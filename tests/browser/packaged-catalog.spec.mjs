@@ -24,12 +24,16 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   if (server?.listening) {
     server.closeAllConnections();
-    await new Promise((resolveClose, rejectClose) => server.close(error => error ? rejectClose(error) : resolveClose()));
+    await new Promise((resolveClose, rejectClose) =>
+      server.close((error) => (error ? rejectClose(error) : resolveClose())),
+    );
   }
   if (directory) rmSync(directory, { recursive: true, force: true });
 });
 
-test('serves the validated production release with an empty catalog', async ({ page }) => {
+test('serves the validated production release with an empty catalog', async ({
+  page,
+}) => {
   await page.goto(url);
   await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible();
   await expect(page.getByText('0 games', { exact: true })).toBeVisible();
@@ -38,5 +42,7 @@ test('serves the validated production release with an empty catalog', async ({ p
   await expectNoHorizontalOverflow(page);
 
   await page.goto(`${url}/g/not-published`);
-  await expect(page.getByRole('heading', { name: 'This game isn’t available.' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'This game isn’t available.' }),
+  ).toBeVisible();
 });

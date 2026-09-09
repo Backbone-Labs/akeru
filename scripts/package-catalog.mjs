@@ -13,6 +13,7 @@ export function packageCatalog(cwd = process.cwd()) {
   const add = (path, bytes, type) => assets.set(path, { bytes, type });
   for (const path of [
     'index.html',
+    'favicon.svg',
     'style.css',
     'app.js',
     'model.js',
@@ -22,13 +23,15 @@ export function packageCatalog(cwd = process.cwd()) {
     add(
       path,
       committed(`platform/catalog/${path}`),
-      path.endsWith('.html')
-        ? 'text/html; charset=utf-8'
-        : path.endsWith('.css')
-          ? 'text/css; charset=utf-8'
-          : path.endsWith('.js')
-            ? 'text/javascript; charset=utf-8'
-            : 'application/json; charset=utf-8',
+      path.endsWith('.svg')
+        ? 'image/svg+xml'
+        : path.endsWith('.html')
+          ? 'text/html; charset=utf-8'
+          : path.endsWith('.css')
+            ? 'text/css; charset=utf-8'
+            : path.endsWith('.js')
+              ? 'text/javascript; charset=utf-8'
+              : 'application/json; charset=utf-8',
     );
   }
   // Publication is a separate reviewed integration. No candidate manifests,

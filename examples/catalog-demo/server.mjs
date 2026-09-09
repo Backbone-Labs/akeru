@@ -171,7 +171,9 @@ export async function startCatalogDemo() {
     const file =
       req.url === '/' || /^\/g\/[a-z0-9-]+\/?$/.test(req.url)
         ? 'platform/catalog/index.html'
-        : /^\/(?:style\.css|app\.js|model\.js|channel\.js)$/.test(req.url)
+        : /^\/(?:favicon\.svg|style\.css|app\.js|model\.js|channel\.js)$/.test(
+              req.url,
+            )
           ? `platform/catalog${req.url}`
           : /^\/input\/(?:browser|index|normalize|preferences|overlay)\.js$/.test(
                 req.url,
@@ -185,11 +187,13 @@ export async function startCatalogDemo() {
     try {
       res.setHeader(
         'Content-Type',
-        file.endsWith('.html')
-          ? 'text/html'
-          : file.endsWith('.css')
-            ? 'text/css'
-            : 'text/javascript',
+        file.endsWith('.svg')
+          ? 'image/svg+xml'
+          : file.endsWith('.html')
+            ? 'text/html'
+            : file.endsWith('.css')
+              ? 'text/css'
+              : 'text/javascript',
       );
       res.end(read(file));
     } catch {
