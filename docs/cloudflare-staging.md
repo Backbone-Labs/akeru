@@ -64,3 +64,36 @@ Do not rebuild from a moving branch. Normal title pause/rollback uses the separa
 operator availability record; this empty-shell deployment does not implement a
 catalog launch consumer or activate any games. Those remain VAN-7461 acceptance
 work together with title hosting and the cache/rollback drill.
+
+
+## Per-title launch gateway
+
+`platform/hosting/title-gateway.mjs` provides the independent game-origin request
+handler. Configure one title identity and host-owned HTTPS origin, a different
+shell origin, retained release file/digest inventories, and the title headers
+from the reviewed `planLaunch` policy. Its CSP must bind that shell as ancestor.
+The staging shell configuration deliberately does not deploy this handler.
+
+A deployment adapter must bind static ASSETS and a private REGISTRY service.
+REGISTRY receives GET `/titles/<configured-id>` and returns an uncached, current
+`{ id, paused, current }` record from the trusted availability store; current is a
+retained release digest. This service is not a public endpoint on the game origin.
+No incoming cookie/authorization is forwarded. REGISTRY must implement consistent
+reads without stale fallback, authenticate its publishers, and not accept title
+messages as publication decisions. That service and live bindings still require
+implementation/configuration; the tests supply an in-memory provider.
+
+Every new HTML launch checks registry state, even when the caller bypasses `/`
+and requests a retained entry URL directly. Pause returns 410; stale releases
+return 409; missing, malformed or failed registry responses return 503. Responses
+are `no-store`. Root requests redirect only to the retained current entry on the
+same origin. Static assets from retained versions remain available for existing
+sessions during normal pause/rollback. Do not prune versions active sessions may
+still need. This is launch control, not DRM for publicly downloadable source.
+
+Unknown paths, query strings, write methods and cross-origin requests are rejected.
+Every served artifact is hash checked. Additional HTML files are also gated;
+only the configured primary HTML entry is selected by the root launch redirect.
+Tests drive the existing operator pause/rollback function through this consumer:
+new launches change or stop, direct stale entry URLs fail, and old session assets
+remain readable. Live title-origin/DNS/service binding tests remain required.

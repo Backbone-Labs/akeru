@@ -17,7 +17,7 @@ export function createStagingWorker(release, headers) {
       if (!file) return respond(404, 'Not found');
       try {
         // Construct a new request: do not forward cookies, authorization, ranges or conditionals.
-        const asset = await env.ASSETS.fetch(new Request(`https://assets.invalid${path}`));
+        const asset = await env.ASSETS.fetch(new Request(`https://assets.invalid${path}`, { redirect: 'manual' }));
         if (asset.status !== 200) return respond(503, 'Release unavailable');
         const bytes = await asset.arrayBuffer();
         const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(n => n.toString(16).padStart(2, '0')).join('');
