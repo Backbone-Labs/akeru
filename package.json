@@ -17,6 +17,8 @@
     "test": "node --test tests/*.test.mjs",
     "check": "npm run build && npm test && npm run check:public",
     "check:public": "node scripts/check-public-tree.mjs",
-    "package:source": "node scripts/package-source.mjs"
+    "package:source": "node scripts/package-source.mjs",
+    "package:staging": "node scripts/package-staging.mjs",
+    "preview:staging": "node scripts/serve-staging.mjs"
   }
 }

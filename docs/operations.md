@@ -17,7 +17,46 @@ CI retains the source archive for 14 days as build evidence. Long-term public
 corresponding-source distribution must be part of each production release;
 temporary CI artifacts do not satisfy that operational requirement by themselves.
 
-## Hosting design to implement next
+## Reproducible staging artifact and preview
+
+`npm run package:staging` creates a static, empty staging shell from committed
+source, with the visible source revision, platform license, downloadable source
+archive, provenance and an exact file/digest manifest. It requires a clean
+checkout and uses the same pinned toolchain. It does not include games.
+
+`npm run preview:staging` verifies every allowlisted file before listening on
+loopback port 4173. Extra files, symlinks, changed bytes and mismatched source
+provenance fail closed. The HTTP server serves only the verified in-memory
+files, rejects unsupported methods, and exposes `/healthz` with revision and
+release-manifest digest. Its strict shell CSP blocks scripts, frames, workers
+and connections; this deliberately empty shell policy is not a title policy.
+No production HSTS claim is made by a local HTTP preview. The deployment adapter
+must supply HTTPS and preserve these headers. CI retains both source and staging
+artifacts; their hashes provide integrity evidence, not authenticated signatures.
+
+## Operator pause and rollback primitive
+
+`node scripts/availability.mjs <operator-file> <title-id> pause` updates a trusted
+local availability record atomically. `rollback <sha256>` selects only a retained
+release with the same save schema. A paused title stays paused; the tool cannot
+activate a title, accept a new artifact, or approve a release. Concurrent cooperating
+writers are excluded with a lock file. After an interrupted writer, an operator
+must verify no writer remains before removing its stale `.lock` file.
+
+The record has schemaVersion `1.0.0`, an integer generation and a titles array.
+Each title has id, paused, current (SHA-256 release digest), and releases; each
+retained release has digest, version (three-part semantic version), and
+saveSchemaVersion (positive integer). A reference example lives in the tests.
+Only a trusted publisher may create this file and retain the corresponding
+immutable bytes. The CLI is not an authenticated registry or public HTTP endpoint.
+
+The hosting integration must load the resulting record for new launches, serve
+availability with a maximum 60-second freshness window and no stale fallback,
+and reject unavailable metadata. Existing sessions continue during normal pause.
+This consumer/cache behavior remains a deployment integration acceptance check;
+the local state-change tests alone do not establish a working hosted kill switch.
+
+## Hosting integration still required
 
 Use an owned HTTPS catalog origin and isolated stable title origins. Cloudflare
 delivery with object storage is a candidate; account, DNS, cost and identity
@@ -57,7 +96,12 @@ leaves active sessions running, per product direction. Define emergency-stop
 behavior separately. Rollback must select a retained artifact and compatible
 save version; do not rebuild an old release from floating dependencies.
 
-Before production, record the operating owner, security contact, monitoring
+Kishan is the initial hosting/DNS and release decision owner. Security reports
+go through the repository’s private security advisory intake (see SECURITY.md).
+GitHub secret scanning and push protection are enabled in addition to the
+repository’s limited source-pattern check.
+
+Before production, record the monitoring
 destination, alert thresholds, response process, publication authority, cache
 freshness target and rollback drill evidence. No production rollout is part of
 this foundation PR.
