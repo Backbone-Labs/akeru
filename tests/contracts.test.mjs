@@ -110,3 +110,8 @@ test('full Git SHA-1 and SHA-256 source identities are supported', () => {
     assert.equal(validateManifest(changed(m => m.provenance.source.revision = 'a'.repeat(length))).valid, true);
   }
 });
+
+test('numeric-leading title slugs are valid while unsafe slug forms fail', () => {
+  for (const id of ['2048', '2048-classic']) assert.equal(validateManifest(changed(m => m.id = id)).valid, true);
+  for (const id of ['../2048', '-2048', '2048-', '2048/classic', 'Title']) assert.equal(validateManifest(changed(m => m.id = id)).valid, false);
+});
