@@ -19,6 +19,8 @@ export interface BrowserInputProvider {
   setMapping(provider: 'gamepad' | 'touch', mapping: InputMapping): void;
   selectController(index: number | null): void;
   resetPreferences(): void;
+  /** Refreshes the controller list without emitting input/navigation or selecting a device. */
+  refreshControllers(): readonly Readonly<{ index: number; mapping: 'standard' }>[];
   getPreferences(): InputPreferences;
   getState(): Readonly<{ started: boolean; mounted: boolean; focused: boolean; gamepad: 'available' | 'unavailable'; activeProvider: 'gamepad' | 'touch' | null; activeController: number | null; controllers: readonly Readonly<{ index: number; mapping: 'standard' }>[] }>;
   showControls(): void;

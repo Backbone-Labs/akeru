@@ -214,6 +214,11 @@ export function createBrowserInputProvider(options = {}) {
       resetInput(); activeGamepad = null; preferences.selectedController = index; persist();
     },
     resetPreferences() { resetInput(); preferences = defaultPreferences(); persist(); },
+    refreshControllers() {
+      if (disposed) throw new Error('Input provider disposed');
+      updateControllerList(listGamepads());
+      return Object.freeze(connectedControllers.slice());
+    },
     getPreferences() { return clone(preferences); },
     getState() { return Object.freeze({ started, mounted: !!ui, focused, gamepad: gamepadStatus, activeProvider, activeController: activeGamepad, controllers: Object.freeze(connectedControllers.slice()) }); },
     showControls() { ui?.show(); }, hideControls() { ui?.hide(); },
