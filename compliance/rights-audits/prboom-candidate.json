@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "upstreamUrl": "https://github.com/libretro/libretro-prboom",
+  "revision": "ddea2c6c041f7790c7bcf1dc3c1fe73b6cff0516",
+  "approvalStatus": "pending",
+  "recommendation": "Preferred source candidate for an Akeru-owned minimal WASM frontend evaluation, not an approved runtime or port.",
+  "observations": [
+    "README.md explicitly lists Freedoom Phase 1 and 2 and libretro input/savestates.",
+    "Makefile lines 310-314 provide an Emscripten static bitcode target; a browser frontend and final linking remain necessary.",
+    "README.md declares GPL v2 and COPYING contains GPL v2 text; this is a repository claim, not a full per-file dependency audit.",
+    "Makefile.common enumerates libretro-common and optional FluidLite/Vorbis/Ogg; WANT_FLUIDSYNTH defaults to 0.",
+    "README.md documents bundled engine resource WAD and additional game formats; source compatibility is not permission to package those game data."
+  ],
+  "recommendedEvaluationConstraints": [
+    "Pin this source revision; initially evaluate HAVE_THREADS=0 and WANT_FLUIDSYNTH=0 to bound thread and soundfont dependencies. These settings are a proposal, not a tested recipe.",
+    "Use only separately selected Freedoom data. Do not copy commercial IWADs, demo game payloads or prior binaries.",
+    "Inventory exact compiled dependencies, resource WAD source/credits and frontend/toolchain before distribution.",
+    "Confirm a useful allowed local FreeDM mode independently; Phase 1/2 support does not establish bot/deathmatch feasibility."
+  ],
+  "remainingSourceAudit": [
+    "Per-file engine and libretro-common terms, embedded prboom_wad_data.h resource provenance, optional audio implementation notices, frontend dependency chain and complete corresponding source."
+  ],
+  "evidence": [
+    {
+      "path": "COPYING",
+      "gitObjectId": "f698bce6fd5d87959ce7ffc3989cf30bdab5cd52",
+      "sha256": "1cba07ce0f6d1366d84b7cc62b76966ba79075e5f379c1e230c3ff0635fa789f",
+      "bytes": 18077,
+      "url": "https://github.com/libretro/libretro-prboom/blob/ddea2c6c041f7790c7bcf1dc3c1fe73b6cff0516/COPYING"
+    },
+    {
+      "path": "Makefile",
+      "gitObjectId": "3ae97517c5386a0efc56f8881d6256f17d7d8d23",
+      "sha256": "81c2f9caf586ed54dbfbfe49ae51dc1038909131d5475656cc5e494030e020d6",
+      "bytes": 29605,
+      "url": "https://github.com/libretro/libretro-prboom/blob/ddea2c6c041f7790c7bcf1dc3c1fe73b6cff0516/Makefile"
+    },
+    {
+      "path": "Makefile.common",
+      "gitObjectId": "3a5e288c01c8f4c922433805ba7ba45ae20757fa",
+      "sha256": "7e7784235994d59e4406e3007b64e56b3271057fbebcf1712dcda468ab9422fd",
+      "bytes": 9362,
+      "url": "https://github.com/libretro/libretro-prboom/blob/ddea2c6c041f7790c7bcf1dc3c1fe73b6cff0516/Makefile.common"
+    },
+    {
+      "path": "README",
+      "gitObjectId": "d1ac70df549887f799f48b1f3080f9023cc67ff8",
+      "sha256": "16874dd9f0e487e14fbdc78e5546279373be010a2bad4185b283f10098ff9ef1",
+      "bytes": 9219,
+      "url": "https://github.com/libretro/libretro-prboom/blob/ddea2c6c041f7790c7bcf1dc3c1fe73b6cff0516/README"
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "92b645f27ace9d773dafc05155504bb03e523bae",
+      "sha256": "bcc58faa2030f5fe233c0f3350c766cd55804a7ce8ff655f5c6bf435cea39a2b",
+      "bytes": 20667,
+      "url": "https://github.com/libretro/libretro-prboom/blob/ddea2c6c041f7790c7bcf1dc3c1fe73b6cff0516/README.md"
+    },
+    {
+      "path": "deps/fluidlite/LICENSE",
+      "gitObjectId": "10cc81dd81f8f4c8501ab136a4183adb712269c0",
+      "sha256": "a5564e99fd7f49e1344152a8c5bc1d420d5f973b30e010946764db0b5b9e668c",
+      "bytes": 736,
+      "url": "https://github.com/libretro/libretro-prboom/blob/ddea2c6c041f7790c7bcf1dc3c1fe73b6cff0516/deps/fluidlite/LICENSE"
+    },
+    {
+      "path": "libretro/libretro.c",
+      "gitObjectId": "e20b3ee1b18cda3aa035d309d7c2f65f1cdcd783",
+      "sha256": "df80d94137314b85f268fb4c076000ea2bddb55f5ba19e18d49f1dfeaf56107a",
+      "bytes": 154898,
+      "url": "https://github.com/libretro/libretro-prboom/blob/ddea2c6c041f7790c7bcf1dc3c1fe73b6cff0516/libretro/libretro.c"
+    }
+  ]
+}

@@ -1,0 +1,1398 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-09",
+  "upstreamUrl": "https://github.com/freedoom/freedoom",
+  "revision": "d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85",
+  "inventory": "freedm.json",
+  "titleIds": [
+    "freedoom-phase-1",
+    "freedoom-phase-2",
+    "freedm"
+  ],
+  "approvalStatus": "pending",
+  "scope": "Source-declaration and credit evidence only. No rights approval, generated artifact, publication grant or gameplay QA.",
+  "groups": [
+    {
+      "id": "explicit-bsd-3-clause",
+      "selector": {
+        "paths": [
+          "Makefile",
+          "bootstrap/bootstrap",
+          "buildcfg.txt",
+          "graphics/text/config.py",
+          "graphics/text/create_caption",
+          "graphics/text/image_dimensions.py",
+          "graphics/text/rotate",
+          "graphics/text/smtextgen",
+          "graphics/text/textgen",
+          "lumps/dehacked/dehacked.txt",
+          "lumps/dmxgus/comparison.py",
+          "lumps/dmxgus/config.py",
+          "lumps/dmxgus/gather_stats.py",
+          "lumps/dmxgus/gen-ultramid",
+          "lumps/genmidi/a2i-to-sbi",
+          "lumps/genmidi/a2i_file.py",
+          "lumps/genmidi/config.py",
+          "lumps/genmidi/dumpgenmidi",
+          "lumps/genmidi/genmidi.py",
+          "lumps/genmidi/instrument.py",
+          "lumps/genmidi/midi.py",
+          "lumps/genmidi/mkgenmidi",
+          "lumps/genmidi/sbi_file.py",
+          "lumps/textures/build-textures",
+          "scripts/fix-deutex-pngs",
+          "scripts/fix-gfx-offsets",
+          "scripts/makejson",
+          "scripts/makepkgs",
+          "scripts/map-color-index",
+          "scripts/music-duplicates",
+          "scripts/news-to-feed",
+          "scripts/simplecpp",
+          "scripts/test-vanilla-compliance"
+        ]
+      },
+      "fileCount": 33,
+      "basis": "file-declaration",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "Makefile",
+        "bootstrap/bootstrap",
+        "buildcfg.txt",
+        "graphics/text/config.py",
+        "graphics/text/create_caption",
+        "graphics/text/image_dimensions.py",
+        "graphics/text/rotate",
+        "graphics/text/smtextgen",
+        "graphics/text/textgen",
+        "lumps/dehacked/dehacked.txt",
+        "lumps/dmxgus/comparison.py",
+        "lumps/dmxgus/config.py",
+        "lumps/dmxgus/gather_stats.py",
+        "lumps/dmxgus/gen-ultramid",
+        "lumps/genmidi/a2i-to-sbi",
+        "lumps/genmidi/a2i_file.py",
+        "lumps/genmidi/config.py",
+        "lumps/genmidi/dumpgenmidi",
+        "lumps/genmidi/genmidi.py",
+        "lumps/genmidi/instrument.py",
+        "lumps/genmidi/midi.py",
+        "lumps/genmidi/mkgenmidi",
+        "lumps/genmidi/sbi_file.py",
+        "lumps/textures/build-textures",
+        "scripts/fix-deutex-pngs",
+        "scripts/fix-gfx-offsets",
+        "scripts/makejson",
+        "scripts/makepkgs",
+        "scripts/map-color-index",
+        "scripts/music-duplicates",
+        "scripts/news-to-feed",
+        "scripts/simplecpp",
+        "scripts/test-vanilla-compliance"
+      ],
+      "noticeAction": "Retain root copyright, conditions and disclaimer with redistributed source and binary documentation; retain specific notices.",
+      "unknowns": []
+    },
+    {
+      "id": "explicit-cc0-1.0",
+      "selector": {
+        "paths": [
+          "dist/freedoom",
+          "dist/pillow-compose",
+          "dist/pillow-resize"
+        ]
+      },
+      "fileCount": 3,
+      "basis": "file-declaration",
+      "declaredLicense": "CC0-1.0",
+      "evidence": [
+        "dist/freedoom",
+        "dist/pillow-compose",
+        "dist/pillow-resize",
+        "dist/COPYING.CC0"
+      ],
+      "noticeAction": "Preserve the CC0 declaration and dist/COPYING.CC0 as provenance.",
+      "unknowns": []
+    },
+    {
+      "id": "explicit-mit",
+      "selector": {
+        "paths": [
+          "graphics/text/tint.py"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "file-declaration",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "graphics/text/tint.py"
+      ],
+      "noticeAction": "Retain Martin Miller and Nick Zatkovich attribution. Resolve the linked Stack Overflow provenance and obtain/preserve applicable full terms before redistributing this script.",
+      "unknowns": [
+        "Pinned header labels MIT but links a Stack Overflow answer; full permission chain not established by this file."
+      ]
+    },
+    {
+      "id": "explicit-gpl-2.0-or-later",
+      "selector": {
+        "paths": [
+          "lumps/colormap/colormap",
+          "lumps/playpal/playpal"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "file-declaration",
+      "declaredLicense": "GPL-2.0-or-later",
+      "evidence": [
+        "lumps/colormap/colormap",
+        "lumps/playpal/playpal",
+        "lumps/playpal/COPYING",
+        "lumps/colormap/COPYING"
+      ],
+      "noticeAction": "Retain authors, GPL headers and COPYING for generator source; make corresponding modified generator source available if distributed. Do not silently relicense the generator as BSD.",
+      "unknowns": [
+        "Generated palette/colormap output rights require separate assessment; script license alone does not establish output license."
+      ]
+    },
+    {
+      "id": "appstream-metadata-conflict",
+      "selector": {
+        "paths": [
+          "dist/io.github.freedoom.FreeDM.metainfo.xml",
+          "dist/io.github.freedoom.Phase1.metainfo.xml",
+          "dist/io.github.freedoom.Phase2.metainfo.xml"
+        ]
+      },
+      "fileCount": 3,
+      "basis": "conflicting-declarations",
+      "declaredLicense": null,
+      "evidence": [
+        "dist/io.github.freedoom.FreeDM.metainfo.xml",
+        "dist/io.github.freedoom.Phase1.metainfo.xml",
+        "dist/io.github.freedoom.Phase2.metainfo.xml"
+      ],
+      "noticeAction": "Preserve both declarations; exclude metadata from web package until reviewer resolves scope.",
+      "unknowns": [
+        "Each XML file has BSD-3-Clause SPDX header but CC0-1.0 metadata_license; project_license BSD does not resolve metadata scope."
+      ]
+    },
+    {
+      "id": "denex-font",
+      "selector": {
+        "prefix": "graphics/text/font/",
+        "excludePaths": []
+      },
+      "fileCount": 2,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "graphics/text/font/README"
+      ],
+      "noticeAction": "Credit Brett Harrell (Mechadon), Denex/Deneb relationship, and retain Freedoom notice.",
+      "unknowns": [
+        "README identifies Deneb derivation but contains no standalone Deneb/Denex grant; author/permission chain remains unknown."
+      ]
+    },
+    {
+      "id": "genmidi-instruments",
+      "selector": {
+        "prefix": "lumps/genmidi/instruments/",
+        "excludePaths": []
+      },
+      "fileCount": 293,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "lumps/genmidi/README.adoc",
+        "lumps/genmidi/config.py"
+      ],
+      "noticeAction": "Retain Freedoom notice and identify upstream OpenBSD instrument origin for review.",
+      "unknowns": [
+        "OpenBSD kernel origin is asserted without exact originating revision/license or per-instrument attribution; 293 SBI files need that chain."
+      ]
+    },
+    {
+      "id": "levels",
+      "selector": {
+        "prefix": "levels/",
+        "excludePaths": []
+      },
+      "fileCount": 103,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "CREDITS-LEVELS",
+        "levels/README"
+      ],
+      "noticeAction": "Retain Freedoom copyright, conditions, disclaimer and relevant credits in source and distribution documentation.",
+      "unknowns": [
+        "Credits identify current map authors, not embedded-lump provenance or final output digest."
+      ]
+    },
+    {
+      "id": "musics",
+      "selector": {
+        "prefix": "musics/",
+        "excludePaths": []
+      },
+      "fileCount": 113,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "CREDITS-MUSIC",
+        "musics/README"
+      ],
+      "noticeAction": "Retain Freedoom copyright, conditions, disclaimer and relevant credits in source and distribution documentation.",
+      "unknowns": [
+        "Credits name current tracks and derivative works; permissions for cited remixes are inherited from project claim."
+      ]
+    },
+    {
+      "id": "sprites",
+      "selector": {
+        "prefix": "sprites/",
+        "excludePaths": []
+      },
+      "fileCount": 1329,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "CREDITS"
+      ],
+      "noticeAction": "Retain Freedoom copyright, conditions, disclaimer and relevant credits in source and distribution documentation.",
+      "unknowns": [
+        "Contributor categories do not identify each individual sprite artist."
+      ]
+    },
+    {
+      "id": "patches",
+      "selector": {
+        "prefix": "patches/",
+        "excludePaths": []
+      },
+      "fileCount": 1057,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "CREDITS"
+      ],
+      "noticeAction": "Retain Freedoom copyright, conditions, disclaimer and relevant credits in source and distribution documentation.",
+      "unknowns": [
+        "Contributor categories do not identify each individual patch artist, including Aquatex source chain."
+      ]
+    },
+    {
+      "id": "flats",
+      "selector": {
+        "prefix": "flats/",
+        "excludePaths": []
+      },
+      "fileCount": 243,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "CREDITS"
+      ],
+      "noticeAction": "Retain Freedoom copyright, conditions, disclaimer and relevant credits in source and distribution documentation.",
+      "unknowns": [
+        "Contributor categories do not identify each individual flat artist, including Aquatex source chain."
+      ]
+    },
+    {
+      "id": "sounds",
+      "selector": {
+        "prefix": "sounds/",
+        "excludePaths": []
+      },
+      "fileCount": 219,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "CREDITS"
+      ],
+      "noticeAction": "Retain Freedoom copyright, conditions, disclaimer and relevant credits in source and distribution documentation.",
+      "unknowns": [
+        "Contributor categories do not identify each individual recorded or edited sound."
+      ]
+    },
+    {
+      "id": "graphics",
+      "selector": {
+        "prefix": "graphics/",
+        "excludePaths": [
+          "graphics/text/config.py",
+          "graphics/text/create_caption",
+          "graphics/text/font/README",
+          "graphics/text/font/denex_bigfont_imagetool.pcx",
+          "graphics/text/image_dimensions.py",
+          "graphics/text/rotate",
+          "graphics/text/smtextgen",
+          "graphics/text/textgen",
+          "graphics/text/tint.py"
+        ]
+      },
+      "fileCount": 332,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "CREDITS"
+      ],
+      "noticeAction": "Retain Freedoom copyright, conditions, disclaimer and relevant credits in source and distribution documentation.",
+      "unknowns": [
+        "Contributor categories do not identify every image, font derivation or generated caption."
+      ]
+    },
+    {
+      "id": "lumps",
+      "selector": {
+        "prefix": "lumps/",
+        "excludePaths": [
+          "lumps/colormap/colormap",
+          "lumps/dehacked/dehacked.txt",
+          "lumps/dmxgus/comparison.py",
+          "lumps/dmxgus/config.py",
+          "lumps/dmxgus/gather_stats.py",
+          "lumps/dmxgus/gen-ultramid",
+          "lumps/genmidi/a2i-to-sbi",
+          "lumps/genmidi/a2i_file.py",
+          "lumps/genmidi/config.py",
+          "lumps/genmidi/dumpgenmidi",
+          "lumps/genmidi/genmidi.py",
+          "lumps/genmidi/instrument.py",
+          "lumps/genmidi/instruments/dummy.sbi",
+          "lumps/genmidi/instruments/instr001-2.sbi",
+          "lumps/genmidi/instruments/instr001.sbi",
+          "lumps/genmidi/instruments/instr002-2.sbi",
+          "lumps/genmidi/instruments/instr002.sbi",
+          "lumps/genmidi/instruments/instr003-2.sbi",
+          "lumps/genmidi/instruments/instr003.sbi",
+          "lumps/genmidi/instruments/instr004-2.sbi",
+          "lumps/genmidi/instruments/instr004.sbi",
+          "lumps/genmidi/instruments/instr005-2.sbi",
+          "lumps/genmidi/instruments/instr005.sbi",
+          "lumps/genmidi/instruments/instr006-2.sbi",
+          "lumps/genmidi/instruments/instr006.sbi",
+          "lumps/genmidi/instruments/instr007-2.sbi",
+          "lumps/genmidi/instruments/instr007.sbi",
+          "lumps/genmidi/instruments/instr008-2.sbi",
+          "lumps/genmidi/instruments/instr008.sbi",
+          "lumps/genmidi/instruments/instr009-2.sbi",
+          "lumps/genmidi/instruments/instr009.sbi",
+          "lumps/genmidi/instruments/instr010-2.sbi",
+          "lumps/genmidi/instruments/instr010.sbi",
+          "lumps/genmidi/instruments/instr011-2.sbi",
+          "lumps/genmidi/instruments/instr011.sbi",
+          "lumps/genmidi/instruments/instr012-2.sbi",
+          "lumps/genmidi/instruments/instr012.sbi",
+          "lumps/genmidi/instruments/instr013-2.sbi",
+          "lumps/genmidi/instruments/instr013.sbi",
+          "lumps/genmidi/instruments/instr014.sbi",
+          "lumps/genmidi/instruments/instr015-2.sbi",
+          "lumps/genmidi/instruments/instr015.sbi",
+          "lumps/genmidi/instruments/instr016-2.sbi",
+          "lumps/genmidi/instruments/instr016.sbi",
+          "lumps/genmidi/instruments/instr017-2.sbi",
+          "lumps/genmidi/instruments/instr017.sbi",
+          "lumps/genmidi/instruments/instr018-2.sbi",
+          "lumps/genmidi/instruments/instr018.sbi",
+          "lumps/genmidi/instruments/instr019-2.sbi",
+          "lumps/genmidi/instruments/instr019.sbi",
+          "lumps/genmidi/instruments/instr020-2.sbi",
+          "lumps/genmidi/instruments/instr020.sbi",
+          "lumps/genmidi/instruments/instr021-2.sbi",
+          "lumps/genmidi/instruments/instr021.sbi",
+          "lumps/genmidi/instruments/instr022-2.sbi",
+          "lumps/genmidi/instruments/instr022.sbi",
+          "lumps/genmidi/instruments/instr023-2.sbi",
+          "lumps/genmidi/instruments/instr023.sbi",
+          "lumps/genmidi/instruments/instr024-2.sbi",
+          "lumps/genmidi/instruments/instr024.sbi",
+          "lumps/genmidi/instruments/instr025-2.sbi",
+          "lumps/genmidi/instruments/instr025.sbi",
+          "lumps/genmidi/instruments/instr026-2.sbi",
+          "lumps/genmidi/instruments/instr026.sbi",
+          "lumps/genmidi/instruments/instr027-2.sbi",
+          "lumps/genmidi/instruments/instr027.sbi",
+          "lumps/genmidi/instruments/instr028-2.sbi",
+          "lumps/genmidi/instruments/instr028.sbi",
+          "lumps/genmidi/instruments/instr029-2.sbi",
+          "lumps/genmidi/instruments/instr029.sbi",
+          "lumps/genmidi/instruments/instr030-2.sbi",
+          "lumps/genmidi/instruments/instr030.sbi",
+          "lumps/genmidi/instruments/instr031-2.sbi",
+          "lumps/genmidi/instruments/instr031.sbi",
+          "lumps/genmidi/instruments/instr032-2.sbi",
+          "lumps/genmidi/instruments/instr032.sbi",
+          "lumps/genmidi/instruments/instr033-2.sbi",
+          "lumps/genmidi/instruments/instr033.sbi",
+          "lumps/genmidi/instruments/instr034-2.sbi",
+          "lumps/genmidi/instruments/instr034.sbi",
+          "lumps/genmidi/instruments/instr035-2.sbi",
+          "lumps/genmidi/instruments/instr035.sbi",
+          "lumps/genmidi/instruments/instr036-2.sbi",
+          "lumps/genmidi/instruments/instr036.sbi",
+          "lumps/genmidi/instruments/instr037-2.sbi",
+          "lumps/genmidi/instruments/instr037.sbi",
+          "lumps/genmidi/instruments/instr038-2.sbi",
+          "lumps/genmidi/instruments/instr038.sbi",
+          "lumps/genmidi/instruments/instr039.sbi",
+          "lumps/genmidi/instruments/instr040-2.sbi",
+          "lumps/genmidi/instruments/instr040.sbi",
+          "lumps/genmidi/instruments/instr041-2.sbi",
+          "lumps/genmidi/instruments/instr041.sbi",
+          "lumps/genmidi/instruments/instr042.sbi",
+          "lumps/genmidi/instruments/instr043-2.sbi",
+          "lumps/genmidi/instruments/instr043.sbi",
+          "lumps/genmidi/instruments/instr044.sbi",
+          "lumps/genmidi/instruments/instr045-2.sbi",
+          "lumps/genmidi/instruments/instr045.sbi",
+          "lumps/genmidi/instruments/instr046-2.sbi",
+          "lumps/genmidi/instruments/instr046.sbi",
+          "lumps/genmidi/instruments/instr047-2.sbi",
+          "lumps/genmidi/instruments/instr047.sbi",
+          "lumps/genmidi/instruments/instr048-2.sbi",
+          "lumps/genmidi/instruments/instr048.sbi",
+          "lumps/genmidi/instruments/instr049-2.sbi",
+          "lumps/genmidi/instruments/instr049.sbi",
+          "lumps/genmidi/instruments/instr050-2.sbi",
+          "lumps/genmidi/instruments/instr050.sbi",
+          "lumps/genmidi/instruments/instr051-2.sbi",
+          "lumps/genmidi/instruments/instr051.sbi",
+          "lumps/genmidi/instruments/instr052-2.sbi",
+          "lumps/genmidi/instruments/instr052.sbi",
+          "lumps/genmidi/instruments/instr053-2.sbi",
+          "lumps/genmidi/instruments/instr053.sbi",
+          "lumps/genmidi/instruments/instr054-2.sbi",
+          "lumps/genmidi/instruments/instr054.sbi",
+          "lumps/genmidi/instruments/instr055-2.sbi",
+          "lumps/genmidi/instruments/instr055.sbi",
+          "lumps/genmidi/instruments/instr056-2.sbi",
+          "lumps/genmidi/instruments/instr056.sbi",
+          "lumps/genmidi/instruments/instr057.sbi",
+          "lumps/genmidi/instruments/instr058-2.sbi",
+          "lumps/genmidi/instruments/instr058.sbi",
+          "lumps/genmidi/instruments/instr059.sbi",
+          "lumps/genmidi/instruments/instr060.sbi",
+          "lumps/genmidi/instruments/instr061-2.sbi",
+          "lumps/genmidi/instruments/instr061.sbi",
+          "lumps/genmidi/instruments/instr062-2.sbi",
+          "lumps/genmidi/instruments/instr062.sbi",
+          "lumps/genmidi/instruments/instr063-2.sbi",
+          "lumps/genmidi/instruments/instr063.sbi",
+          "lumps/genmidi/instruments/instr064-2.sbi",
+          "lumps/genmidi/instruments/instr064.sbi",
+          "lumps/genmidi/instruments/instr065.sbi",
+          "lumps/genmidi/instruments/instr066.sbi",
+          "lumps/genmidi/instruments/instr067.sbi",
+          "lumps/genmidi/instruments/instr068.sbi",
+          "lumps/genmidi/instruments/instr069-2.sbi",
+          "lumps/genmidi/instruments/instr069.sbi",
+          "lumps/genmidi/instruments/instr070.sbi",
+          "lumps/genmidi/instruments/instr071.sbi",
+          "lumps/genmidi/instruments/instr072.sbi",
+          "lumps/genmidi/instruments/instr073.sbi",
+          "lumps/genmidi/instruments/instr074.sbi",
+          "lumps/genmidi/instruments/instr075.sbi",
+          "lumps/genmidi/instruments/instr076-2.sbi",
+          "lumps/genmidi/instruments/instr076.sbi",
+          "lumps/genmidi/instruments/instr077-2.sbi",
+          "lumps/genmidi/instruments/instr077.sbi",
+          "lumps/genmidi/instruments/instr078-2.sbi",
+          "lumps/genmidi/instruments/instr078.sbi",
+          "lumps/genmidi/instruments/instr079.sbi",
+          "lumps/genmidi/instruments/instr080.sbi",
+          "lumps/genmidi/instruments/instr081-2.sbi",
+          "lumps/genmidi/instruments/instr081.sbi",
+          "lumps/genmidi/instruments/instr082-2.sbi",
+          "lumps/genmidi/instruments/instr082.sbi",
+          "lumps/genmidi/instruments/instr083-2.sbi",
+          "lumps/genmidi/instruments/instr083.sbi",
+          "lumps/genmidi/instruments/instr084-2.sbi",
+          "lumps/genmidi/instruments/instr084.sbi",
+          "lumps/genmidi/instruments/instr085.sbi",
+          "lumps/genmidi/instruments/instr086-2.sbi",
+          "lumps/genmidi/instruments/instr086.sbi",
+          "lumps/genmidi/instruments/instr087-2.sbi",
+          "lumps/genmidi/instruments/instr087.sbi",
+          "lumps/genmidi/instruments/instr088-2.sbi",
+          "lumps/genmidi/instruments/instr088.sbi",
+          "lumps/genmidi/instruments/instr089-2.sbi",
+          "lumps/genmidi/instruments/instr089.sbi",
+          "lumps/genmidi/instruments/instr090-2.sbi",
+          "lumps/genmidi/instruments/instr090.sbi",
+          "lumps/genmidi/instruments/instr091-2.sbi",
+          "lumps/genmidi/instruments/instr091.sbi",
+          "lumps/genmidi/instruments/instr092-2.sbi",
+          "lumps/genmidi/instruments/instr092.sbi",
+          "lumps/genmidi/instruments/instr093-2.sbi",
+          "lumps/genmidi/instruments/instr093.sbi",
+          "lumps/genmidi/instruments/instr094-2.sbi",
+          "lumps/genmidi/instruments/instr094.sbi",
+          "lumps/genmidi/instruments/instr095-2.sbi",
+          "lumps/genmidi/instruments/instr095.sbi",
+          "lumps/genmidi/instruments/instr096-2.sbi",
+          "lumps/genmidi/instruments/instr096.sbi",
+          "lumps/genmidi/instruments/instr097-2.sbi",
+          "lumps/genmidi/instruments/instr097.sbi",
+          "lumps/genmidi/instruments/instr098-2.sbi",
+          "lumps/genmidi/instruments/instr098.sbi",
+          "lumps/genmidi/instruments/instr099-2.sbi",
+          "lumps/genmidi/instruments/instr099.sbi",
+          "lumps/genmidi/instruments/instr100-2.sbi",
+          "lumps/genmidi/instruments/instr100.sbi",
+          "lumps/genmidi/instruments/instr101-2.sbi",
+          "lumps/genmidi/instruments/instr101.sbi",
+          "lumps/genmidi/instruments/instr102-2.sbi",
+          "lumps/genmidi/instruments/instr102.sbi",
+          "lumps/genmidi/instruments/instr103-2.sbi",
+          "lumps/genmidi/instruments/instr103.sbi",
+          "lumps/genmidi/instruments/instr104-2.sbi",
+          "lumps/genmidi/instruments/instr104.sbi",
+          "lumps/genmidi/instruments/instr105-2.sbi",
+          "lumps/genmidi/instruments/instr105.sbi",
+          "lumps/genmidi/instruments/instr106-2.sbi",
+          "lumps/genmidi/instruments/instr106.sbi",
+          "lumps/genmidi/instruments/instr107.sbi",
+          "lumps/genmidi/instruments/instr108.sbi",
+          "lumps/genmidi/instruments/instr109.sbi",
+          "lumps/genmidi/instruments/instr110-2.sbi",
+          "lumps/genmidi/instruments/instr110.sbi",
+          "lumps/genmidi/instruments/instr111.sbi",
+          "lumps/genmidi/instruments/instr112.sbi",
+          "lumps/genmidi/instruments/instr113.sbi",
+          "lumps/genmidi/instruments/instr114.sbi",
+          "lumps/genmidi/instruments/instr115-2.sbi",
+          "lumps/genmidi/instruments/instr115.sbi",
+          "lumps/genmidi/instruments/instr116.sbi",
+          "lumps/genmidi/instruments/instr117-2.sbi",
+          "lumps/genmidi/instruments/instr117.sbi",
+          "lumps/genmidi/instruments/instr118-2.sbi",
+          "lumps/genmidi/instruments/instr118.sbi",
+          "lumps/genmidi/instruments/instr119-2.sbi",
+          "lumps/genmidi/instruments/instr119.sbi",
+          "lumps/genmidi/instruments/instr120-2.sbi",
+          "lumps/genmidi/instruments/instr120.sbi",
+          "lumps/genmidi/instruments/instr121.sbi",
+          "lumps/genmidi/instruments/instr122-2.sbi",
+          "lumps/genmidi/instruments/instr122.sbi",
+          "lumps/genmidi/instruments/instr123-2.sbi",
+          "lumps/genmidi/instruments/instr123.sbi",
+          "lumps/genmidi/instruments/instr124.sbi",
+          "lumps/genmidi/instruments/instr125-2.sbi",
+          "lumps/genmidi/instruments/instr125.sbi",
+          "lumps/genmidi/instruments/instr126-2.sbi",
+          "lumps/genmidi/instruments/instr126.sbi",
+          "lumps/genmidi/instruments/instr127-2.sbi",
+          "lumps/genmidi/instruments/instr127.sbi",
+          "lumps/genmidi/instruments/instr128.sbi",
+          "lumps/genmidi/instruments/perc35.sbi",
+          "lumps/genmidi/instruments/perc36.sbi",
+          "lumps/genmidi/instruments/perc37-2.sbi",
+          "lumps/genmidi/instruments/perc37.sbi",
+          "lumps/genmidi/instruments/perc38-2.sbi",
+          "lumps/genmidi/instruments/perc38.sbi",
+          "lumps/genmidi/instruments/perc39-2.sbi",
+          "lumps/genmidi/instruments/perc39.sbi",
+          "lumps/genmidi/instruments/perc40-2.sbi",
+          "lumps/genmidi/instruments/perc40.sbi",
+          "lumps/genmidi/instruments/perc41.sbi",
+          "lumps/genmidi/instruments/perc42-2.sbi",
+          "lumps/genmidi/instruments/perc42.sbi",
+          "lumps/genmidi/instruments/perc43.sbi",
+          "lumps/genmidi/instruments/perc44.sbi",
+          "lumps/genmidi/instruments/perc45.sbi",
+          "lumps/genmidi/instruments/perc46-2.sbi",
+          "lumps/genmidi/instruments/perc46.sbi",
+          "lumps/genmidi/instruments/perc47.sbi",
+          "lumps/genmidi/instruments/perc48.sbi",
+          "lumps/genmidi/instruments/perc49-2.sbi",
+          "lumps/genmidi/instruments/perc49.sbi",
+          "lumps/genmidi/instruments/perc50.sbi",
+          "lumps/genmidi/instruments/perc51-2.sbi",
+          "lumps/genmidi/instruments/perc51.sbi",
+          "lumps/genmidi/instruments/perc52-2.sbi",
+          "lumps/genmidi/instruments/perc52.sbi",
+          "lumps/genmidi/instruments/perc53.sbi",
+          "lumps/genmidi/instruments/perc54-2.sbi",
+          "lumps/genmidi/instruments/perc54.sbi",
+          "lumps/genmidi/instruments/perc55-2.sbi",
+          "lumps/genmidi/instruments/perc55.sbi",
+          "lumps/genmidi/instruments/perc56.sbi",
+          "lumps/genmidi/instruments/perc57-2.sbi",
+          "lumps/genmidi/instruments/perc57.sbi",
+          "lumps/genmidi/instruments/perc58.sbi",
+          "lumps/genmidi/instruments/perc59.sbi",
+          "lumps/genmidi/instruments/perc60-2.sbi",
+          "lumps/genmidi/instruments/perc60.sbi",
+          "lumps/genmidi/instruments/perc61-2.sbi",
+          "lumps/genmidi/instruments/perc61.sbi",
+          "lumps/genmidi/instruments/perc62-2.sbi",
+          "lumps/genmidi/instruments/perc62.sbi",
+          "lumps/genmidi/instruments/perc63-2.sbi",
+          "lumps/genmidi/instruments/perc63.sbi",
+          "lumps/genmidi/instruments/perc64-2.sbi",
+          "lumps/genmidi/instruments/perc64.sbi",
+          "lumps/genmidi/instruments/perc65.sbi",
+          "lumps/genmidi/instruments/perc66.sbi",
+          "lumps/genmidi/instruments/perc67-2.sbi",
+          "lumps/genmidi/instruments/perc67.sbi",
+          "lumps/genmidi/instruments/perc68-2.sbi",
+          "lumps/genmidi/instruments/perc68.sbi",
+          "lumps/genmidi/instruments/perc70.sbi",
+          "lumps/genmidi/instruments/perc71.sbi",
+          "lumps/genmidi/instruments/perc72.sbi",
+          "lumps/genmidi/instruments/perc73-2.sbi",
+          "lumps/genmidi/instruments/perc73.sbi",
+          "lumps/genmidi/instruments/perc74-2.sbi",
+          "lumps/genmidi/instruments/perc74.sbi",
+          "lumps/genmidi/instruments/perc75.sbi",
+          "lumps/genmidi/instruments/perc76.sbi",
+          "lumps/genmidi/instruments/perc77.sbi",
+          "lumps/genmidi/instruments/perc78.sbi",
+          "lumps/genmidi/instruments/perc79.sbi",
+          "lumps/genmidi/instruments/perc80.sbi",
+          "lumps/genmidi/instruments/perc81.sbi",
+          "lumps/genmidi/midi.py",
+          "lumps/genmidi/mkgenmidi",
+          "lumps/genmidi/sbi_file.py",
+          "lumps/playpal/playpal",
+          "lumps/textures/build-textures"
+        ]
+      },
+      "fileCount": 53,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "CREDITS"
+      ],
+      "noticeAction": "Retain Freedoom copyright, conditions, disclaimer and relevant credits in source and distribution documentation.",
+      "unknowns": [
+        "Generator inputs, bootstrap data and generated resources need output-level lineage; root claim alone is not proof of bytes."
+      ]
+    },
+    {
+      "id": "remaining-project-files",
+      "selector": {
+        "paths": [
+          ".adoc-layout.conf",
+          ".gitattributes",
+          ".github/workflows/make.yml",
+          ".gitignore",
+          "BUILD-SYSTEM.adoc",
+          "COMPILING.adoc",
+          "COPYING.adoc",
+          "CREDITS",
+          "CREDITS-LEVELS",
+          "CREDITS-MUSIC",
+          "NEWS.adoc",
+          "README.adoc",
+          "bootstrap/Makefile",
+          "bootstrap/README",
+          "dist/COPYING.CC0",
+          "dist/Makefile",
+          "dist/README",
+          "dist/freedoom.adoc",
+          "dist/io.github.freedoom.FreeDM.desktop",
+          "dist/io.github.freedoom.Phase1.desktop",
+          "dist/io.github.freedoom.Phase2.desktop",
+          "manual/Makefile",
+          "manual/README.adoc",
+          "manual/cover/cover-en.sed",
+          "manual/cover/cover-es.sed",
+          "manual/cover/cover-fr.sed",
+          "manual/cover/minigunner.png",
+          "manual/cover/serpentipede.png",
+          "manual/cover/template.svg",
+          "manual/freedoom-manual-en.adoc",
+          "manual/freedoom-manual-es.adoc",
+          "manual/freedoom-manual-fr.adoc",
+          "manual/images/e1m1-tutorial-sshot.png",
+          "manual/images/freedoom-logo.svg",
+          "manual/images/hazard-barrels.png",
+          "manual/images/hazard-crusher.png",
+          "manual/images/hazard-slime.png",
+          "manual/images/key-icons.png",
+          "manual/images/map.png",
+          "manual/images/map01-sshot.png",
+          "manual/images/menu-episode.png",
+          "manual/images/menu-mainmenu.png",
+          "manual/images/menu-save-game.png",
+          "manual/images/menu-skill.png",
+          "manual/images/monster-assault-tripod.png",
+          "manual/images/monster-combat-slug.png",
+          "manual/images/monster-dreadnought.png",
+          "manual/images/monster-flesh-worm.png",
+          "manual/images/monster-hatchling.png",
+          "manual/images/monster-matribite.png",
+          "manual/images/monster-minigun-zombie.png",
+          "manual/images/monster-necromancer.png",
+          "manual/images/monster-octaminator.png",
+          "manual/images/monster-pain-bringer.png",
+          "manual/images/monster-pain-lord.png",
+          "manual/images/monster-serpentipede.png",
+          "manual/images/monster-shotgun-zombie.png",
+          "manual/images/monster-stealth-worm.png",
+          "manual/images/monster-technospider.png",
+          "manual/images/monster-trilobite.png",
+          "manual/images/monster-zombie.png",
+          "manual/images/scythe-map09.png",
+          "manual/images/status-bar.png"
+        ]
+      },
+      "fileCount": 63,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "BSD-3-Clause",
+      "evidence": [
+        "COPYING.adoc",
+        "CREDITS"
+      ],
+      "noticeAction": "Retain root notice; separate build dependencies from distributed data.",
+      "unknowns": [
+        "Remaining build/docs/manual files rely on root claim; external tools are not inventoried by this source tree."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "COPYING.adoc",
+      "gitObjectId": "57a9f63e95a8f66ac4edc7aa9d446f4297176355",
+      "sha256": "ed60abcf1ff64bf61bf8b4c585ab63643d655a21f8997ba284c01f94ed681fc5",
+      "bytes": 1611,
+      "lineCount": 30,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/COPYING.adoc",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "repository"
+      }
+    },
+    {
+      "path": "CREDITS",
+      "gitObjectId": "d044eea9a944d212f5c93435fdfce0d6efc49632",
+      "sha256": "aa69fd40f0a37bded21291cf7ca3b455575b5da109a069d31f6a9fdc1c98dfa0",
+      "bytes": 15440,
+      "lineCount": 1069,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/CREDITS"
+    },
+    {
+      "path": "CREDITS-LEVELS",
+      "gitObjectId": "44a6a0b624a918c1ea05118dbdeeaf27f67ad21a",
+      "sha256": "f374dcc9d180bfba4f6143edbb5bec338fb958d9c58c9189fb581ceb71f12930",
+      "bytes": 7749,
+      "lineCount": 155,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/CREDITS-LEVELS"
+    },
+    {
+      "path": "CREDITS-MUSIC",
+      "gitObjectId": "1de8ca3bc6a5a060a2ad5aeb961749364b24e529",
+      "sha256": "6ea179f197ba58a9b6689dec0afd2832394fdc63c13a79408ef428c3f65c8edd",
+      "bytes": 9319,
+      "lineCount": 215,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/CREDITS-MUSIC"
+    },
+    {
+      "path": "buildcfg.txt",
+      "gitObjectId": "5e5ae11becc7496e674f8104b8f89f33824be48b",
+      "sha256": "5ae7cb6cf2b7611a497a037f4a812a882f3887ed64f96fc5f4e6edea5cdcbba6",
+      "bytes": 35413,
+      "lineCount": 2778,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/buildcfg.txt",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "BUILD-SYSTEM.adoc",
+      "gitObjectId": "0d9f003dec2286e867c503bd852cd1c196985b54",
+      "sha256": "868ed6bac9cb38aaa7f47496a154494bd86ac2cafa5ed29a231b91efcbd083e4",
+      "bytes": 11266,
+      "lineCount": 269,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/BUILD-SYSTEM.adoc"
+    },
+    {
+      "path": "musics/README",
+      "gitObjectId": "ec4896c58684a65a22dd0ae6cee2ca747f152bca",
+      "sha256": "de4751259491d815ae72aaaddb68737e856488b7300f14abbeb50e8083b43191",
+      "bytes": 831,
+      "lineCount": 22,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/musics/README"
+    },
+    {
+      "path": "levels/README",
+      "gitObjectId": "05f939422413f17810869aa9c9d3a94d2a657280",
+      "sha256": "dfbea0901de31193a79b85d738431ae48c205f75828e4e7e722595211d71decc",
+      "bytes": 196,
+      "lineCount": 7,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/levels/README"
+    },
+    {
+      "path": "graphics/text/font/README",
+      "gitObjectId": "ffed307871a48aec2fe10f3c873c517a8365e987",
+      "sha256": "84e5eb0457ee9292ea183c849eae34d963d0e15ac40c7070381ddf5672bd8c58",
+      "bytes": 218,
+      "lineCount": 6,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/font/README"
+    },
+    {
+      "path": "lumps/genmidi/README.adoc",
+      "gitObjectId": "5816321ea263a2f0671211f05b2229d17b167d8f",
+      "sha256": "8a71790688594e059653dfe50fbaefeb9fd7dd051584d05248a9595b1db0ac04",
+      "bytes": 6712,
+      "lineCount": 143,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/genmidi/README.adoc"
+    },
+    {
+      "path": "lumps/playpal/README",
+      "gitObjectId": "483c60d0c8313f9162f4cf8a54c0462170b4f0b2",
+      "sha256": "60256cf884e60902454b5faae834a4602199848320f71d3e78bf75999e198e5a",
+      "bytes": 838,
+      "lineCount": 18,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/playpal/README"
+    },
+    {
+      "path": "lumps/colormap/README",
+      "gitObjectId": "a59befcc588a07eee0d75b8669649bd78f3c96a3",
+      "sha256": "3a89b654d0298bc498ba9b3d993756bb80764b9fe7ad101c22e6f7fdc1793741",
+      "bytes": 435,
+      "lineCount": 10,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/colormap/README"
+    },
+    {
+      "path": "Makefile",
+      "gitObjectId": "31184f91cf032c2e89837d2076a01889a5d7b9e3",
+      "sha256": "d4d586f4cfad75bde8631cb63669b1a29d20ea7b7f9850715c78b3ed3261e161",
+      "bytes": 13813,
+      "lineCount": 352,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/Makefile",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "bootstrap/bootstrap",
+      "gitObjectId": "a697753403a7e3a934908cdbeb81a89de337434a",
+      "sha256": "60f11c69665f6e1ecb3a04fbef523fef8d110e9e7262f2b680be0dba07f31a1f",
+      "bytes": 1271,
+      "lineCount": 58,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/bootstrap/bootstrap",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "dist/freedoom",
+      "gitObjectId": "343bb05963a6a4d92b295c71b2aeee660ef9029f",
+      "sha256": "a8cd3594dd84997a2919ba37e88d3f0700ad9f2a157fddabc09b2bfe2d2d4cf2",
+      "bytes": 2668,
+      "lineCount": 94,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/dist/freedoom",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "dist/io.github.freedoom.FreeDM.metainfo.xml",
+      "gitObjectId": "98d6c825e52287cce4a677e1ec0c8382d6948646",
+      "sha256": "347df15aacc4a81b5620a19b50384c44ded67c9df4025f6e71f162b8ae629e65",
+      "bytes": 2866,
+      "lineCount": 67,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/dist/io.github.freedoom.FreeDM.metainfo.xml",
+      "declaration": {
+        "license": "BSD-3-Clause AND CC0-1.0 (scope conflict)",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "dist/io.github.freedoom.Phase1.metainfo.xml",
+      "gitObjectId": "5b32483d28c6c043746565fb44f3e58d77d1d85a",
+      "sha256": "3dce541288f8d708cfc4dc480dd6de9332229171f2147e50e6277c6148b6ceb1",
+      "bytes": 2864,
+      "lineCount": 67,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/dist/io.github.freedoom.Phase1.metainfo.xml",
+      "declaration": {
+        "license": "BSD-3-Clause AND CC0-1.0 (scope conflict)",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "dist/io.github.freedoom.Phase2.metainfo.xml",
+      "gitObjectId": "b5b90e9b4fcf96d712647eef6d08ae197fc6caac",
+      "sha256": "55a9fa3f2e1fb98cf1036e0c49fb3881972098ed64eb1eef8a741b13ec884aae",
+      "bytes": 2836,
+      "lineCount": 66,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/dist/io.github.freedoom.Phase2.metainfo.xml",
+      "declaration": {
+        "license": "BSD-3-Clause AND CC0-1.0 (scope conflict)",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "dist/pillow-compose",
+      "gitObjectId": "c2728c81c3535342e8728b11e15888507cb78817",
+      "sha256": "dbcc3f331d2ad3e66fd806c5b74337324cde3ab1064d79667d8ab99ab8611c77",
+      "bytes": 736,
+      "lineCount": 27,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/dist/pillow-compose",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "dist/pillow-resize",
+      "gitObjectId": "1ebf3c7b17316d14eff0da79ffe416e4ae9d4e2f",
+      "sha256": "2bec9709ec4c9c524482ad20992fa4800047dad97510193cfc6e8ad88882948c",
+      "bytes": 297,
+      "lineCount": 12,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/dist/pillow-resize",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "graphics/text/config.py",
+      "gitObjectId": "717e30eb242297cd11205472f5cdec0f8787373c",
+      "sha256": "7809fa348c944dc242a09f5aca1c55d96e3cb1afad6b22926004f7d5dfd664a5",
+      "bytes": 7998,
+      "lineCount": 275,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/config.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "graphics/text/create_caption",
+      "gitObjectId": "ea080594efbfedffa652835c64415c09f91d2cff",
+      "sha256": "a94b54972157c6a6332700dd984b7d5731237fc32edd037ecc2cdf6d83dfd0c7",
+      "bytes": 2140,
+      "lineCount": 72,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/create_caption",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "graphics/text/image_dimensions.py",
+      "gitObjectId": "6eb9125e8776772f88f9960b3e00b0c694c5346d",
+      "sha256": "48f2157957d69acd3d7094ae9f13004ce49bbe66b2dd8d2b3320a0861c656898",
+      "bytes": 473,
+      "lineCount": 25,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/image_dimensions.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "graphics/text/rotate",
+      "gitObjectId": "9b2d8957ee3341fcbb3e11020a15578b4ad18f71",
+      "sha256": "a0a0e2c233b394c8cbf78704c35378c9e5026343c9577c15107e5518d3525b79",
+      "bytes": 601,
+      "lineCount": 27,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/rotate",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "graphics/text/smtextgen",
+      "gitObjectId": "ce54468e028d5f16d017974f54df30b1cce94afa",
+      "sha256": "9b64d10ce933abe65ce89d43c4702042a3388905e03786690cf0b4a7bad6a8dd",
+      "bytes": 4255,
+      "lineCount": 151,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/smtextgen",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "graphics/text/textgen",
+      "gitObjectId": "db7605061ff9e3b9f300449bca9c49a860be3383",
+      "sha256": "8509d4094a623f01aaeff4a4b57ba7b3eedb1e25aa8d84a35dda2e8ac7f12202",
+      "bytes": 5084,
+      "lineCount": 167,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/textgen",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "graphics/text/tint.py",
+      "gitObjectId": "c3af9be8e8d20d07536846766fb0f56dbaec7dda",
+      "sha256": "072b112976791b571a4e2c282c75981b0b30359504d2fc1490a83dd24f0a0c12",
+      "bytes": 2061,
+      "lineCount": 59,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/tint.py",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/colormap/colormap",
+      "gitObjectId": "bc12934e8ffa50375efd6a8b46732e2bc105e8fc",
+      "sha256": "2bd6af03dff55f8ba7c50a779712cea602fda8cd7949da0a48467f01a765ae78",
+      "bytes": 7103,
+      "lineCount": 244,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/colormap/colormap",
+      "declaration": {
+        "license": "GPL-2.0-or-later",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/dehacked/dehacked.txt",
+      "gitObjectId": "6b178cb1e9c0953db3b49364b8e32383812657a4",
+      "sha256": "7dae992f477069ee8fc4ff51d42bf7172648d9f8428eb523392f97e13e1bf4ad",
+      "bytes": 26607,
+      "lineCount": 727,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/dehacked/dehacked.txt",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/dmxgus/comparison.py",
+      "gitObjectId": "d182dc9763e0393be295b2ad7f16aeb7e488eed2",
+      "sha256": "8c69f061c78e890cd83dbde70d91f7762108583f8f0e8e255ea9b445e716a721",
+      "bytes": 3719,
+      "lineCount": 111,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/dmxgus/comparison.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/dmxgus/config.py",
+      "gitObjectId": "0792b6c59c75da4e6af0d009e0e385f691bf876b",
+      "sha256": "8f1458107cb6e52662873916ba0715924e7a972fa1c7d7d3ea7e94a86be6db67",
+      "bytes": 16281,
+      "lineCount": 561,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/dmxgus/config.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/dmxgus/gather_stats.py",
+      "gitObjectId": "73202df4df41a8981914c35d850e5f1f59881fe9",
+      "sha256": "6f0361fe7acccb7306da1d911c15926ca79124b1a5c9db6d5986c94d86c83c38",
+      "bytes": 1487,
+      "lineCount": 55,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/dmxgus/gather_stats.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/dmxgus/gen-ultramid",
+      "gitObjectId": "157783ff3054682023c72590e4db69e2249d96f9",
+      "sha256": "706ddc475c68aa5dc844d7719763e508ef91013784fc2657c04eff00df695bf1",
+      "bytes": 6616,
+      "lineCount": 207,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/dmxgus/gen-ultramid",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/genmidi/a2i-to-sbi",
+      "gitObjectId": "565159e418b0d81de166357fa48d8f3dd928c9e8",
+      "sha256": "03dcbf5476cd37fc89cd50ec8e25d1748185c8cfeffafc3b8de7eae84c783672",
+      "bytes": 329,
+      "lineCount": 16,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/genmidi/a2i-to-sbi",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/genmidi/a2i_file.py",
+      "gitObjectId": "e8e6742636f56dea20530e6be42b1b26d3c26c1f",
+      "sha256": "0c46d5a3b32d2c29179d7bff8afdf8046a2206b8eee184cd77f57e64104e65e4",
+      "bytes": 5572,
+      "lineCount": 224,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/genmidi/a2i_file.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/genmidi/config.py",
+      "gitObjectId": "b44aada7fc5a1b3146f920d1a9dcc005ff18d87d",
+      "sha256": "f0105b84c05428d2230b5f742a4a4262509d73bdc5855588ebfdae892001058a",
+      "bytes": 17274,
+      "lineCount": 347,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/genmidi/config.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/genmidi/dumpgenmidi",
+      "gitObjectId": "1cddb4c172658bce363bddd4c5769a3a8a8f187e",
+      "sha256": "280802b4bbaef4780eb5f83ca7f7ab3572731fa62f5fdcf0ddb115b705a8a607",
+      "bytes": 2809,
+      "lineCount": 110,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/genmidi/dumpgenmidi",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/genmidi/genmidi.py",
+      "gitObjectId": "19f579c7d97cdef7d1bf2acf8b355f8a9f12cf57",
+      "sha256": "9606e24e7c882ccc52aa65ae28573864bf9174f03bc3e2445c9541d55fd4c2ea",
+      "bytes": 4874,
+      "lineCount": 195,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/genmidi/genmidi.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/genmidi/instrument.py",
+      "gitObjectId": "7c52821b9ee14acf73a48a77db8e77942a04a204",
+      "sha256": "cbfb106f27d1a026067cd32030dc327762ad4ffa49b646afd2f9774b8f577fa2",
+      "bytes": 2031,
+      "lineCount": 80,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/genmidi/instrument.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/genmidi/midi.py",
+      "gitObjectId": "c632a3a1e0f1787e3e190b1644f6d7fdc8234f2b",
+      "sha256": "4af29a144978626e8ea783baf93713fb4bd90e8c4aae58b916435b08d13c9f29",
+      "bytes": 1523,
+      "lineCount": 67,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/genmidi/midi.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/genmidi/mkgenmidi",
+      "gitObjectId": "4ca143154ead392cccbc0f135a776c47cdc83961",
+      "sha256": "67cfd31287f403e76bf12d659e5748349cc7ca411f0d51ff23b3e73aebd5e118",
+      "bytes": 294,
+      "lineCount": 13,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/genmidi/mkgenmidi",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/genmidi/sbi_file.py",
+      "gitObjectId": "e6904e6dcc83f44bf8141974cbdbbaec90ada6a8",
+      "sha256": "7918205ebf22688c466232e15cae5d7bbfa79575d175547ea782073228e4626d",
+      "bytes": 1376,
+      "lineCount": 60,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/genmidi/sbi_file.py",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/playpal/playpal",
+      "gitObjectId": "2011dbe09162f2866b2cf8a0859e9eb376d5ef8a",
+      "sha256": "f48ee3b7428c35588a33b22d9e51c6ec3f55f5982267c68b72066688691fcaed",
+      "bytes": 5176,
+      "lineCount": 211,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/playpal/playpal",
+      "declaration": {
+        "license": "GPL-2.0-or-later",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "lumps/textures/build-textures",
+      "gitObjectId": "ee173640a06984277c66e405262d7547c8e0feb0",
+      "sha256": "387915b36702478b097c2b5c56e03b781b477875484b95fa81c7d88e45777aaf",
+      "bytes": 11835,
+      "lineCount": 380,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/textures/build-textures",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "scripts/fix-deutex-pngs",
+      "gitObjectId": "7eb660d99e36320a6a5f5024f19d4c95e193b797",
+      "sha256": "62734d4394b95d10fff47ce93864a6cd0c66176a8ae381498352efec662b37c4",
+      "bytes": 4446,
+      "lineCount": 130,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/scripts/fix-deutex-pngs",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "scripts/fix-gfx-offsets",
+      "gitObjectId": "316193659307a946ca81157aa8c2f57cc845fafd",
+      "sha256": "7afb7ffc839afff38272efb8f6214cac8fdb7150a0824ad197ba22353c274cbd",
+      "bytes": 2871,
+      "lineCount": 87,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/scripts/fix-gfx-offsets",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "scripts/makejson",
+      "gitObjectId": "755720f800a2d1460d6a3e43b245296218f48d89",
+      "sha256": "3d805f95218a6c17775a0c64d2cebaede5ca32a60eafec74bb374f035b478398",
+      "bytes": 2053,
+      "lineCount": 74,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/scripts/makejson",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "scripts/makepkgs",
+      "gitObjectId": "6df382549f0b6c508f64788ab0356939b53bb762",
+      "sha256": "33fec5d877e9767c699f5808b7657ef5e2a2a0f975f0d2a7eea625171e9be99d",
+      "bytes": 1060,
+      "lineCount": 49,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/scripts/makepkgs",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "scripts/map-color-index",
+      "gitObjectId": "ddfbd9dedf6a11cb81a6834ca57a33b71b3222f2",
+      "sha256": "396421ee603a685bc68829a4a6de6f5131d1672d8aac42ed1a134843ff1f3bae",
+      "bytes": 9195,
+      "lineCount": 277,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/scripts/map-color-index",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "scripts/music-duplicates",
+      "gitObjectId": "0e52bd25e779210f032f466d2f87649573dcbe91",
+      "sha256": "45d1e464cba3849288c8072670c57b8b46431290e17294e2ae8d2d9e8a6c77b8",
+      "bytes": 3069,
+      "lineCount": 89,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/scripts/music-duplicates",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "scripts/news-to-feed",
+      "gitObjectId": "62700fdbfe039d5297d55ca2e794447a1b57b850",
+      "sha256": "9650abe7ab43ed34b009c174b0565028f84589d070c986aec9993e9f352865a6",
+      "bytes": 6958,
+      "lineCount": 210,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/scripts/news-to-feed",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "scripts/simplecpp",
+      "gitObjectId": "a0c2fb3d58d54d7e576b015d1d8d31248e910231",
+      "sha256": "84994e2b33f730a452a5cbbb42c889e5823842105529132d652cbeae93b72e59",
+      "bytes": 3940,
+      "lineCount": 201,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/scripts/simplecpp",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "scripts/test-vanilla-compliance",
+      "gitObjectId": "9693c77ef1d3282d0dbbe12b8953aeb007fdfbc4",
+      "sha256": "19d63f1077d77e59da9c883b91029917e97f9da2fb532311ed2d06c84bccc45b",
+      "bytes": 25395,
+      "lineCount": 667,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/scripts/test-vanilla-compliance",
+      "declaration": {
+        "license": "BSD-3-Clause",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "dist/COPYING.CC0",
+      "gitObjectId": "0e259d42c996742e9e3cba14c677129b2c1b6311",
+      "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+      "bytes": 7048,
+      "lineCount": 121,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/dist/COPYING.CC0",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "document"
+      }
+    },
+    {
+      "path": "lumps/playpal/COPYING",
+      "gitObjectId": "d60c31a97a544b53039088d14fe9114583c0efc3",
+      "sha256": "32b1062f7da84967e7019d01ab805935caa7ab7321a7ced0e30ebe75e5df1670",
+      "bytes": 17992,
+      "lineCount": 340,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/playpal/COPYING",
+      "declaration": {
+        "license": "GPL-2.0-only",
+        "scope": "document"
+      }
+    },
+    {
+      "path": "lumps/colormap/COPYING",
+      "gitObjectId": "d60c31a97a544b53039088d14fe9114583c0efc3",
+      "sha256": "32b1062f7da84967e7019d01ab805935caa7ab7321a7ced0e30ebe75e5df1670",
+      "bytes": 17992,
+      "lineCount": 340,
+      "url": "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/lumps/colormap/COPYING",
+      "declaration": {
+        "license": "GPL-2.0-only",
+        "scope": "document"
+      }
+    }
+  ]
+}
