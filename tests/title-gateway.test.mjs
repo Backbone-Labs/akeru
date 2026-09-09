@@ -11,7 +11,7 @@ const config = { titleId: 'fixture', titleOrigin: 'https://fixture.example.net',
 function setup() {
  let availability = { schemaVersion: '1.0.0', generation: 0, titles: [{ id: 'fixture', paused: false, current, releases: [{ digest: previous, version: '1.0.0', saveSchemaVersion: 1 }, { digest: current, version: '1.1.0', saveSchemaVersion: 1 }] }] };
  const env = {
-  REGISTRY: { fetch: async request => { assert.equal(request.headers.has('authorization'), false); return Response.json(availability.titles[0]); } },
+  REGISTRY: { fetch: async request => { assert.equal(request.headers.has('authorization'), false); assert.equal(request.redirect, 'manual'); return Response.json(availability.titles[0]); } },
   ASSETS: { fetch: async request => new Response(bytes[new URL(request.url).pathname.split('/').at(-1)]) },
  };
  const worker = createTitleGateway(config);
@@ -51,6 +51,10 @@ test('gateway rejects same-origin hosting and unsafe artifact configurations', (
  assert.throws(() => createTitleGateway({ ...config, headers: shellHeaders }), /CSP/);
  const bad = structuredClone(versions); bad[0].files[0].path = '../index.html';
  assert.throws(() => createTitleGateway({ ...config, versions: bad }), /artifact/);
+ for (const type of ['application/xhtml+xml', 'image/svg+xml', ' text/html']) {
+  const active = structuredClone(versions); active[0].files[1].type = type;
+  assert.throws(() => createTitleGateway({ ...config, versions: active }), /artifact/);
+ }
  const noEntry = structuredClone(versions); noEntry[0].entry = 'game.js';
  assert.throws(() => createTitleGateway({ ...config, versions: noEntry }), /HTML/);
 });
