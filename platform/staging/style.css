@@ -1,8 +1,37 @@
-:root { color-scheme: dark; font: 100%/1.6 system-ui, sans-serif; background: #111316; color: #e9ecef; }
-body { margin: 0; padding: 2rem; }
-main { max-width: 46rem; margin: 12vh auto; }
-h1 { font-size: clamp(2rem, 6vw, 4rem); line-height: 1.1; }
-a { color: #b7e798; overflow-wrap: anywhere; }
-a:focus-visible { outline: 3px solid #b7e798; outline-offset: 4px; }
-footer { margin-top: 4rem; font-size: .875rem; }
-nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+:root {
+  color-scheme: dark;
+  font:
+    100%/1.6 system-ui,
+    sans-serif;
+  background: #111316;
+  color: #e9ecef;
+}
+body {
+  margin: 0;
+  padding: 2rem;
+}
+main {
+  max-width: 46rem;
+  margin: 12vh auto;
+}
+h1 {
+  font-size: clamp(2rem, 6vw, 4rem);
+  line-height: 1.1;
+}
+a {
+  color: #b7e798;
+  overflow-wrap: anywhere;
+}
+a:focus-visible {
+  outline: 3px solid #b7e798;
+  outline-offset: 4px;
+}
+footer {
+  margin-top: 4rem;
+  font-size: 0.875rem;
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}

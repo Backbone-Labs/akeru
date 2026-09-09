@@ -1,9 +1,18 @@
 /** Draft v0.1 contracts. Implementations must validate every cross-origin message. */
 export const SPEC_VERSION: '0.1.0';
 export const SDK_VERSION: '0.1.0';
-export interface ValidationResult { valid: boolean; errors: string[] }
-export function validateManifest(manifest: unknown, options?: { sdkVersion?: string }): ValidationResult;
-export function validatePackage(directory: string, options?: { sdkVersion?: string }): Promise<ValidationResult>;
+export interface ValidationResult {
+  valid: boolean;
+  errors: string[];
+}
+export function validateManifest(
+  manifest: unknown,
+  options?: { sdkVersion?: string },
+): ValidationResult;
+export function validatePackage(
+  directory: string,
+  options?: { sdkVersion?: string },
+): Promise<ValidationResult>;
 
 export type LifecycleEvent =
   | { type: 'loading'; progress?: number }
@@ -36,17 +45,30 @@ export interface InputMapping {
   buttons: Readonly<Record<string, string>>;
   axes: Readonly<Record<string, string>>;
 }
-export interface SaveRecord { schemaVersion: number; revision: string; bytes: Uint8Array }
+export interface SaveRecord {
+  schemaVersion: number;
+  revision: string;
+  bytes: Uint8Array;
+}
 export interface SaveStatus {
   local: 'available' | 'unavailable';
   sync: 'disabled' | 'signed-out' | 'pending' | 'synced' | 'conflict' | 'error';
-  quota: { usedSlots: number; maxSlots: number; usedBytes: number; maxBytesPerSlot: number };
+  quota: {
+    usedSlots: number;
+    maxSlots: number;
+    usedBytes: number;
+    maxBytesPerSlot: number;
+  };
 }
 export interface SaveService {
   /** Host binds title and player/session identity. Games cannot select either. */
   read(slot: string): Promise<SaveRecord | null>;
   /** Compare-and-swap: null means create only. A conflict never silently overwrites. */
-  write(slot: string, value: { schemaVersion: number; bytes: Uint8Array }, expectedRevision: string | null): Promise<SaveRecord>;
+  write(
+    slot: string,
+    value: { schemaVersion: number; bytes: Uint8Array },
+    expectedRevision: string | null,
+  ): Promise<SaveRecord>;
   remove(slot: string, expectedRevision: string): Promise<void>;
   status(): Promise<SaveStatus>;
 }
@@ -59,7 +81,10 @@ export interface AudioState {
   state: 'blocked' | 'ready' | 'interrupted';
   reason: 'consent-required' | 'background' | 'route-change' | null;
 }
-export interface ControlHelpItem { action: string; label: string }
+export interface ControlHelpItem {
+  action: string;
+  label: string;
+}
 export interface ControlHelp {
   controller: readonly ControlHelpItem[];
   touch: readonly ControlHelpItem[];
@@ -71,7 +96,9 @@ export interface HostServicesV1 {
   presentation: {
     getState(): PresentationState;
     onChange(listener: (state: PresentationState) => void): () => void;
-    request(mode: 'embedded' | 'fullscreen'): Promise<{ mode: 'embedded' | 'fullscreen'; granted: boolean }>;
+    request(
+      mode: 'embedded' | 'fullscreen',
+    ): Promise<{ mode: 'embedded' | 'fullscreen'; granted: boolean }>;
   };
   /** Playback remains host-gated. A request may surface consent UI but cannot grant itself. */
   audio: {
@@ -80,7 +107,12 @@ export interface HostServicesV1 {
     requestPlayback(): Promise<{ granted: boolean; state: AudioState }>;
   };
   /** Fixed numeric metrics only; host applies consent and export policy. */
-  telemetry: { emit(event: { type: 'loadDurationMs' | 'frameDurationMs'; value: number }): void };
+  telemetry: {
+    emit(event: {
+      type: 'loadDurationMs' | 'frameDurationMs';
+      value: number;
+    }): void;
+  };
   emit(event: LifecycleEvent): void;
   onInput(listener: (input: InputSnapshot) => void): () => void;
 }

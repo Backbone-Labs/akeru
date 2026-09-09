@@ -1,19 +1,16 @@
 name: Validate
-
 on:
   pull_request:
   push:
     branches: [main]
-
 permissions:
   contents: read
-
 concurrency:
   group: validate-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
-  check:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -24,28 +21,126 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
-      - name: Use pinned npm
-        run: npm install --global npm@11.17.0 --ignore-scripts
+      - run: npm install --global npm@11.17.0 --ignore-scripts
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+  format:
+    name: Formatting
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm install --global npm@11.17.0 --ignore-scripts
+      - run: npm ci --ignore-scripts
+      - run: npm run format:check
+  types:
+    name: Public API types
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm install --global npm@11.17.0 --ignore-scripts
+      - run: npm ci --ignore-scripts
+      - run: npm run typecheck
+  unit:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm install --global npm@11.17.0 --ignore-scripts
       - run: npm ci --ignore-scripts
       - run: npm run check
-      - name: Check known dependency vulnerabilities
-        run: npm audit --audit-level=high
-      - name: Produce source provenance
-        run: npm run package:source
-      - name: Produce and verify staging artifact
+  dependencies:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm install --global npm@11.17.0 --ignore-scripts
+      - run: npm ci --ignore-scripts
+      - run: npm audit --audit-level=high
+  artifacts:
+    name: Catalog and provenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm install --global npm@11.17.0 --ignore-scripts
+      - run: npm ci --ignore-scripts
+      - name: Build and verify committed release bundles
         run: |
-          npm run package:staging
+          npm run package:cloudflare
+          npm run package:catalog
+          node --check dist/cloudflare/worker.mjs
+          node --check dist/catalog-cloudflare/worker.mjs
           node --input-type=module -e "import {loadStaging} from './scripts/serve-staging.mjs'; loadStaging('dist/staging')"
-      - name: Prepare Cloudflare deployment bundle (no deployment)
-        run: npm run package:cloudflare
+          node --input-type=module -e "import {loadCatalog} from './scripts/serve-catalog.mjs'; loadCatalog('dist/catalog')"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: source-${{ github.sha }}
+          name: release-${{ github.sha }}
           path: |
             dist/source/
             dist/staging/
             dist/cloudflare/
+            dist/catalog/
+            dist/catalog-cloudflare/
           if-no-files-found: error
           retention-days: 14
-
-# This validates and retains evidence. It does not deploy, approve or activate titles.
+  browser:
+    name: Browser tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm install --global npm@11.17.0 --ignore-scripts
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+      - run: npm run package:catalog
+      - run: npm run test:browser
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: failure()
+        with:
+          name: browser-failure-${{ github.sha }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+# Validation only: no deploy, game publication, or production credentials.
