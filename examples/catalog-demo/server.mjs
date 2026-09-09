@@ -26,6 +26,7 @@ export async function startCatalogDemo(){
   shellOrigin=await serve((req,res)=>{
     res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');
     if(req.method!=='GET'){res.writeHead(405);return res.end();}
+    if(req.url==='/favicon.ico'){res.writeHead(204);return res.end();}
     if(req.url==='/catalog.json'){res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({schemaVersion:'0.1.0',mode:'demo',entries:state==='unpublished'?[]:[{...entry,availability:state}]}));}
     if(req.url==='/bootstrap.js'){res.setHeader('Content-Type','text/javascript');return res.end("import {mountCatalog} from '/app.js';import {createBrowserInputProvider} from '/input/browser.js';window.catalogPreview=mountCatalog({mode:'demo',inputProviderFactory:createBrowserInputProvider});");}
     const file=req.url==='/'||/^\/g\/[a-z0-9-]+\/?$/.test(req.url)?'platform/catalog/index.html':/^\/(?:style\.css|app\.js|model\.js|channel\.js)$/.test(req.url)?`platform/catalog${req.url}`:/^\/input\/(?:browser|index|normalize|preferences|overlay)\.js$/.test(req.url)||req.url==='/input/styles.css'?`packages/input/src/${req.url.split('/').at(-1)}`:null;

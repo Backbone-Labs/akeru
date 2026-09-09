@@ -97,8 +97,12 @@ node examples/catalog-demo/server.mjs
 The Node tests cover independent publication, exact release identity, origin
 isolation, creator parity, production/demo separation, route/filter behavior,
 telemetry allowlisting and channel replay/forgery/rate/lifecycle rejection.
-Browser checks should additionally exercise loading, playable, pause/resume,
-touch/controller handoff, exit/retry, paused/unpublished state and narrow-screen
-layout. Local desktop-browser results do not establish iOS/Android WebView,
+Local Chrome 152 browser checks exercised desktop (1440 px) and narrow
+(390 px) layouts, detail metadata, playable handshake, touch movement, synthetic
+standard-gamepad movement, Start pause/resume, controller-list refresh while
+paused, controls, runtime error/retry, modal back, exit, forged-message rejection,
+and paused/unpublished/empty routes. Both layouts had no horizontal overflow;
+final runs reported no JavaScript or console errors. Controller simulation
+verifies the browser integration, not physical hardware. Local desktop-browser results do not establish iOS/Android WebView,
 physical controller, native deep-link, hosted domain, account migration or
 performance acceptance. Those integration gates remain explicit.
