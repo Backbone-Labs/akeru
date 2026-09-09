@@ -1,0 +1,401 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-09",
+  "upstreamUrl": "https://github.com/masylum/whatajong",
+  "revision": "45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5",
+  "inventory": "whatajong.json",
+  "titleIds": [
+    "whatajong"
+  ],
+  "approvalStatus": "pending",
+  "scope": "Grouped source declarations and notice exceptions only. No legal clearance, generated artifact, publication grant or gameplay QA.",
+  "groups": [
+    {
+      "id": "bravegates-font",
+      "selector": {
+        "paths": [
+          "src/renderer/assets/BraveGates.otf"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "package.json"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "No BraveGates font license is bundled. Nunito npm dependency is separate and does not establish this font grant."
+      ]
+    },
+    {
+      "id": "assets-music",
+      "selector": {
+        "prefix": "src/renderer/assets/music/",
+        "excludePaths": []
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "No per-file creator/license or source credit evidence is bundled for this music group; voices/remixes and derivative tile art are not cleared by root MIT."
+      ]
+    },
+    {
+      "id": "assets-sounds",
+      "selector": {
+        "prefix": "src/renderer/assets/sounds/",
+        "excludePaths": []
+      },
+      "fileCount": 41,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "No per-file creator/license or source credit evidence is bundled for this sounds group; voices/remixes and derivative tile art are not cleared by root MIT."
+      ]
+    },
+    {
+      "id": "assets-backgrounds",
+      "selector": {
+        "prefix": "src/renderer/assets/backgrounds/",
+        "excludePaths": []
+      },
+      "fileCount": 6,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "No per-file creator/license or source credit evidence is bundled for this backgrounds group; voices/remixes and derivative tile art are not cleared by root MIT."
+      ]
+    },
+    {
+      "id": "assets-sprites",
+      "selector": {
+        "prefix": "src/renderer/assets/sprites/",
+        "excludePaths": []
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "No per-file creator/license or source credit evidence is bundled for this sprites group; voices/remixes and derivative tile art are not cleared by root MIT."
+      ]
+    },
+    {
+      "id": "assets-textures",
+      "selector": {
+        "prefix": "src/renderer/assets/textures/",
+        "excludePaths": []
+      },
+      "fileCount": 5,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "No per-file creator/license or source credit evidence is bundled for this textures group; voices/remixes and derivative tile art are not cleared by root MIT."
+      ]
+    },
+    {
+      "id": "assets-tiles",
+      "selector": {
+        "prefix": "src/renderer/assets/tiles/",
+        "excludePaths": []
+      },
+      "fileCount": 81,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "No per-file creator/license or source credit evidence is bundled for this tiles group; voices/remixes and derivative tile art are not cleared by root MIT."
+      ]
+    },
+    {
+      "id": "legacy-app-sounds",
+      "selector": {
+        "prefix": "apps/frontend/public/sounds/",
+        "excludePaths": []
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Legacy click/gemstone audio lacks separate provenance; not a second grant for renderer sound bytes."
+      ]
+    },
+    {
+      "id": "other-artwork",
+      "selector": {
+        "paths": [
+          "img.png",
+          "resources/icon.png",
+          "src/renderer/assets/rotate.webp"
+        ]
+      },
+      "fileCount": 3,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Remaining art/icon/rotation assets lack individual provenance records."
+      ]
+    },
+    {
+      "id": "project-remainder",
+      "selector": {
+        "paths": [
+          ".cursor/rules/typescript.mdc",
+          ".gitignore",
+          "LICENSE",
+          "README.md",
+          "biome.json",
+          "build/entitlements.mac.plist",
+          "electron-builder.yml",
+          "electron.vite.config.js",
+          "knip.json",
+          "package.json",
+          "pnpm-lock.yaml",
+          "src/main/index.ts",
+          "src/preload/index.d.ts",
+          "src/preload/index.ts",
+          "src/renderer/assets/assets.ts",
+          "src/renderer/components/audio.tsx",
+          "src/renderer/components/background.css.ts",
+          "src/renderer/components/background.tsx",
+          "src/renderer/components/button.css.ts",
+          "src/renderer/components/button.tsx",
+          "src/renderer/components/dialog.css.ts",
+          "src/renderer/components/dialog.tsx",
+          "src/renderer/components/game/basicTile.css.ts",
+          "src/renderer/components/game/basicTile.tsx",
+          "src/renderer/components/game/defs.tsx",
+          "src/renderer/components/game/dustParticles.css.ts",
+          "src/renderer/components/game/dustParticles.tsx",
+          "src/renderer/components/game/powerups.css.ts",
+          "src/renderer/components/game/powerups.tsx",
+          "src/renderer/components/game/tileBody.tsx",
+          "src/renderer/components/game/tileComponent.css.ts",
+          "src/renderer/components/game/tileComponent.tsx",
+          "src/renderer/components/game/tileDetails.tsx",
+          "src/renderer/components/game/tileImage.tsx",
+          "src/renderer/components/game/tileShades.css.ts",
+          "src/renderer/components/game/tileShades.tsx",
+          "src/renderer/components/game/tileSide.tsx",
+          "src/renderer/components/icon.tsx",
+          "src/renderer/components/layout.css.ts",
+          "src/renderer/components/layout.tsx",
+          "src/renderer/components/menu.tsx",
+          "src/renderer/components/text.css.ts",
+          "src/renderer/components/text.tsx",
+          "src/renderer/i18n/en.ts",
+          "src/renderer/i18n/es.ts",
+          "src/renderer/i18n/useTranslation.ts",
+          "src/renderer/index.html",
+          "src/renderer/index.tsx",
+          "src/renderer/lib/createChangeEffect.ts",
+          "src/renderer/lib/game.test.ts",
+          "src/renderer/lib/game.ts",
+          "src/renderer/lib/in-memoriam.test.ts",
+          "src/renderer/lib/in-memoriam.ts",
+          "src/renderer/lib/maps/responsive.ts",
+          "src/renderer/lib/observability.ts",
+          "src/renderer/lib/rand.ts",
+          "src/renderer/lib/resolveDragons.test.ts",
+          "src/renderer/lib/resolveDragons.ts",
+          "src/renderer/lib/resolveGems.test.ts",
+          "src/renderer/lib/resolveGems.ts",
+          "src/renderer/lib/resolveJokers.ts",
+          "src/renderer/lib/resolveMutations.test.ts",
+          "src/renderer/lib/resolveMutations.ts",
+          "src/renderer/lib/resolvePhoenixes.test.ts",
+          "src/renderer/lib/resolvePhoenixes.ts",
+          "src/renderer/lib/resolveWinds.ts",
+          "src/renderer/lib/setMethods.ts",
+          "src/renderer/lib/setupTiles.ts",
+          "src/renderer/lib/test/utils.ts",
+          "src/renderer/lib/throttle.ts",
+          "src/renderer/lib/useOffsetValues.ts",
+          "src/renderer/routes/help.css.ts",
+          "src/renderer/routes/help.tsx",
+          "src/renderer/routes/home.css.ts",
+          "src/renderer/routes/home.tsx",
+          "src/renderer/routes/new.css.ts",
+          "src/renderer/routes/new.tsx",
+          "src/renderer/routes/run.tsx",
+          "src/renderer/routes/run/runEnd.css.ts",
+          "src/renderer/routes/run/runEnd.tsx",
+          "src/renderer/routes/run/runGame.css.ts",
+          "src/renderer/routes/run/runGame.tsx",
+          "src/renderer/routes/run/runGameOver.css.ts",
+          "src/renderer/routes/run/runGameOver.tsx",
+          "src/renderer/routes/run/runIntro.css.ts",
+          "src/renderer/routes/run/runIntro.tsx",
+          "src/renderer/routes/run/runReward.css.ts",
+          "src/renderer/routes/run/runReward.tsx",
+          "src/renderer/routes/run/runShop.css.ts",
+          "src/renderer/routes/run/runShop.tsx",
+          "src/renderer/routes/settings.css.ts",
+          "src/renderer/routes/settings.tsx",
+          "src/renderer/state/animationState.tsx",
+          "src/renderer/state/constants.ts",
+          "src/renderer/state/deckState.tsx",
+          "src/renderer/state/gameState.tsx",
+          "src/renderer/state/globalState.tsx",
+          "src/renderer/state/persistantMutable.ts",
+          "src/renderer/state/persistentDatabase.ts",
+          "src/renderer/state/runState.test.ts",
+          "src/renderer/state/runState.tsx",
+          "src/renderer/state/tileState.tsx",
+          "src/renderer/styles/animations.css.ts",
+          "src/renderer/styles/breakpoints.ts",
+          "src/renderer/styles/colors.ts",
+          "src/renderer/styles/fontFamily.css.ts",
+          "src/renderer/styles/fontSize.ts",
+          "src/renderer/styles/reset.css",
+          "src/renderer/vite-env.d.ts",
+          "tsconfig.json",
+          "tsconfig.node.json",
+          "tsconfig.web.json",
+          "vite.config.ts",
+          "wrangler.json"
+        ]
+      },
+      "fileCount": 114,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Preserve upstream project license, copyright and disclaimer; for copyleft code retain corresponding source and review distribution/network obligations.",
+      "unknowns": [
+        "Repository declaration only. This group is not a verification of individual authorship, third-party imports, selected output or publication approval."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "LICENSE",
+      "gitObjectId": "e867a3360dda1ae53995d274a3e416f05132282b",
+      "sha256": "0f1618a69cba05fc6e7292617c5742e76ab5ceca24f92f39d8765fc422f15695",
+      "bytes": 1093,
+      "lineCount": 9,
+      "url": "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/LICENSE",
+      "declaration": {
+        "license": "MIT",
+        "scope": "repository"
+      }
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "3c5a8e4503da00a898100e97c459fb2b90499690",
+      "sha256": "68725f427b5e12cbf24edbdb93233eed2aa532cf22b5706f7827a717412676b0",
+      "bytes": 294,
+      "lineCount": 11,
+      "url": "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/README.md"
+    },
+    {
+      "path": "package.json",
+      "gitObjectId": "8852a56a0837f2f7c986559e7a7ad08b04984e3f",
+      "sha256": "ee0b62b01dc1f8d8db8a73c3681a018e9ab614bc841f6f794ab1a3eaaa6abee1",
+      "bytes": 2685,
+      "lineCount": 83,
+      "url": "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/package.json"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "gitObjectId": "50a7f3236b06ea5c484b55b6764f3188e21f8d57",
+      "sha256": "c632e87bf9ff1085eea3cd5d8f4f21e8220e51fe24098183466bdc9d90fe9ca1",
+      "bytes": 271183,
+      "lineCount": 8145,
+      "url": "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/pnpm-lock.yaml"
+    }
+  ],
+  "externalDependencyEvidence": {
+    "manifest": "package.json",
+    "lockfile": "pnpm-lock.yaml",
+    "scope": "Declared ranges below identify dependencies to audit, not a selected distribution or license grant. Lockfile bytes are pinned by evidence; transitive package notices not reviewed.",
+    "dependencies": {
+      "@electron-toolkit/preload": "^3.0.1",
+      "@electron-toolkit/utils": "^4.0.0",
+      "@fontsource-variable/nunito": "^5.2.5",
+      "@kobalte/core": "^0.13.9",
+      "@solid-primitives/i18n": "^2.2.0",
+      "@solid-primitives/keyboard": "^1.3.0",
+      "@solid-primitives/keyed": "^1.5.0",
+      "@solid-primitives/map": "^0.6.0",
+      "@solid-primitives/media": "^2.3.0",
+      "@solid-primitives/resize-observer": "^2.1.0",
+      "@solid-primitives/rootless": "^1.5.0",
+      "@solid-primitives/set": "^0.6.0",
+      "@solid-primitives/timer": "^1.4.0",
+      "@solidjs/meta": "^0.29.4",
+      "@solidjs/router": "^0.15.1",
+      "@types/howler": "^2.2.12",
+      "@vanilla-extract/css": "^1.17.1",
+      "@vanilla-extract/css-utils": "^0.1.4",
+      "@vanilla-extract/dynamic": "^2.1.2",
+      "@vanilla-extract/recipes": "^0.5.5",
+      "@vanilla-extract/vite-plugin": "^5.0.1",
+      "@vitejs/plugin-legacy": "^6.0.2",
+      "howler": "^2.2.4",
+      "nanoid": "^5.0.9",
+      "pnpm": "^10.8.0",
+      "posthog-js": "^1.234.1",
+      "rand-seed": "^2.1.7",
+      "remeda": "^2.21.0",
+      "solid-js": "^1.9.4",
+      "wrangler": "^3.101.0"
+    },
+    "devDependencies": {
+      "@biomejs/biome": "1.9.4",
+      "@electron-toolkit/tsconfig": "^1.0.1",
+      "@solidjs/testing-library": "^0.8.10",
+      "@types/node": "^22.13.2",
+      "electron": "^35.1.4",
+      "electron-builder": "^26.0.12",
+      "electron-vite": "^3.1.0",
+      "jsdom": "^26.0.0",
+      "knip": "^5.46.5",
+      "typescript": "^5.7.3",
+      "vite": "^6.0.0",
+      "vite-plugin-bundlesize": "^0.2.0",
+      "vite-plugin-solid": "^2.11.1",
+      "vitest": "^3.0.5"
+    }
+  }
+}

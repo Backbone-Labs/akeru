@@ -62,7 +62,8 @@ Host capability grants remain separate from both evidence and publication.
 
 The [Anarch and shared Freedoom source-rights audit](source-rights-audit.md) adds
 file-group declarations, mixed-license exceptions and current map/music credit
-joins. It does not change candidate approval status.
+joins. The [remaining-candidate audit](other-candidate-rights.md) completes grouped
+source coverage for every candidate. These records do not change approval status.
 
 ## Candidate-specific work still open
 

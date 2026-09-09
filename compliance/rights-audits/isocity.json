@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-09",
+  "upstreamUrl": "https://github.com/victorqribeiro/isocity",
+  "revision": "c5772412d3e423318f2cf479ebdd50a2b9029d84",
+  "inventory": "isocity.json",
+  "titleIds": [
+    "isocity"
+  ],
+  "approvalStatus": "pending",
+  "scope": "Grouped source declarations and notice exceptions only. No legal clearance, generated artifact, publication grant or gameplay QA.",
+  "groups": [
+    {
+      "id": "attributed-helper",
+      "selector": {
+        "paths": [
+          "js/main.js"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "js/main.js",
+        "LICENSE"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "File links Stack Overflow answer 36046727 for the helper (line 79); root MIT does not establish that borrowed section permission chain."
+      ]
+    },
+    {
+      "id": "isometric-landscape-texture",
+      "selector": {
+        "prefix": "textures/",
+        "excludePaths": []
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "js/main.js",
+        "LICENSE"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Source identifies OpenGameArt isometric-landscape; exact downloaded asset matching and retained third-party grant are not established in this repository."
+      ]
+    },
+    {
+      "id": "promotional-images",
+      "selector": {
+        "paths": [
+          "favicon.png",
+          "screenshot.png"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "LICENSE"
+      ],
+      "noticeAction": "Retain root MIT provenance for these images.",
+      "unknowns": [
+        "No per-image creator or derivative-content notice found."
+      ]
+    },
+    {
+      "id": "project-remainder",
+      "selector": {
+        "paths": [
+          "LICENSE",
+          "README.md",
+          "css/main.css",
+          "index.html"
+        ]
+      },
+      "fileCount": 4,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Preserve upstream project license, copyright and disclaimer; for copyleft code retain corresponding source and review distribution/network obligations.",
+      "unknowns": [
+        "Repository declaration only. This group is not a verification of individual authorship, third-party imports, selected output or publication approval."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "LICENSE",
+      "gitObjectId": "2e17593f4c9d39d2133c2220fb596b98b1a11a0d",
+      "sha256": "20917b8e2cfb3574d262b4d663b1fd206a6bf6c8de7e7f71941b986cb98e02fe",
+      "bytes": 1071,
+      "lineCount": 21,
+      "url": "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/LICENSE",
+      "declaration": {
+        "license": "MIT",
+        "scope": "repository"
+      }
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "207c6cbead9411208aa3a9274b26720a61a8f499",
+      "sha256": "d7b011a794c7c828dfdd201a017f6f76fa1fec5f4e3b8537cbef01390debc5ec",
+      "bytes": 485,
+      "lineCount": 17,
+      "url": "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/README.md"
+    },
+    {
+      "path": "js/main.js",
+      "gitObjectId": "1144f053d9a9f0caa3a42388e27b6a52effecef9",
+      "sha256": "0b44bb7acd32d4154a0ef1ac5154164082a990b66f99a93a218d5fede9cabfa3",
+      "bytes": 4667,
+      "lineCount": 185,
+      "url": "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/js/main.js"
+    }
+  ]
+}

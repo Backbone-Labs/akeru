@@ -1,0 +1,46 @@
+[
+  {
+    "titleId": "anarch",
+    "audit": "anarch.json"
+  },
+  {
+    "titleId": "open-golf",
+    "audit": "open-golf.json"
+  },
+  {
+    "titleId": "freedoom-phase-1",
+    "audit": "freedm.json"
+  },
+  {
+    "titleId": "freedoom-phase-2",
+    "audit": "freedm.json"
+  },
+  {
+    "titleId": "freedm",
+    "audit": "freedm.json"
+  },
+  {
+    "titleId": "isocity",
+    "audit": "isocity.json"
+  },
+  {
+    "titleId": "server-survival",
+    "audit": "server-survival.json"
+  },
+  {
+    "titleId": "whatajong",
+    "audit": "whatajong.json"
+  },
+  {
+    "titleId": "hextris",
+    "audit": "hextris.json"
+  },
+  {
+    "titleId": "2048",
+    "audit": "2048.json"
+  },
+  {
+    "titleId": "hypersomnia",
+    "audit": "hypersomnia.json"
+  }
+]

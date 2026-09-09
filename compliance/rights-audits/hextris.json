@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-09",
+  "upstreamUrl": "https://github.com/Hextris/hextris",
+  "revision": "3f4847dc8fd7dab3d1c87e6324b9159d92fbd396",
+  "inventory": "hextris.json",
+  "titleIds": [
+    "hextris"
+  ],
+  "approvalStatus": "pending",
+  "scope": "Grouped source declarations and notice exceptions only. No legal clearance, generated artifact, publication grant or gameplay QA.",
+  "groups": [
+    {
+      "id": "mit-vendor-headers",
+      "selector": {
+        "paths": [
+          "vendor/hammer.min.js",
+          "vendor/js.cookie.js"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "file-declaration",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "vendor/hammer.min.js",
+        "vendor/js.cookie.js"
+      ],
+      "noticeAction": "Retain all in-file copyright, license, disclaimer and attribution text in redistributed source; include applicable distribution notices. Dual-license choices are not selected by this audit.",
+      "unknowns": []
+    },
+    {
+      "id": "keypress",
+      "selector": {
+        "paths": [
+          "vendor/keypress.min.js"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "file-declaration",
+      "declaredLicense": "Apache-2.0",
+      "evidence": [
+        "vendor/keypress.min.js"
+      ],
+      "noticeAction": "Retain all in-file copyright, license, disclaimer and attribution text in redistributed source; include applicable distribution notices. Dual-license choices are not selected by this audit.",
+      "unknowns": []
+    },
+    {
+      "id": "fontawesome-css",
+      "selector": {
+        "paths": [
+          "style/fa/css/font-awesome.css",
+          "style/fa/css/font-awesome.min.css"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "file-declaration",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "style/fa/css/font-awesome.css",
+        "style/fa/css/font-awesome.min.css"
+      ],
+      "noticeAction": "Retain all in-file copyright, license, disclaimer and attribution text in redistributed source; include applicable distribution notices. Dual-license choices are not selected by this audit.",
+      "unknowns": []
+    },
+    {
+      "id": "fontawesome-fonts",
+      "selector": {
+        "prefix": "style/fa/fonts/",
+        "excludePaths": []
+      },
+      "fileCount": 5,
+      "basis": "referenced-declaration",
+      "declaredLicense": "OFL-1.1",
+      "evidence": [
+        "style/fa/css/font-awesome.css"
+      ],
+      "noticeAction": "Retain Dave Gandy / FontAwesome 4.1 attribution and obtain/preserve full OFL notice with the selected font bytes.",
+      "unknowns": [
+        "CSS names SIL OFL 1.1 for fonts; individual font hashes have not been matched to an independently retrieved FontAwesome release."
+      ]
+    },
+    {
+      "id": "vendor-jquery",
+      "selector": {
+        "paths": [
+          "vendor/jquery.js"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "vendor/jquery.js"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Pinned minified payload has a jQuery 1.9.1 license URL but no retained full license terms."
+      ]
+    },
+    {
+      "id": "vendor-jsonfn.min",
+      "selector": {
+        "paths": [
+          "vendor/jsonfn.min.js"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "vendor/jsonfn.min.js"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Pinned minified payload has no usable license/version notice; exact source release and original notice must be recovered."
+      ]
+    },
+    {
+      "id": "vendor-rrssb.min",
+      "selector": {
+        "paths": [
+          "vendor/rrssb.min.js"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "vendor/rrssb.min.js"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Pinned minified payload has no usable license/version notice; exact source release and original notice must be recovered."
+      ]
+    },
+    {
+      "id": "vendor-sweet-alert.min",
+      "selector": {
+        "paths": [
+          "vendor/sweet-alert.min.js"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "vendor/sweet-alert.min.js"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Pinned minified payload has no usable license/version notice; exact source release and original notice must be recovered."
+      ]
+    },
+    {
+      "id": "rrssb-css",
+      "selector": {
+        "paths": [
+          "style/rrssb.css"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "style/rrssb.css"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Sharing CSS has no retained license header; resolve with exact rrssb source version or exclude it."
+      ]
+    },
+    {
+      "id": "unmatched-fonts",
+      "selector": {
+        "prefix": "style/fonts/",
+        "excludePaths": []
+      },
+      "fileCount": 6,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Exo2, Lovelo, Quattrocento Sans and Roboto binaries lack bundled family-specific grants. Do not guess rights from names."
+      ]
+    },
+    {
+      "id": "store-social-brand-art",
+      "selector": {
+        "paths": [
+          "images/android.png",
+          "images/appstore.svg",
+          "images/btn_facebook.svg",
+          "images/btn_twitter.svg",
+          "images/facebook-opengraph.png",
+          "images/twitter-opengraph.png"
+        ]
+      },
+      "fileCount": 6,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Store/social-brand graphics need their own provenance and brand-use review; root GPL is not trademark permission."
+      ]
+    },
+    {
+      "id": "other-game-art",
+      "selector": {
+        "prefix": "images/",
+        "excludePaths": [
+          "images/android.png",
+          "images/appstore.svg",
+          "images/btn_facebook.svg",
+          "images/btn_twitter.svg",
+          "images/facebook-opengraph.png",
+          "images/twitter-opengraph.png"
+        ]
+      },
+      "fileCount": 23,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "GPL-3.0-or-later",
+      "evidence": [
+        "LICENSE.md",
+        "README.md"
+      ],
+      "noticeAction": "Retain game attribution and corresponding-source obligations for selected GPL-covered art.",
+      "unknowns": [
+        "Individual image derivation not established."
+      ]
+    },
+    {
+      "id": "project-remainder",
+      "selector": {
+        "paths": [
+          ".github/FUNDING.yml",
+          ".gitignore",
+          "CNAME",
+          "LICENSE.md",
+          "README.md",
+          "a.js",
+          "favicon.ico",
+          "index.html",
+          "js/Block.js",
+          "js/Hex.js",
+          "js/Text.js",
+          "js/checking.js",
+          "js/comboTimer.js",
+          "js/initialization.js",
+          "js/input.js",
+          "js/main.js",
+          "js/math.js",
+          "js/render.js",
+          "js/save-state.js",
+          "js/update.js",
+          "js/view.js",
+          "js/wavegen.js",
+          "manifest.webmanifest",
+          "style/style.css"
+        ]
+      },
+      "fileCount": 24,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "GPL-3.0-or-later",
+      "evidence": [
+        "LICENSE.md",
+        "README.md"
+      ],
+      "noticeAction": "Preserve upstream project license, copyright and disclaimer; for copyleft code retain corresponding source and review distribution/network obligations.",
+      "unknowns": [
+        "Repository declaration only. This group is not a verification of individual authorship, third-party imports, selected output or publication approval."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "LICENSE.md",
+      "gitObjectId": "16d89e0a34c0bc274e1939e28a3f98ee2b380858",
+      "sha256": "ccb349b4132ed7737f25e5adebfe61f3d52dca33708df1e50352320438d1d4c2",
+      "bytes": 35178,
+      "lineCount": 596,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/LICENSE.md",
+      "declaration": {
+        "license": "GPL-3.0-or-later",
+        "scope": "repository"
+      }
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "271c5601e3abcdd6bf0567eb6d88417dea45cbee",
+      "sha256": "383ac7de93cc0f085ef6d5ffeb08f95e1baf599d33772afd6c51958187f75eaf",
+      "bytes": 1802,
+      "lineCount": 50,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/README.md"
+    },
+    {
+      "path": "vendor/hammer.min.js",
+      "gitObjectId": "11af03140859cb43e75b217dd792194f87069f58",
+      "sha256": "f91094848368717989484b6fe060675e4f7ae194f3fe85650aca413b9e987271",
+      "bytes": 13710,
+      "lineCount": 8,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/vendor/hammer.min.js",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "vendor/js.cookie.js",
+      "gitObjectId": "116e62d8cb621ea3cedcfd465e4ca7df61725be4",
+      "sha256": "dd972387609461c36da7be13326bc22f48a89c3df0aad539c80f16d65046ff72",
+      "bytes": 3242,
+      "lineCount": 137,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/vendor/js.cookie.js",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "vendor/keypress.min.js",
+      "gitObjectId": "e004f6a9186d27371473c931b19c13859cb6d061",
+      "sha256": "e3a60e96762936ce21bdb27f95176ef0eeac75b962ccaade28861ab14af8d11d",
+      "bytes": 9985,
+      "lineCount": 25,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/vendor/keypress.min.js",
+      "declaration": {
+        "license": "Apache-2.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "style/fa/css/font-awesome.css",
+      "gitObjectId": "78f1021045356cba68c3c7c6e022e4b9060e0bc8",
+      "sha256": "2bead76d9f6089e144b6dabc4959ff055f2295790a2dfba6b547266594765df6",
+      "bytes": 25167,
+      "lineCount": 1566,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/style/fa/css/font-awesome.css",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      },
+      "referencedDeclarations": [
+        {
+          "license": "OFL-1.1",
+          "scopePrefix": "style/fa/fonts/"
+        }
+      ]
+    },
+    {
+      "path": "style/fa/css/font-awesome.min.css",
+      "gitObjectId": "2ed777e6e126d3401af2934d89f0e567aae86ac9",
+      "sha256": "05540f351581e28f2423a6bd9c531f481cbd8f4006704af8c6d1b9732ac64e1c",
+      "bytes": 20734,
+      "lineCount": 4,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/style/fa/css/font-awesome.min.css",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "vendor/jquery.js",
+      "gitObjectId": "a6107ab22b762c3ca5a8f1f535441d919885833f",
+      "sha256": "ee120ee3cca09a6e21325332e3294444d16406a355b8b0c33dbd9cc3ea3fbe2c",
+      "bytes": 92593,
+      "lineCount": 4,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/vendor/jquery.js"
+    },
+    {
+      "path": "vendor/jsonfn.min.js",
+      "gitObjectId": "59a0ea1cda450d82472488ff909d4620b0b59031",
+      "sha256": "5f0502c3c48812393a14ebc4a51785085903b713a0df8eb8533fafea8bb529a9",
+      "bytes": 809,
+      "lineCount": 1,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/vendor/jsonfn.min.js"
+    },
+    {
+      "path": "vendor/rrssb.min.js",
+      "gitObjectId": "45c021d2191725e63b3b48429992a71bbb508f24",
+      "sha256": "974e9bf2a21cc47e20182eb5a3daaf40d0e69a13989c8e10d4014f4aae5987ce",
+      "bytes": 4972,
+      "lineCount": 1,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/vendor/rrssb.min.js"
+    },
+    {
+      "path": "vendor/sweet-alert.min.js",
+      "gitObjectId": "a0c8c3ce5a28b7ecb2f88256d70423721b246837",
+      "sha256": "ac46ed6a8364a5004cfc46372e42ccde232cee43e6594dd4233a486311c3d439",
+      "bytes": 10424,
+      "lineCount": 1,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/vendor/sweet-alert.min.js"
+    },
+    {
+      "path": "style/rrssb.css",
+      "gitObjectId": "e7499d96521be2304f9e344226916a5fd98d4082",
+      "sha256": "0c5cd0d327b63e346fcc637d5bb31630d4767d2f22a40132850f1d3da1f233b1",
+      "bytes": 10978,
+      "lineCount": 1,
+      "url": "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/style/rrssb.css"
+    }
+  ]
+}
