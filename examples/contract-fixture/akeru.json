@@ -1,0 +1,54 @@
+{
+  "specVersion": "0.1.0",
+  "id": "contract-fixture",
+  "version": "0.1.0",
+  "sdk": {
+    "range": "^0.1.0"
+  },
+  "title": "Contract fixture (not playable)",
+  "entry": "index.html",
+  "artifacts": [
+    {
+      "path": "index.html",
+      "sha256": "776ec60940fbb7de9ab7f6bd37c88631179a0b7c81d0e7bb86dd3d5b2d34d606"
+    }
+  ],
+  "provenance": {
+    "source": {
+      "url": "https://example.com/contract-fixture",
+      "revision": "0000000000000000000000000000000000000000",
+      "license": "MIT",
+      "rightsStatus": "documented"
+    },
+    "assets": [
+      {
+        "path": "index.html",
+        "kind": "original",
+        "license": "MIT",
+        "evidence": [
+          "https://example.com/contract-fixture"
+        ]
+      }
+    ]
+  },
+  "input": {
+    "controller": true,
+    "touch": true
+  },
+  "runtime": {
+    "graphics": {
+      "preferred": "webgl2",
+      "fallback": null
+    },
+    "requiredFeatures": [],
+    "optionalFeatures": []
+  },
+  "capabilities": [
+    "save.local"
+  ],
+  "saves": {
+    "schemaVersion": 1,
+    "guestLocal": true,
+    "accountSync": "disabled"
+  }
+}
