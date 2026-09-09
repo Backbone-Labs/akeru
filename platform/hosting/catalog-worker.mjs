@@ -30,7 +30,8 @@ export function createCatalogWorker(release) {
     if (!['GET', 'HEAD'].includes(request.method)) return respond(405, 'Method not allowed');
     if (url.search) return respond(400, 'Query parameters are not supported');
     if (url.pathname === '/healthz') return respond(200, JSON.stringify({ status: 'ok', revision: release.revision, releaseDigest: release.digest, kind: 'catalog-shell' }), 'application/json; charset=utf-8');
-    const route = url.pathname === '/' || /^\/g\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(url.pathname);
+    const match = /^\/g\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/.exec(url.pathname);
+    const route = url.pathname === '/' || (match && match[1].length <= 64);
     const path = route ? '/index.html' : url.pathname;
     const file = files.get(path);
     if (!file) return respond(404, 'Not found');
