@@ -19,6 +19,7 @@
     "check:public": "node scripts/check-public-tree.mjs",
     "package:source": "node scripts/package-source.mjs",
     "package:staging": "node scripts/package-staging.mjs",
-    "preview:staging": "node scripts/serve-staging.mjs"
+    "preview:staging": "node scripts/serve-staging.mjs",
+    "package:cloudflare": "node scripts/package-cloudflare.mjs"
   }
 }
