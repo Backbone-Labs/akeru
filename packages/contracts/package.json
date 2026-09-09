@@ -10,7 +10,10 @@
       "import": "./src/index.js"
     },
     "./schema": "./schema/akeru.schema.json",
-    "./reference-host": "./src/reference-host.js"
+    "./reference-host": {
+      "types": "./src/reference-host.d.ts",
+      "import": "./src/reference-host.js"
+    }
   },
   "bin": {
     "akeru-validate": "./src/cli.js"

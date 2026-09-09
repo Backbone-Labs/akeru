@@ -5,19 +5,25 @@ against `@akeru/contracts/reference-host`. This fixture exercises initialization
 loading/playable, controller and touch-shaped input, pause/resume and idempotent
 teardown. It is deliberately not a catalog title, renderer or full game.
 
-The version 0.1 SDK also defines bounded presentation requests and two numeric
-telemetry metrics. The reference presentation provider always denies fullscreen
-and remains embedded; the telemetry provider validates and discards metrics.
+The version 0.1 SDK also defines bounded presentation state/requests, audio
+consent/interruption state and two numeric telemetry metrics. The reference
+presentation provider begins embedded and denies fullscreen until its trusted
+control plane changes mode; the telemetry provider validates and discards metrics.
 Production providers must honor platform user-gesture/consent rules. Games cannot
 supply user identifiers, analytics URLs or native commands through these services.
 
 ## Automated coverage
 
 The reference host rejects lifecycle reordering, replayed/nonfinite input, unknown
-fields, held controls on disconnect, unknown telemetry and presentation requests.
+fields, held controls on disconnect, ambiguous mappings, unknown telemetry and
+presentation requests. Raw-input tests cover axial deadzones, mapping/remapping,
+provider changes and focus loss, including a neutral release snapshot before state
+changes.
 Each host instance has independent in-memory save slots, capped at eight 64 KiB
 slots by default, with schema checks, defensive byte copies and compare-and-swap
-revisions. Dispose clears listeners and in-memory records. This is an ephemeral
+revisions. Host-only tests cover atomic schema migration, defensive export, scoped
+reset, quota/status reporting and unavailable storage. Dispose clears listeners
+and in-memory records. This is an ephemeral
 contract fixture, not persistent storage or implemented cloud sync. The production
 save provider must implement the same interface with durable identity-scoped data.
 
@@ -27,12 +33,15 @@ fallback-capable package selects WebGL2. Selection is tested, actual rendering i
 not. Required threaded builds are refused until a reviewed worker/COOP/COEP policy
 exists; optional features are not implicitly enabled by this reference plan.
 
-The plan produces a restrictive per-title CSP with no outbound connections,
+The plan produces a restrictive per-title CSP with no external connections,
 subframes, forms, objects or workers. Unit tests inspect the generated policy; the separate browser fixture below
 checks selected enforcement paths in an actual browser. `allow-scripts allow-same-origin` is safe only with a genuinely
 separate title origin, never the shell's origin. The plan rejects equal origins,
 but registry allocation and actual response/header enforcement belong to hosting.
 A plan does not grant publication approval or prove an immutable package is safe.
+`connect-src 'self'` permits reviewed same-origin data and WASM artifacts. The
+title host must allow only immutable declared paths with correct MIME types and
+deny query variants, writes and external redirects; CSP is not an artifact allowlist.
 
 ## Hosting and transport acceptance checklist
 
@@ -83,15 +92,22 @@ Each run allocates fresh ports. A JSON result must report `passed: true` and zer
 collector requests. Timeout is a failure. The loopback fixture substitutes only
 the HTTPS ancestor origin in the generated policy; production must use HTTPS.
 
-The original adapter exercises lifecycle and teardown, synthetic normalized
-controller/touch input, save write/read/remove, fullscreen denial and bounded
-telemetry. Attempts to fetch or load scripts/images/frames from the collector
+The original adapter passes the runtime capability/control-help check and exercises
+lifecycle and teardown, synthetic normalized controller/touch input,
+save write/read/remove, fullscreen denial, safe-area/orientation state, audio
+consent and bounded telemetry. It also fetches and instantiates an original empty
+eight-byte WASM module from its own origin. Attempts to fetch or load
+scripts/images/frames from the collector
 must fail under CSP. Both titles must be denied shell DOM access and retain
 independent localStorage values. Results require the expected source Window,
 origin and nonce; a forged shell result must be rejected. This is a test-result
 channel, not the production SDK message transport.
 
-Verified locally in the Codex Chromium browser on 2026-09-09. This is not physical
+The fixture title host serves an explicit GET-only artifact allowlist. It rejects
+query variants, non-GET requests and undeclared paths without redirecting.
+
+Verified locally in the Codex Chromium 152 browser on 2026-09-09, including the
+same-origin WASM load and zero external collector requests. This is not physical
 controller/touch, WKWebView, Android WebView, WebGPU rendering or production
 persistence evidence. Production navigation interception and the other denial
 paths in the checklist still require the actual host integration. The optional

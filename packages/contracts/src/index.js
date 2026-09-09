@@ -82,3 +82,5 @@ function inside(root, file) {
   const path = relative(root, file);
   return path !== '' && path !== '..' && !path.startsWith('../') && !isAbsolute(path);
 }
+
+export { assertTitleAdapterV1 } from './reference-session.js';
