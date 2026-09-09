@@ -92,6 +92,10 @@ No release policy or registry is implemented in this PR.
 
 ## Draft SDK boundaries
 
+The normative behavior for adapter capabilities, input transitions,
+presentation/audio state and host-owned save administration is in the
+[adapter and isolation baseline](adapter-baseline.md).
+
 `TitleAdapterV1` initializes with host-owned services, pauses/resumes and disposes.
 Initialization precedes loading/playable. The game emits `playable` only when input
 can affect gameplay; page load is insufficient. Fatal/exit terminate a session;
@@ -105,7 +109,8 @@ providers. Touch and controller gameplay are both required. Disconnect/reconnect
 focus changes and provider changes must release stale held controls. The host needs
 bounded logical controls, numeric range/sequence validation and a conformance harness;
 the reference host checks ranges, bounded controls and sequence/time ordering;
-physical providers and focus/provider-change clearing still require integration tests. No browser API is monkey-
+the reference model now exercises remapping, deadzones and focus/provider-change
+clearing. Physical providers still require integration tests. No browser API is monkey-
 patched and no native message handler is exposed by this package.
 
 `SaveService` is bound by the host to a single title and guest/player identity. The
@@ -119,7 +124,9 @@ describe development/candidate packages: the P0 release policy must require supp
 for optional account-linked cloud sync. This validator does not enforce release
 readiness.
 Host UI owns sign-in, guest migration, conflict resolution, export/reset and retention.
-Game adapters handle save-schema migrations without access to account credentials.
+The reference control plane exercises atomic save-schema migration, defensive export,
+scoped reset, quota reporting and availability states without exposing these
+administrative methods to games. Game adapters handle save-schema migrations without access to account credentials.
 No IndexedDB or backend implementation is provided here.
 
 A future cross-origin transport must authenticate the session/channel, validate

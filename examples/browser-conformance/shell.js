@@ -13,7 +13,7 @@ const poll = setInterval(async () => {
  clearInterval(poll);
  const results = [...received.values()];
  const collector = await fetch('/collector-count').then(r => r.json());
- const passed = results.every(r => r.inputWorked && r.storageWorked && r.presentationWorked && r.telemetryWorked && r.lifecycleWorked && r.listenersReleased && r.blockedFetch && r.blockedDOM && r.absent && r.ownStorage && ['connect-src', 'img-src', 'script-src-elem', 'frame-src'].every(d => r.violations.includes(d))) && invalidRejected > 0 && collector.count === 0 && !document.body.dataset.compromised;
+ const passed = results.every(r => r.adapterWorked && r.inputWorked && r.storageWorked && r.presentationWorked && r.presentationStateWorked && r.audioWorked && r.sameOriginWasmWorked && r.artifactHostWorked && r.telemetryWorked && r.lifecycleWorked && r.listenersReleased && r.blockedFetch && r.blockedDOM && r.absent && r.ownStorage && ['connect-src', 'img-src', 'script-src-elem', 'frame-src'].every(d => r.violations.includes(d))) && invalidRejected > 0 && collector.count === 0 && !document.body.dataset.compromised;
  document.getElementById('result').textContent = JSON.stringify({ passed, browser: navigator.userAgent, results, invalidRejected, collector });
  document.body.dataset.finished = 'true';
 }, 25);

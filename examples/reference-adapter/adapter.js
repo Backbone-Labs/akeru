@@ -3,6 +3,10 @@ export function createAdapter() {
   let host, unsubscribe, disposed = false;
   const received = [];
   return {
+    controlHelp: {
+      controller: [{ action: 'confirm', label: 'South button' }],
+      touch: [{ action: 'confirm', label: 'Tap' }],
+    },
     received,
     async initialize(services) {
       if (host || disposed) throw new Error('Already initialized or disposed');
