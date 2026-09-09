@@ -86,7 +86,8 @@ implementation/configuration; the tests supply an in-memory provider.
 Every new HTML launch checks registry state, even when the caller bypasses `/`
 and requests a retained entry URL directly. Pause returns 410; stale releases
 return 409; missing, malformed or failed registry responses return 503. Responses
-are `no-store`. Root requests redirect only to the retained current entry on the
+for HTML/state/errors are `no-store`; verified non-HTML artifacts at digest-based
+URLs use a one-year immutable cache policy. Root requests redirect only to the retained current entry on the
 same origin. Static assets from retained versions remain available for existing
 sessions during normal pause/rollback. Do not prune versions active sessions may
 still need. This is launch control, not DRM for publicly downloadable source.

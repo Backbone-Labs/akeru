@@ -28,6 +28,7 @@ export function createTitleGateway({ titleId, titleOrigin, shellOrigin, versions
     retained.set(version.digest, entry);
   }
   const assets = createStagingWorker({ files }, headers);
+  const assetPaths = new Set(files.map(file => `/${file.path}`));
   return {
     async fetch(request, env) {
       const url = new URL(request.url);
@@ -47,8 +48,10 @@ export function createTitleGateway({ titleId, titleOrigin, shellOrigin, versions
         if (current.paused) return respond(410, 'Title unavailable');
         if (url.pathname === '/') return respond(302, '', { Location: retained.get(current.current) });
         if (entries.get(url.pathname) !== current.current) return respond(409, 'Release changed; launch again');
-      } else if (!files.some(file => `/${file.path}` === url.pathname)) return respond(404, 'Not found');
-      return assets.fetch(request, env);
+      } else if (!assetPaths.has(url.pathname)) return respond(404, 'Not found');
+      const response = await assets.fetch(request, env);
+      if (response.status === 200 && !entries.has(url.pathname)) response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+      return response;
     },
   };
 }

@@ -26,7 +26,9 @@ test('operator rollback changes new launches while active assets remain readable
  f.update('rollback', previous);
  response = await f.request('/'); assert.equal(response.headers.get('location'), `/releases/${previous}/index.html`);
  assert.equal((await f.request(`/releases/${current}/index.html`)).status, 409);
- assert.equal((await f.request(`/releases/${current}/game.js`)).status, 200);
+ const retainedAsset = await f.request(`/releases/${current}/game.js`);
+ assert.equal(retainedAsset.status, 200);
+ assert.equal(retainedAsset.headers.get('cache-control'), 'public, max-age=31536000, immutable');
  f.update('pause');
  for (const path of ['/', `/releases/${previous}/index.html`, `/releases/${current}/index.html`]) {
   response = await f.request(path); assert.equal(response.status, 410); assert.equal(response.headers.get('cache-control'), 'no-store');
