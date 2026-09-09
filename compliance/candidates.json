@@ -40,11 +40,13 @@
         "review": null
       },
       "dependencies": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Browser recipe links SDL2 and OpenAL through Emscripten; portable core dependency claims do not cover the browser artifact.",
+        "evidenceUrls": [
+          "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/make.sh"
+        ],
         "missingEvidence": [
-          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Pin exact Emscripten ports/toolchain and include their notices; inventory selected mods separately."
         ],
         "review": null
       },
@@ -154,11 +156,15 @@
         "review": null
       },
       "dependencies": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Vendored cimgui/ImGui and GLFW have separate notices. Other bundled libraries and build tools need file-level mapping.",
+        "evidenceUrls": [
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/cimgui/LICENSE",
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/cimgui/imgui/LICENSE.txt",
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/glfw/LICENSE.md"
+        ],
         "missingEvidence": [
-          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Resolve all vendored terms, generated shaders and pinned toolchain inputs."
         ],
         "review": null
       },
@@ -270,21 +276,26 @@
         "review": null
       },
       "dependencies": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Data build requires an independently selected engine and build tools; no engine choice or engine binary is approved here.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/BUILD-SYSTEM.adoc"
+        ],
         "missingEvidence": [
-          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Select and pin engine/toolchain, audit their resources and corresponding-source obligations."
         ],
         "review": null
       },
       "assets": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Data source includes separate music credits and font provenance records. Generated WAD contents still require a path-to-output mapping.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/CREDITS-MUSIC",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/font/README",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/COPYING.adoc"
+        ],
         "missingEvidence": [
-          "Select data release and engine; map contributor, music and level records.",
-          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Map every shipped lump to its source and credit; exclude commercial Doom data."
         ],
         "review": null
       },
@@ -383,21 +394,26 @@
         "review": null
       },
       "dependencies": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Data build requires an independently selected engine and build tools; no engine choice or engine binary is approved here.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/BUILD-SYSTEM.adoc"
+        ],
         "missingEvidence": [
-          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Select and pin engine/toolchain, audit their resources and corresponding-source obligations."
         ],
         "review": null
       },
       "assets": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Data source includes separate music credits and font provenance records. Generated WAD contents still require a path-to-output mapping.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/CREDITS-MUSIC",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/font/README",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/COPYING.adoc"
+        ],
         "missingEvidence": [
-          "Select data release and engine; map contributor, music and level records.",
-          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Map every shipped lump to its source and credit; exclude commercial Doom data."
         ],
         "review": null
       },
@@ -496,21 +512,26 @@
         "review": null
       },
       "dependencies": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Data build requires an independently selected engine and build tools; no engine choice or engine binary is approved here.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/BUILD-SYSTEM.adoc"
+        ],
         "missingEvidence": [
-          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Select and pin engine/toolchain, audit their resources and corresponding-source obligations."
         ],
         "review": null
       },
       "assets": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Data source includes separate music credits and font provenance records. Generated WAD contents still require a path-to-output mapping.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/CREDITS-MUSIC",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/font/README",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/COPYING.adoc"
+        ],
         "missingEvidence": [
-          "Select data release and engine; map contributor, music and level records.",
-          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Map every shipped lump to its source and credit; exclude commercial Doom data."
         ],
         "review": null
       },
@@ -618,12 +639,13 @@
         "review": null
       },
       "assets": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Main source attributes landscape assets to Kenney; its base64 helper has separate Stack Overflow provenance. Root MIT is not a per-file clearance.",
+        "evidenceUrls": [
+          "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/js/main.js"
+        ],
         "missingEvidence": [
-          "Match Kenney assets and attributed helper code to exact files and applicable terms.",
-          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Match each asset to its original source and terms; resolve helper attribution and modifications."
         ],
         "review": null
       },
@@ -637,11 +659,13 @@
         "review": null
       },
       "privacy": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Main source serializes game state into URL fragments and browser history. Host-owned save migration must account for this existing behavior.",
+        "evidenceUrls": [
+          "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/js/main.js"
+        ],
         "missingEvidence": [
-          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Audit final build requests and ensure state is not exposed through host analytics or link sharing."
         ],
         "review": null
       },
@@ -723,11 +747,14 @@
         "review": null
       },
       "dependencies": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Entry HTML loads runtime dependencies separately from package.json development tooling. They must be vendored or explicitly reviewed and pinned.",
+        "evidenceUrls": [
+          "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/index.html",
+          "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/package.json"
+        ],
         "missingEvidence": [
-          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Inventory remote scripts/styles and their transitive assets; retain notices for exact shipped versions."
         ],
         "review": null
       },
@@ -752,12 +779,12 @@
       },
       "privacy": {
         "status": "in-review",
-        "finding": "Entry page loads external runtime scripts; packaged dependencies and approved outbound policy are required.",
+        "finding": "Entry HTML contains remote script/style loads; serving it unchanged sends requests outside the game host.",
         "evidenceUrls": [
           "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/index.html"
         ],
         "missingEvidence": [
-          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Remove or review every remote dependency and verify a final-build network trace."
         ],
         "review": null
       },
@@ -838,11 +865,14 @@
         "review": null
       },
       "dependencies": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Browser package declares Solid/Vite, Howler, Nunito and PostHog alongside separate Electron packaging. Browser and desktop dependency scopes differ.",
+        "evidenceUrls": [
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/package.json",
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/vite.config.ts"
+        ],
         "missingEvidence": [
-          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Produce browser-only resolved dependency inventory and exclude unused Electron/telemetry packages."
         ],
         "review": null
       },
@@ -867,12 +897,14 @@
       },
       "privacy": {
         "status": "in-review",
-        "finding": "Upstream observability initializes PostHog; remove or replace with reviewed host telemetry.",
+        "finding": "Production observability initializes PostHog and associates events with run identifiers. Persistence accesses localStorage directly.",
         "evidenceUrls": [
-          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/src/renderer/lib/observability.ts"
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/src/renderer/lib/observability.ts",
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/src/renderer/index.tsx",
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/src/renderer/state/persistantMutable.ts"
         ],
         "missingEvidence": [
-          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Remove upstream telemetry; migrate saves behind host interface; verify final build network behavior."
         ],
         "review": null
       },
@@ -954,11 +986,13 @@
         "review": null
       },
       "dependencies": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Bundled Font Awesome stylesheet has independent attribution and font licensing context; other vendor scripts and fonts remain unmapped.",
+        "evidenceUrls": [
+          "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/style/fa/css/font-awesome.css"
+        ],
         "missingEvidence": [
-          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Inventory each vendor script and font; preserve applicable notices with the exact build."
         ],
         "review": null
       },
@@ -983,12 +1017,13 @@
       },
       "privacy": {
         "status": "in-review",
-        "finding": "Entry page includes advertising, analytics, external fonts and sharing; upstream page is not suitable unchanged.",
+        "finding": "Entry page contains advertising, analytics, remote fonts and external sharing/store links. These are not authorized Akeru runtime integrations.",
         "evidenceUrls": [
-          "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/index.html"
+          "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/index.html",
+          "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/a.js"
         ],
         "missingEvidence": [
-          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Remove upstream ads/trackers; review remaining outbound links and verify final-build network trace."
         ],
         "review": null
       },
@@ -1078,12 +1113,13 @@
         "review": null
       },
       "assets": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Clear Sans stylesheet identifies bundled font files; root MIT does not independently establish their redistribution terms.",
+        "evidenceUrls": [
+          "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/style/fonts/clear-sans.css"
+        ],
         "missingEvidence": [
-          "Map Clear Sans fonts and images; confirm this optional implementation.",
-          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Resolve font origins/notices and each promotional image; remove unnecessary store art."
         ],
         "review": null
       },
@@ -1097,11 +1133,13 @@
         "review": null
       },
       "privacy": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Local storage uses generic gameState and bestScore keys with an in-memory fallback. The host save adapter must isolate per-title state.",
+        "evidenceUrls": [
+          "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/js/local_storage_manager.js"
+        ],
         "missingEvidence": [
-          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Map migration/deletion behavior and inspect final entry-page requests."
         ],
         "review": null
       },
@@ -1183,23 +1221,25 @@
         "review": null
       },
       "dependencies": {
-        "status": "unknown",
-        "finding": "Evidence review has not been completed.",
-        "evidenceUrls": [],
+        "status": "in-review",
+        "finding": "Submodules and CMake declare independently sourced build/network dependencies; these are separate source inventories.",
+        "evidenceUrls": [
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/.gitmodules",
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/CMakeLists.txt"
+        ],
         "missingEvidence": [
-          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Resolve every submodule recursively and inventory network/audio/toolchain notices."
         ],
         "review": null
       },
       "assets": {
         "status": "in-review",
-        "finding": "Content documentation declares CC0 with exceptions and sound-origin caveats; individual provenance remains unresolved.",
+        "finding": "Content README states CC0 with exceptions for social sign-in buttons and editor icons, and cautions about original sound uploader labeling.",
         "evidenceUrls": [
           "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/hypersomnia/content/README.md"
         ],
         "missingEvidence": [
-          "Review asset exceptions, underlying sound provenance and deployment-specific dependency/source obligations.",
-          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Resolve each exception and sound provenance before reuse; root asset statement cannot clear the inventory."
         ],
         "review": null
       },
@@ -1214,12 +1254,12 @@
       },
       "privacy": {
         "status": "in-review",
-        "finding": "Online identity and network services require a separate data-flow and operating review.",
+        "finding": "Server documentation describes online infrastructure; operating identity, networking and moderation cannot be inferred from browser support.",
         "evidenceUrls": [
-          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/README.md"
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/README_SERVER.md"
         ],
         "missingEvidence": [
-          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+          "Keep out of launch until a separately reviewed service/data/operations model exists."
         ],
         "review": null
       },

@@ -90,3 +90,45 @@ future registry gains history. Submission portals and AI creation tools should
 produce this same evidence, with no special approval bypass. The first version
 supports Git-backed sources; extend the versioned format deliberately for other
 immutable source archives rather than weakening the commit requirement.
+
+## Reproducible file baseline
+
+`compliance/source-inventories/index.json` maps every candidate to a complete
+tracked-path inventory at its observed commit. The three Freedoom experiences
+share one source tree, but need separate generated-output inventories. The nine
+upstream inventories contain 11,061 non-directory entries, captured from
+untruncated GitHub Git trees and all pages of the Anarch GitLab tree. Each entry
+records its exact Git object identity and mode. Symlinks and submodules are
+identified, never followed. These are source baselines, not selected releases.
+No upstream game bytes are included in this repository.
+
+To reproduce from a locally available upstream Git checkout without running its
+build or scripts:
+
+```sh
+node scripts/source-inventory.mjs /path/to/upstream FULL_COMMIT https://example.org/upstream /tmp/inventory.json
+```
+
+The command reads committed Git objects, ignores working-tree modifications and
+refuses to overwrite an existing output. Compare its output to the corresponding
+inventory before attaching findings. A changed pin needs a new inventory and
+review. A submodule entry identifies only its commit: inventory the referenced
+repository independently. Remote dependencies, toolchain ports, downloaded fonts,
+generated files and final network traces are not covered by a tracked-path list.
+
+`compliance/source-evidence.json` records content SHA-256, byte length and Git
+object identity for selected evidence files whose locally inspected bytes match
+the pinned upstream tree. A missing file in this evidence index is not a negative
+finding. It means this content verification has not been recorded. The candidate
+dossiers summarize observed source findings and specific follow-up work.
+
+Every file starts with `rightsStatus: unreviewed`. Do not infer a license from its
+extension, parent directory, root license or the existence of a hash. The next
+review must map each shipped file to applicable terms, provenance, modifications,
+notices and corresponding-source obligations. Do not replace this mapping with a
+blanket approval of the source tree.
+
+Before a title is cleared, its owner must confirm the actual launch edition and
+release, resolve missing asset/dependency evidence, record brand/content/region
+and privacy decisions, and approve the exact release dossier. This tooling can
+merge independently, but it does not complete those title-clearance decisions.
