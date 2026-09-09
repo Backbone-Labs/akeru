@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://akeru.dev/schema/0.1/akeru.schema.json",
+  "$id": "https://github.com/Backbone-Labs/akeru/blob/main/packages/contracts/schema/akeru.schema.json",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -105,8 +105,7 @@
             },
             "revision": {
               "type": "string",
-              "minLength": 1,
-              "maxLength": 512
+              "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
             },
             "license": {
               "type": "string",
@@ -204,6 +203,8 @@
           "properties": {
             "preferred": {
               "enum": [
+                "dom",
+                "canvas2d",
                 "webgl2",
                 "webgpu"
               ]

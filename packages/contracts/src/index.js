@@ -18,7 +18,7 @@ export function validateManifest(manifest, { sdkVersion = SDK_VERSION } = {}) {
     return { valid: false, errors: checkSchema.errors.map(e => `${e.instancePath || '/'} ${e.message}`) };
   }
   const errors = [];
-  if (!semver.valid(manifest.version)) errors.push('/version must be an exact semantic version');
+  if (semver.valid(manifest.version) !== manifest.version) errors.push('/version must be an exact semantic version');
   const range = semver.validRange(manifest.sdk.range);
   if (!range || !semver.valid(sdkVersion) || !semver.satisfies(sdkVersion, range)) {
     errors.push('/sdk/range must accept the selected host SDK version');
@@ -36,8 +36,8 @@ export function validateManifest(manifest, { sdkVersion = SDK_VERSION } = {}) {
     errors.push('/provenance URLs must use HTTPS without credentials');
   }
   const graphics = manifest.runtime.graphics;
-  if (graphics.preferred === 'webgl2' && graphics.fallback !== null) {
-    errors.push('/runtime/graphics a WebGL2 renderer has no declared fallback');
+  if (graphics.preferred !== 'webgpu' && graphics.fallback !== null) {
+    errors.push('/runtime/graphics only WebGPU may declare a WebGL2 fallback');
   }
   if (manifest.runtime.requiredFeatures.some(f => manifest.runtime.optionalFeatures.includes(f))) {
     errors.push('/runtime features cannot be both required and optional');

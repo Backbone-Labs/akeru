@@ -20,6 +20,10 @@ test('original fixture validates through public package exports and CLI', async 
 const negatives = {
   'unknown spec': m => m.specVersion = '2.0.0',
   'invalid package version': m => m.version = 'latest',
+  'noncanonical package version': m => m.version = 'v1.0.0',
+  'floating source revision': m => m.provenance.source.revision = 'main',
+  'abbreviated source revision': m => m.provenance.source.revision = 'abc1234',
+  'uppercase source revision': m => m.provenance.source.revision = 'A'.repeat(40),
   'incompatible SDK': m => m.sdk.range = '^2.0.0',
   'malformed SDK range': m => m.sdk.range = 'banana',
   'missing touch': m => delete m.input.touch,
@@ -93,4 +97,16 @@ test('manifest symlinks cannot select a manifest outside the package', async t =
 test('CLI errors have nonzero exit status', () => {
   assert.equal(spawnSync(process.execPath, ['packages/contracts/src/cli.js']).status, 2);
   assert.equal(spawnSync(process.execPath, ['packages/contracts/src/cli.js', '/nonexistent-akeru-fixture']).status, 1);
+});
+
+test('DOM and Canvas2D packages need no GPU renderer and cannot claim WebGL2 fallback', () => {
+  for (const preferred of ['dom', 'canvas2d']) {
+    assert.equal(validateManifest(changed(m => m.runtime.graphics = { preferred, fallback: null })).valid, true);
+    assert.equal(validateManifest(changed(m => m.runtime.graphics = { preferred, fallback: 'webgl2' })).valid, false);
+  }
+});
+test('full Git SHA-1 and SHA-256 source identities are supported', () => {
+  for (const length of [40, 64]) {
+    assert.equal(validateManifest(changed(m => m.provenance.source.revision = 'a'.repeat(length))).valid, true);
+  }
 });

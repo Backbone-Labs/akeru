@@ -16,7 +16,7 @@
   "provenance": {
     "source": {
       "url": "https://example.com/contract-fixture",
-      "revision": "fixture-v1",
+      "revision": "0000000000000000000000000000000000000000",
       "license": "MIT",
       "rightsStatus": "documented"
     },

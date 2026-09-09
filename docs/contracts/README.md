@@ -36,7 +36,8 @@ The schema export is `@akeru/contracts/schema`; SDK interfaces accompany the mai
 export. The schema `$id` is an identifier, not a promise of a hosted schema endpoint.
 
 `examples/contract-fixture` is original neutral HTML for testing the contract. Its
-example.com provenance URLs are explicit placeholders, not review evidence. Its
+example.com provenance URLs and all-zero source commit are explicit placeholders,
+not review evidence or an assertion that an upstream repository/commit exists. Its
 controller/touch booleans demonstrate required fields, not functioning gameplay.
 It must not enter a playable catalog or release pipeline as an approved title.
 
@@ -53,7 +54,9 @@ It must not enter a playable catalog or release pipeline as an approved title.
   entry. Paths are portable relative paths with no escapes, encoded paths, URLs,
   hidden components or platform separators. Actual files are checked against hashes;
   symlink targets outside the root are rejected, including the manifest itself.
-- Source URL, revision, license and asset evidence preserve provenance. `documented`
+- Source URL, full lowercase 40/64-character Git commit, license and asset evidence
+  preserve provenance. Floating branches/tags and abbreviated hashes are rejected.
+  Other immutable source formats need an explicit versioned format extension. `documented`
   only describes the submission's assertion, never a rights approval. Unknown rights
   remain `unknown`; license text is not restricted to open-source identifiers because
   later indie packages may use different reviewed licensing arrangements.
@@ -74,7 +77,9 @@ A future capability must receive a versioned contract and explicit host policy.
 `graphics.preferred = webgpu` with `fallback = null` requires WebGPU: an unsupported
 host must decline launch. With `fallback = webgl2`, the package asserts it includes a
 working WebGL2 path; the host must select a supported path and conformance must test
-both. A WebGL2 package uses `fallback = null`. Required WASM features must be present
+both. DOM, Canvas2D and WebGL2 packages use `fallback = null`; a DOM/Canvas2D
+package does not imply a GPU requirement. Other fallback combinations are not part
+of this draft; extend the contract explicitly when a concrete package requires one. Required WASM features must be present
 or launch is denied; optional features may be selected only when detected. WebGPU,
 SIMD, threads, memory64 and WASM GC are not universal WebView assumptions. A threaded
 build also needs verified origin/header isolation; this manifest does not supply it.
@@ -107,7 +112,11 @@ game supplies only a slot, schema version and bytes, never account tokens, user 
 bucket names or another title's key. The future host must bound slots, byte sizes,
 quotas and schemas, enforce access control, and scope revisions to each slot. A null
 expected revision is create-only; conflicts must not silently overwrite data. Guest
-local play never requires sign-in; account sync is optional and can be unavailable.
+local play never requires sign-in; player sign-in for account sync is optional and
+sync may temporarily be unavailable. `accountSync = disabled` is accepted only to
+describe development/candidate packages: the P0 release policy must require support
+for optional account-linked cloud sync. This validator does not enforce release
+readiness.
 Host UI owns sign-in, guest migration, conflict resolution, export/reset and retention.
 Game adapters handle save-schema migrations without access to account credentials.
 No IndexedDB or backend implementation is provided here.
