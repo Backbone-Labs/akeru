@@ -32,7 +32,12 @@ export function validateManifest(manifest, { sdkVersion = SDK_VERSION } = {}) {
     errors.push('/provenance/assets must cover every artifact exactly once');
   }
   const urls = [manifest.provenance.source.url, ...manifest.provenance.assets.flatMap(a => a.evidence)];
-  if (urls.some(value => { const u = new URL(value); return u.protocol !== 'https:' || !!u.username || !!u.password; })) {
+  if (urls.some(value => {
+    try {
+      const u = new URL(value);
+      return u.protocol !== 'https:' || !!u.username || !!u.password;
+    } catch { return true; }
+  })) {
     errors.push('/provenance URLs must use HTTPS without credentials');
   }
   const graphics = manifest.runtime.graphics;

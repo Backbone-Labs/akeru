@@ -40,6 +40,7 @@ const negatives = {
   'uncovered artifact': m => m.provenance.assets[0].path = 'other.html',
   'unsafe source URL': m => m.provenance.source.url = 'javascript:alert(1)',
   'credential URL': m => m.provenance.source.url = 'https://secret@example.com/source',
+  'out-of-range URL port': m => m.provenance.source.url = 'https://example.com:99999/source',
   'unsafe asset evidence': m => m.provenance.assets[0].evidence = ['http://example.com'],
   'self-granted permission': m => m.grants = ['native.all'],
   'self-approved title': m => m.approved = true,
