@@ -38,7 +38,6 @@ export function createCatalogWorker(release) {
     'application/json; charset=utf-8',
     'text/plain; charset=utf-8',
     'application/gzip',
-    'image/svg+xml',
   ]);
   const files = new Map();
   for (const file of release.files) {
@@ -46,7 +45,8 @@ export function createCatalogWorker(release) {
       !/^[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*\.[a-zA-Z0-9.]+$/.test(file.path) ||
       file.path.includes('..') ||
       files.has(`/${file.path}`) ||
-      !types.has(file.type) ||
+      (!types.has(file.type) &&
+        !(file.path === 'favicon.svg' && file.type === 'image/svg+xml')) ||
       !Number.isSafeInteger(file.size) ||
       file.size < 0 ||
       !/^[a-f0-9]{64}$/.test(file.sha256)
