@@ -1,8 +1,9 @@
 import { createServer } from 'node:http';
-import { readFileSync, lstatSync, readdirSync } from 'node:fs';
+import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { sha256 } from './package-staging.mjs';
+import { createContainedFileReader } from './read-contained-file.mjs';
 
 const fileTypes = {
   'index.html': 'text/html; charset=utf-8',
@@ -25,12 +26,16 @@ export const shellHeaders = Object.freeze({
 // Verify the complete allowlisted release before listening, then hold immutable bytes
 // in memory. No request-controlled filesystem access or dynamic code execution.
 export function loadStaging(directory) {
-  const root = resolve(directory);
+  const reader = createContainedFileReader(directory);
+  const { root } = reader;
   const read = (name) => {
-    const path = resolve(root, name);
-    if (!lstatSync(path).isFile())
-      throw new Error(`Release requires regular file: ${name}`);
-    return readFileSync(path);
+    try {
+      return reader.read(name);
+    } catch (error) {
+      throw new Error(`Release requires regular file: ${name}`, {
+        cause: error,
+      });
+    }
   };
   const metadata = read('release.json');
   const release = JSON.parse(metadata);

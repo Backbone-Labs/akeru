@@ -1,16 +1,20 @@
 import { createServer } from 'node:http';
-import { readFileSync, lstatSync, readdirSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readdirSync } from 'node:fs';
+import { relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { sha256 } from './package-staging.mjs';
 import { createCatalogWorker } from '../platform/hosting/catalog-worker.mjs';
+import { createContainedFileReader } from './read-contained-file.mjs';
 export function loadCatalog(directory) {
-  const root = resolve(directory);
+  const reader = createContainedFileReader(directory);
+  const { root } = reader;
   const read = (name) => {
-    const path = resolve(root, name);
-    if (!lstatSync(path).isFile())
-      throw new Error('Expected regular release file');
-    return readFileSync(path);
+    try {
+      return reader.read(name);
+    } catch (error) {
+      if (error.message === 'Unsafe file path') throw error;
+      throw new Error('Expected regular release file', { cause: error });
+    }
   };
   const metadata = read('release.json');
   const release = JSON.parse(metadata);
@@ -18,8 +22,13 @@ export function loadCatalog(directory) {
     throw new Error('Invalid catalog release');
   const manifest = { ...release, digest: sha256(metadata) };
   createCatalogWorker(manifest); // validates paths before reading
-  const names = readdirSync(root, { recursive: true })
-    .filter((name) => !lstatSync(resolve(root, name)).isDirectory())
+  const names = readdirSync(root, { recursive: true, withFileTypes: true })
+    .filter((entry) => !entry.isDirectory())
+    .map((entry) =>
+      relative(root, resolve(entry.parentPath, entry.name))
+        .split(sep)
+        .join('/'),
+    )
     .sort();
   if (
     JSON.stringify(names) !==

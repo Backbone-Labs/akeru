@@ -35,14 +35,15 @@ A successful analysis alone is not equivalent to having no findings.
 
 `.github/main-ruleset.json` records the expected active repository ruleset:
 
-- Pull requests only; one approving review from someone other than the latest pusher.
-- New reviewable pushes invalidate prior approval; resolve review conversations.
+- Pull requests only; the solo maintainer reviews and merges after required checks pass.
+- Resolve review conversations; an external approval is not required for this solo workflow.
 - All named checks must pass against current main, from GitHub Actions.
 - No force pushes or deletion, and no configured actor/admin bypass.
 - CodeQL results required for the change and target, with the severity gates above.
 
-The PR author cannot approve their own PR. A maintainer with review permissions
-must review it. No particular reviewer or CODEOWNERS team is invented here.
+The solo workflow requires zero external approvals and no last-pusher approval.
+Re-enable independent approval when another engineer joins the project.
+No particular reviewer or CODEOWNERS team is invented here.
 Repository administrators can change settings; normal merge bypass is disabled.
 Changes to workflow, public API, isolation, release and account boundaries deserve
 review by the relevant Backbone engineering owner.
@@ -72,14 +73,17 @@ passing it does not establish hardware or WebView support. Coverage percentages
 are not a substitute for meaningful boundary tests, and no arbitrary coverage
 threshold is claimed.
 
-## Initial security scan follow-up
+## Initial security scan review
 
-The initial extended CodeQL scan reported existing alerts; enabling scanning is
-not a clean security certification. Read-only triage found deliberate attack
-fixtures and operator-controlled CLI inputs among the reports, but also local
-validation resource amplification and filesystem race/symlink hardening work.
-Keep those alerts open until individually resolved or reviewed with evidence.
-Before accepting community uploads, bound manifest size and validation work,
-and harden source-file containment against symlink changes. The current CLI
-packaging flow is not an untrusted upload service. No alert was dismissed merely
-to make this quality-gate change pass.
+Manifest validation now fails fast, bounds input before parsing/schema traversal,
+and streams artifact hashing with file/package limits. Local release and evidence
+readers verify regular files and consume the same descriptor, rejecting escaping
+symlinks. These are offline integrity tools; portable Node does not provide a
+sandbox against a hostile process concurrently replacing ancestor directories.
+Keep build/source workspaces under the operator's exclusive control.
+
+Specific reports for intentional attack fixtures and operator-selected CLI inputs
+are reviewed in [CodeQL alert review](codeql-alert-review.md), with a matching
+reason recorded on each GitHub alert. No query or source directory is excluded.
+Re-review those decisions before exposing local tools as untrusted upload or
+network services. A passing scan is not certification or title publication approval.

@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync, lstatSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createContainedFileReader } from './read-contained-file.mjs';
 
 export function inspectPublicFile(path, content) {
   const errors = [];
@@ -43,6 +43,7 @@ export function inspectPublicFile(path, content) {
 }
 
 export function checkPublicTree(cwd = process.cwd()) {
+  const reader = createContainedFileReader(cwd);
   const paths = execFileSync('git', ['ls-files', '-z'], {
     cwd,
     encoding: 'utf8',
@@ -51,15 +52,19 @@ export function checkPublicTree(cwd = process.cwd()) {
     .filter(Boolean);
   const failures = [];
   for (const path of paths) {
-    const fullPath = resolve(cwd, path);
-    if (!lstatSync(fullPath).isFile()) {
+    const pathErrors = inspectPublicFile(path, '');
+    if (pathErrors.length) {
+      for (const error of pathErrors) failures.push(`${path}: ${error}`);
+      continue;
+    }
+    let content;
+    try {
+      content = reader.read(path, 'utf8');
+    } catch {
       failures.push(`${path}: only regular tracked files are allowed`);
       continue;
     }
-    for (const error of inspectPublicFile(
-      path,
-      readFileSync(fullPath, 'utf8'),
-    )) {
+    for (const error of inspectPublicFile(path, content)) {
       failures.push(`${path}: ${error}`);
     }
   }

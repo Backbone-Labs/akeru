@@ -1,10 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createContainedFileReader } from './read-contained-file.mjs';
 
-const fail = (message) => {
-  throw new Error(message);
+const fail = (message, options) => {
+  throw new Error(message, options);
 };
 export function selectedPaths(group, inventory) {
   const selector = group.selector;
@@ -137,11 +137,14 @@ export function validateRightsAudit(audit, inventory) {
 }
 
 export function verifyAuditSources(audit, sourceDirectory) {
+  const reader = createContainedFileReader(sourceDirectory);
   for (const e of audit.evidence) {
-    const path = resolve(sourceDirectory, e.path);
-    if (!path.startsWith(resolve(sourceDirectory) + '/'))
-      fail('Unsafe evidence path');
-    const bytes = readFileSync(path);
+    let bytes;
+    try {
+      bytes = reader.read(e.path);
+    } catch (error) {
+      fail(`Unsafe evidence file: ${e.path}`, { cause: error });
+    }
     const sha256 = createHash('sha256').update(bytes).digest('hex');
     const gitObjectId = createHash('sha1')
       .update(`blob ${bytes.length}\0`)

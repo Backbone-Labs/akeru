@@ -7,6 +7,8 @@ import {
   writeFile,
   rm,
   symlink,
+  truncate,
+  mkdir,
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -193,4 +195,95 @@ test('numeric-leading title slugs are valid while unsafe slug forms fail', () =>
     assert.equal(validateManifest(changed((m) => (m.id = id))).valid, true);
   for (const id of ['../2048', '-2048', '2048-', '2048/classic', 'Title'])
     assert.equal(validateManifest(changed((m) => (m.id = id))).valid, false);
+});
+
+test('rejects oversized arrays before inspecting their entries', () => {
+  const manifest = structuredClone(original);
+  const oversized = new Array(1025);
+  Object.defineProperty(oversized, 0, {
+    get() {
+      throw new Error('oversized array must not be traversed');
+    },
+  });
+  manifest.artifacts = oversized;
+  assert.match(validateManifest(manifest).errors.join(), /limits/);
+});
+
+test('rejects excessive evidence, feature and capability counts', () => {
+  for (const mutate of [
+    (m) => {
+      m.provenance.assets[0].evidence = Array.from(
+        { length: 17 },
+        (_, i) => `https://example.com/${i}`,
+      );
+    },
+    (m) => {
+      m.runtime.requiredFeatures = new Array(6).fill('wasm');
+    },
+    (m) => {
+      m.runtime.optionalFeatures = new Array(6).fill('wasm');
+    },
+    (m) => {
+      m.capabilities = new Array(3).fill('save.local');
+    },
+    (m) => {
+      m.provenance.assets = new Array(1025).fill(m.provenance.assets[0]);
+    },
+  ])
+    assert.equal(validateManifest(changed(mutate)).valid, false);
+});
+
+test('rejects excessive strings, nesting and cyclic in-memory declarations', () => {
+  for (const mutate of [
+    (m) => {
+      m.title = 'a'.repeat(1024 * 1024);
+    },
+    (m) => {
+      m.extra = m;
+    },
+    (m) => {
+      m.extra = Array.from({ length: 1024 }, () => 'a'.repeat(2048));
+    },
+  ])
+    assert.match(validateManifest(changed(mutate)).errors.join(), /limits/);
+});
+
+test('duplicate artifact and provenance paths remain invalid without quadratic schema uniqueness', () => {
+  for (const mutate of [
+    (m) => m.artifacts.push({ ...m.artifacts[0] }),
+    (m) => m.provenance.assets.push({ ...m.provenance.assets[0] }),
+  ])
+    assert.match(
+      validateManifest(changed(mutate)).errors.join(),
+      /paths must be unique/,
+    );
+});
+
+test('schema validation reports only its first error', () => {
+  const result = validateManifest({});
+  assert.equal(result.valid, false);
+  assert.equal(result.errors.length, 1);
+});
+
+test('rejects oversized manifest and artifact files before consuming their contents', async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), 'akeru-size-test-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  await cp(fixture, dir, { recursive: true });
+  await truncate(join(dir, 'akeru.json'), 1024 * 1024 + 1);
+  assert.match((await validatePackage(dir)).errors.join(), /size limit/);
+  await writeFile(join(dir, 'akeru.json'), JSON.stringify(original));
+  await truncate(join(dir, 'index.html'), 256 * 1024 * 1024 + 1);
+  assert.match((await validatePackage(dir)).errors.join(), /size limit/);
+});
+
+test('rejects nonregular manifest and artifact files', async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), 'akeru-file-type-test-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  await cp(fixture, dir, { recursive: true });
+  await rm(join(dir, 'index.html'));
+  await mkdir(join(dir, 'index.html'));
+  assert.match((await validatePackage(dir)).errors.join(), /regular file/);
+  await rm(join(dir, 'akeru.json'));
+  await mkdir(join(dir, 'akeru.json'));
+  assert.match((await validatePackage(dir)).errors.join(), /regular file/);
 });
