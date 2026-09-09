@@ -38,6 +38,7 @@ export function createCatalogWorker(release) {
     'application/json; charset=utf-8',
     'text/plain; charset=utf-8',
     'application/gzip',
+    'image/svg+xml',
   ]);
   const files = new Map();
   for (const file of release.files) {

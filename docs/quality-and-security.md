@@ -71,3 +71,15 @@ security review remain release gates. The browser suite uses synthetic input;
 passing it does not establish hardware or WebView support. Coverage percentages
 are not a substitute for meaningful boundary tests, and no arbitrary coverage
 threshold is claimed.
+
+## Initial security scan follow-up
+
+The initial extended CodeQL scan reported existing alerts; enabling scanning is
+not a clean security certification. Read-only triage found deliberate attack
+fixtures and operator-controlled CLI inputs among the reports, but also local
+validation resource amplification and filesystem race/symlink hardening work.
+Keep those alerts open until individually resolved or reviewed with evidence.
+Before accepting community uploads, bound manifest size and validation work,
+and harden source-file containment against symlink changes. The current CLI
+packaging flow is not an untrusted upload service. No alert was dismissed merely
+to make this quality-gate change pass.
