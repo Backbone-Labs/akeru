@@ -1,0 +1,13 @@
+# Internal discovery contains private repository references and source snapshots.
+/research/
+/AKERU_DISCOVERY.md
+/REPOSITORY_INVENTORY.md
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.tsbuildinfo
+/tmp/
