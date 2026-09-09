@@ -76,7 +76,10 @@ threshold is claimed.
 ## Initial security scan review
 
 Manifest validation now fails fast, bounds input before parsing/schema traversal,
-and streams artifact hashing with file/package limits. Local release and evidence
+and streams artifact hashing with file/package limits: 1 MiB manifest files,
+1,024 artifacts/assets, 16 evidence URLs per asset, 256 MiB per artifact, and
+1 GiB per package. In-memory declarations also have depth/node/string budgets.
+These limits are versioned implementation policy and require review before expansion. Local release and evidence
 readers verify regular files and consume the same descriptor, rejecting escaping
 symlinks. These are offline integrity tools; portable Node does not provide a
 sandbox against a hostile process concurrently replacing ancestor directories.
