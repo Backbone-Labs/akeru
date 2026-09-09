@@ -105,3 +105,9 @@ Before production, record the monitoring
 destination, alert thresholds, response process, publication authority, cache
 freshness target and rollback drill evidence. No production rollout is part of
 this foundation PR.
+
+## Concrete staging adapter
+
+See [Cloudflare staging](cloudflare-staging.md) for the generated deployment
+bundle, pinned CLI command, verification and owner/runbook. Account access and
+actual deployment verification are still required before VAN-7461 can close.

@@ -36,12 +36,15 @@ jobs:
         run: |
           npm run package:staging
           node --input-type=module -e "import {loadStaging} from './scripts/serve-staging.mjs'; loadStaging('dist/staging')"
+      - name: Prepare Cloudflare deployment bundle (no deployment)
+        run: npm run package:cloudflare
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: source-${{ github.sha }}
           path: |
             dist/source/
             dist/staging/
+            dist/cloudflare/
           if-no-files-found: error
           retention-days: 14
 
