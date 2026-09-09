@@ -16,11 +16,15 @@ and `package.json`). From a clean checkout:
 npm ci --ignore-scripts
 npm run check
 npm run package:source
+npm run package:staging
+npm run preview:staging
 ```
 
-The last command requires a clean Git checkout. It writes a source archive and
+Packaging requires a clean Git checkout. Source packaging writes a source archive and
 SHA-256 provenance under `dist/source/`; it does not publish a game or deploy a
-website. CI runs the same checks, audits dependencies and retains the archive.
+website. Staging packaging adds an empty source-linked page; the preview command
+verifies and serves it on localhost:4173. CI runs the same checks, audits
+dependencies and retains both artifacts.
 
 Initial work is split into compliance evidence, reproducible project tooling,
 and versioned title-package/runtime contracts. Gameplay is intended to be free,
