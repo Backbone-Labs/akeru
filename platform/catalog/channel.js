@@ -1,3 +1,4 @@
+import { createSaveChannel } from './save-channel.js';
 /** One authenticated, bounded channel per already-authorized isolated frame. */
 const exact = (v, keys) =>
   v &&
@@ -19,6 +20,7 @@ const control = (v, min) =>
   );
 export function createRuntimeChannel({
   frame,
+  saveService,
   origin,
   nonce,
   onEvent = () => {},
@@ -58,6 +60,7 @@ export function createRuntimeChannel({
         origin,
       );
   };
+  const saves = createSaveChannel(saveService, send);
   const timeout = setTimeout(() => {
     if (state === 'loading' && !closed) {
       state = 'error';
@@ -68,6 +71,7 @@ export function createRuntimeChannel({
   function dispose() {
     if (closed) return;
     clearTimeout(timeout);
+    saves.dispose();
     closed = true;
     state = 'closed';
   }
@@ -90,6 +94,15 @@ export function createRuntimeChannel({
     }
     if (++budget > 60) return false;
     const p = v.payload;
+    if (v.type === 'save') {
+      if (
+        !['loading', 'playable', 'paused'].includes(state) ||
+        !saves.receive(p)
+      )
+        return false;
+      received = v.sequence;
+      return true;
+    }
     if (v.type === 'loading') {
       if (
         state !== 'loading' ||
@@ -170,10 +183,19 @@ export function createRuntimeChannel({
     connect() {
       if (connected || closed) return;
       connected = true;
-      send('connect', {
-        sdkVersion: '0.1.0',
-        saves: { local: 'unavailable', sync: 'disabled' },
-      });
+      const finish = (status) =>
+        send('connect', {
+          sdkVersion: '0.1.0',
+          saves: {
+            local: status?.local === 'available' ? 'available' : 'unavailable',
+            sync: 'disabled',
+          },
+        });
+      if (saveService)
+        Promise.resolve()
+          .then(() => saveService.status())
+          .then(finish, () => finish(null));
+      else finish(null);
     },
     pause() {
       if (state !== 'playable' || closed) return false;

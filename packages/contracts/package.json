@@ -13,6 +13,10 @@
     "./reference-host": {
       "types": "./src/reference-host.d.ts",
       "import": "./src/reference-host.js"
+    },
+    "./save-client": {
+      "types": "./src/save-client.d.ts",
+      "import": "./src/save-client.js"
     }
   },
   "bin": {

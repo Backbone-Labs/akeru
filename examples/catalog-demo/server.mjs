@@ -25,6 +25,7 @@ export async function startCatalogDemo() {
       read(`examples/catalog-demo/${p}`),
     ]),
   );
+  titleFiles['save-client.js'] = read('packages/contracts/src/save-client.js');
   const digest = hash(
     Buffer.from(
       JSON.stringify(
@@ -128,7 +129,7 @@ export async function startCatalogDemo() {
       },
       privacy: [
         'No external requests, accounts, advertising or upstream trackers.',
-        'No progress is saved. Account linking and cloud sync are not connected.',
+        'Position is saved locally in this browser. Account linking and cloud sync are not connected.',
       ],
       notices: [
         {
@@ -171,15 +172,17 @@ export async function startCatalogDemo() {
     const file =
       req.url === '/' || /^\/g\/[a-z0-9-]+\/?$/.test(req.url)
         ? 'platform/catalog/index.html'
-        : /^\/(?:favicon\.svg|style\.css|app\.js|model\.js|channel\.js)$/.test(
+        : /^\/(?:favicon\.svg|style\.css|app\.js|model\.js|channel\.js|save-channel\.js)$/.test(
               req.url,
             )
           ? `platform/catalog${req.url}`
-          : /^\/input\/(?:browser|index|normalize|preferences|overlay)\.js$/.test(
-                req.url,
-              ) || req.url === '/input/styles.css'
-            ? `packages/input/src/${req.url.split('/').at(-1)}`
-            : null;
+          : req.url === '/saves/index.js'
+            ? 'packages/saves/src/index.js'
+            : /^\/input\/(?:browser|index|normalize|preferences|overlay)\.js$/.test(
+                  req.url,
+                ) || req.url === '/input/styles.css'
+              ? `packages/input/src/${req.url.split('/').at(-1)}`
+              : null;
     if (!file) {
       res.writeHead(404);
       return res.end('Not found');

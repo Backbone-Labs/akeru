@@ -44,7 +44,9 @@ test('browses from catalog to detail and launches the isolated original fixture'
   await expect(
     runtime.getByRole('heading', { name: 'Find a little space.' }),
   ).toBeVisible();
-  await expect(runtime.getByRole('status')).toHaveText('Ready when you are.');
+  await expect(runtime.getByRole('status', { name: 'Game status' })).toHaveText(
+    'Ready when you are.',
+  );
   await expect(page.locator('#runtime-overlay')).toBeHidden();
 });
 
@@ -63,7 +65,9 @@ test('holds and releases touch input while an idle controller remains connected'
     type: 'touchStart',
     touchPoints: [point],
   });
-  await expect(runtime.getByRole('status')).toHaveText('Touch input connected');
+  await expect(runtime.getByRole('status', { name: 'Game status' })).toHaveText(
+    'Touch input connected',
+  );
   await expect
     .poll(async () => (await orbPosition(runtime)).x)
     .toBeGreaterThan(before.x + 5);
@@ -112,7 +116,9 @@ test('persists a per-title controller remap across reload', async ({
   const runtime = page.frameLocator(
     'iframe[title="Orbit study isolated runtime"]',
   );
-  await expect(runtime.getByRole('status')).toHaveText('Ready when you are.');
+  await expect(runtime.getByRole('status', { name: 'Game status' })).toHaveText(
+    'Ready when you are.',
+  );
   await page.getByRole('button', { name: 'Controls' }).click();
   await expect(
     page.getByRole('combobox', { name: 'confirm control' }),
@@ -127,7 +133,7 @@ test('requires a neutral controller after synthetic focus recovery', async ({
   await page.waitForTimeout(100);
 
   await setGamepadButton(page, 15, 1);
-  await expect(runtime.getByRole('status')).toHaveText(
+  await expect(runtime.getByRole('status', { name: 'Game status' })).toHaveText(
     'Controller input connected',
   );
   await expect
@@ -225,7 +231,9 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
   const runtime = page.frameLocator(
     'iframe[title="Orbit study isolated runtime"]',
   );
-  await expect(runtime.getByRole('status')).toHaveText('Ready when you are.');
+  await expect(runtime.getByRole('status', { name: 'Game status' })).toHaveText(
+    'Ready when you are.',
+  );
   await expectNoHorizontalOverflow(page);
 
   await page.getByRole('button', { name: 'Controls' }).click();
