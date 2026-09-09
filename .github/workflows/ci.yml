@@ -1,0 +1,42 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Use pinned npm
+        run: npm install --global npm@11.17.0 --ignore-scripts
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - name: Check known dependency vulnerabilities
+        run: npm audit --audit-level=high
+      - name: Produce source provenance
+        run: npm run package:source
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: source-${{ github.sha }}
+          path: dist/source/
+          if-no-files-found: error
+          retention-days: 14
+
+# This validates and retains evidence. It does not deploy, approve or activate titles.
