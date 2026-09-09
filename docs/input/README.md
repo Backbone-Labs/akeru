@@ -55,6 +55,12 @@ activity produces gameplay snapshots only, so it cannot also move the catalog.
 Call `unsubscribe`, `unmount` and `dispose` when the route or title session ends;
 all are safe to repeat.
 
+While a paused controls screen has stopped gameplay polling, the shell may call
+`refreshControllers()` on a bounded timer or connection event. It performs one
+enumeration and refreshes the mounted controller selector without selecting a pad,
+changing held state or emitting gameplay/navigation. Clear the timer when the
+controls screen closes.
+
 ## Normalization and recovery
 
 Only connected Gamepad API devices whose `mapping` is `standard` enter the

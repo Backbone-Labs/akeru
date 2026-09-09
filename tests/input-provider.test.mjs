@@ -158,3 +158,20 @@ test('generic controls overlay remaps baseline actions without dropping title ac
   assert.equal(mapping.buttons.south, 'fire'); assert.equal(mapping.buttons.east, 'confirm'); assert.equal(mapping.axes.leftX, 'steer');
   provider.dispose();
 });
+
+test('stopped controls can refresh hotplug state without input or navigation', () => {
+  const pads = [gamepad(0)], env = environment({ pads });
+  const provider = createBrowserInputProvider({ titleId: 'hotplug-title', window: env.window, document: env.document, navigator: env.navigator, requestAnimationFrame: env.frames.request, cancelAnimationFrame: env.frames.cancel });
+  provider.mount(env.roots); const snapshots = [], navigation = [];
+  provider.subscribe(value => snapshots.push(value)); provider.subscribeNavigation(value => navigation.push(value));
+  provider.start(); env.frames.step(); provider.stop();
+  const snapshotCount = snapshots.length;
+  pads.push(gamepad(2));
+  assert.deepEqual(provider.refreshControllers().map(controller => controller.index), [0, 2]);
+  assert.deepEqual(provider.getState().controllers.map(controller => controller.index), [0, 2]);
+  assert.equal(snapshots.length, snapshotCount); assert.equal(navigation.length, 0);
+  pads.splice(0, 1);
+  assert.deepEqual(provider.refreshControllers().map(controller => controller.index), [2]);
+  assert.equal(snapshots.length, snapshotCount); assert.equal(navigation.length, 0);
+  provider.dispose(); assert.throws(() => provider.refreshControllers(), /disposed/);
+});
