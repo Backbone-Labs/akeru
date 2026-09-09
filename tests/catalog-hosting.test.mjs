@@ -44,3 +44,20 @@ test('hosted catalog verification checks deep links, identities, headers and has
   await assert.rejects(verifyHostedCatalog('https://catalog.invalid', { ...release, digest: 'c'.repeat(64) }, fetcher), /release mismatch/);
   await assert.rejects(verifyHostedCatalog('https://catalog.invalid', release, async () => new Response('{}')), /changed/);
 });
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { loadCatalog } from '../scripts/serve-catalog.mjs';
+test('local catalog verifier rejects tampering, extra files and symlink assets before serving', () => {
+ const root = mkdtempSync(join(tmpdir(), 'akeru-catalog-test-'));
+ try {
+  const source = Buffer.from('original source archive fixture');
+  const data = { ...contents, 'source.tar.gz': source, 'provenance.json': JSON.stringify({ revision: release.revision, artifact: { sha256: createHash('sha256').update(source).digest('hex') } }) };
+  const files = Object.entries(data).map(([path, bytes]) => ({ path, size: Buffer.byteLength(bytes), sha256: createHash('sha256').update(bytes).digest('hex'), type: path.endsWith('.html') ? 'text/html; charset=utf-8' : path.endsWith('.js') ? 'text/javascript; charset=utf-8' : path.endsWith('.gz') ? 'application/gzip' : 'application/json; charset=utf-8' }));
+  const restore = () => { rmSync(root, { recursive: true }); mkdirSync(root); for (const [name, bytes] of Object.entries(data)) writeFileSync(join(root, name), bytes); writeFileSync(join(root, 'release.json'), JSON.stringify({ schemaVersion: '1.0.0', kind: 'catalog-shell', revision: release.revision, titleOrigins: [], files })); };
+  restore(); assert.equal(loadCatalog(root).manifest.revision, release.revision);
+  writeFileSync(join(root, 'index.html'), 'tampered'); assert.throws(() => loadCatalog(root), /digest/);
+  restore(); writeFileSync(join(root, 'debug.json'), '{}'); assert.throws(() => loadCatalog(root), /Unexpected/);
+  restore(); rmSync(join(root, 'index.html')); symlinkSync(join(root, 'app.js'), join(root, 'index.html')); assert.throws(() => loadCatalog(root), /regular/);
+ } finally { rmSync(root, { recursive: true, force: true }); }
+});
