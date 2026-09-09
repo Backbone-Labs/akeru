@@ -100,6 +100,20 @@ test('changing release, source, evidence or policy invalidates recorded decision
   }
 });
 
+test('source and evidence URLs reject coercible non-string values', () => {
+  for (const mutate of [
+    (d) => { d.identity.upstreamUrl = [d.identity.upstreamUrl]; },
+    (d) => { d.release.sources[0].url = [d.release.sources[0].url]; },
+    (d) => { d.sections.assets.evidenceUrls = [['https://example.org/evidence']]; },
+    (d) => { d.sections.assets.review.evidenceUrls = [['https://example.org/review']]; },
+    (d) => { d.approval.review.evidenceUrls = [['https://example.org/review']]; },
+  ]) {
+    const dossier = completed(); mutate(dossier);
+    dossier.approval.reviewedContentDigest = dossierDigest(dossier);
+    assert.notDeepEqual(validateDossier(dossier), []);
+  }
+});
+
 test('pending, rejected and unsupported policies do not become approval by default', () => {
   const dossier = draft(); dossier.approval.status = 'rejected';
   dossier.approval.review = review(); dossier.approval.reviewedContentDigest = dossierDigest(dossier);

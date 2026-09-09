@@ -8,6 +8,7 @@ const text = (value) => typeof value === 'string' && value.trim().length > 0;
 const sha = (value) => typeof value === 'string' && /^[a-f0-9]{40}([a-f0-9]{24})?$/.test(value);
 const digest = (value) => typeof value === 'string' && /^sha256:[a-f0-9]{64}$/.test(value);
 const https = (value) => {
+  if (typeof value !== 'string') return false;
   try {
     const url = new URL(value);
     return url.protocol === 'https:' && !url.username && !url.password;
