@@ -28,8 +28,8 @@ not. Required threaded builds are refused until a reviewed worker/COOP/COEP poli
 exists; optional features are not implicitly enabled by this reference plan.
 
 The plan produces a restrictive per-title CSP with no outbound connections,
-subframes, forms, objects or workers. The tests inspect the generated policy, not
-browser enforcement. `allow-scripts allow-same-origin` is safe only with a genuinely
+subframes, forms, objects or workers. Unit tests inspect the generated policy; the separate browser fixture below
+checks selected enforcement paths in an actual browser. `allow-scripts allow-same-origin` is safe only with a genuinely
 separate title origin, never the shell's origin. The plan rejects equal origins,
 but registry allocation and actual response/header enforcement belong to hosting.
 A plan does not grant publication approval or prove an immutable package is safe.
@@ -72,3 +72,28 @@ Before a runtime is approved for production, retain evidence for each item:
 
 The same checklist applies to Backbone, indie and community packages. Creator tier
 may change review depth; it cannot bypass host isolation or grant publication rights.
+
+
+## Running the browser fixture
+
+Run `node packages/contracts/src/browser-conformance.js` and open its printed
+loopback URL in a browser. The fixture creates four local origins: a shell, two
+titles and a collector. Stop with Ctrl-C; no hosting account or deployment is used.
+Each run allocates fresh ports. A JSON result must report `passed: true` and zero
+collector requests. Timeout is a failure. The loopback fixture substitutes only
+the HTTPS ancestor origin in the generated policy; production must use HTTPS.
+
+The original adapter exercises lifecycle and teardown, synthetic normalized
+controller/touch input, save write/read/remove, fullscreen denial and bounded
+telemetry. Attempts to fetch or load scripts/images/frames from the collector
+must fail under CSP. Both titles must be denied shell DOM access and retain
+independent localStorage values. Results require the expected source Window,
+origin and nonce; a forged shell result must be rejected. This is a test-result
+channel, not the production SDK message transport.
+
+Verified locally in the Codex Chromium browser on 2026-09-09. This is not physical
+controller/touch, WKWebView, Android WebView, WebGPU rendering or production
+persistence evidence. Production navigation interception and the other denial
+paths in the checklist still require the actual host integration. The optional
+headless Chrome attempt failed to start reliably on the development machine;
+no headless/CI browser pass is claimed. Unit conformance remains part of CI.
