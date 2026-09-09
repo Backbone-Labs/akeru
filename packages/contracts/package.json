@@ -9,7 +9,8 @@
       "types": "./src/index.d.ts",
       "import": "./src/index.js"
     },
-    "./schema": "./schema/akeru.schema.json"
+    "./schema": "./schema/akeru.schema.json",
+    "./reference-host": "./src/reference-host.js"
   },
   "bin": {
     "akeru-validate": "./src/cli.js"

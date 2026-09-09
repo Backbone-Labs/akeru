@@ -35,6 +35,10 @@ export interface SaveService {
 export interface HostServicesV1 {
   sdkVersion: '0.1.0';
   saves: SaveService;
+  /** Host may deny; requests never authorize navigation or native UI. */
+  presentation: { request(mode: 'embedded' | 'fullscreen'): Promise<{ mode: 'embedded' | 'fullscreen'; granted: boolean }> };
+  /** Fixed numeric metrics only; host applies consent and export policy. */
+  telemetry: { emit(event: { type: 'loadDurationMs' | 'frameDurationMs'; value: number }): void };
   emit(event: LifecycleEvent): void;
   onInput(listener: (input: InputSnapshot) => void): () => void;
 }

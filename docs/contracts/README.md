@@ -6,9 +6,9 @@ format rather than receive a separate execution or publication path. Title-speci
 adapters and assets belong in title packages; the host must not special-case titles.
 
 This initial implementation provides a JSON Schema, semantic checks, local artifact
-integrity checks, a CLI and draft TypeScript SDK interfaces. It does **not** implement
-a game host, browser sandbox, publication authorization, cloud saves, input transport
-or gameplay conformance. Passing validation does not establish that a game supports
+integrity checks, a CLI, draft TypeScript SDK interfaces and an executable in-process conformance
+model with an original adapter fixture. It does **not** implement a production game
+host, browser sandbox, publication authorization, cloud saves or physical input transport. Passing validation does not establish that a game supports
 touch/controller, runs safely, has cleared rights, or is approved to publish.
 
 ## Validate a package
@@ -95,8 +95,8 @@ No release policy or registry is implemented in this PR.
 `TitleAdapterV1` initializes with host-owned services, pauses/resumes and disposes.
 Initialization precedes loading/playable. The game emits `playable` only when input
 can affect gameplay; page load is insufficient. Fatal/exit terminate a session;
-`roundEnd` is optional. The future host must enforce ordering and prevent duplicate
-terminal actions. Dispose must release listeners, audio, rendering and resources.
+`roundEnd` is optional. The reference host enforces ordering and rejects duplicate terminal actions; the
+production transport must preserve these checks. Dispose must release listeners, audio, rendering and resources.
 Background/overlay transitions clear held input and pause through the lifecycle API.
 
 `InputSnapshot` provides normalized logical controls after host remapping/deadzones.
@@ -104,7 +104,8 @@ Gamepad API, touch and a possible narrow native input transport are interchangea
 providers. Touch and controller gameplay are both required. Disconnect/reconnect,
 focus changes and provider changes must release stale held controls. The host needs
 bounded logical controls, numeric range/sequence validation and a conformance harness;
-the draft interfaces alone do not implement these checks. No browser API is monkey-
+the reference host checks ranges, bounded controls and sequence/time ordering;
+physical providers and focus/provider-change clearing still require integration tests. No browser API is monkey-
 patched and no native message handler is exposed by this package.
 
 `SaveService` is bound by the host to a single title and guest/player identity. The
@@ -129,8 +130,8 @@ isolation mechanism. Do not execute untrusted games in the shell origin.
 
 ## Next validation layers
 
-This PR tests declaration rejection, compatibility and local artifact integrity.
-Follow-up work must implement and test host permission denial, cross-title isolation,
-message validation, lifecycle state transitions, physical controller/touch behavior,
-actual renderer fallback, guest/cloud save authorization and publication approval.
-Those are prerequisites for launch, not capabilities claimed by this validator.
+The automated suite tests declaration rejection, compatibility, local artifact
+integrity, capability grant denial, renderer selection, lifecycle ordering, input
+validation, bounded save slots, revision conflicts and in-memory identity separation.
+See [reference conformance and integration checklist](conformance.md) for exact
+coverage and browser/device acceptance checks still required before launch.
