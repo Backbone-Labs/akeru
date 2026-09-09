@@ -60,3 +60,38 @@ test('current Freedoom credits account for every level and MIDI source without a
   // Current Phase 1 E1M1 is line 9; a previous-release credit must not replace it.
   assert.equal(map.records.find(r=>r.sourcePath==='musics/d_e1m1.mid').creditLine,9);
 });
+
+test('every candidate has a scoped audit at its source pin; shared Freedoom tree is counted once', () => {
+  const candidates=read('compliance/candidates.json');
+  const index=read('compliance/rights-audits/index.json');
+  assert.deepEqual(index.map(i=>i.titleId).sort(),candidates.map(c=>c.id).sort());
+  const results=new Map();
+  for(const row of index){
+    const a=read(`compliance/rights-audits/${row.audit}`), c=candidates.find(c=>c.id===row.titleId);
+    assert.ok(a.titleIds.includes(row.titleId));assert.equal(a.revision,c.identity.observedRevision);
+    assert.equal(a.upstreamUrl,c.identity.upstreamUrl);
+    results.set(row.audit,validateRightsAudit(a,read(`compliance/source-inventories/${a.inventory}`)));
+  }
+  assert.equal(results.size,9);
+  assert.equal([...results.values()].reduce((sum,r)=>sum+r.files,0),11061);
+  assert.equal([...results.values()].reduce((sum,r)=>sum+r.groups,0),119);
+});
+
+test('submodule pointers and scoped font declarations cannot inherit the parent code license', () => {
+  const a=read('compliance/rights-audits/hypersomnia.json'), i=read('compliance/source-inventories/hypersomnia.json');
+  const g=a.groups.find(g=>g.id==='unexpanded-submodules');g.basis='inherited-project-claim';g.declaredLicense='AGPL-3.0-only';g.evidence=['LICENSE.md'];
+  assert.throws(()=>validateRightsAudit(a,i),/submodules/);
+  const h=read('compliance/rights-audits/hextris.json');
+  h.groups.find(g=>g.id==='fontawesome-fonts').declaredLicense='GPL-3.0-or-later';
+  assert.throws(()=>validateRightsAudit(h,read('compliance/source-inventories/hextris.json')),/Referenced declaration/);
+});
+
+test('asset exclusions and external dependency gaps remain explicit', () => {
+  const a=read('compliance/rights-audits/hypersomnia.json');
+  for(const id of ['social-brand-exception','editor-icon-exception']){
+    const g=a.groups.find(g=>g.id===id);assert.equal(g.basis,'unknown');assert.equal(g.declaredLicense,null);assert.ok(g.unknowns.length);
+  }
+  const s=read('compliance/rights-audits/server-survival.json');
+  assert.ok(s.externalDependencyEvidence.runtimeExceptions.some(e=>e.includes('Three.js')));
+  assert.equal(read('compliance/rights-audits/open-golf.json').groups.find(g=>g.id==='coi-serviceworker-0.1.6').basis,'file-declaration');
+});

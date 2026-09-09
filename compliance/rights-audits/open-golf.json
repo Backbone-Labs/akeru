@@ -1,0 +1,1747 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-09",
+  "upstreamUrl": "https://github.com/mgerdes/Open-Golf",
+  "revision": "b9029f1e80c3110ae3d4fc9300854bdaeef96508",
+  "inventory": "open-golf.json",
+  "titleIds": [
+    "open-golf"
+  ],
+  "approvalStatus": "pending",
+  "scope": "Grouped source declarations and notice exceptions only. No legal clearance, generated artifact, publication grant or gameplay QA.",
+  "groups": [
+    {
+      "id": "sokol-headers",
+      "selector": {
+        "paths": [
+          "src/3rd_party/sokol/sokol_app.h",
+          "src/3rd_party/sokol/sokol_audio.h",
+          "src/3rd_party/sokol/sokol_gfx.h",
+          "src/3rd_party/sokol/sokol_glue.h",
+          "src/3rd_party/sokol/sokol_imgui.h",
+          "src/3rd_party/sokol/sokol_time.h"
+        ]
+      },
+      "fileCount": 6,
+      "basis": "file-declaration",
+      "declaredLicense": "Zlib",
+      "evidence": [
+        "src/3rd_party/sokol/sokol_app.h",
+        "src/3rd_party/sokol/sokol_audio.h",
+        "src/3rd_party/sokol/sokol_gfx.h",
+        "src/3rd_party/sokol/sokol_glue.h",
+        "src/3rd_party/sokol/sokol_imgui.h",
+        "src/3rd_party/sokol/sokol_time.h"
+      ],
+      "noticeAction": "Retain all in-file copyright, license, disclaimer and attribution text in redistributed source; include applicable distribution notices. Dual-license choices are not selected by this audit.",
+      "unknowns": []
+    },
+    {
+      "id": "dual-license-headers",
+      "selector": {
+        "paths": [
+          "src/3rd_party/mattiasgustavsson_libs/assetsys.h",
+          "src/3rd_party/mattiasgustavsson_libs/rnd.h",
+          "src/3rd_party/mattiasgustavsson_libs/strpool.h",
+          "src/3rd_party/stb/stb_image.h",
+          "src/3rd_party/stb/stb_image_write.h",
+          "src/3rd_party/stb/stb_truetype.h",
+          "src/3rd_party/stb/stb_vorbis.h"
+        ]
+      },
+      "fileCount": 7,
+      "basis": "file-declaration",
+      "declaredLicense": "MIT OR Unlicense",
+      "evidence": [
+        "src/3rd_party/mattiasgustavsson_libs/assetsys.h",
+        "src/3rd_party/mattiasgustavsson_libs/rnd.h",
+        "src/3rd_party/mattiasgustavsson_libs/strpool.h",
+        "src/3rd_party/stb/stb_image.h",
+        "src/3rd_party/stb/stb_image_write.h",
+        "src/3rd_party/stb/stb_truetype.h",
+        "src/3rd_party/stb/stb_vorbis.h"
+      ],
+      "noticeAction": "Retain all in-file copyright, license, disclaimer and attribution text in redistributed source; include applicable distribution notices. Dual-license choices are not selected by this audit.",
+      "unknowns": []
+    },
+    {
+      "id": "mit-vendor-source",
+      "selector": {
+        "paths": [
+          "src/3rd_party/fast_obj/fast_obj.h",
+          "src/3rd_party/miniz/miniz.c",
+          "src/3rd_party/parson/parson.c",
+          "src/3rd_party/parson/parson.h",
+          "src/3rd_party/xatlas/xatlas.cpp",
+          "src/3rd_party/xatlas/xatlas.h"
+        ]
+      },
+      "fileCount": 6,
+      "basis": "file-declaration",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "src/3rd_party/fast_obj/fast_obj.h",
+        "src/3rd_party/parson/parson.h",
+        "src/3rd_party/parson/parson.c",
+        "src/3rd_party/miniz/miniz.c",
+        "src/3rd_party/xatlas/xatlas.h",
+        "src/3rd_party/xatlas/xatlas.cpp"
+      ],
+      "noticeAction": "Retain all in-file copyright, license, disclaimer and attribution text in redistributed source; include applicable distribution notices. Dual-license choices are not selected by this audit.",
+      "unknowns": []
+    },
+    {
+      "id": "khronos-header",
+      "selector": {
+        "paths": [
+          "src/3rd_party/glad/khrplatform.h"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "file-declaration",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "src/3rd_party/glad/khrplatform.h"
+      ],
+      "noticeAction": "Retain all in-file copyright, license, disclaimer and attribution text in redistributed source; include applicable distribution notices. Dual-license choices are not selected by this audit.",
+      "unknowns": []
+    },
+    {
+      "id": "lightmapper-header",
+      "selector": {
+        "paths": [
+          "src/3rd_party/lightmapper/lightmapper.h"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "file-declaration",
+      "declaredLicense": "LicenseRef-Public-Domain-with-fallback",
+      "evidence": [
+        "src/3rd_party/lightmapper/lightmapper.h"
+      ],
+      "noticeAction": "Retain all in-file copyright, license, disclaimer and attribution text in redistributed source; include applicable distribution notices. Dual-license choices are not selected by this audit.",
+      "unknowns": []
+    },
+    {
+      "id": "imgui",
+      "selector": {
+        "prefix": "src/3rd_party/cimgui/imgui/",
+        "excludePaths": []
+      },
+      "fileCount": 13,
+      "basis": "subtree-declaration",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "src/3rd_party/cimgui/imgui/LICENSE.txt"
+      ],
+      "noticeAction": "Preserve this component-specific license, copyright and attribution notices; record modifications.",
+      "unknowns": [
+        "Nested imstb files retain their embedded upstream notices; no claim that every line is original ImGui."
+      ]
+    },
+    {
+      "id": "cimgui",
+      "selector": {
+        "prefix": "src/3rd_party/cimgui/",
+        "excludePaths": [
+          "src/3rd_party/cimgui/imgui/CMakeLists.txt",
+          "src/3rd_party/cimgui/imgui/LICENSE.txt",
+          "src/3rd_party/cimgui/imgui/imconfig.h",
+          "src/3rd_party/cimgui/imgui/imgui.cpp",
+          "src/3rd_party/cimgui/imgui/imgui.h",
+          "src/3rd_party/cimgui/imgui/imgui_demo.cpp",
+          "src/3rd_party/cimgui/imgui/imgui_draw.cpp",
+          "src/3rd_party/cimgui/imgui/imgui_internal.h",
+          "src/3rd_party/cimgui/imgui/imgui_tables.cpp",
+          "src/3rd_party/cimgui/imgui/imgui_widgets.cpp",
+          "src/3rd_party/cimgui/imgui/imstb_rectpack.h",
+          "src/3rd_party/cimgui/imgui/imstb_textedit.h",
+          "src/3rd_party/cimgui/imgui/imstb_truetype.h"
+        ]
+      },
+      "fileCount": 4,
+      "basis": "subtree-declaration",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "src/3rd_party/cimgui/LICENSE"
+      ],
+      "noticeAction": "Preserve this component-specific license, copyright and attribution notices; record modifications.",
+      "unknowns": []
+    },
+    {
+      "id": "glfw",
+      "selector": {
+        "prefix": "src/3rd_party/glfw/",
+        "excludePaths": []
+      },
+      "fileCount": 64,
+      "basis": "subtree-declaration",
+      "declaredLicense": "Zlib",
+      "evidence": [
+        "src/3rd_party/glfw/LICENSE.md"
+      ],
+      "noticeAction": "Preserve this component-specific license, copyright and attribution notices; record modifications.",
+      "unknowns": []
+    },
+    {
+      "id": "kenney-nature-kit",
+      "selector": {
+        "prefix": "data/models/nature_kit/",
+        "excludePaths": []
+      },
+      "fileCount": 659,
+      "basis": "subtree-declaration",
+      "declaredLicense": "CC0-1.0",
+      "evidence": [
+        "data/models/nature_kit/License.txt"
+      ],
+      "noticeAction": "Preserve this component-specific license, copyright and attribution notices; record modifications.",
+      "unknowns": [
+        "Notice explicitly identifies Nature Kit 2.1; generated .golf_data transformations are not independently reproduced."
+      ]
+    },
+    {
+      "id": "coi-serviceworker-0.1.6",
+      "selector": {
+        "paths": [
+          "build/emscripten/coi-serviceworker.min.js"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "file-declaration",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "build/emscripten/coi-serviceworker.min.js"
+      ],
+      "noticeAction": "Retain all in-file copyright, license, disclaimer and attribution text in redistributed source; include applicable distribution notices. Dual-license choices are not selected by this audit.",
+      "unknowns": []
+    },
+    {
+      "id": "native-wrapper-and-assets",
+      "selector": {
+        "paths": [
+          "build/android/OpenGolf/.gitignore",
+          "build/android/OpenGolf/.idea/.gitignore",
+          "build/android/OpenGolf/.idea/.name",
+          "build/android/OpenGolf/.idea/compiler.xml",
+          "build/android/OpenGolf/.idea/gradle.xml",
+          "build/android/OpenGolf/.idea/misc.xml",
+          "build/android/OpenGolf/.idea/vcs.xml",
+          "build/android/OpenGolf/app/.gitignore",
+          "build/android/OpenGolf/app/build.gradle",
+          "build/android/OpenGolf/app/proguard-rules.pro",
+          "build/android/OpenGolf/app/src/main/AndroidManifest.xml",
+          "build/android/OpenGolf/app/src/main/res/drawable-v24/ic_launcher_foreground.xml",
+          "build/android/OpenGolf/app/src/main/res/drawable/ic_launcher_background.xml",
+          "build/android/OpenGolf/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+          "build/android/OpenGolf/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+          "build/android/OpenGolf/app/src/main/res/mipmap-hdpi/ic_launcher.webp",
+          "build/android/OpenGolf/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp",
+          "build/android/OpenGolf/app/src/main/res/mipmap-mdpi/ic_launcher.webp",
+          "build/android/OpenGolf/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp",
+          "build/android/OpenGolf/app/src/main/res/mipmap-xhdpi/ic_launcher.webp",
+          "build/android/OpenGolf/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp",
+          "build/android/OpenGolf/app/src/main/res/mipmap-xhdpi/icon.jpg",
+          "build/android/OpenGolf/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp",
+          "build/android/OpenGolf/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp",
+          "build/android/OpenGolf/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp",
+          "build/android/OpenGolf/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp",
+          "build/android/OpenGolf/app/src/main/res/values-night/themes.xml",
+          "build/android/OpenGolf/app/src/main/res/values/colors.xml",
+          "build/android/OpenGolf/app/src/main/res/values/strings.xml",
+          "build/android/OpenGolf/app/src/main/res/values/themes.xml",
+          "build/android/OpenGolf/build.gradle",
+          "build/android/OpenGolf/gradle.properties",
+          "build/android/OpenGolf/gradle/wrapper/gradle-wrapper.jar",
+          "build/android/OpenGolf/gradle/wrapper/gradle-wrapper.properties",
+          "build/android/OpenGolf/gradlew",
+          "build/android/OpenGolf/gradlew.bat",
+          "build/android/OpenGolf/settings.gradle",
+          "build/ios/LaunchScreen.storyboard",
+          "build/ios/icon.jpg",
+          "build/ios/ios.toolchain.cmake",
+          "build/ios/plist.in"
+        ]
+      },
+      "fileCount": 41,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Native packaging includes a Gradle wrapper JAR and platform icons/templates outside the web source audit; exclude until corresponding third-party notices are inventoried."
+      ]
+    },
+    {
+      "id": "font-castle-rock",
+      "selector": {
+        "paths": [
+          "data/font/Castle-Rock.ttf",
+          "data/font/Castle-Rock.ttf.golf_data"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "No matching license/author grant is bundled for these font bytes. Do not infer permission from the family name or root MIT."
+      ]
+    },
+    {
+      "id": "font-firasans-bold",
+      "selector": {
+        "paths": [
+          "data/font/FiraSans-Bold.ttf",
+          "data/font/FiraSans-Bold.ttf.golf_data"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "No matching license/author grant is bundled for these font bytes. Do not infer permission from the family name or root MIT."
+      ]
+    },
+    {
+      "id": "font-fa-solid-900",
+      "selector": {
+        "paths": [
+          "data/font/fa-solid-900.ttf",
+          "data/font/fa-solid-900.ttf.golf_data"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "No matching license/author grant is bundled for these font bytes. Do not infer permission from the family name or root MIT."
+      ]
+    },
+    {
+      "id": "generated-font-atlases",
+      "selector": {
+        "paths": [
+          "data/textures/font_large.png",
+          "data/textures/font_medium.png",
+          "data/textures/font_small.png"
+        ]
+      },
+      "fileCount": 3,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Font atlas source-to-font/license relationship is not recorded; a PNG atlas does not erase font obligations."
+      ]
+    },
+    {
+      "id": "fontawesome-generated-header",
+      "selector": {
+        "paths": [
+          "src/3rd_party/IconsFontAwesome5/IconsFontAwesome5.h"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "src/3rd_party/IconsFontAwesome5/IconsFontAwesome5.h"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Header names IconFontCppHeaders and FontAwesome moving URLs but supplies no immutable generator/metadata license chain."
+      ]
+    },
+    {
+      "id": "miniz-header",
+      "selector": {
+        "paths": [
+          "src/3rd_party/miniz/miniz.h"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "src/3rd_party/miniz/miniz.h"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Header claims public domain and refers to a missing end-of-file unlicense statement; miniz.c independently carries MIT terms."
+      ]
+    },
+    {
+      "id": "sokol-prebuilt-tools",
+      "selector": {
+        "prefix": "tools/sokol-tools/",
+        "excludePaths": []
+      },
+      "fileCount": 8,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "tools/sokol-tools/LICENSE"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "MIT notice exists for tool project, but bundled platform executables lack an audited build/source/dependency correspondence."
+      ]
+    },
+    {
+      "id": "vendor-remainder-fast_obj",
+      "selector": {
+        "prefix": "src/3rd_party/fast_obj/",
+        "excludePaths": [
+          "src/3rd_party/fast_obj/fast_obj.h"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Remaining implementation/wrapper/build files have no independently verified scope declaration here; do not apply the game root license to upstream vendor code."
+      ]
+    },
+    {
+      "id": "vendor-remainder-glad",
+      "selector": {
+        "prefix": "src/3rd_party/glad/",
+        "excludePaths": [
+          "src/3rd_party/glad/khrplatform.h"
+        ]
+      },
+      "fileCount": 3,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Remaining implementation/wrapper/build files have no independently verified scope declaration here; do not apply the game root license to upstream vendor code."
+      ]
+    },
+    {
+      "id": "vendor-remainder-lightmapper",
+      "selector": {
+        "prefix": "src/3rd_party/lightmapper/",
+        "excludePaths": [
+          "src/3rd_party/lightmapper/lightmapper.h"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Remaining implementation/wrapper/build files have no independently verified scope declaration here; do not apply the game root license to upstream vendor code."
+      ]
+    },
+    {
+      "id": "vendor-remainder-mattiasgustavsson_libs",
+      "selector": {
+        "prefix": "src/3rd_party/mattiasgustavsson_libs/",
+        "excludePaths": [
+          "src/3rd_party/mattiasgustavsson_libs/assetsys.h",
+          "src/3rd_party/mattiasgustavsson_libs/rnd.h",
+          "src/3rd_party/mattiasgustavsson_libs/strpool.h"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Remaining implementation/wrapper/build files have no independently verified scope declaration here; do not apply the game root license to upstream vendor code."
+      ]
+    },
+    {
+      "id": "vendor-remainder-miniz",
+      "selector": {
+        "prefix": "src/3rd_party/miniz/",
+        "excludePaths": [
+          "src/3rd_party/miniz/miniz.c",
+          "src/3rd_party/miniz/miniz.h"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Remaining implementation/wrapper/build files have no independently verified scope declaration here; do not apply the game root license to upstream vendor code."
+      ]
+    },
+    {
+      "id": "vendor-remainder-parson",
+      "selector": {
+        "prefix": "src/3rd_party/parson/",
+        "excludePaths": [
+          "src/3rd_party/parson/parson.c",
+          "src/3rd_party/parson/parson.h"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Remaining implementation/wrapper/build files have no independently verified scope declaration here; do not apply the game root license to upstream vendor code."
+      ]
+    },
+    {
+      "id": "vendor-remainder-sokol",
+      "selector": {
+        "prefix": "src/3rd_party/sokol/",
+        "excludePaths": [
+          "src/3rd_party/sokol/sokol_app.h",
+          "src/3rd_party/sokol/sokol_audio.h",
+          "src/3rd_party/sokol/sokol_gfx.h",
+          "src/3rd_party/sokol/sokol_glue.h",
+          "src/3rd_party/sokol/sokol_imgui.h",
+          "src/3rd_party/sokol/sokol_time.h"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Remaining implementation/wrapper/build files have no independently verified scope declaration here; do not apply the game root license to upstream vendor code."
+      ]
+    },
+    {
+      "id": "vendor-remainder-stb",
+      "selector": {
+        "prefix": "src/3rd_party/stb/",
+        "excludePaths": [
+          "src/3rd_party/stb/stb_image.h",
+          "src/3rd_party/stb/stb_image_write.h",
+          "src/3rd_party/stb/stb_truetype.h",
+          "src/3rd_party/stb/stb_vorbis.h"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Remaining implementation/wrapper/build files have no independently verified scope declaration here; do not apply the game root license to upstream vendor code."
+      ]
+    },
+    {
+      "id": "vendor-remainder-xatlas",
+      "selector": {
+        "prefix": "src/3rd_party/xatlas/",
+        "excludePaths": [
+          "src/3rd_party/xatlas/xatlas.cpp",
+          "src/3rd_party/xatlas/xatlas.h"
+        ]
+      },
+      "fileCount": 2,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Remaining implementation/wrapper/build files have no independently verified scope declaration here; do not apply the game root license to upstream vendor code."
+      ]
+    },
+    {
+      "id": "other-game-data",
+      "selector": {
+        "prefix": "data/",
+        "excludePaths": [
+          "data/font/Castle-Rock.ttf",
+          "data/font/Castle-Rock.ttf.golf_data",
+          "data/font/FiraSans-Bold.ttf",
+          "data/font/FiraSans-Bold.ttf.golf_data",
+          "data/font/fa-solid-900.ttf",
+          "data/font/fa-solid-900.ttf.golf_data",
+          "data/models/nature_kit/License.txt",
+          "data/models/nature_kit/bed.mtl",
+          "data/models/nature_kit/bed.obj",
+          "data/models/nature_kit/bed_floor.mtl",
+          "data/models/nature_kit/bed_floor.obj",
+          "data/models/nature_kit/bridge_center_stone.mtl",
+          "data/models/nature_kit/bridge_center_stone.obj",
+          "data/models/nature_kit/bridge_center_stoneRound.mtl",
+          "data/models/nature_kit/bridge_center_stoneRound.obj",
+          "data/models/nature_kit/bridge_center_wood.mtl",
+          "data/models/nature_kit/bridge_center_wood.obj",
+          "data/models/nature_kit/bridge_center_woodRound.mtl",
+          "data/models/nature_kit/bridge_center_woodRound.obj",
+          "data/models/nature_kit/bridge_side_stone.mtl",
+          "data/models/nature_kit/bridge_side_stone.obj",
+          "data/models/nature_kit/bridge_side_stoneRound.mtl",
+          "data/models/nature_kit/bridge_side_stoneRound.obj",
+          "data/models/nature_kit/bridge_side_wood.mtl",
+          "data/models/nature_kit/bridge_side_wood.obj",
+          "data/models/nature_kit/bridge_side_woodRound.mtl",
+          "data/models/nature_kit/bridge_side_woodRound.obj",
+          "data/models/nature_kit/bridge_stone.mtl",
+          "data/models/nature_kit/bridge_stone.obj",
+          "data/models/nature_kit/bridge_stoneNarrow.mtl",
+          "data/models/nature_kit/bridge_stoneNarrow.obj",
+          "data/models/nature_kit/bridge_stoneRound.mtl",
+          "data/models/nature_kit/bridge_stoneRound.obj",
+          "data/models/nature_kit/bridge_stoneRoundNarrow.mtl",
+          "data/models/nature_kit/bridge_stoneRoundNarrow.obj",
+          "data/models/nature_kit/bridge_wood.mtl",
+          "data/models/nature_kit/bridge_wood.obj",
+          "data/models/nature_kit/bridge_woodNarrow.mtl",
+          "data/models/nature_kit/bridge_woodNarrow.obj",
+          "data/models/nature_kit/bridge_woodRound.mtl",
+          "data/models/nature_kit/bridge_woodRound.obj",
+          "data/models/nature_kit/bridge_woodRoundNarrow.mtl",
+          "data/models/nature_kit/bridge_woodRoundNarrow.obj",
+          "data/models/nature_kit/cactus_short.mtl",
+          "data/models/nature_kit/cactus_short.obj",
+          "data/models/nature_kit/cactus_tall.mtl",
+          "data/models/nature_kit/cactus_tall.obj",
+          "data/models/nature_kit/campfire_bricks.mtl",
+          "data/models/nature_kit/campfire_bricks.obj",
+          "data/models/nature_kit/campfire_logs.mtl",
+          "data/models/nature_kit/campfire_logs.obj",
+          "data/models/nature_kit/campfire_planks.mtl",
+          "data/models/nature_kit/campfire_planks.obj",
+          "data/models/nature_kit/campfire_stones.mtl",
+          "data/models/nature_kit/campfire_stones.obj",
+          "data/models/nature_kit/canoe.mtl",
+          "data/models/nature_kit/canoe.obj",
+          "data/models/nature_kit/canoe_paddle.mtl",
+          "data/models/nature_kit/canoe_paddle.obj",
+          "data/models/nature_kit/cliff_blockCave_rock.mtl",
+          "data/models/nature_kit/cliff_blockCave_rock.obj",
+          "data/models/nature_kit/cliff_blockCave_stone.mtl",
+          "data/models/nature_kit/cliff_blockCave_stone.obj",
+          "data/models/nature_kit/cliff_blockDiagonal_rock.mtl",
+          "data/models/nature_kit/cliff_blockDiagonal_rock.obj",
+          "data/models/nature_kit/cliff_blockDiagonal_stone.mtl",
+          "data/models/nature_kit/cliff_blockDiagonal_stone.obj",
+          "data/models/nature_kit/cliff_blockHalf_rock.mtl",
+          "data/models/nature_kit/cliff_blockHalf_rock.obj",
+          "data/models/nature_kit/cliff_blockHalf_stone.mtl",
+          "data/models/nature_kit/cliff_blockHalf_stone.obj",
+          "data/models/nature_kit/cliff_blockQuarter_rock.mtl",
+          "data/models/nature_kit/cliff_blockQuarter_rock.obj",
+          "data/models/nature_kit/cliff_blockQuarter_stone.mtl",
+          "data/models/nature_kit/cliff_blockQuarter_stone.obj",
+          "data/models/nature_kit/cliff_blockSlopeHalfWalls_rock.mtl",
+          "data/models/nature_kit/cliff_blockSlopeHalfWalls_rock.obj",
+          "data/models/nature_kit/cliff_blockSlopeHalfWalls_stone.mtl",
+          "data/models/nature_kit/cliff_blockSlopeHalfWalls_stone.obj",
+          "data/models/nature_kit/cliff_blockSlopeWalls_rock.mtl",
+          "data/models/nature_kit/cliff_blockSlopeWalls_rock.obj",
+          "data/models/nature_kit/cliff_blockSlopeWalls_stone.mtl",
+          "data/models/nature_kit/cliff_blockSlopeWalls_stone.obj",
+          "data/models/nature_kit/cliff_blockSlope_rock.mtl",
+          "data/models/nature_kit/cliff_blockSlope_rock.obj",
+          "data/models/nature_kit/cliff_blockSlope_stone.mtl",
+          "data/models/nature_kit/cliff_blockSlope_stone.obj",
+          "data/models/nature_kit/cliff_block_rock.mtl",
+          "data/models/nature_kit/cliff_block_rock.obj",
+          "data/models/nature_kit/cliff_block_stone.mtl",
+          "data/models/nature_kit/cliff_block_stone.obj",
+          "data/models/nature_kit/cliff_cave_rock.mtl",
+          "data/models/nature_kit/cliff_cave_rock.obj",
+          "data/models/nature_kit/cliff_cave_stone.mtl",
+          "data/models/nature_kit/cliff_cave_stone.obj",
+          "data/models/nature_kit/cliff_cornerInnerLarge_rock.mtl",
+          "data/models/nature_kit/cliff_cornerInnerLarge_rock.obj",
+          "data/models/nature_kit/cliff_cornerInnerLarge_stone.mtl",
+          "data/models/nature_kit/cliff_cornerInnerLarge_stone.obj",
+          "data/models/nature_kit/cliff_cornerInnerTop_rock.mtl",
+          "data/models/nature_kit/cliff_cornerInnerTop_rock.obj",
+          "data/models/nature_kit/cliff_cornerInnerTop_stone.mtl",
+          "data/models/nature_kit/cliff_cornerInnerTop_stone.obj",
+          "data/models/nature_kit/cliff_cornerInner_rock.mtl",
+          "data/models/nature_kit/cliff_cornerInner_rock.obj",
+          "data/models/nature_kit/cliff_cornerInner_stone.mtl",
+          "data/models/nature_kit/cliff_cornerInner_stone.obj",
+          "data/models/nature_kit/cliff_cornerLarge_rock.mtl",
+          "data/models/nature_kit/cliff_cornerLarge_rock.obj",
+          "data/models/nature_kit/cliff_cornerLarge_stone.mtl",
+          "data/models/nature_kit/cliff_cornerLarge_stone.obj",
+          "data/models/nature_kit/cliff_cornerTop_rock.mtl",
+          "data/models/nature_kit/cliff_cornerTop_rock.obj",
+          "data/models/nature_kit/cliff_cornerTop_stone.mtl",
+          "data/models/nature_kit/cliff_cornerTop_stone.obj",
+          "data/models/nature_kit/cliff_corner_rock.mtl",
+          "data/models/nature_kit/cliff_corner_rock.obj",
+          "data/models/nature_kit/cliff_corner_stone.mtl",
+          "data/models/nature_kit/cliff_corner_stone.obj",
+          "data/models/nature_kit/cliff_diagonal_rock.mtl",
+          "data/models/nature_kit/cliff_diagonal_rock.obj",
+          "data/models/nature_kit/cliff_diagonal_stone.mtl",
+          "data/models/nature_kit/cliff_diagonal_stone.obj",
+          "data/models/nature_kit/cliff_halfCornerInner_rock.mtl",
+          "data/models/nature_kit/cliff_halfCornerInner_rock.obj",
+          "data/models/nature_kit/cliff_halfCornerInner_stone.mtl",
+          "data/models/nature_kit/cliff_halfCornerInner_stone.obj",
+          "data/models/nature_kit/cliff_halfCorner_rock.mtl",
+          "data/models/nature_kit/cliff_halfCorner_rock.obj",
+          "data/models/nature_kit/cliff_halfCorner_stone.mtl",
+          "data/models/nature_kit/cliff_halfCorner_stone.obj",
+          "data/models/nature_kit/cliff_half_rock.mtl",
+          "data/models/nature_kit/cliff_half_rock.obj",
+          "data/models/nature_kit/cliff_half_stone.mtl",
+          "data/models/nature_kit/cliff_half_stone.obj",
+          "data/models/nature_kit/cliff_large_rock.mtl",
+          "data/models/nature_kit/cliff_large_rock.obj",
+          "data/models/nature_kit/cliff_large_stone.mtl",
+          "data/models/nature_kit/cliff_large_stone.obj",
+          "data/models/nature_kit/cliff_rock.mtl",
+          "data/models/nature_kit/cliff_rock.obj",
+          "data/models/nature_kit/cliff_stepsCornerInner_rock.mtl",
+          "data/models/nature_kit/cliff_stepsCornerInner_rock.obj",
+          "data/models/nature_kit/cliff_stepsCornerInner_stone.mtl",
+          "data/models/nature_kit/cliff_stepsCornerInner_stone.obj",
+          "data/models/nature_kit/cliff_stepsCorner_rock.mtl",
+          "data/models/nature_kit/cliff_stepsCorner_rock.obj",
+          "data/models/nature_kit/cliff_stepsCorner_stone.mtl",
+          "data/models/nature_kit/cliff_stepsCorner_stone.obj",
+          "data/models/nature_kit/cliff_steps_rock.mtl",
+          "data/models/nature_kit/cliff_steps_rock.obj",
+          "data/models/nature_kit/cliff_steps_stone.mtl",
+          "data/models/nature_kit/cliff_steps_stone.obj",
+          "data/models/nature_kit/cliff_stone.mtl",
+          "data/models/nature_kit/cliff_stone.obj",
+          "data/models/nature_kit/cliff_topDiagonal_rock.mtl",
+          "data/models/nature_kit/cliff_topDiagonal_rock.obj",
+          "data/models/nature_kit/cliff_topDiagonal_stone.mtl",
+          "data/models/nature_kit/cliff_topDiagonal_stone.obj",
+          "data/models/nature_kit/cliff_top_rock.mtl",
+          "data/models/nature_kit/cliff_top_rock.obj",
+          "data/models/nature_kit/cliff_top_stone.mtl",
+          "data/models/nature_kit/cliff_top_stone.obj",
+          "data/models/nature_kit/cliff_waterfallTop_rock.mtl",
+          "data/models/nature_kit/cliff_waterfallTop_rock.obj",
+          "data/models/nature_kit/cliff_waterfallTop_stone.mtl",
+          "data/models/nature_kit/cliff_waterfallTop_stone.obj",
+          "data/models/nature_kit/cliff_waterfall_rock.mtl",
+          "data/models/nature_kit/cliff_waterfall_rock.obj",
+          "data/models/nature_kit/cliff_waterfall_stone.mtl",
+          "data/models/nature_kit/cliff_waterfall_stone.obj",
+          "data/models/nature_kit/crop_carrot.mtl",
+          "data/models/nature_kit/crop_carrot.obj",
+          "data/models/nature_kit/crop_melon.mtl",
+          "data/models/nature_kit/crop_melon.obj",
+          "data/models/nature_kit/crop_pumpkin.mtl",
+          "data/models/nature_kit/crop_pumpkin.obj",
+          "data/models/nature_kit/crop_turnip.mtl",
+          "data/models/nature_kit/crop_turnip.obj",
+          "data/models/nature_kit/crops_bambooStageA.mtl",
+          "data/models/nature_kit/crops_bambooStageA.obj",
+          "data/models/nature_kit/crops_bambooStageB.mtl",
+          "data/models/nature_kit/crops_bambooStageB.obj",
+          "data/models/nature_kit/crops_cornStageA.mtl",
+          "data/models/nature_kit/crops_cornStageA.obj",
+          "data/models/nature_kit/crops_cornStageB.mtl",
+          "data/models/nature_kit/crops_cornStageB.obj",
+          "data/models/nature_kit/crops_cornStageC.mtl",
+          "data/models/nature_kit/crops_cornStageC.obj",
+          "data/models/nature_kit/crops_cornStageD.mtl",
+          "data/models/nature_kit/crops_cornStageD.obj",
+          "data/models/nature_kit/crops_dirtDoubleRow.mtl",
+          "data/models/nature_kit/crops_dirtDoubleRow.obj",
+          "data/models/nature_kit/crops_dirtDoubleRowCorner.mtl",
+          "data/models/nature_kit/crops_dirtDoubleRowCorner.obj",
+          "data/models/nature_kit/crops_dirtDoubleRowEnd.mtl",
+          "data/models/nature_kit/crops_dirtDoubleRowEnd.obj",
+          "data/models/nature_kit/crops_dirtRow.mtl",
+          "data/models/nature_kit/crops_dirtRow.obj",
+          "data/models/nature_kit/crops_dirtRowCorner.mtl",
+          "data/models/nature_kit/crops_dirtRowCorner.obj",
+          "data/models/nature_kit/crops_dirtRowEnd.mtl",
+          "data/models/nature_kit/crops_dirtRowEnd.obj",
+          "data/models/nature_kit/crops_dirtSingle.mtl",
+          "data/models/nature_kit/crops_dirtSingle.obj",
+          "data/models/nature_kit/crops_leafsStageA.mtl",
+          "data/models/nature_kit/crops_leafsStageA.obj",
+          "data/models/nature_kit/crops_leafsStageB.mtl",
+          "data/models/nature_kit/crops_leafsStageB.obj",
+          "data/models/nature_kit/crops_wheatStageA.mtl",
+          "data/models/nature_kit/crops_wheatStageA.obj",
+          "data/models/nature_kit/crops_wheatStageB.mtl",
+          "data/models/nature_kit/crops_wheatStageB.obj",
+          "data/models/nature_kit/fence_bend.mtl",
+          "data/models/nature_kit/fence_bend.obj",
+          "data/models/nature_kit/fence_bendCenter.mtl",
+          "data/models/nature_kit/fence_bendCenter.obj",
+          "data/models/nature_kit/fence_corner.mtl",
+          "data/models/nature_kit/fence_corner.obj",
+          "data/models/nature_kit/fence_gate.mtl",
+          "data/models/nature_kit/fence_gate.obj",
+          "data/models/nature_kit/fence_planks.mtl",
+          "data/models/nature_kit/fence_planks.obj",
+          "data/models/nature_kit/fence_planksDouble.mtl",
+          "data/models/nature_kit/fence_planksDouble.obj",
+          "data/models/nature_kit/fence_simple.mtl",
+          "data/models/nature_kit/fence_simple.obj",
+          "data/models/nature_kit/fence_simpleCenter.mtl",
+          "data/models/nature_kit/fence_simpleCenter.obj",
+          "data/models/nature_kit/fence_simpleDiagonal.mtl",
+          "data/models/nature_kit/fence_simpleDiagonal.obj",
+          "data/models/nature_kit/fence_simpleDiagonalCenter.mtl",
+          "data/models/nature_kit/fence_simpleDiagonalCenter.obj",
+          "data/models/nature_kit/fence_simpleHigh.mtl",
+          "data/models/nature_kit/fence_simpleHigh.obj",
+          "data/models/nature_kit/fence_simpleLow.mtl",
+          "data/models/nature_kit/fence_simpleLow.obj",
+          "data/models/nature_kit/flower_purpleA.mtl",
+          "data/models/nature_kit/flower_purpleA.obj",
+          "data/models/nature_kit/flower_purpleB.mtl",
+          "data/models/nature_kit/flower_purpleB.obj",
+          "data/models/nature_kit/flower_purpleC.mtl",
+          "data/models/nature_kit/flower_purpleC.obj",
+          "data/models/nature_kit/flower_redA.mtl",
+          "data/models/nature_kit/flower_redA.obj",
+          "data/models/nature_kit/flower_redB.mtl",
+          "data/models/nature_kit/flower_redB.obj",
+          "data/models/nature_kit/flower_redC.mtl",
+          "data/models/nature_kit/flower_redC.obj",
+          "data/models/nature_kit/flower_yellowA.mtl",
+          "data/models/nature_kit/flower_yellowA.obj",
+          "data/models/nature_kit/flower_yellowB.mtl",
+          "data/models/nature_kit/flower_yellowB.obj",
+          "data/models/nature_kit/flower_yellowC.mtl",
+          "data/models/nature_kit/flower_yellowC.obj",
+          "data/models/nature_kit/grass.mtl",
+          "data/models/nature_kit/grass.obj",
+          "data/models/nature_kit/grass_large.mtl",
+          "data/models/nature_kit/grass_large.obj",
+          "data/models/nature_kit/grass_leafs.mtl",
+          "data/models/nature_kit/grass_leafs.obj",
+          "data/models/nature_kit/grass_leafsLarge.mtl",
+          "data/models/nature_kit/grass_leafsLarge.obj",
+          "data/models/nature_kit/ground_grass.mtl",
+          "data/models/nature_kit/ground_grass.obj",
+          "data/models/nature_kit/ground_pathBend.mtl",
+          "data/models/nature_kit/ground_pathBend.obj",
+          "data/models/nature_kit/ground_pathBendBank.mtl",
+          "data/models/nature_kit/ground_pathBendBank.obj",
+          "data/models/nature_kit/ground_pathCorner.mtl",
+          "data/models/nature_kit/ground_pathCorner.obj",
+          "data/models/nature_kit/ground_pathCornerSmall.mtl",
+          "data/models/nature_kit/ground_pathCornerSmall.obj",
+          "data/models/nature_kit/ground_pathCross.mtl",
+          "data/models/nature_kit/ground_pathCross.obj",
+          "data/models/nature_kit/ground_pathEnd.mtl",
+          "data/models/nature_kit/ground_pathEnd.obj",
+          "data/models/nature_kit/ground_pathEndClosed.mtl",
+          "data/models/nature_kit/ground_pathEndClosed.obj",
+          "data/models/nature_kit/ground_pathOpen.mtl",
+          "data/models/nature_kit/ground_pathOpen.obj",
+          "data/models/nature_kit/ground_pathRocks.mtl",
+          "data/models/nature_kit/ground_pathRocks.obj",
+          "data/models/nature_kit/ground_pathSide.mtl",
+          "data/models/nature_kit/ground_pathSide.obj",
+          "data/models/nature_kit/ground_pathSideOpen.mtl",
+          "data/models/nature_kit/ground_pathSideOpen.obj",
+          "data/models/nature_kit/ground_pathSplit.mtl",
+          "data/models/nature_kit/ground_pathSplit.obj",
+          "data/models/nature_kit/ground_pathStraight.mtl",
+          "data/models/nature_kit/ground_pathStraight.obj",
+          "data/models/nature_kit/ground_pathTile.mtl",
+          "data/models/nature_kit/ground_pathTile.obj",
+          "data/models/nature_kit/ground_riverBend.mtl",
+          "data/models/nature_kit/ground_riverBend.obj",
+          "data/models/nature_kit/ground_riverBendBank.mtl",
+          "data/models/nature_kit/ground_riverBendBank.obj",
+          "data/models/nature_kit/ground_riverCorner.mtl",
+          "data/models/nature_kit/ground_riverCorner.obj",
+          "data/models/nature_kit/ground_riverCornerSmall.mtl",
+          "data/models/nature_kit/ground_riverCornerSmall.obj",
+          "data/models/nature_kit/ground_riverCross.mtl",
+          "data/models/nature_kit/ground_riverCross.obj",
+          "data/models/nature_kit/ground_riverEnd.mtl",
+          "data/models/nature_kit/ground_riverEnd.obj",
+          "data/models/nature_kit/ground_riverEndClosed.mtl",
+          "data/models/nature_kit/ground_riverEndClosed.obj",
+          "data/models/nature_kit/ground_riverOpen.mtl",
+          "data/models/nature_kit/ground_riverOpen.obj",
+          "data/models/nature_kit/ground_riverRocks.mtl",
+          "data/models/nature_kit/ground_riverRocks.obj",
+          "data/models/nature_kit/ground_riverSide.mtl",
+          "data/models/nature_kit/ground_riverSide.obj",
+          "data/models/nature_kit/ground_riverSideOpen.mtl",
+          "data/models/nature_kit/ground_riverSideOpen.obj",
+          "data/models/nature_kit/ground_riverSplit.mtl",
+          "data/models/nature_kit/ground_riverSplit.obj",
+          "data/models/nature_kit/ground_riverStraight.mtl",
+          "data/models/nature_kit/ground_riverStraight.obj",
+          "data/models/nature_kit/ground_riverTile.mtl",
+          "data/models/nature_kit/ground_riverTile.obj",
+          "data/models/nature_kit/hanging_moss.mtl",
+          "data/models/nature_kit/hanging_moss.obj",
+          "data/models/nature_kit/lily_large.mtl",
+          "data/models/nature_kit/lily_large.obj",
+          "data/models/nature_kit/lily_small.mtl",
+          "data/models/nature_kit/lily_small.obj",
+          "data/models/nature_kit/log.mtl",
+          "data/models/nature_kit/log.obj",
+          "data/models/nature_kit/log_large.mtl",
+          "data/models/nature_kit/log_large.obj",
+          "data/models/nature_kit/log_stack.mtl",
+          "data/models/nature_kit/log_stack.obj",
+          "data/models/nature_kit/log_stackLarge.mtl",
+          "data/models/nature_kit/log_stackLarge.obj",
+          "data/models/nature_kit/mushroom_red.mtl",
+          "data/models/nature_kit/mushroom_red.obj",
+          "data/models/nature_kit/mushroom_redGroup.mtl",
+          "data/models/nature_kit/mushroom_redGroup.obj",
+          "data/models/nature_kit/mushroom_redTall.mtl",
+          "data/models/nature_kit/mushroom_redTall.obj",
+          "data/models/nature_kit/mushroom_tan.mtl",
+          "data/models/nature_kit/mushroom_tan.obj",
+          "data/models/nature_kit/mushroom_tanGroup.mtl",
+          "data/models/nature_kit/mushroom_tanGroup.obj",
+          "data/models/nature_kit/mushroom_tanTall.mtl",
+          "data/models/nature_kit/mushroom_tanTall.obj",
+          "data/models/nature_kit/path_stone.mtl",
+          "data/models/nature_kit/path_stone.obj",
+          "data/models/nature_kit/path_stoneCircle.mtl",
+          "data/models/nature_kit/path_stoneCircle.obj",
+          "data/models/nature_kit/path_stoneCorner.mtl",
+          "data/models/nature_kit/path_stoneCorner.obj",
+          "data/models/nature_kit/path_stoneEnd.mtl",
+          "data/models/nature_kit/path_stoneEnd.obj",
+          "data/models/nature_kit/path_wood.mtl",
+          "data/models/nature_kit/path_wood.obj",
+          "data/models/nature_kit/path_woodCorner.mtl",
+          "data/models/nature_kit/path_woodCorner.obj",
+          "data/models/nature_kit/path_woodEnd.mtl",
+          "data/models/nature_kit/path_woodEnd.obj",
+          "data/models/nature_kit/plant_bush.mtl",
+          "data/models/nature_kit/plant_bush.obj",
+          "data/models/nature_kit/plant_bushDetailed.mtl",
+          "data/models/nature_kit/plant_bushDetailed.obj",
+          "data/models/nature_kit/plant_bushLarge.mtl",
+          "data/models/nature_kit/plant_bushLarge.obj",
+          "data/models/nature_kit/plant_bushLargeTriangle.mtl",
+          "data/models/nature_kit/plant_bushLargeTriangle.obj",
+          "data/models/nature_kit/plant_bushSmall.mtl",
+          "data/models/nature_kit/plant_bushSmall.obj",
+          "data/models/nature_kit/plant_bushTriangle.mtl",
+          "data/models/nature_kit/plant_bushTriangle.obj",
+          "data/models/nature_kit/plant_flatShort.mtl",
+          "data/models/nature_kit/plant_flatShort.obj",
+          "data/models/nature_kit/plant_flatTall.mtl",
+          "data/models/nature_kit/plant_flatTall.obj",
+          "data/models/nature_kit/platform_beach.mtl",
+          "data/models/nature_kit/platform_beach.obj",
+          "data/models/nature_kit/platform_grass.mtl",
+          "data/models/nature_kit/platform_grass.obj",
+          "data/models/nature_kit/platform_stone.mtl",
+          "data/models/nature_kit/platform_stone.obj",
+          "data/models/nature_kit/pot_large.mtl",
+          "data/models/nature_kit/pot_large.obj",
+          "data/models/nature_kit/pot_small.mtl",
+          "data/models/nature_kit/pot_small.obj",
+          "data/models/nature_kit/rock_largeA.mtl",
+          "data/models/nature_kit/rock_largeA.obj",
+          "data/models/nature_kit/rock_largeB.mtl",
+          "data/models/nature_kit/rock_largeB.obj",
+          "data/models/nature_kit/rock_largeC.mtl",
+          "data/models/nature_kit/rock_largeC.obj",
+          "data/models/nature_kit/rock_largeD.mtl",
+          "data/models/nature_kit/rock_largeD.obj",
+          "data/models/nature_kit/rock_largeE.mtl",
+          "data/models/nature_kit/rock_largeE.obj",
+          "data/models/nature_kit/rock_largeF.mtl",
+          "data/models/nature_kit/rock_largeF.obj",
+          "data/models/nature_kit/rock_smallA.mtl",
+          "data/models/nature_kit/rock_smallA.obj",
+          "data/models/nature_kit/rock_smallB.mtl",
+          "data/models/nature_kit/rock_smallB.obj",
+          "data/models/nature_kit/rock_smallC.mtl",
+          "data/models/nature_kit/rock_smallC.obj",
+          "data/models/nature_kit/rock_smallD.mtl",
+          "data/models/nature_kit/rock_smallD.obj",
+          "data/models/nature_kit/rock_smallE.mtl",
+          "data/models/nature_kit/rock_smallE.obj",
+          "data/models/nature_kit/rock_smallF.mtl",
+          "data/models/nature_kit/rock_smallF.obj",
+          "data/models/nature_kit/rock_smallFlatA.mtl",
+          "data/models/nature_kit/rock_smallFlatA.obj",
+          "data/models/nature_kit/rock_smallFlatB.mtl",
+          "data/models/nature_kit/rock_smallFlatB.obj",
+          "data/models/nature_kit/rock_smallFlatC.mtl",
+          "data/models/nature_kit/rock_smallFlatC.obj",
+          "data/models/nature_kit/rock_smallG.mtl",
+          "data/models/nature_kit/rock_smallG.obj",
+          "data/models/nature_kit/rock_smallH.mtl",
+          "data/models/nature_kit/rock_smallH.obj",
+          "data/models/nature_kit/rock_smallI.mtl",
+          "data/models/nature_kit/rock_smallI.obj",
+          "data/models/nature_kit/rock_smallTopA.mtl",
+          "data/models/nature_kit/rock_smallTopA.obj",
+          "data/models/nature_kit/rock_smallTopB.mtl",
+          "data/models/nature_kit/rock_smallTopB.obj",
+          "data/models/nature_kit/rock_tallA.mtl",
+          "data/models/nature_kit/rock_tallA.obj",
+          "data/models/nature_kit/rock_tallB.mtl",
+          "data/models/nature_kit/rock_tallB.obj",
+          "data/models/nature_kit/rock_tallC.mtl",
+          "data/models/nature_kit/rock_tallC.obj",
+          "data/models/nature_kit/rock_tallD.mtl",
+          "data/models/nature_kit/rock_tallD.obj",
+          "data/models/nature_kit/rock_tallE.mtl",
+          "data/models/nature_kit/rock_tallE.obj",
+          "data/models/nature_kit/rock_tallF.mtl",
+          "data/models/nature_kit/rock_tallF.obj",
+          "data/models/nature_kit/rock_tallG.mtl",
+          "data/models/nature_kit/rock_tallG.obj",
+          "data/models/nature_kit/rock_tallH.mtl",
+          "data/models/nature_kit/rock_tallH.obj",
+          "data/models/nature_kit/rock_tallI.mtl",
+          "data/models/nature_kit/rock_tallI.obj",
+          "data/models/nature_kit/rock_tallJ.mtl",
+          "data/models/nature_kit/rock_tallJ.obj",
+          "data/models/nature_kit/sign.mtl",
+          "data/models/nature_kit/sign.obj",
+          "data/models/nature_kit/statue_block.mtl",
+          "data/models/nature_kit/statue_block.obj",
+          "data/models/nature_kit/statue_column.mtl",
+          "data/models/nature_kit/statue_column.obj",
+          "data/models/nature_kit/statue_columnDamaged.mtl",
+          "data/models/nature_kit/statue_columnDamaged.obj",
+          "data/models/nature_kit/statue_head.mtl",
+          "data/models/nature_kit/statue_head.obj",
+          "data/models/nature_kit/statue_obelisk.mtl",
+          "data/models/nature_kit/statue_obelisk.obj",
+          "data/models/nature_kit/statue_ring.mtl",
+          "data/models/nature_kit/statue_ring.obj",
+          "data/models/nature_kit/stone_largeA.mtl",
+          "data/models/nature_kit/stone_largeA.obj",
+          "data/models/nature_kit/stone_largeB.mtl",
+          "data/models/nature_kit/stone_largeB.obj",
+          "data/models/nature_kit/stone_largeC.mtl",
+          "data/models/nature_kit/stone_largeC.obj",
+          "data/models/nature_kit/stone_largeD.mtl",
+          "data/models/nature_kit/stone_largeD.obj",
+          "data/models/nature_kit/stone_largeE.mtl",
+          "data/models/nature_kit/stone_largeE.obj",
+          "data/models/nature_kit/stone_largeF.mtl",
+          "data/models/nature_kit/stone_largeF.obj",
+          "data/models/nature_kit/stone_smallA.mtl",
+          "data/models/nature_kit/stone_smallA.obj",
+          "data/models/nature_kit/stone_smallB.mtl",
+          "data/models/nature_kit/stone_smallB.obj",
+          "data/models/nature_kit/stone_smallC.mtl",
+          "data/models/nature_kit/stone_smallC.obj",
+          "data/models/nature_kit/stone_smallD.mtl",
+          "data/models/nature_kit/stone_smallD.obj",
+          "data/models/nature_kit/stone_smallE.mtl",
+          "data/models/nature_kit/stone_smallE.obj",
+          "data/models/nature_kit/stone_smallF.mtl",
+          "data/models/nature_kit/stone_smallF.obj",
+          "data/models/nature_kit/stone_smallFlatA.mtl",
+          "data/models/nature_kit/stone_smallFlatA.obj",
+          "data/models/nature_kit/stone_smallFlatB.mtl",
+          "data/models/nature_kit/stone_smallFlatB.obj",
+          "data/models/nature_kit/stone_smallFlatC.mtl",
+          "data/models/nature_kit/stone_smallFlatC.obj",
+          "data/models/nature_kit/stone_smallG.mtl",
+          "data/models/nature_kit/stone_smallG.obj",
+          "data/models/nature_kit/stone_smallH.mtl",
+          "data/models/nature_kit/stone_smallH.obj",
+          "data/models/nature_kit/stone_smallI.mtl",
+          "data/models/nature_kit/stone_smallI.obj",
+          "data/models/nature_kit/stone_smallTopA.mtl",
+          "data/models/nature_kit/stone_smallTopA.obj",
+          "data/models/nature_kit/stone_smallTopB.mtl",
+          "data/models/nature_kit/stone_smallTopB.obj",
+          "data/models/nature_kit/stone_tallA.mtl",
+          "data/models/nature_kit/stone_tallA.obj",
+          "data/models/nature_kit/stone_tallB.mtl",
+          "data/models/nature_kit/stone_tallB.obj",
+          "data/models/nature_kit/stone_tallC.mtl",
+          "data/models/nature_kit/stone_tallC.obj",
+          "data/models/nature_kit/stone_tallD.mtl",
+          "data/models/nature_kit/stone_tallD.obj",
+          "data/models/nature_kit/stone_tallE.mtl",
+          "data/models/nature_kit/stone_tallE.obj",
+          "data/models/nature_kit/stone_tallF.mtl",
+          "data/models/nature_kit/stone_tallF.obj",
+          "data/models/nature_kit/stone_tallG.mtl",
+          "data/models/nature_kit/stone_tallG.obj",
+          "data/models/nature_kit/stone_tallH.mtl",
+          "data/models/nature_kit/stone_tallH.obj",
+          "data/models/nature_kit/stone_tallI.mtl",
+          "data/models/nature_kit/stone_tallI.obj",
+          "data/models/nature_kit/stone_tallJ.mtl",
+          "data/models/nature_kit/stone_tallJ.obj",
+          "data/models/nature_kit/stump_old.mtl",
+          "data/models/nature_kit/stump_old.obj",
+          "data/models/nature_kit/stump_oldTall.mtl",
+          "data/models/nature_kit/stump_oldTall.obj",
+          "data/models/nature_kit/stump_round.mtl",
+          "data/models/nature_kit/stump_round.obj",
+          "data/models/nature_kit/stump_roundDetailed.mtl",
+          "data/models/nature_kit/stump_roundDetailed.obj",
+          "data/models/nature_kit/stump_square.mtl",
+          "data/models/nature_kit/stump_square.obj",
+          "data/models/nature_kit/stump_squareDetailed.mtl",
+          "data/models/nature_kit/stump_squareDetailed.obj",
+          "data/models/nature_kit/stump_squareDetailedWide.mtl",
+          "data/models/nature_kit/stump_squareDetailedWide.obj",
+          "data/models/nature_kit/tent_detailedClosed.mtl",
+          "data/models/nature_kit/tent_detailedClosed.obj",
+          "data/models/nature_kit/tent_detailedOpen.mtl",
+          "data/models/nature_kit/tent_detailedOpen.obj",
+          "data/models/nature_kit/tent_smallClosed.mtl",
+          "data/models/nature_kit/tent_smallClosed.obj",
+          "data/models/nature_kit/tent_smallOpen.mtl",
+          "data/models/nature_kit/tent_smallOpen.obj",
+          "data/models/nature_kit/tree_blocks.mtl",
+          "data/models/nature_kit/tree_blocks.obj",
+          "data/models/nature_kit/tree_blocks_dark.mtl",
+          "data/models/nature_kit/tree_blocks_dark.obj",
+          "data/models/nature_kit/tree_blocks_fall.mtl",
+          "data/models/nature_kit/tree_blocks_fall.obj",
+          "data/models/nature_kit/tree_cone.mtl",
+          "data/models/nature_kit/tree_cone.obj",
+          "data/models/nature_kit/tree_cone_dark.mtl",
+          "data/models/nature_kit/tree_cone_dark.obj",
+          "data/models/nature_kit/tree_cone_fall.mtl",
+          "data/models/nature_kit/tree_cone_fall.obj",
+          "data/models/nature_kit/tree_default.mtl",
+          "data/models/nature_kit/tree_default.obj",
+          "data/models/nature_kit/tree_default_dark.mtl",
+          "data/models/nature_kit/tree_default_dark.obj",
+          "data/models/nature_kit/tree_default_fall.mtl",
+          "data/models/nature_kit/tree_default_fall.obj",
+          "data/models/nature_kit/tree_detailed.mtl",
+          "data/models/nature_kit/tree_detailed.obj",
+          "data/models/nature_kit/tree_detailed_dark.mtl",
+          "data/models/nature_kit/tree_detailed_dark.obj",
+          "data/models/nature_kit/tree_detailed_fall.mtl",
+          "data/models/nature_kit/tree_detailed_fall.obj",
+          "data/models/nature_kit/tree_fat.mtl",
+          "data/models/nature_kit/tree_fat.obj",
+          "data/models/nature_kit/tree_fat_darkh.mtl",
+          "data/models/nature_kit/tree_fat_darkh.obj",
+          "data/models/nature_kit/tree_fat_fall.mtl",
+          "data/models/nature_kit/tree_fat_fall.obj",
+          "data/models/nature_kit/tree_oak.mtl",
+          "data/models/nature_kit/tree_oak.obj",
+          "data/models/nature_kit/tree_oak_dark.mtl",
+          "data/models/nature_kit/tree_oak_dark.obj",
+          "data/models/nature_kit/tree_oak_fall.mtl",
+          "data/models/nature_kit/tree_oak_fall.obj",
+          "data/models/nature_kit/tree_palm.mtl",
+          "data/models/nature_kit/tree_palm.obj",
+          "data/models/nature_kit/tree_palmBend.mtl",
+          "data/models/nature_kit/tree_palmBend.obj",
+          "data/models/nature_kit/tree_palmDetailedShort.mtl",
+          "data/models/nature_kit/tree_palmDetailedShort.obj",
+          "data/models/nature_kit/tree_palmDetailedTall.mtl",
+          "data/models/nature_kit/tree_palmDetailedTall.obj",
+          "data/models/nature_kit/tree_palmShort.mtl",
+          "data/models/nature_kit/tree_palmShort.obj",
+          "data/models/nature_kit/tree_palmTall.mtl",
+          "data/models/nature_kit/tree_palmTall.obj",
+          "data/models/nature_kit/tree_pineDefaultA.mtl",
+          "data/models/nature_kit/tree_pineDefaultA.obj",
+          "data/models/nature_kit/tree_pineDefaultB.mtl",
+          "data/models/nature_kit/tree_pineDefaultB.obj",
+          "data/models/nature_kit/tree_pineGroundA.mtl",
+          "data/models/nature_kit/tree_pineGroundA.obj",
+          "data/models/nature_kit/tree_pineGroundB.mtl",
+          "data/models/nature_kit/tree_pineGroundB.obj",
+          "data/models/nature_kit/tree_pineRoundA.mtl",
+          "data/models/nature_kit/tree_pineRoundA.obj",
+          "data/models/nature_kit/tree_pineRoundB.mtl",
+          "data/models/nature_kit/tree_pineRoundB.obj",
+          "data/models/nature_kit/tree_pineRoundC.mtl",
+          "data/models/nature_kit/tree_pineRoundC.obj",
+          "data/models/nature_kit/tree_pineRoundD.mtl",
+          "data/models/nature_kit/tree_pineRoundD.obj",
+          "data/models/nature_kit/tree_pineRoundE.mtl",
+          "data/models/nature_kit/tree_pineRoundE.obj",
+          "data/models/nature_kit/tree_pineRoundF.mtl",
+          "data/models/nature_kit/tree_pineRoundF.obj",
+          "data/models/nature_kit/tree_pineSmallA.mtl",
+          "data/models/nature_kit/tree_pineSmallA.obj",
+          "data/models/nature_kit/tree_pineSmallB.mtl",
+          "data/models/nature_kit/tree_pineSmallB.obj",
+          "data/models/nature_kit/tree_pineSmallC.mtl",
+          "data/models/nature_kit/tree_pineSmallC.obj",
+          "data/models/nature_kit/tree_pineSmallD.mtl",
+          "data/models/nature_kit/tree_pineSmallD.obj",
+          "data/models/nature_kit/tree_pineTallA.mtl",
+          "data/models/nature_kit/tree_pineTallA.obj",
+          "data/models/nature_kit/tree_pineTallA_detailed.mtl",
+          "data/models/nature_kit/tree_pineTallA_detailed.obj",
+          "data/models/nature_kit/tree_pineTallB.mtl",
+          "data/models/nature_kit/tree_pineTallB.obj",
+          "data/models/nature_kit/tree_pineTallB_detailed.mtl",
+          "data/models/nature_kit/tree_pineTallB_detailed.obj",
+          "data/models/nature_kit/tree_pineTallC.mtl",
+          "data/models/nature_kit/tree_pineTallC.obj",
+          "data/models/nature_kit/tree_pineTallC_detailed.mtl",
+          "data/models/nature_kit/tree_pineTallC_detailed.obj",
+          "data/models/nature_kit/tree_pineTallD.mtl",
+          "data/models/nature_kit/tree_pineTallD.obj",
+          "data/models/nature_kit/tree_pineTallD_detailed.mtl",
+          "data/models/nature_kit/tree_pineTallD_detailed.obj",
+          "data/models/nature_kit/tree_plateau.mtl",
+          "data/models/nature_kit/tree_plateau.obj",
+          "data/models/nature_kit/tree_plateau_dark.mtl",
+          "data/models/nature_kit/tree_plateau_dark.obj",
+          "data/models/nature_kit/tree_plateau_fall.mtl",
+          "data/models/nature_kit/tree_plateau_fall.obj",
+          "data/models/nature_kit/tree_simple.mtl",
+          "data/models/nature_kit/tree_simple.obj",
+          "data/models/nature_kit/tree_simple_dark.mtl",
+          "data/models/nature_kit/tree_simple_dark.obj",
+          "data/models/nature_kit/tree_simple_fall.mtl",
+          "data/models/nature_kit/tree_simple_fall.obj",
+          "data/models/nature_kit/tree_small.mtl",
+          "data/models/nature_kit/tree_small.obj",
+          "data/models/nature_kit/tree_small_dark.mtl",
+          "data/models/nature_kit/tree_small_dark.obj",
+          "data/models/nature_kit/tree_small_fall.mtl",
+          "data/models/nature_kit/tree_small_fall.obj",
+          "data/models/nature_kit/tree_tall.mtl",
+          "data/models/nature_kit/tree_tall.obj",
+          "data/models/nature_kit/tree_tall_dark.mtl",
+          "data/models/nature_kit/tree_tall_dark.obj",
+          "data/models/nature_kit/tree_tall_fall.mtl",
+          "data/models/nature_kit/tree_tall_fall.obj",
+          "data/models/nature_kit/tree_thin.mtl",
+          "data/models/nature_kit/tree_thin.obj",
+          "data/models/nature_kit/tree_thin_dark.mtl",
+          "data/models/nature_kit/tree_thin_dark.obj",
+          "data/models/nature_kit/tree_thin_fall.mtl",
+          "data/models/nature_kit/tree_thin_fall.obj",
+          "data/textures/font_large.png",
+          "data/textures/font_medium.png",
+          "data/textures/font_small.png"
+        ]
+      },
+      "fileCount": 149,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "LICENSE"
+      ],
+      "noticeAction": "Preserve root MIT with selected game-authored data; map actual selected outputs to source.",
+      "unknowns": [
+        "Outside the identified Kenney/font groups, art/audio/model author and conversion evidence is inherited rather than independently verified."
+      ]
+    },
+    {
+      "id": "project-remainder",
+      "selector": {
+        "paths": [
+          ".gitignore",
+          "CMakeLists.txt",
+          "LICENSE",
+          "README.md",
+          "build/build-emscripten.sh",
+          "build/build-ios.sh",
+          "build/build-linux.sh",
+          "build/build-osx.sh",
+          "build/build-win64.bat",
+          "build/emscripten/Emscripten.cmake",
+          "build/emscripten/shell.html",
+          "src/common/CMakeLists.txt",
+          "src/common/alloc.c",
+          "src/common/alloc.h",
+          "src/common/audio.c",
+          "src/common/audio.h",
+          "src/common/base64.c",
+          "src/common/base64.h",
+          "src/common/bvh.c",
+          "src/common/bvh.h",
+          "src/common/common.h",
+          "src/common/data.c",
+          "src/common/data.h",
+          "src/common/debug_console.c",
+          "src/common/debug_console.h",
+          "src/common/file.c",
+          "src/common/file.h",
+          "src/common/graphics.c",
+          "src/common/graphics.h",
+          "src/common/inputs.c",
+          "src/common/inputs.h",
+          "src/common/json.c",
+          "src/common/json.h",
+          "src/common/level.c",
+          "src/common/level.h",
+          "src/common/log.c",
+          "src/common/log.h",
+          "src/common/map.c",
+          "src/common/map.h",
+          "src/common/maths.c",
+          "src/common/maths.h",
+          "src/common/script.c",
+          "src/common/script.h",
+          "src/common/storage.c",
+          "src/common/storage.h",
+          "src/common/string.c",
+          "src/common/string.h",
+          "src/common/thread.c",
+          "src/common/thread.h",
+          "src/common/vec.c",
+          "src/common/vec.h",
+          "src/editor/CMakeLists.txt",
+          "src/editor/draw.c",
+          "src/editor/draw.h",
+          "src/editor/editor.c",
+          "src/editor/editor.h",
+          "src/editor/gi.c",
+          "src/editor/gi.h",
+          "src/editor/gizmo.c",
+          "src/editor/gizmo.h",
+          "src/editor/main.c",
+          "src/golf/CMakeLists.txt",
+          "src/golf/draw.c",
+          "src/golf/draw.h",
+          "src/golf/game.c",
+          "src/golf/game.h",
+          "src/golf/golf.c",
+          "src/golf/golf.h",
+          "src/golf/main.c",
+          "src/golf/ui.c",
+          "src/golf/ui.h",
+          "tools/cembed/cembed.c",
+          "tools/cembed/linux/cembed",
+          "tools/cembed/osx/cembed",
+          "tools/cembed/win64/cembed.exe",
+          "tools/glslcc/linux/glslcc",
+          "tools/glslcc/win64/glslcc.exe"
+        ]
+      },
+      "fileCount": 77,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Preserve upstream project license, copyright and disclaimer; for copyleft code retain corresponding source and review distribution/network obligations.",
+      "unknowns": [
+        "Repository declaration only. This group is not a verification of individual authorship, third-party imports, selected output or publication approval."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "LICENSE",
+      "gitObjectId": "acf055a76c5ea8f659ef124f18581f17a64f3846",
+      "sha256": "cf642a101ddd949c1a2eaf294958af173467847f3a69a92fe5ead0f9722603bf",
+      "bytes": 1071,
+      "lineCount": 21,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/LICENSE",
+      "declaration": {
+        "license": "MIT",
+        "scope": "repository"
+      }
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "2b42ff0f90ae850cb4c16de49d415da0dc7e0a89",
+      "sha256": "3ee611b0f6ac35396a72d76bcf76c575de891887ecf3c57729a35749149d45ea",
+      "bytes": 2444,
+      "lineCount": 53,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/README.md"
+    },
+    {
+      "path": "src/3rd_party/sokol/sokol_app.h",
+      "gitObjectId": "305804da28904c306889d39b078a3f39ed0cde26",
+      "sha256": "b530c420f801470b7f653c7e78b491c44944684c6e6090920079db267e43c026",
+      "bytes": 444836,
+      "lineCount": 11133,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/sokol/sokol_app.h",
+      "declaration": {
+        "license": "Zlib",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/sokol/sokol_audio.h",
+      "gitObjectId": "71b74b717aa2ec7e768813a41057d1a95bf250a1",
+      "sha256": "cd231dce55ca7365e9320da28c358cd760e1d66e687718e2d629ba30f02041dc",
+      "bytes": 84427,
+      "lineCount": 2147,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/sokol/sokol_audio.h",
+      "declaration": {
+        "license": "Zlib",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/sokol/sokol_gfx.h",
+      "gitObjectId": "3b38ed068f7827caa76f8e20cdd2be2290d048ce",
+      "sha256": "f39fde4336e5c19d9f1e168a7ace0107cfdc06e367cb93899d29858adae38b9c",
+      "bytes": 675441,
+      "lineCount": 15675,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/sokol/sokol_gfx.h",
+      "declaration": {
+        "license": "Zlib",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/sokol/sokol_glue.h",
+      "gitObjectId": "320311fa77b84e4c247a642d6bd4310ce4a1238c",
+      "sha256": "900bb66c2f1518b524a45bbc818b4e499ab636ba62c39520030c41d9d57fc8ac",
+      "bytes": 4895,
+      "lineCount": 137,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/sokol/sokol_glue.h",
+      "declaration": {
+        "license": "Zlib",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/sokol/sokol_imgui.h",
+      "gitObjectId": "00d878173159b782ad7f0ec81e69a756cc990aef",
+      "sha256": "e3a20ce687564645afe0a61e85e716bb188a87fe1ced5b0c5d2d0c138155f10c",
+      "bytes": 138084,
+      "lineCount": 2168,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/sokol/sokol_imgui.h",
+      "declaration": {
+        "license": "Zlib",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/sokol/sokol_time.h",
+      "gitObjectId": "1a0e3537f8e8f809b589594d527d6b5848f78e10",
+      "sha256": "2738a39eca9e98397f87b843330b2ffc86e7ee5e74565109538d6e4d13337c8e",
+      "bytes": 11384,
+      "lineCount": 324,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/sokol/sokol_time.h",
+      "declaration": {
+        "license": "Zlib",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/mattiasgustavsson_libs/assetsys.h",
+      "gitObjectId": "0979b1eea78ee9118a11c5b3588bd4058272d5c5",
+      "sha256": "e4a4e6d04ca2431a1a84613055b5aeb23a989b090f9b8e7e73829667ccd2b0bf",
+      "bytes": 283763,
+      "lineCount": 6394,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/mattiasgustavsson_libs/assetsys.h",
+      "declaration": {
+        "license": "MIT OR Unlicense",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/mattiasgustavsson_libs/rnd.h",
+      "gitObjectId": "b617813b2f83052dc398cc5ac501df276beea80c",
+      "sha256": "f12efb2e6a6d64ea8be6bb1b33bfa19b678d2d578f144c48b91533c651a30c5e",
+      "bytes": 18658,
+      "lineCount": 574,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/mattiasgustavsson_libs/rnd.h",
+      "declaration": {
+        "license": "MIT OR Unlicense",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/mattiasgustavsson_libs/strpool.h",
+      "gitObjectId": "e30761de679015c72126d72c232366ad1050ea52",
+      "sha256": "7f163293fc5e986c814bf710ba6e727b6dae8929fe07ad452e3d19cda424fe22",
+      "bytes": 51814,
+      "lineCount": 1307,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/mattiasgustavsson_libs/strpool.h",
+      "declaration": {
+        "license": "MIT OR Unlicense",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/stb/stb_image.h",
+      "gitObjectId": "363ce427e3fb4a6700358a8f32ae183e97aa90f9",
+      "sha256": "5ccee96a88994f6f597481b69f2ebff06f60909f334b7131317d6e84d4c964b0",
+      "bytes": 271170,
+      "lineCount": 7559,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/stb/stb_image.h",
+      "declaration": {
+        "license": "MIT OR Unlicense",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/stb/stb_image_write.h",
+      "gitObjectId": "d6463f5490435a9e1c59c343f951f627e2655a0b",
+      "sha256": "6f0296b5c8a440d33f19fe7051918e1a9f07320c7c403d6a68958d4d6455bf93",
+      "bytes": 68020,
+      "lineCount": 1619,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/stb/stb_image_write.h",
+      "declaration": {
+        "license": "MIT OR Unlicense",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/stb/stb_truetype.h",
+      "gitObjectId": "3603f34e90406030e9cd2b9006004e9fd0fc0496",
+      "sha256": "557be1b3cdaf2505cab7dd9407d7f1857416af1d13961906a90024446fbf1bf2",
+      "bytes": 204240,
+      "lineCount": 5078,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/stb/stb_truetype.h",
+      "declaration": {
+        "license": "MIT OR Unlicense",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/stb/stb_vorbis.h",
+      "gitObjectId": "cb6d29bf1f7389d305896f85603eb522d297ce46",
+      "sha256": "5208c32348ed7c642f27c20f614988885440ea028242fabcfde1f018547ee5c9",
+      "bytes": 197403,
+      "lineCount": 5563,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/stb/stb_vorbis.h",
+      "declaration": {
+        "license": "MIT OR Unlicense",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/fast_obj/fast_obj.h",
+      "gitObjectId": "935e17816f03997750db4e4eed73f04714772336",
+      "sha256": "72484ad424b2acef2df7ced71aea2127fdb5f080df215abecd104cf00f76da5c",
+      "bytes": 31246,
+      "lineCount": 1434,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/fast_obj/fast_obj.h",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/parson/parson.h",
+      "gitObjectId": "b501364bf7f01390c292d3be7c0695d8442d6660",
+      "sha256": "edb374001aceed773f0ea16f2b755a63793d719d3dcaf607f2c2f988d778be08",
+      "bytes": 13659,
+      "lineCount": 256,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/parson/parson.h",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/parson/parson.c",
+      "gitObjectId": "bb7262f84397719126a9841b4bde797cb058ccab",
+      "sha256": "dbfe2b3b315b23c130cb7105e8382e0ea11f9eba641f5ad77eb3cdd0d73fbdde",
+      "bytes": 85050,
+      "lineCount": 2451,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/parson/parson.c",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/miniz/miniz.c",
+      "gitObjectId": "f1fd285ef7fdf4bc743ef3006555f7c263285261",
+      "sha256": "4c90ac5f9bfa8f20439007935902734137a110e1ead96ab68e60ce59731edae8",
+      "bytes": 323944,
+      "lineCount": 7657,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/miniz/miniz.c",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/xatlas/xatlas.h",
+      "gitObjectId": "10699ad26a8097c692bd768358a1b3c753efc7b0",
+      "sha256": "fce862a2964b11e9eb494d0f99fe852e93c39a474ddf169d7e32ff5091d30163",
+      "bytes": 9802,
+      "lineCount": 262,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/xatlas/xatlas.h",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/xatlas/xatlas.cpp",
+      "gitObjectId": "f9e492c2b941a39c47dffee419940a9493955bfa",
+      "sha256": "520b51f9ea7c7e20366c9374f887e0fab602810ab722ab75e548e9ac8a066403",
+      "bytes": 323574,
+      "lineCount": 9557,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/xatlas/xatlas.cpp",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/glad/khrplatform.h",
+      "gitObjectId": "11209702f4af6461a74eabc5419cd92004e78857",
+      "sha256": "03e9b2fb1a06a67dfcedb8b67da62cbd508c4cd2c4c913dbe3c4b5813213105a",
+      "bytes": 10569,
+      "lineCount": 290,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/glad/khrplatform.h",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/lightmapper/lightmapper.h",
+      "gitObjectId": "1a567c38e40c870f775c5ba88a210e507251d9c0",
+      "sha256": "b1bb0f1f3689b35a75340af434c639d72b0301e98350182877d496c5dc375718",
+      "bytes": 69830,
+      "lineCount": 1764,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/lightmapper/lightmapper.h",
+      "declaration": {
+        "license": "LicenseRef-Public-Domain-with-fallback",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/cimgui/imgui/LICENSE.txt",
+      "gitObjectId": "780533dcb26115e96e7fc8a51a832534ac3270e2",
+      "sha256": "fbb51424cf27ca216445d4b472c6aac187ebd8200f7ef41bd845a7d36d54e2c4",
+      "bytes": 1083,
+      "lineCount": 21,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/cimgui/imgui/LICENSE.txt",
+      "declaration": {
+        "license": "MIT",
+        "scope": "subtree",
+        "scopePrefix": "src/3rd_party/cimgui/imgui/"
+      }
+    },
+    {
+      "path": "src/3rd_party/cimgui/LICENSE",
+      "gitObjectId": "2e7afa89f12fe35e0fd376e91ea014b2c4bd7eb9",
+      "sha256": "cf6a4390b1ae5b4dfbc79a4ab33c58852db4f17b3f5c6d9300f278050223884d",
+      "bytes": 1081,
+      "lineCount": 22,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/cimgui/LICENSE",
+      "declaration": {
+        "license": "MIT",
+        "scope": "subtree",
+        "scopePrefix": "src/3rd_party/cimgui/"
+      }
+    },
+    {
+      "path": "src/3rd_party/glfw/LICENSE.md",
+      "gitObjectId": "7494a3f689caf46e268f7ac0b28a07f5416f8c65",
+      "sha256": "149704059b5d0bf551637e50042dd4de9c2cae921021f6636298911e3a5f9462",
+      "bytes": 904,
+      "lineCount": 23,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/glfw/LICENSE.md",
+      "declaration": {
+        "license": "Zlib",
+        "scope": "subtree",
+        "scopePrefix": "src/3rd_party/glfw/"
+      }
+    },
+    {
+      "path": "data/models/nature_kit/License.txt",
+      "gitObjectId": "f4c0bb6a1f398882e6a0b4417f69e5fc84ba53bc",
+      "sha256": "cb96b75e3560ac78d7a53ce6f083f4cdb5c53faea6141b62d63458dcfe1e4b9d",
+      "bytes": 611,
+      "lineCount": 24,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/data/models/nature_kit/License.txt",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "subtree",
+        "scopePrefix": "data/models/nature_kit/"
+      }
+    },
+    {
+      "path": "build/emscripten/coi-serviceworker.min.js",
+      "gitObjectId": "d0dc6e482bce2ae9428e25b78d06d8ba24786023",
+      "sha256": "ae439d7985db394ed4cd9bb03fbfe9847a41a5d2e26595e4c20963a4646577e9",
+      "bytes": 1803,
+      "lineCount": 2,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/build/emscripten/coi-serviceworker.min.js",
+      "declaration": {
+        "license": "MIT",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "src/3rd_party/IconsFontAwesome5/IconsFontAwesome5.h",
+      "gitObjectId": "67cddab501a82f059772f542f51e5aea3cab4640",
+      "sha256": "fc119fa24e9d4f5bd290e63c419c21f8aed79edf54c8ef79a53dd08626eecf83",
+      "bytes": 52335,
+      "lineCount": 1012,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/IconsFontAwesome5/IconsFontAwesome5.h"
+    },
+    {
+      "path": "src/3rd_party/miniz/miniz.h",
+      "gitObjectId": "610c708c9521b6faadc6451f35f4ded9c93d6ec1",
+      "sha256": "12577b6d246e3cc62022e028a14351f366f5d3dce2849c4b4df0b461bb95860f",
+      "bytes": 68928,
+      "lineCount": 1338,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/miniz/miniz.h"
+    },
+    {
+      "path": "tools/sokol-tools/LICENSE",
+      "gitObjectId": "396f6406e381bea56a892b98771f2a8c299e285e",
+      "sha256": "d7bb344eb6e070a617d3b37b3bda6f4b3a08634dd0a413eca1a1b1d247859ee2",
+      "bytes": 1072,
+      "lineCount": 21,
+      "url": "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/tools/sokol-tools/LICENSE"
+    }
+  ]
+}

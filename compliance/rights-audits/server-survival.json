@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-09",
+  "upstreamUrl": "https://github.com/pshenok/server-survival",
+  "revision": "01796362d3b7bfa6c85efab5e2685f4d955dc137",
+  "inventory": "server-survival.json",
+  "titleIds": [
+    "server-survival"
+  ],
+  "approvalStatus": "pending",
+  "scope": "Grouped source declarations and notice exceptions only. No legal clearance, generated artifact, publication grant or gameplay QA.",
+  "groups": [
+    {
+      "id": "sound-assets",
+      "selector": {
+        "prefix": "assets/sounds/",
+        "excludePaths": []
+      },
+      "fileCount": 5,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Five audio files have no asset-specific license/credit record in the pinned tree."
+      ]
+    },
+    {
+      "id": "local-metadata",
+      "selector": {
+        "paths": [
+          "assets/.DS_Store"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "LICENSE"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "Finder metadata is not intended game content and has no source-rights value; exclude it."
+      ]
+    },
+    {
+      "id": "promotional-animation",
+      "selector": {
+        "paths": [
+          "assets/gameplay.gif"
+        ]
+      },
+      "fileCount": 1,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "LICENSE"
+      ],
+      "noticeAction": "Preserve root attribution if selected.",
+      "unknowns": [
+        "No independent image/animation asset chain verified."
+      ]
+    },
+    {
+      "id": "project-remainder",
+      "selector": {
+        "paths": [
+          ".github/FUNDING.yml",
+          ".github/ISSUE_TEMPLATE/bug_report.md",
+          ".github/ISSUE_TEMPLATE/feature_request.md",
+          ".github/workflows/ci.yml",
+          ".gitignore",
+          ".nojekyll",
+          "CONTRIBUTING.md",
+          "LICENSE",
+          "README.md",
+          "docs/GAME_BALANCE_ANALYSIS.md",
+          "docs/superpowers/plans/2026-05-24-campaign-mode.md",
+          "docs/superpowers/specs/2026-05-24-campaign-mode-design.md",
+          "docs/superpowers/specs/2026-07-24-toolbar-categories-design.md",
+          "docs/superpowers/specs/2026-07-30-ai-wave-design.md",
+          "docs/superpowers/specs/2026-08-03-achievements-design.md",
+          "docs/superpowers/specs/2026-08-05-failure-knee-design.md",
+          "eslint.config.mjs",
+          "game.js",
+          "index.html",
+          "package-lock.json",
+          "package.json",
+          "src/achievements/achievements.js",
+          "src/achievements/definitions.js",
+          "src/achievements/ui.js",
+          "src/campaign/campaign.js",
+          "src/campaign/diagram.js",
+          "src/campaign/levels.js",
+          "src/campaign/objectives.js",
+          "src/config.js",
+          "src/core/actions.js",
+          "src/core/economy.js",
+          "src/core/events.js",
+          "src/core/failure-reasons.js",
+          "src/core/hints.js",
+          "src/core/metrics.js",
+          "src/entities/Request.js",
+          "src/entities/Service.js",
+          "src/i18n.js",
+          "src/input/handlers.js",
+          "src/locales/de.js",
+          "src/locales/en.js",
+          "src/locales/fr.js",
+          "src/locales/hi.js",
+          "src/locales/it.js",
+          "src/locales/ko.js",
+          "src/locales/nep.js",
+          "src/locales/pt-BR.js",
+          "src/locales/ru.js",
+          "src/locales/uk.js",
+          "src/locales/zh.js",
+          "src/main.js",
+          "src/persistence/save-load.js",
+          "src/services/SoundService.js",
+          "src/sim/autoscaling.js",
+          "src/sim/circuit-breaker.js",
+          "src/sim/dlq.js",
+          "src/sim/gpu.js",
+          "src/sim/handlers/apigw.js",
+          "src/sim/handlers/cache.js",
+          "src/sim/handlers/cdn.js",
+          "src/sim/handlers/compute.js",
+          "src/sim/handlers/db.js",
+          "src/sim/handlers/dns.js",
+          "src/sim/handlers/index.js",
+          "src/sim/handlers/nosql.js",
+          "src/sim/handlers/notify.js",
+          "src/sim/handlers/pubsub.js",
+          "src/sim/handlers/replica.js",
+          "src/sim/handlers/s3.js",
+          "src/sim/handlers/search.js",
+          "src/sim/handlers/serverless.js",
+          "src/sim/handlers/sqs.js",
+          "src/sim/handlers/warehouse.js",
+          "src/sim/infgw.js",
+          "src/sim/power.js",
+          "src/sim/retry.js",
+          "src/sim/scheduler.js",
+          "src/sim/stream.js",
+          "src/sim/topology.js",
+          "src/state.js",
+          "src/tutorial.js",
+          "src/ui/campaign-ui.js",
+          "src/ui/failure-badges.js",
+          "src/ui/metrics-panel.js",
+          "src/ui/share.js",
+          "src/ui/toolbar.js",
+          "style.css",
+          "tests/achievements-defs.test.mjs",
+          "tests/briefing-numbers.test.mjs",
+          "tests/config.test.mjs",
+          "tests/helpers/campaign-play.mjs",
+          "tests/helpers/load-globals.mjs",
+          "tests/helpers/reference-board.mjs",
+          "tests/helpers/sim-setup.mjs",
+          "tests/helpers/sim-world.mjs",
+          "tests/helpers/three-stub.mjs",
+          "tests/i18n-usage.test.mjs",
+          "tests/levels.test.mjs",
+          "tests/locales.test.mjs",
+          "tests/manual-prices.test.mjs",
+          "tests/objectives.test.mjs",
+          "tests/readme-claims.test.mjs",
+          "tests/sim/achievements-proofs.test.mjs",
+          "tests/sim/achievements.test.mjs",
+          "tests/sim/ai-wave.test.mjs",
+          "tests/sim/archetypes.test.mjs",
+          "tests/sim/archetypes2.test.mjs",
+          "tests/sim/autoscaling.test.mjs",
+          "tests/sim/beatability.test.mjs",
+          "tests/sim/breaker-recovery.test.mjs",
+          "tests/sim/camera-framing.test.mjs",
+          "tests/sim/campaign-lifetime.test.mjs",
+          "tests/sim/campaign-stars.test.mjs",
+          "tests/sim/campaign-tutorial.test.mjs",
+          "tests/sim/campaign.test.mjs",
+          "tests/sim/chapter5.test.mjs",
+          "tests/sim/cost-spike-bites.test.mjs",
+          "tests/sim/criticality-shedding.test.mjs",
+          "tests/sim/economy.test.mjs",
+          "tests/sim/failure-badges.test.mjs",
+          "tests/sim/failures-are-evidence.test.mjs",
+          "tests/sim/goodput-hud.test.mjs",
+          "tests/sim/goodput.test.mjs",
+          "tests/sim/handlers.test.mjs",
+          "tests/sim/level-11-layers.test.mjs",
+          "tests/sim/lifecycle.test.mjs",
+          "tests/sim/locales-uk.test.mjs",
+          "tests/sim/metrics.test.mjs",
+          "tests/sim/money-on-screen.test.mjs",
+          "tests/sim/multi-region.test.mjs",
+          "tests/sim/objective-says-what-it-checks.test.mjs",
+          "tests/sim/pan-symmetry.test.mjs",
+          "tests/sim/panels-add-up.test.mjs",
+          "tests/sim/placement.test.mjs",
+          "tests/sim/pointer-release.test.mjs",
+          "tests/sim/ramp-interpolation.test.mjs",
+          "tests/sim/reference-baseline.test.mjs",
+          "tests/sim/reset-leaks.test.mjs",
+          "tests/sim/resilience.test.mjs",
+          "tests/sim/retry-rebuilds-the-grid.test.mjs",
+          "tests/sim/rings-and-alert.test.mjs",
+          "tests/sim/run-report.test.mjs",
+          "tests/sim/save-load-boundaries.test.mjs",
+          "tests/sim/save-load.test.mjs",
+          "tests/sim/share.test.mjs",
+          "tests/sim/shed-traffic.test.mjs",
+          "tests/sim/smoothed-load.test.mjs",
+          "tests/sim/timing-and-tiers.test.mjs",
+          "tests/sim/toolbar.test.mjs",
+          "tests/sim/topology.test.mjs",
+          "tests/sim/touch-input.test.mjs",
+          "tests/sim/tutorial-lifetime.test.mjs",
+          "tests/sim/tutorial-spotlight.test.mjs",
+          "tests/sim/upkeep-display.test.mjs",
+          "vitest.config.mjs"
+        ]
+      },
+      "fileCount": 155,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "LICENSE",
+        "README.md"
+      ],
+      "noticeAction": "Preserve upstream project license, copyright and disclaimer; for copyleft code retain corresponding source and review distribution/network obligations.",
+      "unknowns": [
+        "Repository declaration only. This group is not a verification of individual authorship, third-party imports, selected output or publication approval."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "LICENSE",
+      "gitObjectId": "f383c51c58ed7cc0de4e3c69c3a362f6b906fab1",
+      "sha256": "e86ab27fe716ee76a1f270a5494b65edaf8add18ed1c311ef578289c379b9198",
+      "bytes": 1079,
+      "lineCount": 21,
+      "url": "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/LICENSE",
+      "declaration": {
+        "license": "MIT",
+        "scope": "repository"
+      }
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "7e9f67afba341b9d237597add0abb45be9b5018d",
+      "sha256": "70ab0bf6641b45f10012d04d30e28c75673b3a63ccc7caba941d09c52425e397",
+      "bytes": 18281,
+      "lineCount": 235,
+      "url": "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/README.md"
+    },
+    {
+      "path": "index.html",
+      "gitObjectId": "fdd1c92681ec935804e8162a1b6e3351d44232de",
+      "sha256": "ab3f116ac7b7a717e1ea1ff1aa1bb5dd17abb83d7e9f08ea98fc22dc95807c82",
+      "bytes": 107715,
+      "lineCount": 1743,
+      "url": "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/index.html"
+    },
+    {
+      "path": "package.json",
+      "gitObjectId": "1af23873916a4741df1e31b3162211be6202936c",
+      "sha256": "87dc646ed4f5555c19e49c3dd0e8835d1602217d4745713015b4107c93aa1e78",
+      "bytes": 589,
+      "lineCount": 19,
+      "url": "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/package.json"
+    },
+    {
+      "path": "package-lock.json",
+      "gitObjectId": "9270f143c0a7fdf62d882e3af174edb6e8217e14",
+      "sha256": "b4378e1ca933214ff63de26e0b5dee6669506ca167acdc62859ceb60968b4ab2",
+      "bytes": 77265,
+      "lineCount": 2279,
+      "url": "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/package-lock.json"
+    }
+  ],
+  "externalDependencyEvidence": {
+    "manifest": "package.json",
+    "lockfile": "package-lock.json",
+    "scope": "Declared ranges below identify dependencies to audit, not a selected distribution or license grant. Lockfile bytes are pinned by evidence; transitive package notices not reviewed.",
+    "dependencies": {},
+    "devDependencies": {
+      "@eslint/js": "^10.0.1",
+      "eslint": "^10.7.0",
+      "globals": "^17.7.0",
+      "happy-dom": "^20.11.1",
+      "vitest": "^4.1.10"
+    },
+    "runtimeExceptions": [
+      "index.html loads Tailwind CDN and Three.js r128 from cdnjs; package-lock.json does not capture these runtime bytes or notices."
+    ]
+  }
+}

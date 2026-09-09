@@ -32,6 +32,7 @@ export function validateRightsAudit(audit, inventory) {
     if (paths.length !== group.fileCount || !group.noticeAction?.trim()) fail('Group count or notice action missing');
     for (const path of paths) {
       if (!files.has(path) || assigned.has(path)) fail('Unknown or multiply assigned source path');
+      if (files.get(path).kind === 'submodule' && group.basis !== 'unknown') fail('Unexpanded submodules have unknown rights');
       const declaration = evidence.get(path)?.declaration;
       if (declaration?.scope === 'file' && !['file-declaration', 'conflicting-declarations'].includes(group.basis)) fail('File declarations cannot be downgraded to inherited claims');
       assigned.add(path);
@@ -45,7 +46,9 @@ export function validateRightsAudit(audit, inventory) {
     } else if (group.basis === 'inherited-project-claim') {
       if (!group.unknowns.length || !refs.some(e => e.declaration?.scope === 'repository' && e.declaration.license === group.declaredLicense)) fail('Inherited claims must retain their limitation and root evidence');
     } else if (group.basis === 'subtree-declaration') {
-      if (!refs.some(e => e.declaration?.scope === 'subtree' && e.declaration.license === group.declaredLicense && paths.every(p => p.startsWith(e.path.slice(0, e.path.lastIndexOf('/') + 1))))) fail('Subtree declaration scope mismatch');
+      if (!refs.some(e => e.declaration?.scope === 'subtree' && e.declaration.license === group.declaredLicense && paths.every(p => p.startsWith(e.declaration.scopePrefix ?? e.path.slice(0, e.path.lastIndexOf('/') + 1))))) fail('Subtree declaration scope mismatch');
+    } else if (group.basis === 'referenced-declaration') {
+      if (!group.unknowns.length || !refs.some(e => e.referencedDeclarations?.some(d => d.license === group.declaredLicense && paths.every(p => p.startsWith(d.scopePrefix))))) fail('Referenced declaration scope mismatch');
     } else if (['unknown', 'conflicting-declarations'].includes(group.basis)) {
       if (group.declaredLicense !== null || !group.unknowns.length) fail('Unknown rights cannot be silently resolved');
     } else fail('Unknown evidence basis');
@@ -67,7 +70,8 @@ export function verifyAuditSources(audit, sourceDirectory) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const [name, checkout] = process.argv.slice(2);
-  if (!['anarch', 'freedm'].includes(name)) fail('Usage: node scripts/validate-rights-audit.mjs anarch|freedm [PINNED_SOURCE_DIRECTORY]');
+  const names = JSON.parse(readFileSync('compliance/rights-audits/index.json')).map(e => e.audit.replace(/\.json$/, ''));
+  if (!names.includes(name)) fail('Usage: node scripts/validate-rights-audit.mjs AUDIT_NAME [PINNED_SOURCE_DIRECTORY]');
   const audit = JSON.parse(readFileSync(`compliance/rights-audits/${name}.json`));
   const inventory = JSON.parse(readFileSync(`compliance/source-inventories/${audit.inventory}`));
   const result = validateRightsAudit(audit, inventory);

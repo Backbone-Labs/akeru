@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-09",
+  "upstreamUrl": "https://github.com/gabrielecirulli/2048",
+  "revision": "478b6ec346e3787f589e4af751378d06ded4cbbc",
+  "inventory": "2048.json",
+  "titleIds": [
+    "2048"
+  ],
+  "approvalStatus": "pending",
+  "scope": "Grouped source declarations and notice exceptions only. No legal clearance, generated artifact, publication grant or gameplay QA.",
+  "groups": [
+    {
+      "id": "clear-sans-fonts",
+      "selector": {
+        "prefix": "style/fonts/",
+        "excludePaths": []
+      },
+      "fileCount": 10,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "style/fonts/clear-sans.css",
+        "LICENSE.txt"
+      ],
+      "noticeAction": "Do not distribute this group until its identified notice/provenance gap is resolved or the group is excluded.",
+      "unknowns": [
+        "CSS names Clear Sans faces but contains no font license; obtain exact release/notice and match bundled EOT/SVG/WOFF before distribution."
+      ]
+    },
+    {
+      "id": "polyfills",
+      "selector": {
+        "paths": [
+          "js/animframe_polyfill.js",
+          "js/bind_polyfill.js",
+          "js/classlist_polyfill.js"
+        ]
+      },
+      "fileCount": 3,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "LICENSE.txt",
+        "js/animframe_polyfill.js",
+        "js/bind_polyfill.js",
+        "js/classlist_polyfill.js"
+      ],
+      "noticeAction": "Retain root MIT and establish any imported helper attribution before modification.",
+      "unknowns": [
+        "These three inspected files have no independent origin/license headers."
+      ]
+    },
+    {
+      "id": "icons-and-launch-images",
+      "selector": {
+        "paths": [
+          "favicon.ico",
+          "meta/apple-touch-icon.png",
+          "meta/apple-touch-startup-image-640x1096.png",
+          "meta/apple-touch-startup-image-640x920.png"
+        ]
+      },
+      "fileCount": 4,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "LICENSE.txt"
+      ],
+      "noticeAction": "Retain root attribution if selected.",
+      "unknowns": [
+        "No image-specific authorship chain verified."
+      ]
+    },
+    {
+      "id": "project-remainder",
+      "selector": {
+        "paths": [
+          ".gitignore",
+          ".jshintrc",
+          "CONTRIBUTING.md",
+          "LICENSE.txt",
+          "README.md",
+          "Rakefile",
+          "index.html",
+          "js/application.js",
+          "js/game_manager.js",
+          "js/grid.js",
+          "js/html_actuator.js",
+          "js/keyboard_input_manager.js",
+          "js/local_storage_manager.js",
+          "js/tile.js",
+          "style/helpers.scss",
+          "style/main.css",
+          "style/main.scss"
+        ]
+      },
+      "fileCount": 17,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "MIT",
+      "evidence": [
+        "LICENSE.txt",
+        "README.md"
+      ],
+      "noticeAction": "Preserve upstream project license, copyright and disclaimer; for copyleft code retain corresponding source and review distribution/network obligations.",
+      "unknowns": [
+        "Repository declaration only. This group is not a verification of individual authorship, third-party imports, selected output or publication approval."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "LICENSE.txt",
+      "gitObjectId": "b0dbfa4d7526587bcc21a4883222b20805d5c065",
+      "sha256": "57e12c39a6ad9d98b2e451065bfdfbd15fc9e0c2ed3bf4dc1d09acab41ff02fc",
+      "bytes": 1083,
+      "lineCount": 21,
+      "url": "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/LICENSE.txt",
+      "declaration": {
+        "license": "MIT",
+        "scope": "repository"
+      }
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "c947a03d4c63822e2ae79fd26de00fc4565e1292",
+      "sha256": "3b624490f45eb6315b00bcaac65cefa713678401c42971b0e65cad8d8ff0ccfc",
+      "bytes": 2350,
+      "lineCount": 38,
+      "url": "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/README.md"
+    },
+    {
+      "path": "style/fonts/clear-sans.css",
+      "gitObjectId": "de2811db8b5ef12fe4f243fab6c4809363562c29",
+      "sha256": "ada5fc5f508d57bf4f8d32ac354f1ebfc25b75c991948aa920f9d25defea5307",
+      "bytes": 1078,
+      "lineCount": 30,
+      "url": "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/style/fonts/clear-sans.css"
+    },
+    {
+      "path": "js/animframe_polyfill.js",
+      "gitObjectId": "c524a994a92103b6b5dc51af82ca8041884b6eea",
+      "sha256": "b97db8f8973c6c883d415e376f15ba657971e5704c8ecfd62e62a9adfec2792e",
+      "bytes": 890,
+      "lineCount": 28,
+      "url": "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/js/animframe_polyfill.js"
+    },
+    {
+      "path": "js/bind_polyfill.js",
+      "gitObjectId": "8d9c4a4886dd1b0b9ae857ab0cf947c697b125b5",
+      "sha256": "90e671a58a24122ffac4fc28b9a967a3769398c906c348568bf731118d7fdf52",
+      "bytes": 220,
+      "lineCount": 9,
+      "url": "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/js/bind_polyfill.js"
+    },
+    {
+      "path": "js/classlist_polyfill.js",
+      "gitObjectId": "1789ae788939fa86560a96f376400b7069f4d093",
+      "sha256": "6abb09a37567fb3735e95d7096d30a01190a8eee016c781d51ae6b8b037261cd",
+      "bytes": 1794,
+      "lineCount": 71,
+      "url": "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/js/classlist_polyfill.js"
+    }
+  ]
+}

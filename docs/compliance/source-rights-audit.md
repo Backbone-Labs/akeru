@@ -98,9 +98,9 @@ notice classification, scoped claims versus direct headers, mixed-license
 exceptions, current music/map credit joins, and a concrete engine-source
 recommendation. It does **not** complete all title clearance: upstream rights
 unknowns above and the selected engine's dependency/resource audit remain source
-work. Open Golf, IsoCity, Server Survival, Whatajong, Hextris, optional 2048 and
-later Hypersomnia retain their earlier inventories; this audit adds no new
-file-group review for them.
+work. The [remaining-candidate audit](other-candidate-rights.md) extends scoped
+file-group review to Open Golf, IsoCity, Server Survival, Whatajong, Hextris,
+optional 2048 and later Hypersomnia; all candidate source trees are now covered.
 
 Later title ports must produce selected-mod/patch inventories, exact dependency
 and toolchain pins, reproducible source-linked artifacts, generated WAD/asset
