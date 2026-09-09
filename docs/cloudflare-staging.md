@@ -86,13 +86,17 @@ implementation/configuration; the tests supply an in-memory provider.
 Every new HTML launch checks registry state, even when the caller bypasses `/`
 and requests a retained entry URL directly. Pause returns 410; stale releases
 return 409; missing, malformed or failed registry responses return 503. Responses
-are `no-store`. Root requests redirect only to the retained current entry on the
+for HTML/state/errors are `no-store`; verified non-HTML artifacts at digest-based
+URLs use a one-year immutable cache policy. Root requests redirect only to the retained current entry on the
 same origin. Static assets from retained versions remain available for existing
 sessions during normal pause/rollback. Do not prune versions active sessions may
 still need. This is launch control, not DRM for publicly downloadable source.
 
 Unknown paths, query strings, write methods and cross-origin requests are rejected.
-Every served artifact is hash checked. Additional HTML files are also gated;
+Every served artifact is hash checked. MIME types are bounded to HTML, script,
+CSS, JSON, WASM, inert binary/text, raster images, selected audio and WOFF fonts.
+Active SVG/XML documents are excluded until their launch/asset policy is defined.
+Additional HTML files are also gated;
 only the configured primary HTML entry is selected by the root launch redirect.
 Tests drive the existing operator pause/rollback function through this consumer:
 new launches change or stop, direct stale entry URLs fail, and old session assets

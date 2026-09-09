@@ -8,13 +8,14 @@ export function createTitleGateway({ titleId, titleOrigin, shellOrigin, versions
   const ancestors = headers?.['Content-Security-Policy']?.split(';').map(s => s.trim()).find(s => s.startsWith('frame-ancestors '));
   if (ancestors !== `frame-ancestors ${shellOrigin}`) throw new Error('Title CSP must bind the expected shell');
   if (!Array.isArray(versions) || !versions.length) throw new Error('No retained releases');
+  const allowedTypes = new Set(['text/html', 'text/html; charset=utf-8', 'text/javascript', 'application/javascript', 'text/css', 'application/json', 'application/wasm', 'application/octet-stream', 'text/plain', 'image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif', 'audio/ogg', 'audio/wav', 'audio/mpeg', 'font/woff', 'font/woff2']);
   const retained = new Map(), entries = new Map(), files = [];
   for (const version of versions) {
     if (!/^[a-f0-9]{64}$/u.test(version.digest) || retained.has(version.digest) || !Array.isArray(version.files)) throw new Error('Invalid retained release');
     const paths = new Set();
     for (const file of version.files) {
       if (typeof file.path !== 'string' || !/^[a-zA-Z0-9._/-]+$/u.test(file.path) || file.path.split('/').some(p => !p || p === '.' || p === '..') || paths.has(file.path)
-        || !Number.isSafeInteger(file.size) || file.size < 0 || !/^[a-f0-9]{64}$/u.test(file.sha256) || typeof file.type !== 'string'
+        || !Number.isSafeInteger(file.size) || file.size < 0 || !/^[a-f0-9]{64}$/u.test(file.sha256) || !allowedTypes.has(file.type)
         || file.type !== file.type.trim() || /[\r\n]/u.test(file.type)) throw new Error('Invalid retained artifact');
       paths.add(file.path);
       const path = `releases/${version.digest}/${file.path}`;
@@ -27,6 +28,7 @@ export function createTitleGateway({ titleId, titleOrigin, shellOrigin, versions
     retained.set(version.digest, entry);
   }
   const assets = createStagingWorker({ files }, headers);
+  const assetPaths = new Set(files.map(file => `/${file.path}`));
   return {
     async fetch(request, env) {
       const url = new URL(request.url);
@@ -46,8 +48,10 @@ export function createTitleGateway({ titleId, titleOrigin, shellOrigin, versions
         if (current.paused) return respond(410, 'Title unavailable');
         if (url.pathname === '/') return respond(302, '', { Location: retained.get(current.current) });
         if (entries.get(url.pathname) !== current.current) return respond(409, 'Release changed; launch again');
-      } else if (!files.some(file => `/${file.path}` === url.pathname)) return respond(404, 'Not found');
-      return assets.fetch(request, env);
+      } else if (!assetPaths.has(url.pathname)) return respond(404, 'Not found');
+      const response = await assets.fetch(request, env);
+      if (response.status === 200 && !entries.has(url.pathname)) response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+      return response;
     },
   };
 }

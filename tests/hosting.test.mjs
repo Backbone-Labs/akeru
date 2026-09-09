@@ -13,6 +13,7 @@ test('hosted adapter restricts paths/methods, strips caller secrets and enforces
    calls++;
    assert.deepEqual([...request.headers], []);
    assert.equal(request.method, 'GET');
+   assert.equal(request.redirect, 'manual');
    assert.equal(new URL(request.url).pathname, '/index.html');
    return new Response(bytes, { headers: { 'Set-Cookie': 'untrusted', 'Access-Control-Allow-Origin': '*' } });
  } } };
