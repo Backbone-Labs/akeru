@@ -70,3 +70,20 @@ host.deliverInput({
 });
 // @ts-expect-error A provider cannot mutate published controller metadata.
 provider.refreshControllers()[0].index = 4;
+
+// Host-only save administration must not become part of the game service.
+import { createSaveStore } from '@akeru/saves';
+import { createSaveClient } from '@akeru/contracts/save-client';
+const guestStore = createSaveStore().forTitle({
+  titleId: 'example-title',
+  schemaVersion: 1,
+});
+void guestStore.service.read('main');
+void guestStore.exportData();
+// @ts-expect-error Games cannot reset an entire title namespace through SaveService.
+guestStore.service.reset();
+// @ts-expect-error Games cannot choose another title through SaveService.
+guestStore.service.forTitle({ titleId: 'other', schemaVersion: 1 });
+const saveClient = createSaveClient(() => {});
+void saveClient.service.status();
+saveClient.dispose();

@@ -1,3 +1,4 @@
+import { createSaveClient } from './save-client.js';
 /** Original Akeru conformance fixture, MIT. No upstream game code or assets. */
 const params = new URLSearchParams(location.hash.slice(1)),
   nonce = params.get('nonce'),
@@ -23,6 +24,73 @@ const send = (type, payload) =>
     },
     shell,
   );
+const saveClient = createSaveClient(send);
+let savedRevision = null,
+  persistedPosition = null,
+  saveBusy = false,
+  loaded = false,
+  saveBlocked = false;
+const saveStatus = document.querySelector('#save-status');
+async function loadPosition() {
+  try {
+    const record = await saveClient.service.read('position');
+    if (record) {
+      const value = JSON.parse(new TextDecoder().decode(record.bytes));
+      if (
+        record.schemaVersion !== 1 ||
+        !Number.isFinite(value.x) ||
+        !Number.isFinite(value.y) ||
+        Math.abs(value.x) > 120 ||
+        Math.abs(value.y) > 65
+      )
+        throw new Error('Invalid position');
+      x = value.x;
+      y = value.y;
+      savedRevision = record.revision;
+      persistedPosition = JSON.stringify({ x, y });
+    }
+    loaded = true;
+    saveStatus.textContent = record
+      ? 'Progress restored from this browser.'
+      : 'Progress saves in this browser.';
+  } catch {
+    saveBlocked = true;
+    loaded = true;
+    saveStatus.textContent =
+      'Saves unavailable or need recovery. Play can continue without replacing existing progress.';
+  }
+}
+async function persistPosition() {
+  const position = JSON.stringify({ x, y });
+  if (
+    !connected ||
+    !loaded ||
+    saveBusy ||
+    saveBlocked ||
+    position === persistedPosition
+  )
+    return;
+  saveBusy = true;
+  try {
+    const record = await saveClient.service.write(
+      'position',
+      { schemaVersion: 1, bytes: new TextEncoder().encode(position) },
+      savedRevision,
+    );
+    savedRevision = record.revision;
+    persistedPosition = position;
+    saveStatus.textContent = 'Progress saved in this browser.';
+  } catch (error) {
+    if (error.code === 'conflict') saveBlocked = true;
+    saveStatus.textContent =
+      error.code === 'conflict'
+        ? 'Another session changed this save. Reopen the game to load it.'
+        : 'Couldn’t save. Your previous saved progress is preserved.';
+  } finally {
+    saveBusy = false;
+  }
+}
+setInterval(persistPosition, 750);
 function reset() {
   axes = {};
   buttons = {};
@@ -40,15 +108,21 @@ window.addEventListener('message', (event) => {
   )
     return;
   received = m.sequence;
+  if (m.type === 'save-result') {
+    saveClient.receive(m.payload);
+    return;
+  }
   if (m.type === 'connect' && !connected && m.payload?.sdkVersion === '0.1.0') {
     connected = true;
     status.textContent = 'Ready when you are.';
     send('playable', { sdkVersion: '0.1.0' });
+    void loadPosition();
   } else if (connected && m.type === 'input' && !paused) {
     axes = m.payload.axes;
     buttons = m.payload.buttons;
     status.textContent = `${m.payload.provider === 'gamepad' ? 'Controller' : 'Touch'} input connected`;
   } else if (m.type === 'pause') {
+    void persistPosition();
     paused = true;
     reset();
     status.textContent = 'Paused';
@@ -62,7 +136,7 @@ let previous = performance.now();
 function draw(at) {
   const dt = Math.min(32, at - previous) / 16;
   previous = at;
-  if (connected && !paused) {
+  if (connected && loaded && !paused) {
     x = Math.max(
       -120,
       Math.min(

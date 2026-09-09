@@ -1,3 +1,4 @@
+import { createSaveStore } from '/saves/index.js';
 import {
   CATEGORIES,
   validateCatalog,
@@ -70,6 +71,7 @@ export function mountCatalog({
   inputProviderFactory,
   telemetrySink,
   loadCatalog = fetchRegistry,
+  saveStore = createSaveStore(),
 } = {}) {
   const main = $('#main'),
     emit = createShellTelemetry(telemetrySink);
@@ -435,10 +437,7 @@ export function mountCatalog({
     $('#controller-help').append(list(meta.controls.controller));
     $('#touch-help').append(list(meta.controls.touch));
     $('#privacy-info').append(list(meta.privacy));
-    $('#save-info').textContent =
-      mode === 'demo'
-        ? 'This test fixture does not save progress. Account linking and cloud sync are not connected.'
-        : 'Guest local saves are required by the package. This preview has no connected save service; account linking and cloud sync are unavailable.';
+    renderSaveControls(entry, $('#save-info'));
     $('#source-license').textContent =
       `Source license: ${m.provenance.source.license}`;
     $('#source-revision').textContent = m.provenance.source.revision;
@@ -452,6 +451,81 @@ export function mountCatalog({
       $('#play-note').textContent =
         'This game is taking a break. Please check back later.';
     } else play.onclick = () => launch(entry);
+  }
+  function savesFor(entry) {
+    return saveStore.forTitle({
+      titleId: entry.manifest.id,
+      schemaVersion: entry.manifest.saves.schemaVersion,
+    });
+  }
+  function renderSaveControls(entry, description) {
+    const saves = savesFor(entry);
+    description.textContent =
+      'Progress stays in this browser. Clearing browser data can remove it. Account sync is not connected.';
+    const actions = node('div', 'status-actions');
+    const exportButton = node('button', 'secondary', 'Export saves');
+    const resetButton = node('button', 'secondary', 'Reset saves');
+    const feedback = node('p', 'fine');
+    feedback.setAttribute('role', 'status');
+    actions.append(exportButton, resetButton);
+    description.after(actions, feedback);
+    const showError = () => {
+      feedback.textContent =
+        'Couldn’t access saves. Existing data has not been intentionally replaced. Try again or export before resetting.';
+    };
+    saves
+      .status()
+      .then((result) => {
+        if (!description.isConnected) return;
+        if (result.local !== 'available') {
+          description.textContent =
+            'Saving is unavailable in this browser. You can still play, but progress may be lost.';
+          exportButton.disabled = true;
+          resetButton.disabled = true;
+        }
+      })
+      .catch(showError);
+    exportButton.onclick = async () => {
+      exportButton.disabled = true;
+      try {
+        const data = await saves.exportData();
+        const url = URL.createObjectURL(
+          new Blob([JSON.stringify(data)], { type: 'application/json' }),
+        );
+        const a = node('a');
+        a.href = url;
+        a.download = `${entry.manifest.id}-saves.json`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        feedback.textContent =
+          'Save export downloaded. Keep it private; it contains your game progress.';
+      } catch {
+        showError();
+      } finally {
+        exportButton.disabled = false;
+      }
+    };
+    let confirmReset = false;
+    resetButton.onclick = async () => {
+      if (!confirmReset) {
+        confirmReset = true;
+        resetButton.textContent = 'Confirm reset';
+        feedback.textContent =
+          'This removes only this game’s local saves. Export first if you want to keep them.';
+        return;
+      }
+      resetButton.disabled = true;
+      try {
+        await saves.reset();
+        feedback.textContent = 'Local saves for this game have been reset.';
+      } catch {
+        showError();
+      } finally {
+        confirmReset = false;
+        resetButton.textContent = 'Reset saves';
+        resetButton.disabled = false;
+      }
+    };
   }
   async function launch(original) {
     const currentPath = location.pathname;
@@ -495,7 +569,7 @@ export function mountCatalog({
   function renderRuntime(entry) {
     clearSession();
     main.innerHTML =
-      '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay" role="status"><span class="spinner" aria-hidden="true"></span><h2>Finding your orbit…</h2><p>Opening the isolated test fixture.</p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Original test fixture · no progress is saved · no account connection</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
+      '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay" role="status"><span class="spinner" aria-hidden="true"></span><h2>Finding your orbit…</h2><p>Opening the isolated test fixture.</p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
     $('#runtime-title').textContent = entry.manifest.title;
     const frame = node('iframe');
     frame.title = `${entry.manifest.title} isolated runtime`;
@@ -512,6 +586,7 @@ export function mountCatalog({
       frame: frame.contentWindow,
       origin: entry.release.origin,
       nonce,
+      saveService: savesFor(entry).service,
       onEvent: (event) => {
         if (active !== session) return;
         if (event.type === 'playable') {

@@ -95,7 +95,9 @@ export async function launchDemo(page, url) {
   const runtime = page.frameLocator(
     'iframe[title="Orbit study isolated runtime"]',
   );
-  await expect(runtime.getByRole('status')).toHaveText('Ready when you are.');
+  await expect(runtime.getByRole('status', { name: 'Game status' })).toHaveText(
+    'Ready when you are.',
+  );
   await expect(page.locator('#runtime-overlay')).toBeHidden();
   return runtime;
 }

@@ -18,6 +18,7 @@ export function packageCatalog(cwd = process.cwd()) {
     'app.js',
     'model.js',
     'channel.js',
+    'save-channel.js',
     'catalog.json',
   ]) {
     add(
@@ -62,6 +63,11 @@ export function packageCatalog(cwd = process.cwd()) {
         : 'text/javascript; charset=utf-8',
     );
   }
+  add(
+    'saves/index.js',
+    committed('packages/saves/src/index.js'),
+    'text/javascript; charset=utf-8',
+  );
   add(
     'bootstrap.js',
     Buffer.from(
