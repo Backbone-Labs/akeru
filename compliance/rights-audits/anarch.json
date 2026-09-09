@@ -1,0 +1,669 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-09",
+  "upstreamUrl": "https://gitlab.com/drummyfish/anarch",
+  "revision": "6f90562161200682459e772f1dacb747f23c5f95",
+  "inventory": "anarch.json",
+  "titleIds": [
+    "anarch"
+  ],
+  "approvalStatus": "pending",
+  "scope": "Source-declaration and credit evidence only. No rights approval, generated artifact, publication grant or gameplay QA.",
+  "groups": [
+    {
+      "id": "explicit-cc0-headers",
+      "selector": {
+        "paths": [
+          "HTMLshell.html",
+          "assets/font2array.py",
+          "assets/img2array.py",
+          "assets/img2map.py",
+          "assets/snd2array.py",
+          "constants.h",
+          "game.h",
+          "images.h",
+          "index.html",
+          "levels.h",
+          "main_csfml.c",
+          "main_espboy.ino",
+          "main_gbmeta.ino",
+          "main_nibble.ino",
+          "main_pokitto.cpp",
+          "main_ringo.ino",
+          "main_saf.c",
+          "main_sdl.c",
+          "main_terminal.c",
+          "main_test.c",
+          "make.sh",
+          "mods/demo.diff",
+          "mods/demo_playthrough.txt",
+          "mods/demo_tas.txt",
+          "mods/full_zbuffer.diff",
+          "mods/makeMapImages.c",
+          "mods/movement_inertia.diff",
+          "mods/procedual_assets.diff",
+          "mods/terminal_messages.diff",
+          "palette.h",
+          "raycastlib.h",
+          "settings.h",
+          "smallinput.h",
+          "sounds.h",
+          "texts.h"
+        ]
+      },
+      "fileCount": 35,
+      "basis": "file-declaration",
+      "declaredLicense": "CC0-1.0",
+      "evidence": [
+        "HTMLshell.html",
+        "assets/font2array.py",
+        "assets/img2array.py",
+        "assets/img2map.py",
+        "assets/snd2array.py",
+        "constants.h",
+        "game.h",
+        "images.h",
+        "index.html",
+        "levels.h",
+        "main_csfml.c",
+        "main_espboy.ino",
+        "main_gbmeta.ino",
+        "main_nibble.ino",
+        "main_pokitto.cpp",
+        "main_ringo.ino",
+        "main_saf.c",
+        "main_sdl.c",
+        "main_terminal.c",
+        "main_test.c",
+        "make.sh",
+        "mods/demo.diff",
+        "mods/demo_playthrough.txt",
+        "mods/demo_tas.txt",
+        "mods/full_zbuffer.diff",
+        "mods/makeMapImages.c",
+        "mods/movement_inertia.diff",
+        "mods/procedual_assets.diff",
+        "mods/terminal_messages.diff",
+        "palette.h",
+        "raycastlib.h",
+        "settings.h",
+        "smallinput.h",
+        "sounds.h",
+        "texts.h"
+      ],
+      "noticeAction": "Preserve the specific author and CC0/waiver statements as provenance; retain LICENSE in source distribution. These statements are not a branding endorsement.",
+      "unknowns": []
+    },
+    {
+      "id": "mods-subtree",
+      "selector": {
+        "prefix": "mods/",
+        "excludePaths": [
+          "mods/demo.diff",
+          "mods/demo_playthrough.txt",
+          "mods/demo_tas.txt",
+          "mods/full_zbuffer.diff",
+          "mods/makeMapImages.c",
+          "mods/movement_inertia.diff",
+          "mods/procedual_assets.diff",
+          "mods/terminal_messages.diff"
+        ]
+      },
+      "fileCount": 67,
+      "basis": "subtree-declaration",
+      "declaredLicense": "CC0-1.0",
+      "evidence": [
+        "mods/README.txt",
+        "LICENSE"
+      ],
+      "noticeAction": "Keep the mods author/CC0 declaration with any selected mod.",
+      "unknowns": [
+        "No mod selection or generated-output digest exists. HD bytes were inventoried, not individually attributed."
+      ]
+    },
+    {
+      "id": "base-assets",
+      "selector": {
+        "prefix": "assets/",
+        "excludePaths": [
+          "assets/font2array.py",
+          "assets/img2array.py",
+          "assets/img2map.py",
+          "assets/snd2array.py"
+        ]
+      },
+      "fileCount": 99,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "CC0-1.0",
+      "evidence": [
+        "README.md",
+        "LICENSE",
+        "images.h",
+        "sounds.h",
+        "levels.h"
+      ],
+      "noticeAction": "Retain root CC0 and original-art attribution alongside selected source assets.",
+      "unknowns": [
+        "Original-art claim is inherited; individual PNG/GIF/BMP/raw provenance and generated-array equivalence are not independently verified."
+      ]
+    },
+    {
+      "id": "bin",
+      "selector": {
+        "prefix": "bin/",
+        "excludePaths": []
+      },
+      "fileCount": 17,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "README.md"
+      ],
+      "noticeAction": "Exclude from the proposed source-built browser package.",
+      "unknowns": [
+        "Prebuilt payload or promotional media lacks an audited artifact/source and dependency chain."
+      ]
+    },
+    {
+      "id": "media",
+      "selector": {
+        "prefix": "media/",
+        "excludePaths": []
+      },
+      "fileCount": 22,
+      "basis": "unknown",
+      "declaredLicense": null,
+      "evidence": [
+        "README.md"
+      ],
+      "noticeAction": "Exclude from the proposed source-built browser package.",
+      "unknowns": [
+        "Prebuilt payload or promotional media lacks an audited artifact/source and dependency chain."
+      ]
+    },
+    {
+      "id": "remaining-project-files",
+      "selector": {
+        "paths": [
+          ".gitlab-ci.yml",
+          "Doxyfile",
+          "IDEAS.txt",
+          "LICENSE",
+          "My_settings.h",
+          "README.md",
+          "TODO.txt",
+          "mbed_config.h"
+        ]
+      },
+      "fileCount": 8,
+      "basis": "inherited-project-claim",
+      "declaredLicense": "CC0-1.0",
+      "evidence": [
+        "README.md",
+        "LICENSE"
+      ],
+      "noticeAction": "Retain root CC0 with selected ancillary source; non-web frontend dependencies need their own notices.",
+      "unknowns": [
+        "Root declaration only; no independent file grant verified for this remainder."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "LICENSE",
+      "gitObjectId": "0e259d42c996742e9e3cba14c677129b2c1b6311",
+      "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+      "bytes": 7048,
+      "lineCount": 121,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/LICENSE",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "document"
+      }
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "5c9728e132ed5c478e1d0262ee87236ca6e71b84",
+      "sha256": "c6c3223430a812f54caac4e67784800a533fdf40dce7aa4f1ce4a741ed95ef03",
+      "bytes": 45622,
+      "lineCount": 396,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/README.md",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "repository"
+      }
+    },
+    {
+      "path": "mods/README.txt",
+      "gitObjectId": "2598e8722d608a8c56acc590dbe211733d5a01e0",
+      "sha256": "a19f869ed7bc0a94ec0930008630c0f8f500a411cf1ca7ea23887e601120b1ba",
+      "bytes": 394,
+      "lineCount": 10,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/mods/README.txt",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "subtree"
+      }
+    },
+    {
+      "path": "HTMLshell.html",
+      "gitObjectId": "9b589a55e666ec7fd84c5274a1c16e45317f8821",
+      "sha256": "3b6e0366e2383f12e38bcc53132b69f85a776621feffb29fcef609bf76dc0a78",
+      "bytes": 2960,
+      "lineCount": 95,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/HTMLshell.html",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "assets/font2array.py",
+      "gitObjectId": "f92dca4ae3305f39f670ba5b1608a2655f48d452",
+      "sha256": "1ce5478d5133671148fc3a2731cd859bd8ee74ab5c9b9ba6af506d8390f63a6c",
+      "bytes": 731,
+      "lineCount": 41,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/assets/font2array.py",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "assets/img2array.py",
+      "gitObjectId": "88243cc033e1bbd44b12d49da9a4a7f62563e3da",
+      "sha256": "43bb2c2c00005076a4c237b26398056eb4e943134b94c56680e1c240c3ca44fe",
+      "bytes": 5063,
+      "lineCount": 216,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/assets/img2array.py",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "assets/img2map.py",
+      "gitObjectId": "c98cfd628003a92692d2144afc4815d6346310f3",
+      "sha256": "486616b75fbf6ee084a607af788ca96e7b2be4b5fa51a78c4acf3440d063cb29",
+      "bytes": 5691,
+      "lineCount": 285,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/assets/img2map.py",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "assets/snd2array.py",
+      "gitObjectId": "b1a54717cebc8ca923b57bae9f0a8728d65a2f86",
+      "sha256": "80614cf37722ea3ec3a6969c04562c610bbf49e311a1ddb5d9a0576f314595d1",
+      "bytes": 757,
+      "lineCount": 50,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/assets/snd2array.py",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "constants.h",
+      "gitObjectId": "956baa03b14dfb4fff52e40269c564d2299943c8",
+      "sha256": "795aa5ba5570d09557d95d27141408a9f0783140dbf3660a91b971765351d3e5",
+      "bytes": 16408,
+      "lineCount": 587,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/constants.h",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "game.h",
+      "gitObjectId": "991058d7acb166e43039dfeae40244be7c68b5fe",
+      "sha256": "26ab105c4c77cf0c13b9fbadc399d55678398f0d4da19b0e99b9c1fbc3d4c5a2",
+      "bytes": 140943,
+      "lineCount": 5024,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/game.h",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "images.h",
+      "gitObjectId": "8f88bcc9bb1d36f6e1d916ae6a184ce3e8c5d3cf",
+      "sha256": "d97a931b1d0c40a7434cd0e05f1b36200c81d1b9680cc97addaec40223a7ead3",
+      "bytes": 97098,
+      "lineCount": 1397,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/images.h",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "index.html",
+      "gitObjectId": "16bca072efade1c4beacbc352251e827ee722937",
+      "sha256": "3f112cfcad64870abdc4e8bf40f779ef017ce1226ee46be7c056f5bac7453091",
+      "bytes": 10609,
+      "lineCount": 331,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/index.html",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "levels.h",
+      "gitObjectId": "09164f896294a0234d65eac1b084ac67987ab1c0",
+      "sha256": "1dd3db21a8c1277762dba71fa4344ae713d681a29b0f6cb1b0892f5b9de140db",
+      "bytes": 218761,
+      "lineCount": 1983,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/levels.h",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "main_csfml.c",
+      "gitObjectId": "14ec59017896d1d37734ff03f965c6deaaa43656",
+      "sha256": "e01fd5363d4de7be1ca08149e62c7fab2e4a71d954989bf3630e52ca5536535c",
+      "bytes": 10154,
+      "lineCount": 390,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_csfml.c",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "main_espboy.ino",
+      "gitObjectId": "a87f4daeebb9711fe61e6de64d256a6cad8a501d",
+      "sha256": "d884f753d28ccf0db29618905cee26f0e4843019ab3f6d5a6dca50ad352581d9",
+      "bytes": 3923,
+      "lineCount": 192,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_espboy.ino",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "main_gbmeta.ino",
+      "gitObjectId": "70bcadbeeed9c8a08443ac021ccf6916a3944572",
+      "sha256": "80339aa74c8beaead9311c5f0113f179f0b79b0d75035ab6555e29a6046af068",
+      "bytes": 4495,
+      "lineCount": 209,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_gbmeta.ino",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "main_nibble.ino",
+      "gitObjectId": "36adf0861d3839286609ec5bb45df845f1f6d358",
+      "sha256": "2441c2dd56b1647aeb73119805895f00cd305789fd4f504391a74b32055925d7",
+      "bytes": 3055,
+      "lineCount": 149,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_nibble.ino",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "main_pokitto.cpp",
+      "gitObjectId": "0bedcd90e402ddc6d07dc5e50e456a321306c600",
+      "sha256": "e0faf3d615a08bb1b0d2f37da78ffcb591250e909769a451b986cbc42f583a2d",
+      "bytes": 7348,
+      "lineCount": 323,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_pokitto.cpp",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "main_ringo.ino",
+      "gitObjectId": "663301585a5e276f3a5378b5af954ee0770e1c5a",
+      "sha256": "a004249133892d4785adc53c78fcfea91c10ee57cb7f4c1ef8e6e0bfb6619de2",
+      "bytes": 4111,
+      "lineCount": 169,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_ringo.ino",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "main_saf.c",
+      "gitObjectId": "009c0efc00c3075a54b6c4768e87f9385b257ad9",
+      "sha256": "0d845ca14fbf9987e1697f156b3a3220cf66cec94f901d844dc420ea3680f347",
+      "bytes": 2715,
+      "lineCount": 126,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_saf.c",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "main_sdl.c",
+      "gitObjectId": "b2b28aeec5f4e94aa02a21ad1fffb8ce2e2b8375",
+      "sha256": "1e48a789d3cff01d78c41830b3f863e6fc78665fcf92560e308d710650f9f267",
+      "bytes": 13669,
+      "lineCount": 531,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_sdl.c",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "main_terminal.c",
+      "gitObjectId": "d204e1a0fc33404fb04845b41567794f1474dca1",
+      "sha256": "69ed1ab7bf684ed62062877f7d9447dea10ede00f20091e75b6b06dd7b348b4d",
+      "bytes": 6767,
+      "lineCount": 277,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_terminal.c",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "main_test.c",
+      "gitObjectId": "bb97a7bef312f2b49ec992d16caf40d74384b95e",
+      "sha256": "15968b0b1de61347b583491d6d6aef7bf1102fabfc4119162139e7fcfdaefbdd",
+      "bytes": 7196,
+      "lineCount": 304,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_test.c",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "make.sh",
+      "gitObjectId": "64ba2b1c5485011aa2c2403765eba3f433ad1ca8",
+      "sha256": "728844dbd9f244b2ee9609bbee128fe4f33950d42049440bcabd6dfdcf1445e5",
+      "bytes": 2494,
+      "lineCount": 100,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/make.sh",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "mods/demo.diff",
+      "gitObjectId": "35993ec703655bd85b0a9174fcdf0a616019b411",
+      "sha256": "71d97c5f7ffca73d67ce313c646a3f2fb6c9375d1eb66cbaa29b5a86c156a893",
+      "bytes": 11041,
+      "lineCount": 411,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/mods/demo.diff",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "mods/demo_playthrough.txt",
+      "gitObjectId": "3109b9210fe5405771ed6c61553b945c817d12db",
+      "sha256": "5b88b4f7373640b6d8f658f375b3b6315bb3c8f5c415f10bb7a5a6d3a468f048",
+      "bytes": 616662,
+      "lineCount": 22322,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/mods/demo_playthrough.txt",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "mods/demo_tas.txt",
+      "gitObjectId": "c33701bbeb87cf39775ce1ccb891aa3b3bb5eaec",
+      "sha256": "092dc406cce8f26a23eb4a9293b67287e3ae2d9890e574c551316631e2f12e0c",
+      "bytes": 1769,
+      "lineCount": 67,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/mods/demo_tas.txt",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "mods/full_zbuffer.diff",
+      "gitObjectId": "ead6586d6f9e8769fa46b009ea9c32cb09f228c9",
+      "sha256": "677a7dea3cafc6f0c398c0f76ed5164fed6d891b12e86d322ea370864a9d3451",
+      "bytes": 2595,
+      "lineCount": 87,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/mods/full_zbuffer.diff",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "mods/makeMapImages.c",
+      "gitObjectId": "581e7400b580d59456c2715a8d381984bc15a003",
+      "sha256": "10975d618605ab11dd0f073eb110a7c64c1822a00a0eaf33af1312b7e4bc0ccd",
+      "bytes": 7134,
+      "lineCount": 296,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/mods/makeMapImages.c",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "mods/movement_inertia.diff",
+      "gitObjectId": "407ce67f0be2babc013b72ab95475bbb433ffffa",
+      "sha256": "ad6e542c4a067e73783cc61edf4a46c39fdcb56fda0b55cd3eb73c46fb5372b5",
+      "bytes": 2201,
+      "lineCount": 65,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/mods/movement_inertia.diff",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "mods/procedual_assets.diff",
+      "gitObjectId": "4c8e22414867252d150932f5395c8af749b7d347",
+      "sha256": "7ce92903bebd44bd54a92313316015b4fdfc4f00a5681fa4bcf531ae61a4dcfa",
+      "bytes": 130578,
+      "lineCount": 2466,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/mods/procedual_assets.diff",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "mods/terminal_messages.diff",
+      "gitObjectId": "78553e6c3937aeeb65276972e1716d2b2a833e1d",
+      "sha256": "f3a690b85b34f7d9b0de68d1893538f880d5df2d73318a351193e3764a920056",
+      "bytes": 3879,
+      "lineCount": 118,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/mods/terminal_messages.diff",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "palette.h",
+      "gitObjectId": "ec66ee272a33f544952e013c0bdb605cf6fdf2c8",
+      "sha256": "df04389530c60492f66e2fea76a0ca069caa217a57c623ada78eaf930d429fa3",
+      "bytes": 5051,
+      "lineCount": 98,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/palette.h",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "raycastlib.h",
+      "gitObjectId": "38a70ff716e9475293eee0f04531ed33c872a8a0",
+      "sha256": "88887430a029d9fb5eaf89e5e6fac5d5748ddd4ff0fbc98b7c2f05265bb04a8c",
+      "bytes": 61754,
+      "lineCount": 2058,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/raycastlib.h",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "settings.h",
+      "gitObjectId": "a0d8c1f53e22bc490f4f3eb24855f0aca9ee51f4",
+      "sha256": "214fd56147cc50e095abeabf4dd40fc37eabd6b64cd56dcf3491e003a44ab351",
+      "bytes": 13805,
+      "lineCount": 526,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/settings.h",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "smallinput.h",
+      "gitObjectId": "cee85079c329bdada54f48688df47bb1242b4776",
+      "sha256": "8d0f199f434b8f8d6f14f18d02539b09a69afa1688ebc169d9bb7a7d4e7625fc",
+      "bytes": 10572,
+      "lineCount": 404,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/smallinput.h",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "sounds.h",
+      "gitObjectId": "2e2b042c8a4600aef7a37dd4940db45fdc33598b",
+      "sha256": "a16641e3bd64ea618fc070f76798a186a6328f7171202d2fbb58358274747973",
+      "bytes": 28230,
+      "lineCount": 489,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/sounds.h",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    },
+    {
+      "path": "texts.h",
+      "gitObjectId": "b7e53d4b999389b829fd151560917a2c6ca0d71a",
+      "sha256": "8d27a16062e374fe1f3121e361c612d86791267cdf4d634e2541e6969f854456",
+      "bytes": 1948,
+      "lineCount": 62,
+      "url": "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/texts.h",
+      "declaration": {
+        "license": "CC0-1.0",
+        "scope": "file"
+      }
+    }
+  ]
+}

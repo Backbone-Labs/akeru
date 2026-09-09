@@ -1,0 +1,2124 @@
+{
+  "schemaVersion": 1,
+  "revision": "d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85",
+  "inventory": "freedm.json",
+  "approvalStatus": "pending",
+  "method": "Current sections of CREDITS-LEVELS / CREDITS-MUSIC joined by musics/README and levels/README filename rules to buildcfg.txt. Historical Previously Featured sections excluded. Source selection only; no WAD built or inspected.",
+  "records": [
+    {
+      "sourcePath": "levels/e1m1.wad",
+      "gitObjectId": "98d3dac0a2aaff8d1647fe6f8948742647a46de3",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E1M1",
+      "buildcfgLine": 26,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 4,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e1m2.wad",
+      "gitObjectId": "aa3bfc60fffd2941e0707b485befb17906e1c507",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E1M2",
+      "buildcfgLine": 27,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 5,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e1m3.wad",
+      "gitObjectId": "f62d54ea0958525ac5fceb4d20d5e0d7ecdf7ea3",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E1M3",
+      "buildcfgLine": 28,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 6,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e1m9.wad",
+      "gitObjectId": "33a5652c81223bd4e4c0bd3af003c5a204f49cef",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E1M9",
+      "buildcfgLine": 34,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 7,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e1m4.wad",
+      "gitObjectId": "da657f60ec717bc58904de6a4db422ebbc553d3c",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E1M4",
+      "buildcfgLine": 29,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 8,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e1m5.wad",
+      "gitObjectId": "bb742d22f642b2523ae8d3adfe96a555eb40c6b7",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E1M5",
+      "buildcfgLine": 30,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 9,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e1m6.wad",
+      "gitObjectId": "42076c2685b59c827febfb9f475c3aa7b5dd08de",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E1M6",
+      "buildcfgLine": 31,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 10,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e1m7.wad",
+      "gitObjectId": "f5d2c9dd3e764b00abfb6383a35e950dcd7e85e5",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E1M7",
+      "buildcfgLine": 32,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 11,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e1m8.wad",
+      "gitObjectId": "9005595b131a9f6ea4f8c06224f2fe0b60574e48",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E1M8",
+      "buildcfgLine": 33,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 12,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e2m1.wad",
+      "gitObjectId": "d1f305378cf248aa8eaadecd9fcb3876cae43bdd",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E2M1",
+      "buildcfgLine": 35,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 15,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e2m2.wad",
+      "gitObjectId": "54e82670c2217036ed5d34d6ca9b32178d6ff72d",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E2M2",
+      "buildcfgLine": 36,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 16,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e2m3.wad",
+      "gitObjectId": "fd2c01ee586cbe1d21c323097c976e2dd24aa6c3",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E2M3",
+      "buildcfgLine": 37,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 17,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e2m4.wad",
+      "gitObjectId": "6a3faa29c2420ad991f351af881e1a318c8d66f8",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E2M4",
+      "buildcfgLine": 38,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 18,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e2m5.wad",
+      "gitObjectId": "74020e6cbe9872684a75dfe72fac11825235354e",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E2M5",
+      "buildcfgLine": 39,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 19,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e2m9.wad",
+      "gitObjectId": "3d2d0e60b98cf0c31bafb777f376e9e49ecfce0c",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E2M9",
+      "buildcfgLine": 43,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 20,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e2m6.wad",
+      "gitObjectId": "580d87f24d4946d434723c608c960d06ba84b1e0",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E2M6",
+      "buildcfgLine": 40,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 21,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e2m7.wad",
+      "gitObjectId": "51563c39bdc8cf4e0a39c8ff60d43ccd0c2c7b53",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E2M7",
+      "buildcfgLine": 41,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 22,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e2m8.wad",
+      "gitObjectId": "169b9aee700e0b7cf7805c5576362632195bb775",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E2M8",
+      "buildcfgLine": 42,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 23,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e3m1.wad",
+      "gitObjectId": "01d21cae35a13d65b57ba34ad17291ad139fccae",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E3M1",
+      "buildcfgLine": 44,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 26,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e3m2.wad",
+      "gitObjectId": "26b1f6796bf53417c1ca83a761e6d437589fddcc",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E3M2",
+      "buildcfgLine": 45,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 27,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e3m3.wad",
+      "gitObjectId": "260e35179b4bae836e5948b57d6e23a97d4df621",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E3M3",
+      "buildcfgLine": 46,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 28,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e3m4.wad",
+      "gitObjectId": "5a478084f8565a20d1925e906cb3bed8c1145dd6",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E3M4",
+      "buildcfgLine": 47,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 29,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e3m5.wad",
+      "gitObjectId": "6888ee5cf99d7040d5cf421b830d4707471aed8f",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E3M5",
+      "buildcfgLine": 48,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 30,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e3m6.wad",
+      "gitObjectId": "580b3e9df90b5e7df8801500da46e5d73253127e",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E3M6",
+      "buildcfgLine": 49,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 31,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e3m9.wad",
+      "gitObjectId": "2ada2b52da3f8369e32ec0e44311dbf26e2b4dea",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E3M9",
+      "buildcfgLine": 52,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 32,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e3m7.wad",
+      "gitObjectId": "b7fb34d792ba459aa6ee5ce60961a3f063424722",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E3M7",
+      "buildcfgLine": 50,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 33,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e3m8.wad",
+      "gitObjectId": "75d82df612ed2fb935dbff43daf180c376ba6f35",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E3M8",
+      "buildcfgLine": 51,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 34,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e4m1.wad",
+      "gitObjectId": "d6bd740637d24116d40b09d8b94db254c7c50006",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E4M1",
+      "buildcfgLine": 53,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 37,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e4m2.wad",
+      "gitObjectId": "76f09c194772fec281ff4306b661b6f0b6155ae9",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E4M2",
+      "buildcfgLine": 54,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 38,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e4m9.wad",
+      "gitObjectId": "76952dd133f172c5cc48359c18e34fa73a1d4e11",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E4M9",
+      "buildcfgLine": 61,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 39,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e4m3.wad",
+      "gitObjectId": "6b57c509ec24d80816a777c54d72ad00fa8c5b4d",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E4M3",
+      "buildcfgLine": 55,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 40,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e4m4.wad",
+      "gitObjectId": "31942b5fb73dae598c130a15e2ca3de913e93b1a",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E4M4",
+      "buildcfgLine": 56,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 41,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e4m5.wad",
+      "gitObjectId": "1d6594736fcd64f28e1076caea94d4a78b34152a",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E4M5",
+      "buildcfgLine": 57,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 42,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e4m6.wad",
+      "gitObjectId": "955fb64c0c9745eb65da913fae8b9a9d8291aeb8",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E4M6",
+      "buildcfgLine": 58,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 43,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e4m7.wad",
+      "gitObjectId": "c58355c02521334767be707df9a4f9fc4e8f96fb",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E4M7",
+      "buildcfgLine": 59,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 44,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/e4m8.wad",
+      "gitObjectId": "e1e7c83fa247079f42d8032cb5bf11d1c7f7db35",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "E4M8",
+      "buildcfgLine": 60,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 45,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map01.wad",
+      "gitObjectId": "12206dd55fb8cfc42f31001d799c9458fda09661",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP01",
+      "buildcfgLine": 102,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 51,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map02.wad",
+      "gitObjectId": "a875fd27ee514346ba282d7e2a8e1a99c096cb30",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP02",
+      "buildcfgLine": 103,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 52,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map03.wad",
+      "gitObjectId": "e9a721252b3a4b61d04619dfb68723e1f3ec1ed8",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP03",
+      "buildcfgLine": 104,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 53,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map04.wad",
+      "gitObjectId": "aa1b9ea3ccf4d469e2d2b3b7ba24e0cfffc381e2",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP04",
+      "buildcfgLine": 105,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 54,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map05.wad",
+      "gitObjectId": "d42feab136af6f05e03983991bf920097fc8732c",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP05",
+      "buildcfgLine": 106,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 55,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map06.wad",
+      "gitObjectId": "86de5afe34b95e6d5f7dd20b1dfbd2d9c42edf26",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP06",
+      "buildcfgLine": 107,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 56,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map07.wad",
+      "gitObjectId": "3b28ff5420f392cb3007ad425e553010a1374c30",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP07",
+      "buildcfgLine": 108,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 57,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map08.wad",
+      "gitObjectId": "08194b1f91d646739794a766af29827f4b8ad1d2",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP08",
+      "buildcfgLine": 109,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 58,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map09.wad",
+      "gitObjectId": "b3685c6c00d54f96981a1a05c6d0084a43049c21",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP09",
+      "buildcfgLine": 110,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 59,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map10.wad",
+      "gitObjectId": "d6040810b277ac6e264e9b70b279d67b7618cc24",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP10",
+      "buildcfgLine": 111,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 60,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map11.wad",
+      "gitObjectId": "ba759cb658836ef6907da3fdea203e62534f9fa3",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP11",
+      "buildcfgLine": 112,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 61,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map12.wad",
+      "gitObjectId": "f18f2e188bb66b185fc8834fd0521108093c03dc",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP12",
+      "buildcfgLine": 113,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 64,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map13.wad",
+      "gitObjectId": "e95e4d20876ef27632570da803a1122a6d5cc6c7",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP13",
+      "buildcfgLine": 114,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 65,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map14.wad",
+      "gitObjectId": "701febb8857da9f651f2afc51b9a13289a660f4f",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP14",
+      "buildcfgLine": 115,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 66,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map15.wad",
+      "gitObjectId": "151942af7c14401caceb04ab647dae18787b017b",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP15",
+      "buildcfgLine": 116,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 67,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map31.wad",
+      "gitObjectId": "55691582dc17fd197d457159bd515f2928a70855",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP31",
+      "buildcfgLine": 132,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 68,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map32.wad",
+      "gitObjectId": "abdcbe246217488ef4eb2561b4ee0b98e47ba410",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP32",
+      "buildcfgLine": 133,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 69,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map16.wad",
+      "gitObjectId": "237aecbdba7ef17206ccc2ee092bd8ec7c0f042a",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP16",
+      "buildcfgLine": 117,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 70,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map17.wad",
+      "gitObjectId": "9da6537f7a2078452adb15307c179524e6c5f18c",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP17",
+      "buildcfgLine": 118,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 71,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map18.wad",
+      "gitObjectId": "3a51d8483576f9d6029764dbfb6a3c9e9c98c065",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP18",
+      "buildcfgLine": 119,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 72,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map19.wad",
+      "gitObjectId": "04e2c165d42d292a33eafb01d4ec555d20ab13cb",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP19",
+      "buildcfgLine": 120,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 73,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map20.wad",
+      "gitObjectId": "9fcf3c0709ac815ebf96b870f15856a45aaa763f",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP20",
+      "buildcfgLine": 121,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 74,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map21.wad",
+      "gitObjectId": "1aed41c39eeb99fa1510e1bd807748c60ed084aa",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP21",
+      "buildcfgLine": 122,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 77,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map22.wad",
+      "gitObjectId": "b260e10fac693721dfacf15dff502c0a3905fe4d",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP22",
+      "buildcfgLine": 123,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 78,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map23.wad",
+      "gitObjectId": "d7eda86cf9790e95a29dcdd47a4707c7c856d3ac",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP23",
+      "buildcfgLine": 124,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 79,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map24.wad",
+      "gitObjectId": "9e75539ac4f8ec59646eaa4b1b16e418b0edf3cf",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP24",
+      "buildcfgLine": 125,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 80,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map25.wad",
+      "gitObjectId": "accca00a146050b7c95a270f45af70464933ccf5",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP25",
+      "buildcfgLine": 126,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 81,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map26.wad",
+      "gitObjectId": "e55eb15ca8ae8a8938054f0daade144680a31eaa",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP26",
+      "buildcfgLine": 127,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 82,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map27.wad",
+      "gitObjectId": "eeab3cd81d50b05f0eb36a62340fe75812c54028",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP27",
+      "buildcfgLine": 128,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 83,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map28.wad",
+      "gitObjectId": "9fb69a2a602e27444f5aee1b18f072fb24984108",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP28",
+      "buildcfgLine": 129,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 84,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map29.wad",
+      "gitObjectId": "0cb164c0fcd143ecc1768dbe12aa9aa96fc8292f",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP29",
+      "buildcfgLine": 130,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 85,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/map30.wad",
+      "gitObjectId": "ed18c80035265a493c07dae9f0e9c0b5ad935c26",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "MAP30",
+      "buildcfgLine": 131,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 86,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm01.wad",
+      "gitObjectId": "36086ba6efdbc0d9c2c0bb51dd03ad9e96bdb8b0",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP01",
+      "buildcfgLine": 67,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 91,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm02.wad",
+      "gitObjectId": "54c13ba820ee940293d239a266262079b4a03c61",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP02",
+      "buildcfgLine": 68,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 92,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm03.wad",
+      "gitObjectId": "1587d78d90840e9d37f46a2bd3bae3e9c8e712be",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP03",
+      "buildcfgLine": 69,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 93,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm04.wad",
+      "gitObjectId": "8e97af73cf74a850adcfc9d270ef5b51d192d45e",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP04",
+      "buildcfgLine": 70,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 94,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm05.wad",
+      "gitObjectId": "954333595731c3a0e7b274e7f4cac5c868aad341",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP05",
+      "buildcfgLine": 71,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 95,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm06.wad",
+      "gitObjectId": "007a7e6adb901cc94cff5f4f6e10d8194e77e74b",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP06",
+      "buildcfgLine": 72,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 96,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm07.wad",
+      "gitObjectId": "92271651870402b26ff809b87573ae304b293b43",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP07",
+      "buildcfgLine": 73,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 97,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm08.wad",
+      "gitObjectId": "387ba127d4433555457eb1b8efa12dff7be9d323",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP08",
+      "buildcfgLine": 74,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 98,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm09.wad",
+      "gitObjectId": "21d3879c51252af6f970f6a070cd5fabc665db10",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP09",
+      "buildcfgLine": 75,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 100,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm10.wad",
+      "gitObjectId": "b539f81502ea6e41cc59f025aa380372ecc150f6",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP10",
+      "buildcfgLine": 76,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 101,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm11.wad",
+      "gitObjectId": "0c335828ec355ecfc0e63ea546e56a815f838d1b",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP11",
+      "buildcfgLine": 77,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 102,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm12.wad",
+      "gitObjectId": "241d2a7e2004c7593001d9870fe8bf4a786fa4d1",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP12",
+      "buildcfgLine": 78,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 103,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm13.wad",
+      "gitObjectId": "971f82d1de0480b82b0de837f67c913d5bb96d2e",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP13",
+      "buildcfgLine": 79,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 104,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm14.wad",
+      "gitObjectId": "8e12bdcf5a6d3f3c58a9ae06f62e76b1673b820d",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP14",
+      "buildcfgLine": 80,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 105,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm15.wad",
+      "gitObjectId": "1b3043213a2ea87a7de8733e75fd5201a4ae9927",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP15",
+      "buildcfgLine": 81,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 106,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm16.wad",
+      "gitObjectId": "7a0d858dfb85f37b859e682e84919e33820f4070",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP16",
+      "buildcfgLine": 82,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 107,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm17.wad",
+      "gitObjectId": "2f0aa0c9f42201656e94f50db12429765c8de569",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP17",
+      "buildcfgLine": 83,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 109,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm18.wad",
+      "gitObjectId": "07d322df67cacd75336670b0334a3b056d86102f",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP18",
+      "buildcfgLine": 84,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 110,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm19.wad",
+      "gitObjectId": "fb846005232334d29b8ba494c3c91abb71bbeb8d",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP19",
+      "buildcfgLine": 85,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 111,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm20.wad",
+      "gitObjectId": "dd4112cd1a99e406f0075f7a110385514376d2d4",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP20",
+      "buildcfgLine": 86,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 112,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm21.wad",
+      "gitObjectId": "ac345f411e1b436036e64a4a236af152e012f664",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP21",
+      "buildcfgLine": 87,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 113,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm22.wad",
+      "gitObjectId": "33a760ed3e9c923585316801d4b3e47c4a36c40d",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP22",
+      "buildcfgLine": 88,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 114,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm23.wad",
+      "gitObjectId": "40a3cf4481f9ab4876b23030dc5af1cbca6c2492",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP23",
+      "buildcfgLine": 89,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 115,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm24.wad",
+      "gitObjectId": "f1943e60279de9b0df1a07551a958e00e309fb0f",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP24",
+      "buildcfgLine": 90,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 116,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm25.wad",
+      "gitObjectId": "e6e76ac39916793cf9b6469a13008359456954f4",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP25",
+      "buildcfgLine": 91,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 118,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm26.wad",
+      "gitObjectId": "9db412e9652cf983630da1fb9a974fb61b02a451",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP26",
+      "buildcfgLine": 92,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 119,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm27.wad",
+      "gitObjectId": "98bec5fc9ae31d07f6dcded5a507cda220c567b0",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP27",
+      "buildcfgLine": 93,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 120,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm28.wad",
+      "gitObjectId": "934dd3608002952d7f4a38f53ae542e5c7c727a3",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP28",
+      "buildcfgLine": 94,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 121,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm29.wad",
+      "gitObjectId": "19eb413b62971ca04301d1bc691bae05449f193c",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP29",
+      "buildcfgLine": 95,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 122,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm30.wad",
+      "gitObjectId": "7d0ca0eed13044f39da411c60578898e76e8c7fe",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP30",
+      "buildcfgLine": 96,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 123,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm31.wad",
+      "gitObjectId": "5c6bf94780cf615769f9045d1a5cc990d73e6ec5",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP31",
+      "buildcfgLine": 97,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 124,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "levels/dm32.wad",
+      "gitObjectId": "1a23b7f446bad9434f3ddd7b93a5aae4fd68b5f8",
+      "outputWad": "freedm.wad",
+      "outputLump": "MAP32",
+      "buildcfgLine": 98,
+      "creditPath": "CREDITS-LEVELS",
+      "creditLine": 125,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_intro.mid",
+      "gitObjectId": "d67425cb4597d82bc71f9037ecad4db937638861",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_INTRO",
+      "buildcfgLine": 479,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 3,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_introa.mid",
+      "gitObjectId": "d67425cb4597d82bc71f9037ecad4db937638861",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_INTROA",
+      "buildcfgLine": 481,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 3,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_inter.mid",
+      "gitObjectId": "2074044c8af869322036a07b355dbfecb3745e6b",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_INTER",
+      "buildcfgLine": 478,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 4,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_victor.mid",
+      "gitObjectId": "e1d41750ef91a931093da93e7866d1b5d02d2d2f",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_VICTOR",
+      "buildcfgLine": 480,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 5,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_bunny.mid",
+      "gitObjectId": "59f70f3377f126b40fbda165936b359a36199ef6",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_BUNNY",
+      "buildcfgLine": 513,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 6,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e1m1.mid",
+      "gitObjectId": "5e58f0dd0d1a5d53372f4f6018ef51a0354123f1",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E1M1",
+      "buildcfgLine": 469,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 9,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e1m2.mid",
+      "gitObjectId": "7112cca50fffe0268de7f474373c8a20d3b7ddd1",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E1M2",
+      "buildcfgLine": 470,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 10,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e1m3.mid",
+      "gitObjectId": "7aedfa47c8aad105be013cdc8b1ef80b1f1f79ed",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E1M3",
+      "buildcfgLine": 471,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 11,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e1m9.mid",
+      "gitObjectId": "0a635a0d5c6be22d1e6147acf4f47555a3b9f157",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E1M9",
+      "buildcfgLine": 477,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 12,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_e1m4.mid",
+      "gitObjectId": "5cb6427dd63080d89e04432a3b133dbabc7237fb",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E1M4",
+      "buildcfgLine": 472,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 13,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e1m5.mid",
+      "gitObjectId": "616af8383190b7b4dc0759cf03d3d1da98fe91e8",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E1M5",
+      "buildcfgLine": 473,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 14,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e1m6.mid",
+      "gitObjectId": "27ad0a381cb3d2a91b243895b91bd82ea4a927ac",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E1M6",
+      "buildcfgLine": 474,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 15,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_e1m7.mid",
+      "gitObjectId": "64cb2f23b61b3a88c05d7abb70492587c14186c4",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E1M7",
+      "buildcfgLine": 475,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 16,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e1m8.mid",
+      "gitObjectId": "73eb6cb1df1439d9ddbdaf88cb0967e54a5fa7bc",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E1M8",
+      "buildcfgLine": 476,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 17,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e2m1.mid",
+      "gitObjectId": "47d18de1ed0101cea7555841dc0d95ff444d168d",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E2M1",
+      "buildcfgLine": 483,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 20,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e2m2.mid",
+      "gitObjectId": "c5750f97ead2fca196572d30e891ef40a674aead",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E2M2",
+      "buildcfgLine": 484,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 21,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e2m3.mid",
+      "gitObjectId": "d905ed2f22b4fa17a2861d5161e3ccf53d2f3cae",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E2M3",
+      "buildcfgLine": 485,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 22,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e2m4.mid",
+      "gitObjectId": "6d76b7e1ef7d7dd3a1fcb15427efcd6f05b1bdf2",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E2M4",
+      "buildcfgLine": 486,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 23,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e2m5.mid",
+      "gitObjectId": "7895193080b179369e8ad562092ae8aaf014b5ec",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E2M5",
+      "buildcfgLine": 487,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 24,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e2m9.mid",
+      "gitObjectId": "02376f6d250ce060d2c8887aef2a371340fc9b5c",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E2M9",
+      "buildcfgLine": 491,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 25,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e2m6.mid",
+      "gitObjectId": "edeb7861d1a1442a96257606f86a4454a7c9f661",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E2M6",
+      "buildcfgLine": 488,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 26,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e2m7.mid",
+      "gitObjectId": "51b7b082cf8a9189db2b65d0b953f30b4da4e8cf",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E2M7",
+      "buildcfgLine": 489,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 27,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e2m8.mid",
+      "gitObjectId": "60895debd8e0bf4a94f5644b0bc965972286fc1c",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E2M8",
+      "buildcfgLine": 490,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 28,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e3m1.mid",
+      "gitObjectId": "66652724c7c09f5ee947d51dfb024c4a911578c6",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E3M1",
+      "buildcfgLine": 493,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 31,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e3m2.mid",
+      "gitObjectId": "ba4f646f2c633b51c39a50d87264ee0b6587d5a8",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E3M2",
+      "buildcfgLine": 494,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 32,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e3m3.mid",
+      "gitObjectId": "26cb97dd69fa23849f4a4019b18ba5b8a0fcc574",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E3M3",
+      "buildcfgLine": 495,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 33,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e3m4.mid",
+      "gitObjectId": "1bb65cbd40ceeb53dc90a769bb01474e3b8f9bdd",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E3M4",
+      "buildcfgLine": 496,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 34,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e3m5.mid",
+      "gitObjectId": "39ef6b15189337ef489fab00edaf4c77ed7557b6",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E3M5",
+      "buildcfgLine": 497,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 35,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e3m6.mid",
+      "gitObjectId": "34792c47db3ba78e11522740b56ba8a036d4e7a9",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E3M6",
+      "buildcfgLine": 498,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 36,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e3m9.mid",
+      "gitObjectId": "9f40e0dca20cfdd4ce8b1e8937e4050d5c9d5f20",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E3M9",
+      "buildcfgLine": 501,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 37,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e3m7.mid",
+      "gitObjectId": "3012a90ea2633fb2f0c4c58e5434aaf85035158e",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E3M7",
+      "buildcfgLine": 499,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 38,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e3m8.mid",
+      "gitObjectId": "976c823d92bf0c6a77b5deec39122824598fdc7f",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E3M8",
+      "buildcfgLine": 500,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 39,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e4m1.mid",
+      "gitObjectId": "6e377a7ce65efd62ff4dc0a3fe17d05e970f705e",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E4M1",
+      "buildcfgLine": 503,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 42,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e4m2.mid",
+      "gitObjectId": "7df487528186b86eca6ca505edabfff582c55091",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E4M2",
+      "buildcfgLine": 504,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 43,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e4m9.mid",
+      "gitObjectId": "e6c3991b16b26b42ba98c77eb2a80e82982d9940",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E4M9",
+      "buildcfgLine": 511,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 44,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e4m3.mid",
+      "gitObjectId": "40757b0767e34039943cca62185b936d1f8eeece",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E4M3",
+      "buildcfgLine": 505,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 45,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e4m4.mid",
+      "gitObjectId": "1a638338ec7a264a3eb6f3055a17f6760b5cea67",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E4M4",
+      "buildcfgLine": 506,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 46,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e4m5.mid",
+      "gitObjectId": "9ec63221c7646b256dd57a606d8fd55720c15118",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E4M5",
+      "buildcfgLine": 507,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 47,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e4m6.mid",
+      "gitObjectId": "0827f76a0ba2f61ac68179709a26412cfc3b51a4",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E4M6",
+      "buildcfgLine": 508,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 48,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e4m7.mid",
+      "gitObjectId": "fcec826759db89984f06602a152f143ea772b97c",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E4M7",
+      "buildcfgLine": 509,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 49,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_e4m8.mid",
+      "gitObjectId": "b16a932bbc1d5075f08043b6ce868d377385dfa1",
+      "outputWad": "freedoom1.wad",
+      "outputLump": "D_E4M8",
+      "buildcfgLine": 510,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 50,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm2ttl.mid",
+      "gitObjectId": "420354395ba47347aad4a50a9227a49c58839faf",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_DM2TTL",
+      "buildcfgLine": 552,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 55,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm2int.mid",
+      "gitObjectId": "dfedec44fe108c61f6bfa606cff42551b7418be7",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_DM2INT",
+      "buildcfgLine": 553,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 56,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_read_m.mid",
+      "gitObjectId": "552bcac8081b766e08fd86d59fed7d98c9c52281",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_READ_M",
+      "buildcfgLine": 551,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 57,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map01.mid",
+      "gitObjectId": "75b0d12329c27f188820476f6f8ae0c279672e77",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_RUNNIN",
+      "buildcfgLine": 519,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 60,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map02.mid",
+      "gitObjectId": "f29dd1df421107e32555fa004de92cd57f0f0a69",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_STALKS",
+      "buildcfgLine": 520,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 61,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map03.mid",
+      "gitObjectId": "dff82f2a85a747958c141ec01a967d428cbef64a",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_COUNTD",
+      "buildcfgLine": 521,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 62,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map04.mid",
+      "gitObjectId": "9aabb3e8eef894ac7a05870d642b20f2f33cb411",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_BETWEE",
+      "buildcfgLine": 522,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 63,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map05.mid",
+      "gitObjectId": "5b12faa63985a8346ebb2456b9425ed7c7176b25",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_DOOM",
+      "buildcfgLine": 523,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 64,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map06.mid",
+      "gitObjectId": "dbdc07228b18eb39d1a551c627d30664b131cb8c",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_THE_DA",
+      "buildcfgLine": 524,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 65,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_map07.mid",
+      "gitObjectId": "74ff12ee7792e2e9974bdd39f3491848aecb4483",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_SHAWN",
+      "buildcfgLine": 525,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 66,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map08.mid",
+      "gitObjectId": "4e29965316779da3db17f0da673c5a2413ab5f11",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_DDTBLU",
+      "buildcfgLine": 526,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 67,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map09.mid",
+      "gitObjectId": "7065bdf2642c2c8a3ee31662c8442f09a687b585",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_IN_CIT",
+      "buildcfgLine": 527,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 68,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map10.mid",
+      "gitObjectId": "c4930d128fdfdfb8c36fc5c683932112c6485efc",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_DEAD",
+      "buildcfgLine": 528,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 69,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map11.mid",
+      "gitObjectId": "0e72d315724fd8ee16c534ee90e31d519201d589",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_STLKS2",
+      "buildcfgLine": 529,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 70,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_map12.mid",
+      "gitObjectId": "feca80a86ba8e3ee48aa73904a634aeb0c754022",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_THEDA2",
+      "buildcfgLine": 530,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 73,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_map13.mid",
+      "gitObjectId": "29ea2404aa18acccf0d5143b8973614777fd9242",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_DOOM2",
+      "buildcfgLine": 531,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 74,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map14.mid",
+      "gitObjectId": "8ae82371494328367533844f9d985e03660ab8cd",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_DDTBL2",
+      "buildcfgLine": 532,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 75,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map15.mid",
+      "gitObjectId": "97c6fec404d10f783224384068a8120ef12e5fe2",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_RUNNI2",
+      "buildcfgLine": 533,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 76,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map31.mid",
+      "gitObjectId": "5875d82f6f15fcc94c1573a5cf53568bad63edc5",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_EVIL",
+      "buildcfgLine": 549,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 77,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map32.mid",
+      "gitObjectId": "342b1a40b34e813e6ee90bfbad6b17cf5cb6bf28",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_ULTIMA",
+      "buildcfgLine": 550,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 78,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map16.mid",
+      "gitObjectId": "df547b669bd11182c88499ad3ce43bd1b18d964d",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_DEAD2",
+      "buildcfgLine": 534,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 79,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map17.mid",
+      "gitObjectId": "5fece4753f92fb92fdf3476e3c6861abb1b30dff",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_STLKS3",
+      "buildcfgLine": 535,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 80,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map18.mid",
+      "gitObjectId": "623c91644a9beb9628f092907210038abd3278b3",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_ROMERO",
+      "buildcfgLine": 536,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 81,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map19.mid",
+      "gitObjectId": "68ef5e973ef8e0a03c6ef551779e57f615e53c2f",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_SHAWN2",
+      "buildcfgLine": 537,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 82,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_map20.mid",
+      "gitObjectId": "fc2507d27305c853d5716f50f25c871936d59b35",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_MESSAG",
+      "buildcfgLine": 538,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 83,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map21.mid",
+      "gitObjectId": "a645e76ffe14fd7591c1199e47af5ab64c273444",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_COUNT2",
+      "buildcfgLine": 539,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 86,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_map22.mid",
+      "gitObjectId": "4173bde27c88f316a5a8e32605807c22056e3e6e",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_DDTBL3",
+      "buildcfgLine": 540,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 87,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map23.mid",
+      "gitObjectId": "116692d7afb343de3a09402a6a8426c8f2d03178",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_AMPIE",
+      "buildcfgLine": 541,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 88,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map24.mid",
+      "gitObjectId": "923302833f3e457bb60b25b9c5c1de54427c31eb",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_THEDA3",
+      "buildcfgLine": 542,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 89,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_map25.mid",
+      "gitObjectId": "8454ddba83ab250c24626a3007eb948bba5eaa07",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_ADRIAN",
+      "buildcfgLine": 543,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 90,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map26.mid",
+      "gitObjectId": "78115a6b0be5986ddfae4fe1aaf774ab00f7bebe",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_MESSG2",
+      "buildcfgLine": 544,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 91,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map27.mid",
+      "gitObjectId": "a49df94e0f2771e038983ed534b41db2412d34b5",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_ROMER2",
+      "buildcfgLine": 545,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 92,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map28.mid",
+      "gitObjectId": "7170706575b316a8f5960c2180af56f268be65cf",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_TENSE",
+      "buildcfgLine": 546,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 93,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map29.mid",
+      "gitObjectId": "31dde8dfaa2c442baa42c1376ca2c7a7546f39a2",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_SHAWN3",
+      "buildcfgLine": 547,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 94,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_map30.mid",
+      "gitObjectId": "a4b724dba59172058b414cf602197648b1457d61",
+      "outputWad": "freedoom2.wad",
+      "outputLump": "D_OPENIN",
+      "buildcfgLine": 548,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 95,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_fdmttl.mid",
+      "gitObjectId": "eabead9fb063c1d2fae658c85cebbbf6c8e8d5a2",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_DM2TTL",
+      "buildcfgLine": 591,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 100,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_fdmint.mid",
+      "gitObjectId": "156833667ffafcb1cc1653866da85b422991bb94",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_DM2INT",
+      "buildcfgLine": 592,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 101,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_fdmrdm.mid",
+      "gitObjectId": "92af96c61ede9a6d66e21ade2e9c4d245881096d",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_READ_M",
+      "buildcfgLine": 593,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 102,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_dm01.mid",
+      "gitObjectId": "d49f1a743459467d734d94cccefa00883ed12161",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_RUNNIN",
+      "buildcfgLine": 559,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 104,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm02.mid",
+      "gitObjectId": "b9696dc19333cedeef40cf5b8c330dcfebaf06ba",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_STALKS",
+      "buildcfgLine": 560,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 105,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm03.mid",
+      "gitObjectId": "687e5962b2f14aa77328d58cdc0acfdc12943bbe",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_COUNTD",
+      "buildcfgLine": 561,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 106,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm04.mid",
+      "gitObjectId": "07041f4471cba0462d2aa7a2f4983f0f9d0c9265",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_BETWEE",
+      "buildcfgLine": 562,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 107,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm05.mid",
+      "gitObjectId": "6a9fed22ba7e2e8cb8c09488d52296659a050d12",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_DOOM",
+      "buildcfgLine": 563,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 108,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm06.mid",
+      "gitObjectId": "083007cde1d59963b45a4acaa35809fa960233c5",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_THE_DA",
+      "buildcfgLine": 564,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 109,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm07.mid",
+      "gitObjectId": "4e52f103de142cf3a6464a7dc433cd2e8d1a9b30",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_SHAWN",
+      "buildcfgLine": 565,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 110,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm08.mid",
+      "gitObjectId": "8bbc2c9c63219c177cab8cbf9e8098eb8a4de2fe",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_DDTBLU",
+      "buildcfgLine": 566,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 111,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm09.mid",
+      "gitObjectId": "5cb150d4c577732f35f1b18aa029b51cf1c04b02",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_IN_CIT",
+      "buildcfgLine": 567,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 113,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm10.mid",
+      "gitObjectId": "c5bb67f55ab2d54250724d5834dfc3cb5ee14424",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_DEAD",
+      "buildcfgLine": 568,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 114,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm11.mid",
+      "gitObjectId": "ea1b5a769bbab2fae739c1d60b115453843f6c95",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_STLKS2",
+      "buildcfgLine": 569,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 115,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm12.mid",
+      "gitObjectId": "b6dccb3ce3e62310fed02a20daf39e16cd2b75f2",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_THEDA2",
+      "buildcfgLine": 570,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 116,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm13.mid",
+      "gitObjectId": "86549f0809ebbf67dcff542974acbe30dd9a04ab",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_DOOM2",
+      "buildcfgLine": 571,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 117,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm14.mid",
+      "gitObjectId": "a301446d4f9c09a1a92be698f860efaee0fa0703",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_DDTBL2",
+      "buildcfgLine": 572,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 118,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm15.mid",
+      "gitObjectId": "a147b38501b330a4a2c15f2996f3f18a238260c8",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_RUNNI2",
+      "buildcfgLine": 573,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 119,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm16.mid",
+      "gitObjectId": "0e815991c7ea4c5aac192868b1fab3b5b5d4320c",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_DEAD2",
+      "buildcfgLine": 574,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 120,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm17.mid",
+      "gitObjectId": "626463b4b38418ae9cded6fcc3373a435d21cb17",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_STLKS3",
+      "buildcfgLine": 575,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 122,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm18.mid",
+      "gitObjectId": "59fdb95e62ad78466ae1c1bafe5296c1a8a70725",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_ROMERO",
+      "buildcfgLine": 576,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 123,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm19.mid",
+      "gitObjectId": "77bd9f58f5e90d0926b33a29c84f53e33e2049f5",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_SHAWN2",
+      "buildcfgLine": 577,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 124,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_dm20.mid",
+      "gitObjectId": "84e8cd385d74ae4b12be04afeb51cc7b8bec56b8",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_MESSAG",
+      "buildcfgLine": 578,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 125,
+      "derivativeCredit": true
+    },
+    {
+      "sourcePath": "musics/d_dm21.mid",
+      "gitObjectId": "03759e8356ac226f5db2e3ff131b37a25bafe87b",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_COUNT2",
+      "buildcfgLine": 579,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 126,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm22.mid",
+      "gitObjectId": "2e1c8320e889567f49cbdcba58b1074d9f858364",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_DDTBL3",
+      "buildcfgLine": 580,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 127,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm23.mid",
+      "gitObjectId": "bd52ecc409c90a82e30aa19d1db5b60a5e8f0790",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_AMPIE",
+      "buildcfgLine": 581,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 128,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm24.mid",
+      "gitObjectId": "061eadd392bd5360a4a9e265d7094cd57aece8b3",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_THEDA3",
+      "buildcfgLine": 582,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 129,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm25.mid",
+      "gitObjectId": "6046a476c6ff4704bc1e84a4b1b40d50de857a34",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_ADRIAN",
+      "buildcfgLine": 583,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 131,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm26.mid",
+      "gitObjectId": "2e29d35248255a03be41101ed8279058a8c818a9",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_MESSG2",
+      "buildcfgLine": 584,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 132,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm27.mid",
+      "gitObjectId": "cfbc4307d653b612c52df0f8e607fff070595851",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_ROMER2",
+      "buildcfgLine": 585,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 133,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm28.mid",
+      "gitObjectId": "30a5128a0a9a49422436d67062c034dd1623709d",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_TENSE",
+      "buildcfgLine": 586,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 134,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm29.mid",
+      "gitObjectId": "9cfdcb3a151d3f5f635af6174400a2193a288218",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_SHAWN3",
+      "buildcfgLine": 587,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 135,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm30.mid",
+      "gitObjectId": "de73f072cc18ab02a0ee1cc848f5845ba3769c7a",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_OPENIN",
+      "buildcfgLine": 588,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 136,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm31.mid",
+      "gitObjectId": "82d4423b045f34b39659aac0498569090b6f3e7e",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_EVIL",
+      "buildcfgLine": 589,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 137,
+      "derivativeCredit": false
+    },
+    {
+      "sourcePath": "musics/d_dm32.mid",
+      "gitObjectId": "01aa015b433538f7235418d664302acc70422bfc",
+      "outputWad": "freedm.wad",
+      "outputLump": "D_ULTIMA",
+      "buildcfgLine": 590,
+      "creditPath": "CREDITS-MUSIC",
+      "creditLine": 138,
+      "derivativeCredit": false
+    }
+  ],
+  "unmappedSourcePaths": [
+    "levels/dummy.wad",
+    "levels/test_levels.wad",
+    "musics/dummy.mid"
+  ]
+}

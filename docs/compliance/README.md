@@ -60,6 +60,10 @@ Host capability grants remain separate from both evidence and publication.
 - Review naming, age/content suitability, online features, supported regions,
   notices, maintainer responsibility, incident response, withdrawal and rollback.
 
+The [Anarch and shared Freedoom source-rights audit](source-rights-audit.md) adds
+file-group declarations, mixed-license exceptions and current map/music credit
+joins. It does not change candidate approval status.
+
 ## Candidate-specific work still open
 
 | Candidate | Concrete next evidence |
