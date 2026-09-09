@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "id": "replace-title-id",
+  "title": "Replace title name",
+  "creatorTier": "indie",
+  "scope": "candidate",
+  "policy": {
+    "id": "akeru-title-review",
+    "revision": 1
+  },
+  "identity": {
+    "status": "candidate",
+    "upstreamUrl": "https://example.org/replace-source",
+    "observedRevision": "REPLACE_WITH_FULL_COMMIT",
+    "note": "Confirm source, edition and rights holder."
+  },
+  "release": null,
+  "sections": {
+    "source": {
+      "status": "unknown",
+      "finding": "Not reviewed.",
+      "evidenceUrls": [],
+      "missingEvidence": [
+        "Confirm title identity and edition",
+        "Pin every source, engine and patch",
+        "Map source and build recipe to immutable release digest"
+      ],
+      "review": null
+    },
+    "code": {
+      "status": "unknown",
+      "finding": "Not reviewed.",
+      "evidenceUrls": [],
+      "missingEvidence": [
+        "Record file-level terms and modifications",
+        "Review license compatibility and corresponding-source obligations",
+        "Keep platform MIT terms separate from title terms"
+      ],
+      "review": null
+    },
+    "dependencies": {
+      "status": "unknown",
+      "finding": "Not reviewed.",
+      "evidenceUrls": [],
+      "missingEvidence": [
+        "Inventory runtime, build, vendored and remotely loaded dependencies",
+        "Pin versions and record notices",
+        "Produce dependency inventory and reproducible build evidence"
+      ],
+      "review": null
+    },
+    "assets": {
+      "status": "unknown",
+      "finding": "Not reviewed.",
+      "evidenceUrls": [],
+      "missingEvidence": [
+        "Map every image, font, sound, level and generated asset to origin and terms",
+        "Record modifications, attribution and redistribution evidence",
+        "AI-generated content requires provenance and review too"
+      ],
+      "review": null
+    },
+    "brand": {
+      "status": "unknown",
+      "finding": "Not reviewed.",
+      "evidenceUrls": [],
+      "missingEvidence": [
+        "Review title, logos, screenshots and attribution wording",
+        "Record trademark and non-endorsement obligations"
+      ],
+      "review": null
+    },
+    "privacy": {
+      "status": "unknown",
+      "finding": "Not reviewed.",
+      "evidenceUrls": [],
+      "missingEvidence": [
+        "Inventory network endpoints, trackers, ads and telemetry",
+        "Review guest local saves, optional account-linked sync, migration and deletion",
+        "Keep account credentials and attribution identifiers in host-owned services",
+        "Record retention, consent and marketing attribution data flows"
+      ],
+      "review": null
+    },
+    "safety": {
+      "status": "unknown",
+      "finding": "Not reviewed.",
+      "evidenceUrls": [],
+      "missingEvidence": [
+        "Review content, age suitability and launch regions",
+        "Review online features and abuse surfaces",
+        "Exclude commercial Doom data; FreeDM requires reviewed local or bot play"
+      ],
+      "review": null
+    },
+    "technical": {
+      "status": "unknown",
+      "finding": "Not reviewed.",
+      "evidenceUrls": [],
+      "missingEvidence": [
+        "Verify guest play plus complete controller and touch flows",
+        "Record capabilities, WebGPU fallback and target WebView evidence",
+        "Verify lifecycle, isolation and host-owned save boundaries",
+        "Test native input transport only through a bounded replaceable provider"
+      ],
+      "review": null
+    },
+    "operations": {
+      "status": "unknown",
+      "finding": "Not reviewed.",
+      "evidenceUrls": [],
+      "missingEvidence": [
+        "Record accountable maintainer and release owner",
+        "Verify notices and corresponding source for exact release",
+        "Document monitoring, withdrawal, rollback and emergency response",
+        "Record update and policy re-review triggers"
+      ],
+      "review": null
+    }
+  },
+  "approval": {
+    "status": "pending",
+    "review": null,
+    "reviewedContentDigest": null
+  }
+}

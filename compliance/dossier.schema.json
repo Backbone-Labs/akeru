@@ -1,0 +1,396 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "title",
+    "creatorTier",
+    "scope",
+    "policy",
+    "identity",
+    "release",
+    "sections",
+    "approval"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "creatorTier": {
+      "enum": [
+        "backbone",
+        "indie",
+        "community"
+      ]
+    },
+    "scope": {
+      "enum": [
+        "candidate",
+        "optional",
+        "future"
+      ]
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision"
+      ],
+      "properties": {
+        "id": {
+          "const": "akeru-title-review"
+        },
+        "revision": {
+          "const": 1
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "upstreamUrl",
+        "observedRevision",
+        "note"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "candidate",
+            "confirmed"
+          ]
+        },
+        "upstreamUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "observedRevision": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "release": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/release"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "code",
+        "dependencies",
+        "assets",
+        "brand",
+        "privacy",
+        "safety",
+        "technical",
+        "operations"
+      ],
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/section"
+        },
+        "code": {
+          "$ref": "#/$defs/section"
+        },
+        "dependencies": {
+          "$ref": "#/$defs/section"
+        },
+        "assets": {
+          "$ref": "#/$defs/section"
+        },
+        "brand": {
+          "$ref": "#/$defs/section"
+        },
+        "privacy": {
+          "$ref": "#/$defs/section"
+        },
+        "safety": {
+          "$ref": "#/$defs/section"
+        },
+        "technical": {
+          "$ref": "#/$defs/section"
+        },
+        "operations": {
+          "$ref": "#/$defs/section"
+        }
+      }
+    },
+    "approval": {
+      "$ref": "#/$defs/approval"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Akeru title evidence dossier v1",
+  "$comment": "Structural schema only. Run scripts/validate-compliance.mjs for current policy, content digest and decision completeness checks. Neither validates reviewer authority or grants publication.",
+  "$defs": {
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewer",
+        "reviewedAt",
+        "evidenceUrls"
+      ],
+      "properties": {
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        },
+        "evidenceUrls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "finding",
+        "evidenceUrls",
+        "missingEvidence",
+        "review"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "unknown",
+            "in-review",
+            "complete"
+          ]
+        },
+        "finding": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidenceUrls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          }
+        },
+        "missingEvidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "review": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/review"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "complete"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidenceUrls": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uri",
+                  "pattern": "^https://"
+                },
+                "minItems": 1
+              },
+              "missingEvidence": {
+                "maxItems": 0
+              },
+              "review": {
+                "$ref": "#/$defs/review"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "missingEvidence": {
+                "minItems": 1
+              },
+              "review": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url",
+        "revision",
+        "role"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"
+        },
+        "role": {
+          "enum": [
+            "game",
+            "engine",
+            "patches",
+            "assets",
+            "build"
+          ]
+        }
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "artifactDigest",
+        "sources"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+        },
+        "artifactDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "review",
+        "reviewedContentDigest"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "review": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/review"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviewedContentDigest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "pending"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "review": {
+                "type": "null"
+              },
+              "reviewedContentDigest": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "review": {
+                "$ref": "#/$defs/review"
+              },
+              "reviewedContentDigest": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

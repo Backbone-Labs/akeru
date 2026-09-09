@@ -1,0 +1,17 @@
+{
+  "id": "akeru-title-review",
+  "revision": 1,
+  "requiredSections": {
+    "source": ["Confirm title identity and edition", "Pin every source, engine and patch", "Map source and build recipe to immutable release digest"],
+    "code": ["Record file-level terms and modifications", "Review license compatibility and corresponding-source obligations", "Keep platform MIT terms separate from title terms"],
+    "dependencies": ["Inventory runtime, build, vendored and remotely loaded dependencies", "Pin versions and record notices", "Produce dependency inventory and reproducible build evidence"],
+    "assets": ["Map every image, font, sound, level and generated asset to origin and terms", "Record modifications, attribution and redistribution evidence", "AI-generated content requires provenance and review too"],
+    "brand": ["Review title, logos, screenshots and attribution wording", "Record trademark and non-endorsement obligations"],
+    "privacy": ["Inventory network endpoints, trackers, ads and telemetry", "Review guest local saves, optional account-linked sync, migration and deletion", "Keep account credentials and attribution identifiers in host-owned services", "Record retention, consent and marketing attribution data flows"],
+    "safety": ["Review content, age suitability and launch regions", "Review online features and abuse surfaces", "Exclude commercial Doom data; FreeDM requires reviewed local or bot play"],
+    "technical": ["Verify guest play plus complete controller and touch flows", "Record capabilities, WebGPU fallback and target WebView evidence", "Verify lifecycle, isolation and host-owned save boundaries", "Test native input transport only through a bounded replaceable provider"],
+    "operations": ["Record accountable maintainer and release owner", "Verify notices and corresponding source for exact release", "Document monitoring, withdrawal, rollback and emergency response", "Record update and policy re-review triggers"]
+  },
+  "prohibitedContent": ["Commercial Doom game data"],
+  "note": "Evidence completeness checks do not authenticate reviewers or provide legal clearance, host permissions, or publication authorization."
+}
