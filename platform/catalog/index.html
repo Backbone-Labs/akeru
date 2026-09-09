@@ -1,18 +1,147 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f5f5f5"><meta name="description" content="Akeru. Free games, ready to play with a controller or touch.">
-<title>Akeru — Good games. Wide open.</title>
-<link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/input/styles.css">
-<script type="module" src="/bootstrap.js"></script>
-</head>
-<body>
-<svg class="brand-symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><symbol id="backbone-mark" viewBox="0 0 111 104"><path d="M46.2683 7.3254C49.8708 5.80605 53.0318 3.4455 55.4997 0.485352C57.9677 3.4455 61.1287 5.80605 64.7312 7.3254C61.1287 8.84375 57.9677 11.2053 55.4997 14.1655C53.0318 11.2053 49.8708 8.84375 46.2683 7.3254Z" fill="currentColor"/><path d="M52.1002 29.7298C52.1002 26.9516 51.0144 24.3445 49.0416 22.3886C47.0897 20.4516 44.5074 19.3877 41.761 19.3877H41.6765L31.4895 19.4692C25.8337 19.514 21.2309 24.1536 21.2309 29.8103V43.9667C20.0536 43.4994 18.771 43.2419 17.4286 43.2419H10.6224C4.92084 43.2419 0.28125 47.8814 0.28125 53.584V84.5258L52.1002 103.514V29.7298ZM21.222 85.2268L6.82897 79.9528V53.585C6.82897 51.4929 8.53128 49.7906 10.6224 49.7906H17.4286C19.5197 49.7906 21.222 51.4929 21.222 53.585V85.2268ZM45.5525 94.142L27.7697 87.6261V53.585C27.7697 53.4607 27.7677 53.3364 27.7627 53.2141H27.7797V29.8113C27.7797 27.7362 29.4671 26.0338 31.5422 26.0169L41.7282 25.9364H41.7601C42.7673 25.9364 43.7149 26.3272 44.4308 27.0371C45.1537 27.755 45.5525 28.7116 45.5525 29.7308V94.142Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"/><path d="M58.8997 29.7308V103.515L110.719 84.5267V53.5849C110.719 47.8824 106.079 43.2428 100.377 43.2428H93.5712C92.2289 43.2428 90.9462 43.5004 89.7689 43.9677V29.8113C89.7689 24.1545 85.1661 19.515 79.5093 19.4702L69.3233 19.3887H69.2388C66.4924 19.3887 63.9091 20.4526 61.9582 22.3896C59.9855 24.3454 58.8997 26.9526 58.8997 29.7308ZM89.7778 53.5849C89.7778 51.4928 91.4801 49.7905 93.5712 49.7905H100.377C102.469 49.7905 104.171 51.4928 104.171 53.5849V79.9528L89.7778 85.2267V53.5849ZM65.4474 29.7298C65.4474 28.7106 65.8461 27.754 66.569 27.0361C67.2859 26.3262 68.2325 25.9354 69.2408 25.9354H69.2716L79.4576 26.0159C81.5328 26.0328 83.2211 27.7351 83.2211 29.8103V53.2131H83.2361C83.2321 53.3354 83.2301 53.4596 83.2301 53.5839V87.6251L65.4474 94.141V29.7298Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"/></symbol><symbol id="backbone-wordmark" viewBox="0 0 140 20"><path d="M14,9.64C14.98,8.63 15.54,7.27 15.54,5.85C15.54,2.86 13.12,0.42 10.14,0.42H0.55V19.04H10.31C13.29,19.04 15.71,16.6 15.71,13.6C15.71,12.09 15.09,10.67 14,9.64ZM3.64,3.53H10.14C11.42,3.53 12.45,4.57 12.45,5.85C12.45,7.13 11.42,8.17 10.14,8.17H3.64V3.53ZM10.31,15.93H3.64V11.28H10.31C11.59,11.28 12.62,12.32 12.62,13.6C12.62,14.89 11.59,15.93 10.31,15.93Z" fill="currentColor"/><path d="M96.94,0.16C92.05,0.16 87.76,4.67 87.76,9.81C87.76,14.95 92.05,19.46 96.94,19.46C101.84,19.46 106.13,14.95 106.13,9.81C106.13,4.66 101.84,0.16 96.94,0.16ZM96.94,16.36C93.69,16.36 90.83,13.3 90.83,9.81C90.83,6.32 93.69,3.26 96.94,3.26C100.2,3.26 103.05,6.32 103.05,9.81C103.05,13.3 100.2,16.36 96.94,16.36Z" fill="currentColor"/><path d="M120.16,13.77L111.64,0.42H108.24V19.04H111.33V5.69L119.86,19.04H123.25V0.42H120.16V13.77Z" fill="currentColor"/><path d="M84.73,9.64C85.71,8.63 86.26,7.27 86.26,5.85C86.26,2.86 83.84,0.42 80.87,0.42H71.27V19.04H81.04C84.01,19.04 86.43,16.6 86.43,13.6C86.43,12.09 85.81,10.67 84.73,9.64ZM74.36,3.53H80.87C82.14,3.53 83.17,4.57 83.17,5.85C83.17,7.13 82.14,8.17 80.87,8.17H74.36V3.53ZM81.04,15.93H74.36V11.28H81.04C82.31,11.28 83.34,12.32 83.34,13.6C83.34,14.89 82.31,15.93 81.04,15.93Z" fill="currentColor"/><path d="M131.13,3.53H139.45V0.42H131.13C128.16,0.42 125.74,2.86 125.74,5.85C125.74,7.27 126.29,8.63 127.27,9.64C126.18,10.67 125.56,12.1 125.56,13.61C125.56,16.6 127.98,19.04 130.95,19.04H139.45V15.93H130.95C129.68,15.93 128.65,14.89 128.65,13.61C128.65,12.33 129.68,11.29 130.95,11.29H137.64V8.18H131.13C129.86,8.18 128.82,7.14 128.82,5.86C128.82,4.57 129.86,3.54 131.13,3.54V3.53Z" fill="currentColor"/><path d="M24.1,0.42L16.22,19.04H19.56L21.98,13.33H29.13L31.54,19.04H34.89L27.02,0.42H24.1H24.1ZM23.29,10.23L25.56,4.88L27.82,10.23H23.29Z" fill="currentColor"/><path d="M69.17,0.41H65.39L59.95,8.15H56.37V0.42H53.3V19.04H56.37V11.25H59.95L65.46,19.04H69.24L62.63,9.7L69.17,0.41Z" fill="currentColor"/><path d="M48.32,13.53C47.25,15.25 45.32,16.36 43.42,16.36C40.21,16.36 37.5,13.36 37.5,9.81C37.5,6.26 40.21,3.26 43.42,3.26C45.16,3.26 47,4.23 48.09,5.73L48.28,5.98L50.95,4.44L50.74,4.13C49.08,1.68 46.27,0.16 43.42,0.16C38.54,0.16 34.42,4.57 34.42,9.8C34.42,15.03 38.54,19.45 43.42,19.45C46.41,19.45 49.38,17.74 50.99,15.09L51.18,14.78L48.5,13.25L48.33,13.53L48.32,13.53Z" fill="currentColor"/></symbol></defs></svg>
-<a class="skip-link" href="#main">Skip to content</a>
-<header class="masthead"><a class="wordmark" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg><span class="brand-name"><svg class="brand-wordmark" viewBox="0 0 140 20" aria-hidden="true"><use href="#backbone-wordmark"/></svg><span class="brand-product">Akeru</span></span></a><nav aria-label="Main"><a href="/" data-navigate>Discover</a><button class="text-button" id="about-button" data-navigate>About Akeru</button></nav><span class="guest-pill"><span aria-hidden="true">●</span> Here to play</span></header>
-<div id="demo-banner" class="demo-banner" hidden>DESIGN PREVIEW · Original test fixture. No published games or approvals.</div>
-<main id="main" tabindex="-1"><section class="initial-state" role="status"><span class="spinner" aria-hidden="true"></span><h1>Opening Akeru…</h1></section></main>
-<footer><a class="wordmark small" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg><span class="brand-name"><svg class="brand-wordmark" viewBox="0 0 140 20" aria-hidden="true"><use href="#backbone-wordmark"/></svg><span class="brand-product">Akeru</span></span></a><p>Open a game. Make some time.</p><span>Free to play. Yours to discover.</span></footer>
-<dialog id="about-dialog" aria-labelledby="about-title"><button class="dialog-close" aria-label="Close about" id="close-about">×</button><svg class="about-brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg><p class="eyebrow">BACKBONE / AKERU</p><h2 id="about-title">Play starts here.</h2><p>Akeru brings games to your browser, with controller and touch support. Guest play is free. No account or membership is required.</p><p>Every published game goes through the same package and review process, whether it comes from Backbone, an independent developer or the community.</p><p class="subtle">Account linking and cloud save services are not available in this preview.</p></dialog>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f5f5f5" />
+    <meta
+      name="description"
+      content="Akeru. Free games, ready to play with a controller or touch."
+    />
+    <title>Akeru — Good games. Wide open.</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/input/styles.css" />
+    <script type="module" src="/bootstrap.js"></script>
+  </head>
+  <body>
+    <svg
+      class="brand-symbols"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <defs>
+        <symbol id="backbone-mark" viewBox="0 0 111 104">
+          <path
+            d="M46.2683 7.3254C49.8708 5.80605 53.0318 3.4455 55.4997 0.485352C57.9677 3.4455 61.1287 5.80605 64.7312 7.3254C61.1287 8.84375 57.9677 11.2053 55.4997 14.1655C53.0318 11.2053 49.8708 8.84375 46.2683 7.3254Z"
+            fill="currentColor"
+          />
+          <path
+            d="M52.1002 29.7298C52.1002 26.9516 51.0144 24.3445 49.0416 22.3886C47.0897 20.4516 44.5074 19.3877 41.761 19.3877H41.6765L31.4895 19.4692C25.8337 19.514 21.2309 24.1536 21.2309 29.8103V43.9667C20.0536 43.4994 18.771 43.2419 17.4286 43.2419H10.6224C4.92084 43.2419 0.28125 47.8814 0.28125 53.584V84.5258L52.1002 103.514V29.7298ZM21.222 85.2268L6.82897 79.9528V53.585C6.82897 51.4929 8.53128 49.7906 10.6224 49.7906H17.4286C19.5197 49.7906 21.222 51.4929 21.222 53.585V85.2268ZM45.5525 94.142L27.7697 87.6261V53.585C27.7697 53.4607 27.7677 53.3364 27.7627 53.2141H27.7797V29.8113C27.7797 27.7362 29.4671 26.0338 31.5422 26.0169L41.7282 25.9364H41.7601C42.7673 25.9364 43.7149 26.3272 44.4308 27.0371C45.1537 27.755 45.5525 28.7116 45.5525 29.7308V94.142Z"
+            fill="currentColor"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+          />
+          <path
+            d="M58.8997 29.7308V103.515L110.719 84.5267V53.5849C110.719 47.8824 106.079 43.2428 100.377 43.2428H93.5712C92.2289 43.2428 90.9462 43.5004 89.7689 43.9677V29.8113C89.7689 24.1545 85.1661 19.515 79.5093 19.4702L69.3233 19.3887H69.2388C66.4924 19.3887 63.9091 20.4526 61.9582 22.3896C59.9855 24.3454 58.8997 26.9526 58.8997 29.7308ZM89.7778 53.5849C89.7778 51.4928 91.4801 49.7905 93.5712 49.7905H100.377C102.469 49.7905 104.171 51.4928 104.171 53.5849V79.9528L89.7778 85.2267V53.5849ZM65.4474 29.7298C65.4474 28.7106 65.8461 27.754 66.569 27.0361C67.2859 26.3262 68.2325 25.9354 69.2408 25.9354H69.2716L79.4576 26.0159C81.5328 26.0328 83.2211 27.7351 83.2211 29.8103V53.2131H83.2361C83.2321 53.3354 83.2301 53.4596 83.2301 53.5839V87.6251L65.4474 94.141V29.7298Z"
+            fill="currentColor"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+          />
+        </symbol>
+        <symbol id="backbone-wordmark" viewBox="0 0 140 20">
+          <path
+            d="M14,9.64C14.98,8.63 15.54,7.27 15.54,5.85C15.54,2.86 13.12,0.42 10.14,0.42H0.55V19.04H10.31C13.29,19.04 15.71,16.6 15.71,13.6C15.71,12.09 15.09,10.67 14,9.64ZM3.64,3.53H10.14C11.42,3.53 12.45,4.57 12.45,5.85C12.45,7.13 11.42,8.17 10.14,8.17H3.64V3.53ZM10.31,15.93H3.64V11.28H10.31C11.59,11.28 12.62,12.32 12.62,13.6C12.62,14.89 11.59,15.93 10.31,15.93Z"
+            fill="currentColor"
+          />
+          <path
+            d="M96.94,0.16C92.05,0.16 87.76,4.67 87.76,9.81C87.76,14.95 92.05,19.46 96.94,19.46C101.84,19.46 106.13,14.95 106.13,9.81C106.13,4.66 101.84,0.16 96.94,0.16ZM96.94,16.36C93.69,16.36 90.83,13.3 90.83,9.81C90.83,6.32 93.69,3.26 96.94,3.26C100.2,3.26 103.05,6.32 103.05,9.81C103.05,13.3 100.2,16.36 96.94,16.36Z"
+            fill="currentColor"
+          />
+          <path
+            d="M120.16,13.77L111.64,0.42H108.24V19.04H111.33V5.69L119.86,19.04H123.25V0.42H120.16V13.77Z"
+            fill="currentColor"
+          />
+          <path
+            d="M84.73,9.64C85.71,8.63 86.26,7.27 86.26,5.85C86.26,2.86 83.84,0.42 80.87,0.42H71.27V19.04H81.04C84.01,19.04 86.43,16.6 86.43,13.6C86.43,12.09 85.81,10.67 84.73,9.64ZM74.36,3.53H80.87C82.14,3.53 83.17,4.57 83.17,5.85C83.17,7.13 82.14,8.17 80.87,8.17H74.36V3.53ZM81.04,15.93H74.36V11.28H81.04C82.31,11.28 83.34,12.32 83.34,13.6C83.34,14.89 82.31,15.93 81.04,15.93Z"
+            fill="currentColor"
+          />
+          <path
+            d="M131.13,3.53H139.45V0.42H131.13C128.16,0.42 125.74,2.86 125.74,5.85C125.74,7.27 126.29,8.63 127.27,9.64C126.18,10.67 125.56,12.1 125.56,13.61C125.56,16.6 127.98,19.04 130.95,19.04H139.45V15.93H130.95C129.68,15.93 128.65,14.89 128.65,13.61C128.65,12.33 129.68,11.29 130.95,11.29H137.64V8.18H131.13C129.86,8.18 128.82,7.14 128.82,5.86C128.82,4.57 129.86,3.54 131.13,3.54V3.53Z"
+            fill="currentColor"
+          />
+          <path
+            d="M24.1,0.42L16.22,19.04H19.56L21.98,13.33H29.13L31.54,19.04H34.89L27.02,0.42H24.1H24.1ZM23.29,10.23L25.56,4.88L27.82,10.23H23.29Z"
+            fill="currentColor"
+          />
+          <path
+            d="M69.17,0.41H65.39L59.95,8.15H56.37V0.42H53.3V19.04H56.37V11.25H59.95L65.46,19.04H69.24L62.63,9.7L69.17,0.41Z"
+            fill="currentColor"
+          />
+          <path
+            d="M48.32,13.53C47.25,15.25 45.32,16.36 43.42,16.36C40.21,16.36 37.5,13.36 37.5,9.81C37.5,6.26 40.21,3.26 43.42,3.26C45.16,3.26 47,4.23 48.09,5.73L48.28,5.98L50.95,4.44L50.74,4.13C49.08,1.68 46.27,0.16 43.42,0.16C38.54,0.16 34.42,4.57 34.42,9.8C34.42,15.03 38.54,19.45 43.42,19.45C46.41,19.45 49.38,17.74 50.99,15.09L51.18,14.78L48.5,13.25L48.33,13.53L48.32,13.53Z"
+            fill="currentColor"
+          />
+        </symbol>
+      </defs>
+    </svg>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="masthead">
+      <a class="wordmark" href="/" aria-label="Backbone Akeru home"
+        ><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true">
+          <use href="#backbone-mark" /></svg
+        ><span class="brand-name"
+          ><svg class="brand-wordmark" viewBox="0 0 140 20" aria-hidden="true">
+            <use href="#backbone-wordmark" /></svg
+          ><span class="brand-product">Akeru</span></span
+        ></a
+      >
+      <nav aria-label="Main">
+        <a href="/" data-navigate>Discover</a
+        ><button class="text-button" id="about-button" data-navigate>
+          About Akeru
+        </button>
+      </nav>
+      <span class="guest-pill"
+        ><span aria-hidden="true">●</span> Here to play</span
+      >
+    </header>
+    <div id="demo-banner" class="demo-banner" hidden>
+      DESIGN PREVIEW · Original test fixture. No published games or approvals.
+    </div>
+    <main id="main" tabindex="-1">
+      <section class="initial-state" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        <h1>Opening Akeru…</h1>
+      </section>
+    </main>
+    <footer>
+      <a class="wordmark small" href="/" aria-label="Backbone Akeru home"
+        ><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true">
+          <use href="#backbone-mark" /></svg
+        ><span class="brand-name"
+          ><svg class="brand-wordmark" viewBox="0 0 140 20" aria-hidden="true">
+            <use href="#backbone-wordmark" /></svg
+          ><span class="brand-product">Akeru</span></span
+        ></a
+      >
+      <p>Open a game. Make some time.</p>
+      <span>Free to play. Yours to discover.</span>
+    </footer>
+    <dialog id="about-dialog" aria-labelledby="about-title">
+      <button class="dialog-close" aria-label="Close about" id="close-about">
+        ×</button
+      ><svg class="about-brand-mark" viewBox="0 0 111 104" aria-hidden="true">
+        <use href="#backbone-mark" />
+      </svg>
+      <p class="eyebrow">BACKBONE / AKERU</p>
+      <h2 id="about-title">Play starts here.</h2>
+      <p>
+        Akeru brings games to your browser, with controller and touch support.
+        Guest play is free. No account or membership is required.
+      </p>
+      <p>
+        Every published game goes through the same package and review process,
+        whether it comes from Backbone, an independent developer or the
+        community.
+      </p>
+      <p class="subtle">
+        Account linking and cloud save services are not available in this
+        preview.
+      </p>
+    </dialog>
+  </body>
+</html>

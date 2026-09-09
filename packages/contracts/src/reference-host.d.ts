@@ -1,4 +1,12 @@
-import type { AudioState, HostServicesV1, InputMapping, PresentationState, RawInputSnapshot, SaveRecord, TitleAdapterV1 } from './index.js';
+import type {
+  AudioState,
+  HostServicesV1,
+  InputMapping,
+  PresentationState,
+  RawInputSnapshot,
+  SaveRecord,
+  TitleAdapterV1,
+} from './index.js';
 
 export interface LaunchPlan {
   readonly renderer: 'dom' | 'canvas2d' | 'webgl2' | 'webgpu';
@@ -8,14 +16,17 @@ export interface LaunchPlan {
   readonly headers: Readonly<Record<string, string>>;
 }
 
-export function planLaunch(manifest: unknown, environment: {
-  grants: readonly string[];
-  graphics: readonly ('dom' | 'canvas2d' | 'webgl2' | 'webgpu')[];
-  features: readonly string[];
-  shellOrigin: string;
-  titleOrigin: string;
-  sdkVersion?: string;
-}): LaunchPlan;
+export function planLaunch(
+  manifest: unknown,
+  environment: {
+    grants: readonly string[];
+    graphics: readonly ('dom' | 'canvas2d' | 'webgl2' | 'webgpu')[];
+    features: readonly string[];
+    shellOrigin: string;
+    titleOrigin: string;
+    sdkVersion?: string;
+  },
+): LaunchPlan;
 
 export interface ReferenceHost {
   readonly services: HostServicesV1;
@@ -36,11 +47,24 @@ export interface ReferenceHost {
   remapInput(mapping: InputMapping, timeMs?: number): void;
   updatePresentation(state: PresentationState): void;
   updateAudio(state: AudioState): void;
-  updateSaveStatus(state: { local: 'available' | 'unavailable'; sync: 'disabled' | 'signed-out' | 'pending' | 'synced' | 'conflict' | 'error' }): void;
+  updateSaveStatus(state: {
+    local: 'available' | 'unavailable';
+    sync:
+      'disabled' | 'signed-out' | 'pending' | 'synced' | 'conflict' | 'error';
+  }): void;
   /** Host control-plane operations. These are intentionally absent from HostServicesV1. */
-  exportSaves(): { schemaVersion: number; records: Array<{ slot: string; schemaVersion: number; bytes: Uint8Array }> };
+  exportSaves(): {
+    schemaVersion: number;
+    records: Array<{ slot: string; schemaVersion: number; bytes: Uint8Array }>;
+  };
   resetSaves(): void;
-  migrateSaves(migrate: (slot: string, record: SaveRecord, targetSchemaVersion: number) => Promise<{ schemaVersion: number; bytes: Uint8Array }>): Promise<void>;
+  migrateSaves(
+    migrate: (
+      slot: string,
+      record: SaveRecord,
+      targetSchemaVersion: number,
+    ) => Promise<{ schemaVersion: number; bytes: Uint8Array }>,
+  ): Promise<void>;
   dispose(): void;
 }
 
@@ -50,7 +74,11 @@ export function createReferenceHost(options?: {
   maxSlots?: number;
   inputDeadzone?: number;
   inputMapping?: InputMapping;
-  initialSaves?: Array<{ slot: string; schemaVersion: number; bytes: Uint8Array }>;
+  initialSaves?: Array<{
+    slot: string;
+    schemaVersion: number;
+    bytes: Uint8Array;
+  }>;
 }): ReferenceHost;
 
 export function assertTitleAdapterV1(adapter: unknown): TitleAdapterV1;

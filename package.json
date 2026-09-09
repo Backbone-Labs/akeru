@@ -20,6 +20,20 @@
     "package:source": "node scripts/package-source.mjs",
     "package:staging": "node scripts/package-staging.mjs",
     "preview:staging": "node scripts/serve-staging.mjs",
-    "package:cloudflare": "node scripts/package-cloudflare.mjs"
+    "package:cloudflare": "node scripts/package-cloudflare.mjs",
+    "lint": "eslint . --max-warnings=0",
+    "format:check": "prettier --check \"**/*.{js,mjs,ts,css,html,yml}\"",
+    "format": "prettier --write \"**/*.{js,mjs,ts,css,html,yml}\"",
+    "typecheck": "tsc -p tsconfig.json",
+    "test:browser": "playwright test",
+    "package:catalog": "node scripts/package-catalog.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
+    "eslint": "10.10.0",
+    "globals": "17.12.0",
+    "prettier": "3.9.6",
+    "typescript": "7.0.2"
   }
 }
