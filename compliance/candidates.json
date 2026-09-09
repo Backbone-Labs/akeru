@@ -1,0 +1,1303 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "anarch",
+    "title": "Anarch",
+    "creatorTier": "backbone",
+    "scope": "candidate",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://gitlab.com/drummyfish/anarch",
+      "observedRevision": "6f90562161200682459e772f1dacb747f23c5f95",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/README.md"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "Author README declares CC0 for code and original art; browser recipe includes SDL2 and OpenAL.",
+        "evidenceUrls": [
+          "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/README.md"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "in-review",
+        "finding": "Browser recipe links SDL2 and OpenAL through Emscripten; portable core dependency claims do not cover the browser artifact.",
+        "evidenceUrls": [
+          "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/make.sh"
+        ],
+        "missingEvidence": [
+          "Pin exact Emscripten ports/toolchain and include their notices; inventory selected mods separately."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Map optional mods and all generated assets; pin browser toolchain.",
+          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Browser frontend has web-specific save and analog-input gaps; touch buttons exist but conformance is untested.",
+        "evidenceUrls": [
+          "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/main_sdl.c",
+          "https://gitlab.com/drummyfish/anarch/-/blob/6f90562161200682459e772f1dacb747f23c5f95/HTMLshell.html"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "id": "open-golf",
+    "title": "Open Golf",
+    "creatorTier": "backbone",
+    "scope": "candidate",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://github.com/mgerdes/Open-Golf",
+      "observedRevision": "b9029f1e80c3110ae3d4fc9300854bdaeef96508",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/README.md"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "Root MIT notice; separate dependency and font/asset inventories remain necessary.",
+        "evidenceUrls": [
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/LICENSE"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "in-review",
+        "finding": "Vendored cimgui/ImGui and GLFW have separate notices. Other bundled libraries and build tools need file-level mapping.",
+        "evidenceUrls": [
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/cimgui/LICENSE",
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/cimgui/imgui/LICENSE.txt",
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/3rd_party/glfw/LICENSE.md"
+        ],
+        "missingEvidence": [
+          "Resolve all vendored terms, generated shaders and pinned toolchain inputs."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "in-review",
+        "finding": "Bundled Kenney Nature Kit notice declares CC0; this does not clear other fonts or assets.",
+        "evidenceUrls": [
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/data/models/nature_kit/License.txt"
+        ],
+        "missingEvidence": [
+          "Map Castle-Rock, FiraSans, Font Awesome and other asset terms; review runtime dependencies.",
+          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Existing HTML build uses WebGL2, pthreads and IDBFS; prove isolation and mobile controller/touch compatibility.",
+        "evidenceUrls": [
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/CMakeLists.txt",
+          "https://github.com/mgerdes/Open-Golf/blob/b9029f1e80c3110ae3d4fc9300854bdaeef96508/src/common/inputs.h"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "id": "freedoom-phase-1",
+    "title": "Freedoom Phase 1",
+    "creatorTier": "backbone",
+    "scope": "candidate",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://github.com/freedoom/freedoom",
+      "observedRevision": "d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/README.adoc"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "Game data has a BSD-style notice; engine licensing and resource chain are separate.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/COPYING.adoc"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "in-review",
+        "finding": "Data build requires an independently selected engine and build tools; no engine choice or engine binary is approved here.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/BUILD-SYSTEM.adoc"
+        ],
+        "missingEvidence": [
+          "Select and pin engine/toolchain, audit their resources and corresponding-source obligations."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "in-review",
+        "finding": "Data source includes separate music credits and font provenance records. Generated WAD contents still require a path-to-output mapping.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/CREDITS-MUSIC",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/font/README",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/COPYING.adoc"
+        ],
+        "missingEvidence": [
+          "Map every shipped lump to its source and credit; exclude commercial Doom data."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Commercial Doom game data must never enter the package; exact data allowlist and selected-engine review remain open.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Prove selected engine with Phase 1 data, controller, touch and saves; no commercial Doom data.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/BUILD-SYSTEM.adoc"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "id": "freedoom-phase-2",
+    "title": "Freedoom Phase 2",
+    "creatorTier": "backbone",
+    "scope": "candidate",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://github.com/freedoom/freedoom",
+      "observedRevision": "d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/README.adoc"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "Game data has a BSD-style notice; engine licensing and resource chain are separate.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/COPYING.adoc"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "in-review",
+        "finding": "Data build requires an independently selected engine and build tools; no engine choice or engine binary is approved here.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/BUILD-SYSTEM.adoc"
+        ],
+        "missingEvidence": [
+          "Select and pin engine/toolchain, audit their resources and corresponding-source obligations."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "in-review",
+        "finding": "Data source includes separate music credits and font provenance records. Generated WAD contents still require a path-to-output mapping.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/CREDITS-MUSIC",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/font/README",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/COPYING.adoc"
+        ],
+        "missingEvidence": [
+          "Map every shipped lump to its source and credit; exclude commercial Doom data."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Commercial Doom game data must never enter the package; exact data allowlist and selected-engine review remain open.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Prove selected engine with Phase 2 data, controller, touch and saves; no commercial Doom data.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/BUILD-SYSTEM.adoc"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "id": "freedm",
+    "title": "FreeDM",
+    "creatorTier": "backbone",
+    "scope": "candidate",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://github.com/freedoom/freedoom",
+      "observedRevision": "d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/README.adoc"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "Game data has a BSD-style notice; engine licensing and resource chain are separate.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/COPYING.adoc"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "in-review",
+        "finding": "Data build requires an independently selected engine and build tools; no engine choice or engine binary is approved here.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/BUILD-SYSTEM.adoc"
+        ],
+        "missingEvidence": [
+          "Select and pin engine/toolchain, audit their resources and corresponding-source obligations."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "in-review",
+        "finding": "Data source includes separate music credits and font provenance records. Generated WAD contents still require a path-to-output mapping.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/CREDITS-MUSIC",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/graphics/text/font/README",
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/COPYING.adoc"
+        ],
+        "missingEvidence": [
+          "Map every shipped lump to its source and credit; exclude commercial Doom data."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the privacy checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Commercial Doom game data must never enter the package; exact data allowlist and selected-engine review remain open.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Demonstrate useful local or bot play in the selected engine; public multiplayer is not a launch mode.",
+        "evidenceUrls": [
+          "https://github.com/freedoom/freedoom/blob/d14dbbee3b6fbfb2c11cdb65eb61216e86d4ee85/README.adoc"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "id": "isocity",
+    "title": "IsoCity",
+    "creatorTier": "backbone",
+    "scope": "candidate",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://github.com/victorqribeiro/isocity",
+      "observedRevision": "c5772412d3e423318f2cf479ebdd50a2b9029d84",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/README.md"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "Root MIT notice; cited helper and asset origins need separate mapping.",
+        "evidenceUrls": [
+          "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/LICENSE"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "in-review",
+        "finding": "Main source attributes landscape assets to Kenney; its base64 helper has separate Stack Overflow provenance. Root MIT is not a per-file clearance.",
+        "evidenceUrls": [
+          "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/js/main.js"
+        ],
+        "missingEvidence": [
+          "Match each asset to its original source and terms; resolve helper attribution and modifications."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "in-review",
+        "finding": "Main source serializes game state into URL fragments and browser history. Host-owned save migration must account for this existing behavior.",
+        "evidenceUrls": [
+          "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/js/main.js"
+        ],
+        "missingEvidence": [
+          "Audit final build requests and ensure state is not exposed through host analytics or link sharing."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Upstream describes a builder without simulation goals and not designed for phones; controller/touch mobile adaptation remains unproved.",
+        "evidenceUrls": [
+          "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/README.md",
+          "https://github.com/victorqribeiro/isocity/blob/c5772412d3e423318f2cf479ebdd50a2b9029d84/js/main.js"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "id": "server-survival",
+    "title": "Server Survival",
+    "creatorTier": "backbone",
+    "scope": "candidate",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://github.com/pshenok/server-survival",
+      "observedRevision": "01796362d3b7bfa6c85efab5e2685f4d955dc137",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/README.md"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "Root MIT notice; entry HTML loads runtime scripts beyond package.json development dependencies.",
+        "evidenceUrls": [
+          "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/LICENSE"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "in-review",
+        "finding": "Entry HTML loads runtime dependencies separately from package.json development tooling. They must be vendored or explicitly reviewed and pinned.",
+        "evidenceUrls": [
+          "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/index.html",
+          "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/package.json"
+        ],
+        "missingEvidence": [
+          "Inventory remote scripts/styles and their transitive assets; retain notices for exact shipped versions."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Inventory and pin CDN-loaded Tailwind and Three.js; map all assets.",
+          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "in-review",
+        "finding": "Entry HTML contains remote script/style loads; serving it unchanged sends requests outside the game host.",
+        "evidenceUrls": [
+          "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/index.html"
+        ],
+        "missingEvidence": [
+          "Remove or review every remote dependency and verify a final-build network trace."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Pointer/keyboard placement and camera flows need controller and touch conformance.",
+        "evidenceUrls": [
+          "https://github.com/pshenok/server-survival/blob/01796362d3b7bfa6c85efab5e2685f4d955dc137/src/input/handlers.js"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "id": "whatajong",
+    "title": "Whatajong",
+    "creatorTier": "backbone",
+    "scope": "candidate",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://github.com/masylum/whatajong",
+      "observedRevision": "45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/README.md"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "Root MIT notice applies to this candidate roguelike solitaire, not similarly named legacy projects.",
+        "evidenceUrls": [
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/LICENSE"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "in-review",
+        "finding": "Browser package declares Solid/Vite, Howler, Nunito and PostHog alongside separate Electron packaging. Browser and desktop dependency scopes differ.",
+        "evidenceUrls": [
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/package.json",
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/vite.config.ts"
+        ],
+        "missingEvidence": [
+          "Produce browser-only resolved dependency inventory and exclude unused Electron/telemetry packages."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Map tiles, textures, sounds, music, fonts and runtime dependencies.",
+          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "in-review",
+        "finding": "Production observability initializes PostHog and associates events with run identifiers. Persistence accesses localStorage directly.",
+        "evidenceUrls": [
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/src/renderer/lib/observability.ts",
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/src/renderer/index.tsx",
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/src/renderer/state/persistantMutable.ts"
+        ],
+        "missingEvidence": [
+          "Remove upstream telemetry; migrate saves behind host interface; verify final build network behavior."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Web renderer exists; controller navigation and corruption-safe save migration remain unproved.",
+        "evidenceUrls": [
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/vite.config.ts",
+          "https://github.com/masylum/whatajong/blob/45fe3da7a7d1e87a66ae41b72ee74cc4e0a920d5/src/renderer/state/persistantMutable.ts"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "id": "hextris",
+    "title": "Hextris",
+    "creatorTier": "backbone",
+    "scope": "candidate",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://github.com/Hextris/hextris",
+      "observedRevision": "3f4847dc8fd7dab3d1c87e6324b9159d92fbd396",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/README.md"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "README declares GPL version 3 or later; root license text is present.",
+        "evidenceUrls": [
+          "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/LICENSE.md"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "in-review",
+        "finding": "Bundled Font Awesome stylesheet has independent attribution and font licensing context; other vendor scripts and fonts remain unmapped.",
+        "evidenceUrls": [
+          "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/style/fa/css/font-awesome.css"
+        ],
+        "missingEvidence": [
+          "Inventory each vendor script and font; preserve applicable notices with the exact build."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Review corresponding-source obligations, vendor code, fonts and image origins.",
+          "Complete the assets checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "in-review",
+        "finding": "Entry page contains advertising, analytics, remote fonts and external sharing/store links. These are not authorized Akeru runtime integrations.",
+        "evidenceUrls": [
+          "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/index.html",
+          "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/a.js"
+        ],
+        "missingEvidence": [
+          "Remove upstream ads/trackers; review remaining outbound links and verify final-build network trace."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Keyboard/touch handlers exist; controller and lifecycle conformance remain unproved.",
+        "evidenceUrls": [
+          "https://github.com/Hextris/hextris/blob/3f4847dc8fd7dab3d1c87e6324b9159d92fbd396/js/input.js"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "id": "2048",
+    "title": "2048",
+    "creatorTier": "backbone",
+    "scope": "optional",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://github.com/gabrielecirulli/2048",
+      "observedRevision": "478b6ec346e3787f589e4af751378d06ded4cbbc",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/README.md"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "Original implementation has an MIT notice; font and image provenance still require review.",
+        "evidenceUrls": [
+          "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/LICENSE.txt"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the dependencies checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "in-review",
+        "finding": "Clear Sans stylesheet identifies bundled font files; root MIT does not independently establish their redistribution terms.",
+        "evidenceUrls": [
+          "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/style/fonts/clear-sans.css"
+        ],
+        "missingEvidence": [
+          "Resolve font origins/notices and each promotional image; remove unnecessary store art."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "in-review",
+        "finding": "Local storage uses generic gameState and bestScore keys with an in-memory fallback. The host save adapter must isolate per-title state.",
+        "evidenceUrls": [
+          "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/js/local_storage_manager.js"
+        ],
+        "missingEvidence": [
+          "Map migration/deletion behavior and inspect final entry-page requests."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Keyboard/swipe handlers exist; generic localStorage keys require host save integration and controller testing.",
+        "evidenceUrls": [
+          "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/js/keyboard_input_manager.js",
+          "https://github.com/gabrielecirulli/2048/blob/478b6ec346e3787f589e4af751378d06ded4cbbc/js/local_storage_manager.js"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "id": "hypersomnia",
+    "title": "Hypersomnia",
+    "creatorTier": "backbone",
+    "scope": "future",
+    "policy": {
+      "id": "akeru-title-review",
+      "revision": 1
+    },
+    "identity": {
+      "status": "candidate",
+      "upstreamUrl": "https://github.com/TeamHypersomnia/Hypersomnia",
+      "observedRevision": "e4dd2c8f87358cb83cfdef5b352093379907147c",
+      "note": "Research candidate, not a confirmed launch selection. The observed commit is not a selected release."
+    },
+    "release": null,
+    "sections": {
+      "source": {
+        "status": "in-review",
+        "finding": "Observed source candidate only; edition and release have not been selected.",
+        "evidenceUrls": [
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/README.md"
+        ],
+        "missingEvidence": [
+          "Complete the source checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "code": {
+        "status": "in-review",
+        "finding": "Code has AGPL terms; content documentation describes CC0 with exceptions and provenance caveats.",
+        "evidenceUrls": [
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/LICENSE.md"
+        ],
+        "missingEvidence": [
+          "Complete the code checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "dependencies": {
+        "status": "in-review",
+        "finding": "Submodules and CMake declare independently sourced build/network dependencies; these are separate source inventories.",
+        "evidenceUrls": [
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/.gitmodules",
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/CMakeLists.txt"
+        ],
+        "missingEvidence": [
+          "Resolve every submodule recursively and inventory network/audio/toolchain notices."
+        ],
+        "review": null
+      },
+      "assets": {
+        "status": "in-review",
+        "finding": "Content README states CC0 with exceptions for social sign-in buttons and editor icons, and cautions about original sound uploader labeling.",
+        "evidenceUrls": [
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/hypersomnia/content/README.md"
+        ],
+        "missingEvidence": [
+          "Resolve each exception and sound provenance before reuse; root asset statement cannot clear the inventory."
+        ],
+        "review": null
+      },
+      "brand": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the brand checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "privacy": {
+        "status": "in-review",
+        "finding": "Server documentation describes online infrastructure; operating identity, networking and moderation cannot be inferred from browser support.",
+        "evidenceUrls": [
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/README_SERVER.md"
+        ],
+        "missingEvidence": [
+          "Keep out of launch until a separately reviewed service/data/operations model exists."
+        ],
+        "review": null
+      },
+      "safety": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the safety checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "technical": {
+        "status": "in-review",
+        "finding": "Future investigation only: browser client exists; mobile input, services, moderation and operating model are unproved.",
+        "evidenceUrls": [
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/README.md",
+          "https://github.com/TeamHypersomnia/Hypersomnia/blob/e4dd2c8f87358cb83cfdef5b352093379907147c/README_SERVER.md"
+        ],
+        "missingEvidence": [
+          "Complete the technical checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      },
+      "operations": {
+        "status": "unknown",
+        "finding": "Evidence review has not been completed.",
+        "evidenceUrls": [],
+        "missingEvidence": [
+          "Complete the operations checklist in policy akeru-title-review revision 1 with release-specific evidence."
+        ],
+        "review": null
+      }
+    },
+    "approval": {
+      "status": "pending",
+      "review": null,
+      "reviewedContentDigest": null
+    }
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "upstreamUrl": "https://github.com/victorqribeiro/isocity",
+  "revision": "c5772412d3e423318f2cf479ebdd50a2b9029d84",
+  "scope": "source-tree",
+  "rightsStatus": "unreviewed",
+  "limitation": "Tracked paths only; submodules, external dependencies, generated outputs and runtime requests require separate inventories. File presence and root license do not establish file rights.",
+  "files": [
+    {"path":"LICENSE","gitObjectId":"2e17593f4c9d39d2133c2220fb596b98b1a11a0d","mode":"100644","kind":"file","rightsStatus":"unreviewed"},
+    {"path":"README.md","gitObjectId":"207c6cbead9411208aa3a9274b26720a61a8f499","mode":"100644","kind":"file","rightsStatus":"unreviewed"},
+    {"path":"css/main.css","gitObjectId":"776843b23bf877fee138c60839ee4f048c60d34c","mode":"100644","kind":"file","rightsStatus":"unreviewed"},
+    {"path":"favicon.png","gitObjectId":"0465098c16487acd5a13c5eadb66d9b4f2e8ecc9","mode":"100644","kind":"file","rightsStatus":"unreviewed"},
+    {"path":"index.html","gitObjectId":"d7e4523341c31decb273c327ad727820bb2f481e","mode":"100755","kind":"file","rightsStatus":"unreviewed"},
+    {"path":"js/main.js","gitObjectId":"1144f053d9a9f0caa3a42388e27b6a52effecef9","mode":"100644","kind":"file","rightsStatus":"unreviewed"},
+    {"path":"screenshot.png","gitObjectId":"00a2c703434894d34b59129505fcaef9c86d7e5e","mode":"100644","kind":"file","rightsStatus":"unreviewed"},
+    {"path":"textures/01_130x66_130x230.png","gitObjectId":"1c02eb7c6d655e041243901b0ac55bb3d6cd04f7","mode":"100644","kind":"file","rightsStatus":"unreviewed"}
+  ]
+}
