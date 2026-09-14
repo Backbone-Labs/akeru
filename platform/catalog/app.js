@@ -99,6 +99,14 @@ export function mountCatalog({
     if (document.hidden && active?.channel?.state === 'playable') pause();
   };
   document.addEventListener('visibilitychange', onVisibility);
+  const onFullscreen = () => {
+    const button = $('#runtime-fullscreen');
+    if (button)
+      button.textContent = document.fullscreenElement
+        ? 'Exit fullscreen'
+        : 'Fullscreen';
+  };
+  document.addEventListener('fullscreenchange', onFullscreen);
   function telemetry(event) {
     try {
       emit(event);
@@ -410,13 +418,15 @@ export function mountCatalog({
       a.href = `/g/${e.manifest.id}`;
       const art = node('div', `card-art ${e.metadata.category}`);
       art.setAttribute('aria-hidden', 'true');
-      art.append(
-        node(
-          'span',
-          'card-tag',
-          mode === 'demo' ? 'ORIGINAL TEST FIXTURE' : cap(e.metadata.category),
-        ),
-      );
+      if (e.metadata.cover) {
+        const image = node('img', 'game-cover');
+        image.src = e.metadata.cover;
+        image.alt = '';
+        image.loading = 'lazy';
+        art.classList.add('has-cover');
+        art.append(image);
+      }
+      art.append(node('span', 'card-tag', cap(e.metadata.category)));
       const copy = node('div', 'card-copy');
       copy.append(
         node('h3', '', e.manifest.title),
@@ -447,6 +457,13 @@ export function mountCatalog({
     main.innerHTML =
       '<div class="wrap"><a class="back" href="/">← All games</a><section class="detail-top"><div id="detail-art" class="card-art detail-art" aria-hidden="true"></div><div class="detail-copy"><p id="category" class="eyebrow"></p><h1 id="title"></h1><p id="description" class="description"></p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span></div><button id="play-button" class="primary">Play now <span aria-hidden="true">↗</span></button><p id="play-note" class="fine">No account or membership needed.</p></div></section><dl class="facts" id="facts"></dl><section class="detail-info"><div><div class="info-block"><h2>Make yourself comfortable.</h2><h3>Controller</h3><div id="controller-help"></div><h3>Touch</h3><div id="touch-help"></div></div><div class="info-block"><h2>Your progress.</h2><p id="save-info"></p></div></div><div><div class="info-block"><h2>A few things to know.</h2><div id="privacy-info"></div></div><div class="info-block"><h2>Open by design.</h2><p id="source-license"></p><div id="source-links" class="source-links"></div><p class="fine">Source revision</p><p id="source-revision" class="revision"></p></div></div></section></div>';
     $('#detail-art').classList.add(meta.category);
+    if (meta.cover) {
+      const image = node('img', 'game-cover');
+      image.src = meta.cover;
+      image.alt = '';
+      $('#detail-art').classList.add('has-cover');
+      $('#detail-art').append(image);
+    }
     $('#category').textContent = `${cap(meta.category)} / ${meta.creator}`;
     $('#title').textContent = m.title;
     $('#description').textContent = meta.description;
@@ -599,7 +616,10 @@ export function mountCatalog({
     $('#runtime-title').textContent = entry.manifest.title;
     const frame = node('iframe');
     frame.title = `${entry.manifest.title} isolated runtime`;
-    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+    frame.setAttribute(
+      'sandbox',
+      'allow-scripts allow-same-origin allow-pointer-lock',
+    );
     frame.setAttribute('referrerpolicy', 'no-referrer');
     frame.setAttribute('allow', 'gamepad');
     const nonce = crypto.randomUUID(),
@@ -623,6 +643,7 @@ export function mountCatalog({
             durationMs: Math.min(600000, performance.now() - start),
           });
           bindInput(entry.manifest.id, true);
+          frame.contentWindow.focus();
         } else if (event.type === 'error') failRuntime(event.code);
         else if (event.type === 'exit') navigate(`/g/${entry.manifest.id}`);
       },
@@ -631,6 +652,38 @@ export function mountCatalog({
       if (active === session) active.channel.connect();
     });
     $('#runtime-exit').onclick = () => navigate(`/g/${entry.manifest.id}`);
+    const tools = document.querySelector('.runtime-tools');
+    const fullscreen = node('button', 'secondary', 'Fullscreen');
+    fullscreen.id = 'runtime-fullscreen';
+    fullscreen.onclick = async () => {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else if (document.querySelector('.runtime-wrap').requestFullscreen)
+          await document.querySelector('.runtime-wrap').requestFullscreen();
+        else
+          document
+            .querySelector('.runtime-wrap')
+            .classList.toggle('expanded-player');
+        fullscreen.textContent =
+          document.fullscreenElement ||
+          document.querySelector('.expanded-player')
+            ? 'Exit fullscreen'
+            : 'Fullscreen';
+        frame.contentWindow.focus();
+      } catch {
+        fullscreen.textContent = 'Fullscreen unavailable';
+      }
+    };
+    tools.prepend(fullscreen);
+    const touch = node('button', 'secondary', 'Touch controls');
+    const touchVisible = matchMedia('(pointer: coarse)').matches;
+    $('#touch-controls').hidden = !touchVisible;
+    touch.setAttribute('aria-pressed', String(touchVisible));
+    touch.onclick = () => {
+      $('#touch-controls').hidden = !$('#touch-controls').hidden;
+      touch.setAttribute('aria-pressed', String(!$('#touch-controls').hidden));
+    };
+    tools.append(touch);
     $('#runtime-pause').onclick = () =>
       active?.channel.state === 'paused' ? resume() : pause();
     $('#runtime-controls').onclick = () => {
@@ -673,6 +726,7 @@ export function mountCatalog({
     input?.start();
     $('#runtime-overlay').hidden = true;
     $('#runtime-pause').textContent = 'Pause';
+    active.frame.contentWindow.focus();
   }
   function failRuntime(code) {
     if (!active) return;
@@ -723,6 +777,7 @@ export function mountCatalog({
       window.removeEventListener('popstate', renderRoute);
       document.removeEventListener('click', onClick);
       document.removeEventListener('visibilitychange', onVisibility);
+      document.removeEventListener('fullscreenchange', onFullscreen);
       $('#about-button').removeEventListener('click', openAbout);
       $('#close-about').removeEventListener('click', closeAbout);
     },

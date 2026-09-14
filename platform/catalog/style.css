@@ -1,11 +1,12 @@
 :root {
-  --paper: #f5f5f5;
-  --ink: #111111;
-  --muted: #626262;
-  --line: #dedede;
+  color-scheme: dark;
+  --paper: #101112;
+  --ink: #f3f3f3;
+  --muted: #a4a7aa;
+  --line: #303235;
   --accent: #f77041;
   --dark: #171717;
-  --white: #fff;
+  --white: #1a1c1e;
   --radius: 22px;
   font-family: Arial, Helvetica, sans-serif;
   color: var(--ink);
@@ -313,9 +314,9 @@ main:focus {
   min-height: 42px;
 }
 .filter[aria-pressed='true'] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: white;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #111;
 }
 .controller-filter {
   margin-left: auto;
@@ -515,6 +516,11 @@ main:focus {
   align-items: center;
   justify-content: center;
   min-height: 54px;
+}
+.filter[aria-pressed='true'] {
+  background: var(--accent);
+  color: #111;
+  border-color: var(--accent);
 }
 .primary:hover {
   background: #333333;
@@ -1460,4 +1466,130 @@ footer span {
 }
 .model-ready .controller-fallback {
   visibility: hidden;
+}
+
+/* Dark Backbone shell, including overlays and the first-run experience. */
+.masthead,
+.onboarding,
+.onboarding::backdrop,
+dialog {
+  background: var(--paper);
+  color: var(--ink);
+}
+.onboarding-copy,
+.onboarding-fine,
+.onboarding-bottom,
+.onboarding-brand span,
+.connection-hint,
+.pairing-help,
+.account-availability,
+.text-button {
+  color: var(--muted);
+}
+.primary {
+  background: var(--accent);
+  color: #121212;
+}
+.secondary,
+.pill,
+.guest-pill,
+.filter,
+.connection-status,
+.akeru-touch-controls button,
+.akeru-control-settings,
+.akeru-control-settings select {
+  background: #1d1f22;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.controller-connected .connection-status {
+  background: #193329;
+  color: #9be3ba;
+}
+.onboarding-progress .current {
+  background: var(--accent);
+}
+.demo-banner {
+  background: #211b16;
+  color: #c1b3a6;
+  border-color: #3c3027;
+}
+.runtime-overlay {
+  background: #151719f5;
+  color: var(--ink);
+}
+.card-art.has-cover::before,
+.card-art.has-cover::after {
+  display: none;
+}
+.game-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+.card-tag {
+  z-index: 1;
+}
+body:has(.runtime-wrap) .masthead,
+body:has(.runtime-wrap) > footer,
+body:has(.runtime-wrap) #demo-banner {
+  display: none;
+}
+body .runtime-wrap {
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #101112;
+}
+body .runtime-bar {
+  margin: 0;
+  min-height: 44px;
+  align-items: center;
+}
+body .runtime-stage {
+  flex: 1;
+  height: auto;
+  min-height: 150px;
+  border-radius: 12px;
+}
+.runtime-wrap .controls-row {
+  display: none;
+}
+.runtime-wrap #touch-controls[hidden] {
+  display: none;
+}
+.runtime-wrap:fullscreen,
+.runtime-wrap.expanded-player {
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  margin: 0;
+}
+.runtime-wrap.expanded-player {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+@media (max-width: 700px) {
+  body .runtime-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  body .runtime-tools {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  body .runtime-tools button {
+    min-height: 36px;
+    padding: 6px 10px;
+  }
+  body .runtime-wrap {
+    padding: 8px;
+  }
 }

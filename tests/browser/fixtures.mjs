@@ -106,6 +106,10 @@ export async function launchDemo(page, url) {
     'Ready when you are.',
   );
   await expect(page.locator('#runtime-overlay')).toBeHidden();
+  if (await page.locator('#touch-controls').isHidden())
+    await page
+      .getByRole('button', { name: 'Touch controls', exact: true })
+      .click();
   return runtime;
 }
 

@@ -106,7 +106,7 @@ test('persists a per-title controller remap across reload', async ({
   page,
 }) => {
   await launchDemo(page, demo.url);
-  await page.getByRole('button', { name: 'Controls' }).click();
+  await page.getByRole('button', { name: 'Controls', exact: true }).click();
   const confirm = page.getByRole('combobox', { name: 'confirm control' });
   await confirm.selectOption('north');
   await expect(confirm).toHaveValue('north');
@@ -119,7 +119,7 @@ test('persists a per-title controller remap across reload', async ({
   await expect(runtime.getByRole('status', { name: 'Game status' })).toHaveText(
     'Ready when you are.',
   );
-  await page.getByRole('button', { name: 'Controls' }).click();
+  await page.getByRole('button', { name: 'Controls', exact: true }).click();
   await expect(
     page.getByRole('combobox', { name: 'confirm control' }),
   ).toHaveValue('north');
@@ -236,7 +236,7 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
   );
   await expectNoHorizontalOverflow(page);
 
-  await page.getByRole('button', { name: 'Controls' }).click();
+  await page.getByRole('button', { name: 'Controls', exact: true }).click();
   await expect(
     page.getByRole('dialog', { name: 'Control settings' }),
   ).toBeVisible();

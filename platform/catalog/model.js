@@ -42,7 +42,11 @@ export function validateMetadata(m) {
       'controls',
       'privacy',
       'notices',
+      ...(m && Object.hasOwn(m, 'cover') ? ['cover'] : []),
     ]) ||
+    (Object.hasOwn(m, 'cover') &&
+      (typeof m.cover !== 'string' ||
+        !/^\/previews\/[a-z0-9][a-z0-9-]*\.png$/.test(m.cover))) ||
     !text(m.summary, 160) ||
     !text(m.description, 1600) ||
     !CATEGORIES.includes(m.category) ||

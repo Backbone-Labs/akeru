@@ -17,7 +17,9 @@ test('minimal guest flow is accessible, honest about accounts, and remembered', 
   await expect(
     page.getByRole('heading', { name: 'Connect your Backbone.' }),
   ).toBeVisible();
-  await page.getByRole('button', { name: 'Continue with touch' }).click();
+  await page
+    .getByRole('button', { name: 'Continue without a controller' })
+    .click();
   await page.getByRole('button', { name: 'Use Backbone ID' }).click();
   await expect(
     page.getByText(/Backbone ID sign-in is not available/),
@@ -79,7 +81,7 @@ test('recognizes already connected Backbone, generic reconnection and disconnect
     'Waiting for your controller',
   );
   await expect(
-    page.getByRole('button', { name: 'Continue with touch' }),
+    page.getByRole('button', { name: 'Continue without a controller' }),
   ).toBeVisible();
 });
 test('small screens and reduced motion preserve the skip path', async ({

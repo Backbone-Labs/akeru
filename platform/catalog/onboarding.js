@@ -87,7 +87,7 @@ export function mountOnboarding({ input, onComplete, modelUrl = null }) {
     dialog.classList.toggle('controller-connected', !!identity);
     dialog.querySelector('#controller-next').textContent = identity
       ? 'Continue →'
-      : 'Continue with touch';
+      : 'Continue without a controller';
     const hint = identity
       ? inputConfirmed
         ? 'Input confirmed. You’re ready to play.'
@@ -95,7 +95,7 @@ export function mountOnboarding({ input, onComplete, modelUrl = null }) {
       : unsupported
         ? 'This controller does not report a standard layout. You can continue with touch or try another controller.'
         : unavailable
-          ? 'You can still play with touch. Try a browser with Gamepad support to use your controller.'
+          ? 'You can still play with keyboard, mouse or touch.'
           : 'Already connected? Press any controller button so your browser can recognize it.';
     const hintNode = dialog.querySelector('.connection-hint');
     if (hintNode.textContent !== hint) hintNode.textContent = hint;
