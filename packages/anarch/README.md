@@ -13,7 +13,8 @@ Use the repository-pinned Node/npm. Install Emscripten **4.0.15** with emsdk tag
 this repository and check out the revision above. Then:
 
 ```sh
-ANARCH_SOURCE=/path/to/anarch EMCC=/path/to/emsdk/upstream/emscripten/emcc npm run build:game -w @akeru/anarch
+source /path/to/emsdk/emsdk_env.sh
+ANARCH_SOURCE=/path/to/anarch npm run build:game -w @akeru/anarch
 npm run preview -w @akeru/anarch
 ```
 

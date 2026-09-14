@@ -9,6 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createContainedFileReader } from '../../scripts/read-contained-file.mjs';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const here = fileURLToPath(new URL('./', import.meta.url));
 const audit = JSON.parse(
@@ -19,7 +20,7 @@ if (!source)
   throw new Error(
     'Set ANARCH_SOURCE to the upstream checkout at ' + audit.revision,
   );
-const emcc = process.env.EMCC || 'emcc';
+const emcc = 'emcc';
 const version = execFileSync(emcc, ['--version'], { encoding: 'utf8' });
 if (!/^emcc .* 4\.0\.15\b/m.test(version))
   throw new Error('Emscripten 4.0.15 required');
@@ -46,9 +47,10 @@ const selected = [
   'sounds.h',
 ];
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
+const sourceReader = createContainedFileReader(source);
 for (const path of selected) {
   const evidence = audit.evidence.find((e) => e.path === path);
-  const bytes = readFileSync(resolve(source, path));
+  const bytes = sourceReader.read(path);
   if (
     !evidence ||
     evidence.declaration.license !== 'CC0-1.0' ||
@@ -85,7 +87,7 @@ copyFileSync(
   resolve(root, 'packages/contracts/src/save-client.js'),
   resolve(out, 'save-client.js'),
 );
-copyFileSync(resolve(source, 'LICENSE'), resolve(out, 'ANARCH-LICENSE.txt'));
+writeFileSync(resolve(out, 'ANARCH-LICENSE.txt'), sourceReader.read('LICENSE'));
 writeFileSync(
   resolve(out, 'build-record.json'),
   JSON.stringify(

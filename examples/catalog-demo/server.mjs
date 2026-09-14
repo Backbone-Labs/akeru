@@ -4,13 +4,19 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
-import { resolve } from 'node:path';
+import { basename, dirname, resolve } from 'node:path';
+import { createContainedFileReader } from '../../scripts/read-contained-file.mjs';
 import { validateManifest } from '../../packages/contracts/src/index.js';
 const root = new URL('../../', import.meta.url),
   read = (p) => readFileSync(new URL(p, root));
 const hash = (b) => createHash('sha256').update(b).digest('hex');
 export async function startCatalogDemo(options = {}) {
   const { controllerModelPath = process.env.AKERU_CONTROLLER_MODEL } = options;
+  const controllerModel = controllerModelPath
+    ? createContainedFileReader(dirname(controllerModelPath)).read(
+        basename(controllerModelPath),
+      )
+    : null;
   const servers = [];
   let state = 'available',
     shellOrigin;
@@ -182,7 +188,7 @@ export async function startCatalogDemo(options = {}) {
     }
     if (req.url === '/local-controller.glb' && controllerModelPath) {
       res.setHeader('Content-Type', 'model/gltf-binary');
-      return res.end(readFileSync(resolve(controllerModelPath)));
+      return res.end(controllerModel);
     }
     const vendor = {
       '/vendor/three/meshopt_decoder.module.js':
