@@ -40,16 +40,51 @@ test('original Server Survival builds services, saves through host, and restores
   await frame.locator('[data-i18n=sandbox_mode]').click();
   await expect(frame.locator('#main-menu-modal')).toBeHidden();
   await frame.locator('#tool-alb').click();
+  await frame.evaluate(() => {
+    window.__serverSurvivalTestInput = null;
+    addEventListener('message', (event) => {
+      if (
+        event.source === parent &&
+        event.data?.protocol === 'akeru.catalog.v1' &&
+        event.data.type === 'input'
+      )
+        window.__serverSurvivalTestInput = event.data.payload;
+    });
+  });
   await setGamepadButton(page, 15, 1);
-  await page.waitForTimeout(250);
+  await expect
+    .poll(() =>
+      frame.evaluate(
+        () =>
+          Number.parseFloat(
+            document.querySelector('#akeru-cursor').style.left,
+          ) -
+          innerWidth / 2,
+      ),
+    )
+    .toBeGreaterThan(60);
   await setGamepadButton(page, 15, 0);
+  await expect
+    .poll(() =>
+      frame.evaluate(() => window.__serverSurvivalTestInput?.buttons.right),
+    )
+    .toBe(0);
   await expect(frame.locator('#akeru-cursor')).toBeVisible();
   await setGamepadButton(page, 0, 1);
-  await page.waitForTimeout(80);
-  await setGamepadButton(page, 0, 0);
+  await expect
+    .poll(() =>
+      frame.evaluate(() => window.__serverSurvivalTestInput?.buttons.confirm),
+    )
+    .toBe(1);
   await expect
     .poll(() => frame.evaluate(() => window.STATE.services.length))
     .toBe(1);
+  await setGamepadButton(page, 0, 0);
+  await expect
+    .poll(() =>
+      frame.evaluate(() => window.__serverSurvivalTestInput?.buttons.confirm),
+    )
+    .toBe(0);
   await frame.locator('#btn-save').click();
   await frame.locator('[data-i18n=save_browser]').click();
   await expect

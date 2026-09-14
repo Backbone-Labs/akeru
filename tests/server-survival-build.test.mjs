@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { transformHtml, flatten } from '../packages/server-survival/build.mjs';
+import {
+  transformHtml,
+  flatten,
+  instrumentInitialization,
+} from '../packages/server-survival/build.mjs';
 test('Server Survival removes external scripts and moves inline executable content out of HTML', () => {
   const t = transformHtml(
     '<html><head><script src="https://example.com/track.js"></script><script>alert(1)</script></head><body><button style="display:none" onclick="startGame()">Play</button></body></html>',
@@ -22,4 +26,17 @@ test('Server Survival parses mixed-case tags and decodes event attributes once',
   assert.ok(!t.html.includes('ONCLICK'));
   assert.match(t.handlers, /show\("&quot;"\)/);
   assert.match(t.styles, /display:none/);
+});
+
+test('Server Survival initialization instrumentation fails closed when upstream boundary changes', () => {
+  const source = 'setTimeout(() => {\n    }\n}, 100);\n\n// getIntersect';
+  assert.match(instrumentInitialization(source), /dispatchEvent/);
+  assert.throws(
+    () => instrumentInitialization('changed source'),
+    /initialization boundary/,
+  );
+  assert.throws(
+    () => instrumentInitialization(source + source),
+    /initialization boundary/,
+  );
 });

@@ -180,10 +180,17 @@ addEventListener('message', async (event) => {
     } catch {
       failure();
     }
+    const initialized = new Promise((resolve) =>
+      window.addEventListener('akeru-engine-initialized', resolve, {
+        once: true,
+      }),
+    );
     await import('./src--main.js');
     state = (await import('./src--state.js')).STATE;
     await import('./upstream-handlers.js');
+    await initialized;
     ready = true;
+    document.body.dataset.akeruReady = 'true';
     send('playable', { sdkVersion: '0.1.0' });
   } else if (m.type === 'input' && ready && !paused)
     controller(m.payload ?? {});

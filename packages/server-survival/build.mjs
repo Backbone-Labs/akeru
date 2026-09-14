@@ -86,7 +86,15 @@ export function transformHtml(html) {
     styles: styles.join('\n'),
   };
 }
-
+export function instrumentInitialization(source) {
+  const marker = '    }\n}, 100);\n\n// getIntersect';
+  if (source.split(marker).length !== 2)
+    throw new Error('Unknown upstream initialization boundary');
+  return source.replace(
+    marker,
+    '    }\n    window.dispatchEvent(new Event("akeru-engine-initialized"));\n}, 100);\n\n// getIntersect',
+  );
+}
 export function buildServerSurvival() {
   const inventory = JSON.parse(
       readFileSync(
@@ -138,6 +146,7 @@ export function buildServerSurvival() {
       styles = t.styles;
       handlers = t.handlers;
     }
+    if (f.path === 'game.js') bytes = instrumentInitialization(String(bytes));
     if (f.path.endsWith('.js')) {
       bytes = String(bytes)
         .replace(
