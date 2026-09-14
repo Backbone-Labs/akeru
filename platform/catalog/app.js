@@ -164,7 +164,11 @@ export function mountCatalog({
     }
     if (event.type === 'back') {
       if (active) navigate(`/g/${active.entry.manifest.id}`);
-      else if (routeFor(location.pathname).view !== 'catalog') navigate('/');
+      else if (
+        ['detail', 'settings'].includes(routeFor(location.pathname).view)
+      )
+        navigate('/games');
+      else if (routeFor(location.pathname).view === 'catalog') navigate('/');
       return;
     }
     if (event.type === 'menu') {
