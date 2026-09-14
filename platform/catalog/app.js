@@ -804,6 +804,7 @@ export function mountCatalog({
     b.onclick = resume;
     o.append(b);
     o.hidden = false;
+    b.focus();
   }
   function resume() {
     if (!active?.channel.resume()) return;
