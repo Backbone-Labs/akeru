@@ -43,12 +43,9 @@ for (const id of ['2048', 'hextris'])
       }
       await expect(runtime.locator('#score')).not.toHaveText('0');
       await expect(runtime.locator('#save-status')).toBeEmpty();
-      await runtime
-        .locator('main')
-        .screenshot({
-          path: new URL('../../dist/previews/2048.png', import.meta.url)
-            .pathname,
-        });
+      await runtime.locator('main').screenshot({
+        path: new URL('../../dist/previews/2048.png', import.meta.url).pathname,
+      });
     } else {
       await expect(runtime.locator('canvas')).toBeVisible();
       await expect(runtime.locator('#score')).toContainText('Best');
@@ -69,12 +66,10 @@ for (const id of ['2048', 'hextris'])
           timeout: 10000,
         })
         .toBeGreaterThan(0);
-      await runtime
-        .locator('canvas')
-        .screenshot({
-          path: new URL('../../dist/previews/hextris.png', import.meta.url)
-            .pathname,
-        });
+      await runtime.locator('canvas').screenshot({
+        path: new URL('../../dist/previews/hextris.png', import.meta.url)
+          .pathname,
+      });
       // Exercise original matching/scoring with three settled, adjacent same-color blocks.
       await frame.evaluate(() => {
         window.blocks = [];

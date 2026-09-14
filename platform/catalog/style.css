@@ -1531,6 +1531,8 @@ dialog {
 }
 .card-tag {
   z-index: 1;
+  background: #17191de8;
+  color: #f3f3f3;
 }
 body:has(.runtime-wrap) .masthead,
 body:has(.runtime-wrap) > footer,
