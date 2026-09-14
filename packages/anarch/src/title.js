@@ -195,13 +195,13 @@ addEventListener('keydown', (event) => {
     releaseInput();
     return;
   }
-  if (desktop.key(event.code, true)) {
+  if (desktop.key(event.code, true, performance.now())) {
     event.preventDefault();
     status.textContent = hint;
   }
 });
 addEventListener('keyup', (event) => {
-  if (desktop.key(event.code, false)) event.preventDefault();
+  if (desktop.key(event.code, false, performance.now())) event.preventDefault();
 });
 canvas.addEventListener('pointerdown', (event) => {
   if (!ready || paused || event.button !== 0) return;

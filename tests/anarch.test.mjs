@@ -124,3 +124,18 @@ test('Anarch desktop input moves, strafes, turns and releases without stuck keys
   assert.equal(input.read(150).mask, 16);
   assert.equal(input.read(221).mask, 0, 'click confirmation expires');
 });
+
+test('Anarch quick keyboard taps survive keyup before the next frame', async () => {
+  const { createDesktopInput } =
+    await import('../packages/anarch/src/desktop.js');
+  const input = createDesktopInput();
+  input.key('Enter', true, 100);
+  input.key('Enter', false, 101);
+  assert.equal(input.read(116).mask, 16);
+  assert.equal(input.read(150).mask, 16, 'tap covers a 30fps simulation step');
+  assert.equal(input.read(181).mask, 0, 'tap expires without sticking');
+  input.key('KeyM', true, 200);
+  input.key('KeyM', false, 201);
+  input.release();
+  assert.equal(input.read(216).mask, 0, 'pause or blur cancels pending taps');
+});
