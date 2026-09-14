@@ -97,3 +97,30 @@ test('Anarch preview rejects modified, additional and symlinked build artifacts'
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('Anarch desktop input moves, strafes, turns and releases without stuck keys', async () => {
+  const { createDesktopInput } =
+    await import('../packages/anarch/src/desktop.js');
+  const input = createDesktopInput();
+  input.key('KeyW', true);
+  input.key('KeyA', true);
+  input.key('ArrowLeft', true);
+  assert.equal(input.read(0).mask, (1 << 0) | (1 << 8) | (1 << 3));
+  input.key('ArrowUp', true);
+  input.key('KeyW', false);
+  assert.ok(input.read(0).mask & 1, 'releasing W preserves held ArrowUp');
+  input.fire(true);
+  input.move(8, -3);
+  input.move(2, 1);
+  assert.deepEqual(input.read(0), { mask: 281, x: 10, y: -2 });
+  assert.equal(input.read(0).x, 0, 'mouse deltas are consumed once');
+  input.release();
+  assert.deepEqual(input.read(0), { mask: 0, x: 0, y: 0 });
+  assert.equal(input.key('Tab', true), false);
+  assert.equal(input.key('toString', true), false);
+  input.move(NaN, Infinity);
+  assert.deepEqual(input.read(0), { mask: 0, x: 0, y: 0 });
+  input.confirm(100);
+  assert.equal(input.read(150).mask, 16);
+  assert.equal(input.read(221).mask, 0, 'click confirmation expires');
+});

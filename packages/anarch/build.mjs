@@ -72,7 +72,7 @@ execFileSync(
     '-sFILESYSTEM=0',
     '-sALLOW_MEMORY_GROWTH=0',
     '-sINITIAL_MEMORY=16777216',
-    '-sEXPORTED_FUNCTIONS=["_akeru_init","_akeru_tick","_akeru_pixels","_akeru_save","_akeru_dirty","_akeru_audio"]',
+    '-sEXPORTED_FUNCTIONS=["_akeru_init","_akeru_tick","_akeru_pixels","_akeru_save","_akeru_dirty","_akeru_audio","_akeru_mouse","_akeru_release","_akeru_state"]',
     '-sEXPORTED_RUNTIME_METHODS=["HEAPU8","HEAPF32"]',
     '-o',
     resolve(out, 'engine.js'),

@@ -25,9 +25,17 @@ No accounts or production activation are involved. Browser WebAssembly and Canva
 are required. Toolchain/runtime redistribution notices and publication approval remain
 pending; the manifest deliberately does not claim cleared rights.
 
-Controls: arrows or left stick move/turn; Confirm/A fires and selects; Cancel/B
-with arrows strafes or looks; Menu plus Down opens the in-game menu. The same host
-controls support touch. Enable sound inside the game for the original bytebeat music
+Desktop controls: click the canvas or press Enter to start; WASD moves and strafes,
+arrows move and turn, mouse looks, left click or Enter fires, Space jumps, Q/E
+switch weapons and M opens the game menu. Clicking captures the mouse when supported;
+Escape releases it. If capture is unavailable, hold and drag to look. Focus loss,
+pointer cancellation and host pause release all held input. The browser edition
+starts the first level directly after confirming Play instead of requiring a second
+confirmation on the upstream story screen.
+
+Controller and touch keep the portable host controls: arrows or left stick move/turn;
+Confirm/A fires and selects; Cancel/B with arrows strafes or looks; Menu plus Down
+opens the in-game menu. Enable sound inside the game for the original bytebeat music
 and sound effects; browsers require a user gesture to enable audio. The initial mixer
 plays one sound effect at a time. The browser must stay foreground for playback.
 

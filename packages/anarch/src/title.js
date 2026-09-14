@@ -1,5 +1,6 @@
 import createEngine from './engine.js';
 import { inputMask } from './input.js';
+import { createDesktopInput } from './desktop.js';
 import { createSaveClient } from './save-client.js';
 const params = new URLSearchParams(location.hash.slice(1));
 const nonce = params.get('nonce'),
@@ -7,6 +8,9 @@ const nonce = params.get('nonce'),
 const status = document.querySelector('#status');
 const canvas = document.querySelector('canvas'),
   context = canvas.getContext('2d');
+const desktop = createDesktopInput();
+let dragging = false;
+const hint = 'WASD move · mouse look · click fire · Space jump · M menu';
 let sequence = 0,
   received = -1,
   connected = false,
@@ -51,8 +55,8 @@ async function initialize() {
     status.textContent = saveBlocked
       ? 'Saves unavailable. Existing progress will be preserved.'
       : restored
-        ? 'Progress restored.'
-        : 'Ready. Press A to begin.';
+        ? 'Progress restored. Click or press Enter / A to play.'
+        : 'Click or press Enter / A to play.';
     send('playable', { sdkVersion: '0.1.0' });
   } catch {
     status.textContent =
@@ -105,11 +109,12 @@ addEventListener('message', (event) => {
     mask = inputMask(m.payload);
   else if (m.type === 'pause') {
     paused = true;
-    mask = 0;
+    releaseInput();
+    if (document.pointerLockElement === canvas) document.exitPointerLock();
     void persist();
   } else if (m.type === 'resume') {
     paused = false;
-    mask = 0;
+    releaseInput();
   }
 });
 let previous = performance.now();
@@ -118,7 +123,9 @@ function draw(at) {
   const elapsed = Math.min(50, Math.max(0, Math.round(at - previous)));
   previous = at;
   if (ready && connected && !paused) {
-    engine._akeru_tick(elapsed, mask);
+    const local = desktop.read(at);
+    engine._akeru_mouse(local.x, local.y);
+    engine._akeru_tick(elapsed, mask | local.mask);
     frame.data.set(
       engine.HEAPU8.subarray(
         engine._akeru_pixels(),
@@ -140,11 +147,11 @@ audioButton.addEventListener('click', async () => {
   audio ??= new AudioContext();
   if (!fresh && audio.state === 'running') {
     await audio.suspend();
-    audioButton.textContent = 'Enable sound';
+    audioButton.textContent = 'Sound off';
   } else {
     await audio.resume();
     nextAudio = audio.currentTime;
-    audioButton.textContent = 'Mute sound';
+    audioButton.textContent = 'Sound on';
   }
 });
 setInterval(() => {
@@ -168,3 +175,70 @@ setInterval(() => {
     nextAudio += 0.1;
   }
 }, 50);
+
+function releaseInput() {
+  mask = 0;
+  dragging = false;
+  desktop.release();
+  engine?._akeru_release();
+}
+addEventListener('blur', releaseInput);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) releaseInput();
+});
+addEventListener('keydown', (event) => {
+  if (!ready || paused || event.target.closest?.('button, input, textarea'))
+    return;
+  // Escape remains the browser's pointer-lock exit action.
+  if (event.code === 'Escape' && document.pointerLockElement === canvas) {
+    document.exitPointerLock();
+    releaseInput();
+    return;
+  }
+  if (desktop.key(event.code, true)) {
+    event.preventDefault();
+    status.textContent = hint;
+  }
+});
+addEventListener('keyup', (event) => {
+  if (desktop.key(event.code, false)) event.preventDefault();
+});
+canvas.addEventListener('pointerdown', (event) => {
+  if (!ready || paused || event.button !== 0) return;
+  canvas.focus();
+  if (event.pointerType !== 'mouse') {
+    desktop.confirm(performance.now());
+    return;
+  }
+  dragging = true;
+  desktop.fire(true);
+  if (document.pointerLockElement !== canvas) {
+    desktop.confirm(performance.now());
+    // Pointer lock is optional: keyboard remains usable if the browser declines.
+    try {
+      canvas.requestPointerLock()?.catch(mouseFallback);
+    } catch {
+      mouseFallback();
+    }
+  }
+  status.textContent = hint;
+});
+function mouseFallback() {
+  status.textContent = 'Drag to look · click fire · WASD move · arrows turn';
+}
+addEventListener('pointerup', () => {
+  dragging = false;
+  desktop.fire(false);
+});
+addEventListener('pointercancel', releaseInput);
+document.addEventListener('mousemove', (event) => {
+  if (!paused && (document.pointerLockElement === canvas || dragging))
+    desktop.move(event.movementX, event.movementY);
+});
+document.addEventListener('pointerlockchange', () => {
+  if (document.pointerLockElement !== canvas) {
+    releaseInput();
+    status.textContent = 'Click to capture mouse · WASD move · Enter fire';
+  }
+});
+canvas.addEventListener('contextmenu', (event) => event.preventDefault());
