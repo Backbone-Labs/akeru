@@ -1679,3 +1679,20 @@ body .runtime-stage {
     padding: 24px;
   }
 }
+@media (max-width: 600px) {
+  .masthead {
+    height: auto;
+    min-height: 100px;
+    padding-block: 14px;
+    flex-wrap: wrap;
+  }
+  .masthead > nav {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: center;
+  }
+  .masthead > .theme-toggle {
+    margin-left: auto;
+    padding: 8px 12px;
+  }
+}

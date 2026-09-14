@@ -21,9 +21,9 @@ test('minimal guest flow is accessible, honest about accounts, and remembered', 
   await page
     .getByRole('button', { name: 'Continue without a controller' })
     .click();
-  await page.getByRole('button', { name: 'Use Backbone ID' }).click();
+  await page.getByRole('button', { name: 'Connect Backbone account' }).click();
   await expect(
-    page.getByText(/Backbone ID sign-in is not available/),
+    page.getByText(/Backbone account sign-in is not available/),
   ).toBeVisible();
   await page.getByRole('button', { name: /Play as a guest/ }).click();
   await expect(dialog).toHaveCount(0);
