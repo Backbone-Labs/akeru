@@ -191,6 +191,8 @@ export async function startCatalogDemo(options = {}) {
       return res.end(controllerModel);
     }
     const vendor = {
+      '/vendor/three/RoomEnvironment.js':
+        'node_modules/three/examples/jsm/environments/RoomEnvironment.js',
       '/vendor/three/meshopt_decoder.module.js':
         'node_modules/three/examples/jsm/libs/meshopt_decoder.module.js',
       '/vendor/three/three.module.js':
