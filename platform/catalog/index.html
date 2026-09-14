@@ -90,17 +90,23 @@
         ></a
       >
       <nav aria-label="Main">
-        <a href="/" data-navigate>Discover</a
+        <a href="/games" data-navigate>Discover</a
+        ><a href="/settings" data-navigate>Settings</a
         ><button class="text-button" id="about-button" data-navigate>
           About Akeru
         </button>
       </nav>
-      <span class="guest-pill"
-        ><span aria-hidden="true">●</span> Here to play</span
+      <button
+        class="secondary theme-toggle"
+        data-theme-toggle
+        type="button"
+        aria-label="Switch light or dark theme"
       >
+        Light / Dark
+      </button>
     </header>
     <div id="demo-banner" class="demo-banner" hidden>
-      DESIGN PREVIEW · Original test fixture. No published games or approvals.
+      LOCAL PREVIEW · Games shown here are not published releases.
     </div>
     <main id="main" tabindex="-1">
       <section class="initial-state" role="status">

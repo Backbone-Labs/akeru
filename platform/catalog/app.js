@@ -1,10 +1,10 @@
+import { renderGameHome, readRecent, recordPlayed } from './home.js';
+import { mountOnboarding, needsOnboarding } from './onboarding.js';
 import { createSaveStore } from '/saves/index.js';
 import {
-  CATEGORIES,
   validateCatalog,
   routeFor,
   titleUrl,
-  filterEntries,
   createShellTelemetry,
 } from './model.js';
 import { createRuntimeChannel } from './channel.js';
@@ -68,6 +68,8 @@ async function fetchRegistry() {
 /** Services are trusted shell integrations, never package-defined capabilities. */
 export function mountCatalog({
   mode = 'production',
+  onboarding = true,
+  controllerModelUrl = null,
   inputProviderFactory,
   telemetrySink,
   loadCatalog = fetchRegistry,
@@ -81,6 +83,35 @@ export function mountCatalog({
     navInput = null,
     disposed = false,
     loadVersion = 0;
+  let onboardingUi = null;
+  const setTheme = (theme) => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem('akeru.theme', theme);
+    } catch {
+      /* Theme works without storage. */
+    }
+  };
+  let savedTheme;
+  try {
+    savedTheme = localStorage.getItem('akeru.theme');
+  } catch {
+    /* Use device preference. */
+  }
+  document.documentElement.dataset.theme = ['light', 'dark'].includes(
+    savedTheme,
+  )
+    ? savedTheme
+    : matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  const onThemeClick = (event) => {
+    if (event.target.closest('[data-theme-toggle]'))
+      setTheme(
+        document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark',
+      );
+  };
+  document.addEventListener('click', onThemeClick);
   let filters = { category: 'all', controller: false, query: '' };
   let controlsTimer = null;
   function stopControlsMonitor() {
@@ -94,6 +125,14 @@ export function mountCatalog({
     if (document.hidden && active?.channel?.state === 'playable') pause();
   };
   document.addEventListener('visibilitychange', onVisibility);
+  const onFullscreen = () => {
+    const button = $('#runtime-fullscreen');
+    if (button)
+      button.textContent = document.fullscreenElement
+        ? 'Exit fullscreen'
+        : 'Fullscreen';
+  };
+  document.addEventListener('fullscreenchange', onFullscreen);
   function telemetry(event) {
     try {
       emit(event);
@@ -116,14 +155,20 @@ export function mountCatalog({
     input = null;
   }
   function nav(event) {
+    if (document.querySelector('.akeru-control-settings:not([hidden])')) return;
     const modal = document.querySelector('dialog[open]');
     if (modal && ['back', 'menu'].includes(event.type)) {
-      modal.close();
+      if (onboardingUi) onboardingUi.back();
+      else modal.close();
       return;
     }
     if (event.type === 'back') {
       if (active) navigate(`/g/${active.entry.manifest.id}`);
-      else if (routeFor(location.pathname).view !== 'catalog') navigate('/');
+      else if (
+        ['detail', 'settings'].includes(routeFor(location.pathname).view)
+      )
+        navigate('/games');
+      else if (routeFor(location.pathname).view === 'catalog') navigate('/');
       return;
     }
     if (event.type === 'menu') {
@@ -152,7 +197,9 @@ export function mountCatalog({
       return;
     }
     const targets = [
-      ...scope.querySelectorAll('a[href],button:not([disabled]),input,select'),
+      ...scope.querySelectorAll(
+        'a[href],button:not([disabled]),input,select,summary',
+      ),
     ].filter((e) => !e.closest('[hidden]') && e.getClientRects().length);
     if (!targets.length) return;
     if (event.type === 'activate') {
@@ -288,7 +335,9 @@ export function mountCatalog({
     clearSession();
     if (!catalog) return;
     const route = routeFor(location.pathname);
-    if (route.view === 'catalog') renderCatalog();
+    if (route.view === 'landing') renderLanding();
+    else if (route.view === 'settings') renderSettings();
+    else if (route.view === 'catalog') renderCatalog();
     else if (route.view === 'detail') {
       const entry = catalog.entries.find((e) => e.manifest.id === route.id);
       if (entry) renderDetail(entry);
@@ -303,115 +352,91 @@ export function mountCatalog({
         'There isn’t a page at this address. Let’s take you back to discover.',
       );
     bindInput('catalog');
+    if (route.view === 'settings') mountSettingsControls();
+  }
+  function startOnboarding() {
+    let storage;
+    try {
+      storage = localStorage;
+    } catch {
+      /* Optional storage. */
+    }
+    if (!onboarding || !needsOnboarding(storage)) return navigate('/games');
+    onboardingUi = mountOnboarding({
+      input,
+      modelUrl: controllerModelUrl,
+      onComplete: () => {
+        onboardingUi = null;
+        navigate('/games');
+      },
+    });
+  }
+  function renderLanding() {
+    main.innerHTML =
+      '<div class="wrap"><section class="hero" aria-labelledby="hero-title"><div><p class="eyebrow">A LITTLE LESS WAIT. A LITTLE MORE PLAY.</p><h1 id="hero-title">Good games.<br>Wide open.</h1><p class="intro">Pick something good. Play in your browser. A controller or a fingertip is all you need.</p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span><span class="pill">No download</span></div></div><div class="hero-art" aria-hidden="true"><span class="art-corner">開ける / OPEN</span><span class="portal"><svg class="portal-brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></span><span class="orbit-dot"></span><span class="art-label">MAKE ROOM FOR PLAY ↗</span></div></section><section class="values" aria-label="The Akeru way"><article><p class="value-number">01 /</p><h3>Just press play.</h3><p>No membership. No account required. A little window for a little escape.</p></article><article><p class="value-number">02 /</p><h3>Play your way.</h3><p>Every published game supports controller and touch. Settle in however you like.</p></article><article><p class="value-number">03 /</p><h3>Know what you play.</h3><p>Source, credits, controls and privacy details live on every game page.</p></article></section></div>';
+    document.title = 'Akeru — Good games. Wide open.';
+    const button = node('button', 'primary landing-start', 'Start playing ↗');
+    button.onclick = startOnboarding;
+    main.querySelector('.hero > div').append(button);
+  }
+  function renderSettings() {
+    document.title = 'Settings — Akeru';
+    main.innerHTML =
+      '<div class="wrap settings-page"><a class="back" href="/games">← All games</a><p class="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your setup.</h1><div class="settings-grid"><section class="settings-card"><h2>Appearance</h2><p>Choose the look that feels right. Your choice stays on this browser.</p><button class="secondary" data-theme-toggle>Switch light / dark</button></section><section class="settings-card"><h2>Controller</h2><p>Pair in your device’s Bluetooth settings, then press a controller button. Customize the layout for each game.</p><label for="settings-title">Game</label><select id="settings-title"></select><button id="settings-controls" class="secondary">Remap controller</button><div id="control-settings"></div><div id="settings-touch" hidden></div></section><section class="settings-card"><h2>Backbone account</h2><span class="pill">Playing as a guest</span><p>Account connection is not available in this preview yet. No account is needed to play, and your saves stay in this browser.</p><button id="settings-sign-out" class="secondary">Sign out &amp; restart</button><p class="fine">Return to the welcome page and restart setup. Saved games, appearance and controller mappings stay on this device.</p></section><section class="settings-card"><h2>Your progress</h2><p>Open a game’s details to manage its local saves. Cloud sync and Backbone account activity will become available when account connection is ready.</p><a href="/games">Browse games ↗</a></section></div></div>';
+    $('#settings-sign-out').onclick = () => {
+      try {
+        browserStorage()?.removeItem('akeru.onboarding.v1');
+      } catch {
+        /* Storage may be unavailable; returning home still works. */
+      }
+      navigate('/');
+    };
+    for (const entry of catalog.entries) {
+      const option = node('option', '', entry.manifest.title);
+      option.value = entry.manifest.id;
+      $('#settings-title').append(option);
+    }
+  }
+  function mountSettingsControls() {
+    const select = $('#settings-title');
+    const configure = () => {
+      stopControlsMonitor();
+      bindInput(select.value || 'catalog');
+      if (!input || !select.value) {
+        $('#settings-controls').disabled = true;
+        return;
+      }
+      input.mount({
+        touchRoot: $('#settings-touch'),
+        controlsRoot: $('#control-settings'),
+      });
+      $('#settings-controls').onclick = () => {
+        input.showControls();
+        input.refreshControllers?.();
+        stopControlsMonitor();
+        controlsTimer = setInterval(() => input?.refreshControllers?.(), 250);
+      };
+    };
+    select.onchange = configure;
+    configure();
+  }
+  function browserStorage() {
+    try {
+      return localStorage;
+    } catch {
+      return null;
+    }
   }
   function renderCatalog() {
-    document.title = 'Akeru — Good games. Wide open.';
+    document.title = 'Discover — Backbone Akeru';
     telemetry({ type: 'catalogView' });
-    main.innerHTML =
-      '<div class="wrap"><section class="hero" aria-labelledby="hero-title"><div><p class="eyebrow">A LITTLE LESS WAIT. A LITTLE MORE PLAY.</p><h1 id="hero-title">Good games.<br>Wide open.</h1><p class="intro">Pick something good. Play in your browser. A controller or a fingertip is all you need.</p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span><span class="pill">No download</span></div></div><div class="hero-art" aria-hidden="true"><span class="art-corner">開ける / OPEN</span><span class="portal"><svg class="portal-brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></span><span class="orbit-dot"></span><span class="art-label">MAKE ROOM FOR PLAY ↗</span></div></section><section aria-labelledby="library-title"><div class="section-head"><h2 id="library-title">Find your next.</h2><span id="game-count" class="count" aria-live="polite"></span></div><div class="filters" id="filters" role="group" aria-label="Filter games"></div><div id="game-grid"></div></section><section class="values" aria-label="The Akeru way"><article><p class="value-number">01 /</p><h3>Just press play.</h3><p>No membership. No account required. A little window for a little escape.</p></article><article><p class="value-number">02 /</p><h3>Play your way.</h3><p>Every published game supports controller and touch. Settle in however you like.</p></article><article><p class="value-number">03 /</p><h3>Know what you play.</h3><p>Source, credits, controls and privacy details live on every game page.</p></article></section></div>';
-    for (const category of ['all', ...CATEGORIES]) {
-      const b = node(
-        'button',
-        'filter',
-        category === 'all' ? 'All games' : cap(category),
-      );
-      b.setAttribute('aria-pressed', String(filters.category === category));
-      b.onclick = () => {
-        filters.category = category;
-        renderCatalog();
-        $('#filters button').focus();
-      };
-      $('#filters').append(b);
-    }
-    const controller = node(
-      'button',
-      'filter controller-filter',
-      '⌘ Controller ready',
-    );
-    controller.setAttribute('aria-pressed', String(filters.controller));
-    controller.onclick = () => {
-      filters.controller = !filters.controller;
-      controller.setAttribute('aria-pressed', String(filters.controller));
-      renderCards();
-    };
-    $('#filters').append(controller);
-    const search = node('input', 'search');
-    search.type = 'search';
-    search.placeholder = 'Find a game';
-    search.setAttribute('aria-label', 'Search games');
-    search.maxLength = 120;
-    search.value = filters.query;
-    search.oninput = () => {
-      filters.query = search.value;
-      renderCards();
-    };
-    $('#filters').append(search);
-    renderCards();
-  }
-  function renderCards() {
-    const entries = filterEntries(catalog.entries, filters);
-    $('#game-count').textContent =
-      `${entries.length} ${entries.length === 1 ? 'game' : 'games'}`;
-    const target = $('#game-grid');
-    target.replaceChildren();
-    if (!entries.length) {
-      const section = node('div', 'empty-library');
-      section.append(node('span', 'empty-icon', '↗'));
-      const copy = node('div');
-      copy.append(
-        node(
-          'h3',
-          '',
-          catalog.entries.length
-            ? 'Nothing here just yet.'
-            : 'Something good takes a little care.',
-        ),
-        node(
-          'p',
-          '',
-          catalog.entries.length
-            ? 'Try another category or a different search. Your next game might be one click away.'
-            : 'The library is being prepared. Games will appear here once they have passed review and are ready to play. No titles are published yet.',
-        ),
-      );
-      section.append(copy);
-      target.append(section);
-      return;
-    }
-    const grid = node('div', 'grid');
-    for (const e of entries) {
-      const a = node('a', 'game-card');
-      a.href = `/g/${e.manifest.id}`;
-      const art = node('div', `card-art ${e.metadata.category}`);
-      art.setAttribute('aria-hidden', 'true');
-      art.append(
-        node(
-          'span',
-          'card-tag',
-          mode === 'demo' ? 'ORIGINAL TEST FIXTURE' : cap(e.metadata.category),
-        ),
-      );
-      const copy = node('div', 'card-copy');
-      copy.append(
-        node('h3', '', e.manifest.title),
-        node('p', '', e.metadata.summary),
-      );
-      const bottom = node('div', 'card-bottom');
-      bottom.append(
-        node(
-          'span',
-          '',
-          e.availability === 'paused'
-            ? 'Temporarily unavailable'
-            : 'Controller + touch',
-        ),
-        node('span', 'arrow-button', '↗'),
-      );
-      copy.append(bottom);
-      a.append(art, copy);
-      grid.append(a);
-    }
-    target.append(grid);
+    renderGameHome(main, catalog.entries, {
+      filters,
+      recent: readRecent(browserStorage()),
+      onFilters: (next) => {
+        filters = next;
+      },
+    });
   }
   function renderDetail(entry) {
     const m = entry.manifest,
@@ -419,8 +444,25 @@ export function mountCatalog({
     document.title = `${m.title} — Akeru`;
     telemetry({ type: 'detailView', titleId: m.id });
     main.innerHTML =
-      '<div class="wrap"><a class="back" href="/">← All games</a><section class="detail-top"><div id="detail-art" class="card-art detail-art" aria-hidden="true"></div><div class="detail-copy"><p id="category" class="eyebrow"></p><h1 id="title"></h1><p id="description" class="description"></p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span></div><button id="play-button" class="primary">Play now <span aria-hidden="true">↗</span></button><p id="play-note" class="fine">No account or membership needed.</p></div></section><dl class="facts" id="facts"></dl><section class="detail-info"><div><div class="info-block"><h2>Make yourself comfortable.</h2><h3>Controller</h3><div id="controller-help"></div><h3>Touch</h3><div id="touch-help"></div></div><div class="info-block"><h2>Your progress.</h2><p id="save-info"></p></div></div><div><div class="info-block"><h2>A few things to know.</h2><div id="privacy-info"></div></div><div class="info-block"><h2>Open by design.</h2><p id="source-license"></p><div id="source-links" class="source-links"></div><p class="fine">Source revision</p><p id="source-revision" class="revision"></p></div></div></section></div>';
+      '<div class="wrap"><a class="back" href="/games">← All games</a><section class="detail-top"><div id="detail-art" class="card-art detail-art" aria-hidden="true"></div><div class="detail-copy"><p id="category" class="eyebrow"></p><h1 id="title"></h1><p id="description" class="description"></p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span></div><button id="play-button" class="primary">Play now <span aria-hidden="true">↗</span></button><p id="play-note" class="fine">No account or membership needed.</p></div></section><dl class="facts" id="facts"></dl><section class="detail-info" id="game-details" tabindex="-1"><div><div class="info-block"><h2>Make yourself comfortable.</h2><h3>Controller</h3><div id="controller-help"></div><h3>Touch</h3><div id="touch-help"></div></div><div class="info-block"><h2>Your progress.</h2><p id="save-info"></p></div></div><div><div class="info-block"><h2>A few things to know.</h2><div id="privacy-info"></div></div><div class="info-block"><h2>Open by design.</h2><p id="source-license"></p><div id="source-links" class="source-links"></div><p class="fine">Source revision</p><p id="source-revision" class="revision"></p></div></div></section></div>';
+    const more = node('button', 'scroll-cue', 'Controls, credits & more ↓');
+    more.onclick = () => {
+      $('#game-details').scrollIntoView({
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'instant'
+          : 'smooth',
+      });
+      $('#game-details').focus({ preventScroll: true });
+    };
+    main.querySelector('.detail-top').after(more);
     $('#detail-art').classList.add(meta.category);
+    if (meta.cover) {
+      const image = node('img', 'game-cover');
+      image.src = meta.cover;
+      image.alt = '';
+      $('#detail-art').classList.add('has-cover');
+      $('#detail-art').append(image);
+    }
     $('#category').textContent = `${cap(meta.category)} / ${meta.creator}`;
     $('#title').textContent = m.title;
     $('#description').textContent = meta.description;
@@ -573,7 +615,10 @@ export function mountCatalog({
     $('#runtime-title').textContent = entry.manifest.title;
     const frame = node('iframe');
     frame.title = `${entry.manifest.title} isolated runtime`;
-    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+    frame.setAttribute(
+      'sandbox',
+      'allow-scripts allow-same-origin allow-pointer-lock',
+    );
     frame.setAttribute('referrerpolicy', 'no-referrer');
     frame.setAttribute('allow', 'gamepad');
     const nonce = crypto.randomUUID(),
@@ -590,6 +635,7 @@ export function mountCatalog({
       onEvent: (event) => {
         if (active !== session) return;
         if (event.type === 'playable') {
+          recordPlayed(browserStorage(), entry.manifest.id);
           $('#runtime-overlay').hidden = true;
           telemetry({
             type: 'playable',
@@ -597,6 +643,7 @@ export function mountCatalog({
             durationMs: Math.min(600000, performance.now() - start),
           });
           bindInput(entry.manifest.id, true);
+          frame.contentWindow.focus();
         } else if (event.type === 'error') failRuntime(event.code);
         else if (event.type === 'exit') navigate(`/g/${entry.manifest.id}`);
       },
@@ -605,11 +652,48 @@ export function mountCatalog({
       if (active === session) active.channel.connect();
     });
     $('#runtime-exit').onclick = () => navigate(`/g/${entry.manifest.id}`);
+    const tools = document.querySelector('.runtime-tools');
+    const theme = node('button', 'secondary theme-toggle', 'Light / Dark');
+    theme.setAttribute('data-theme-toggle', '');
+    theme.setAttribute('aria-label', 'Switch light or dark theme');
+    tools.append(theme);
+    const fullscreen = node('button', 'secondary', 'Fullscreen');
+    fullscreen.id = 'runtime-fullscreen';
+    fullscreen.onclick = async () => {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else if (document.querySelector('.runtime-wrap').requestFullscreen)
+          await document.querySelector('.runtime-wrap').requestFullscreen();
+        else
+          document
+            .querySelector('.runtime-wrap')
+            .classList.toggle('expanded-player');
+        fullscreen.textContent =
+          document.fullscreenElement ||
+          document.querySelector('.expanded-player')
+            ? 'Exit fullscreen'
+            : 'Fullscreen';
+        frame.contentWindow.focus();
+      } catch {
+        fullscreen.textContent = 'Fullscreen unavailable';
+      }
+    };
+    tools.prepend(fullscreen);
+    const touch = node('button', 'secondary', 'Touch controls');
+    const touchVisible = matchMedia('(pointer: coarse)').matches;
+    $('#touch-controls').hidden = !touchVisible;
+    touch.setAttribute('aria-pressed', String(touchVisible));
+    touch.onclick = () => {
+      $('#touch-controls').hidden = !$('#touch-controls').hidden;
+      touch.setAttribute('aria-pressed', String(!$('#touch-controls').hidden));
+    };
+    tools.append(touch);
     $('#runtime-pause').onclick = () =>
       active?.channel.state === 'paused' ? resume() : pause();
     $('#runtime-controls').onclick = () => {
       pause();
       input?.showControls();
+      input?.start();
       input?.refreshControllers?.();
       stopControlsMonitor();
       controlsTimer = setInterval(() => input?.refreshControllers?.(), 250);
@@ -637,6 +721,7 @@ export function mountCatalog({
     b.onclick = resume;
     o.append(b);
     o.hidden = false;
+    b.focus();
   }
   function resume() {
     if (!active?.channel.resume()) return;
@@ -647,6 +732,7 @@ export function mountCatalog({
     input?.start();
     $('#runtime-overlay').hidden = true;
     $('#runtime-pause').textContent = 'Pause';
+    active.frame.contentWindow.focus();
   }
   function failRuntime(code) {
     if (!active) return;
@@ -690,12 +776,15 @@ export function mountCatalog({
     refresh: initialize,
     dispose() {
       disposed = true;
+      onboardingUi?.dispose();
       loadVersion++;
       clearSession();
       window.removeEventListener('message', onMessage);
       window.removeEventListener('popstate', renderRoute);
       document.removeEventListener('click', onClick);
       document.removeEventListener('visibilitychange', onVisibility);
+      document.removeEventListener('fullscreenchange', onFullscreen);
+      document.removeEventListener('click', onThemeClick);
       $('#about-button').removeEventListener('click', openAbout);
       $('#close-about').removeEventListener('click', closeAbout);
     },
