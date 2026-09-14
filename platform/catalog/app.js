@@ -85,7 +85,6 @@ export function mountCatalog({
     disposed = false,
     loadVersion = 0;
   let onboardingUi = null;
-  let firstRender = true;
   const setTheme = (theme) => {
     document.documentElement.dataset.theme = theme;
     try {
@@ -332,7 +331,9 @@ export function mountCatalog({
     clearSession();
     if (!catalog) return;
     const route = routeFor(location.pathname);
-    if (route.view === 'catalog') renderCatalog();
+    if (route.view === 'landing') renderLanding();
+    else if (route.view === 'settings') renderSettings();
+    else if (route.view === 'catalog') renderCatalog();
     else if (route.view === 'detail') {
       const entry = catalog.entries.find((e) => e.manifest.id === route.id);
       if (entry) renderDetail(entry);
@@ -347,30 +348,72 @@ export function mountCatalog({
         'There isn’t a page at this address. Let’s take you back to discover.',
       );
     bindInput('catalog');
-    if (firstRender) {
-      firstRender = false;
-      let storage;
-      try {
-        storage = localStorage;
-      } catch {
-        /* Optional storage. */
-      }
-      if (onboarding && needsOnboarding(storage))
-        onboardingUi = mountOnboarding({
-          input,
-          modelUrl: controllerModelUrl,
-          onComplete: () => {
-            onboardingUi = null;
-            main.focus();
-          },
-        });
+    if (route.view === 'settings') mountSettingsControls();
+  }
+  function startOnboarding() {
+    let storage;
+    try {
+      storage = localStorage;
+    } catch {
+      /* Optional storage. */
     }
+    if (!onboarding || !needsOnboarding(storage)) return navigate('/games');
+    onboardingUi = mountOnboarding({
+      input,
+      modelUrl: controllerModelUrl,
+      onComplete: () => {
+        onboardingUi = null;
+        navigate('/games');
+      },
+    });
+  }
+  function renderLanding() {
+    renderCatalog();
+    main.querySelector('section[aria-labelledby="library-title"]').remove();
+    document.title = 'Akeru — Good games. Wide open.';
+    const button = node('button', 'primary landing-start', 'Start playing ↗');
+    button.onclick = startOnboarding;
+    main.querySelector('.hero > div').append(button);
+  }
+  function renderSettings() {
+    document.title = 'Settings — Akeru';
+    main.innerHTML =
+      '<div class="wrap settings-page"><a class="back" href="/games">← All games</a><p class="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your setup.</h1><div class="settings-grid"><section class="settings-card"><h2>Appearance</h2><p>Choose the look that feels right. Your choice stays on this browser.</p><button class="secondary" data-theme-toggle>Switch light / dark</button></section><section class="settings-card"><h2>Controller</h2><p>Pair in your device’s Bluetooth settings, then press a controller button. Customize the layout for each game.</p><label for="settings-title">Game</label><select id="settings-title"></select><button id="settings-controls" class="secondary">Remap controller</button><div id="control-settings"></div></section><section class="settings-card"><h2>Backbone account</h2><span class="pill">Playing as a guest</span><p>Account connection is not available in this preview yet. No account is needed to play, and your saves stay in this browser.</p></section><section class="settings-card"><h2>Your progress</h2><p>Open a game’s details to manage its local saves. Cloud sync and Backbone account activity will become available when account connection is ready.</p><a href="/games">Browse games ↗</a></section></div></div>';
+    for (const entry of catalog.entries) {
+      const option = node('option', '', entry.manifest.title);
+      option.value = entry.manifest.id;
+      $('#settings-title').append(option);
+    }
+  }
+  function mountSettingsControls() {
+    const select = $('#settings-title');
+    const configure = () => {
+      stopControlsMonitor();
+      bindInput(select.value || 'catalog');
+      if (!input || !select.value) {
+        $('#settings-controls').disabled = true;
+        return;
+      }
+      input.mount({ controlsRoot: $('#control-settings') });
+      $('#settings-controls').onclick = () => {
+        input.showControls();
+        input.refreshControllers?.();
+        stopControlsMonitor();
+        controlsTimer = setInterval(() => input?.refreshControllers?.(), 250);
+      };
+    };
+    select.onchange = configure;
+    configure();
   }
   function renderCatalog() {
     document.title = 'Akeru — Good games. Wide open.';
     telemetry({ type: 'catalogView' });
     main.innerHTML =
       '<div class="wrap"><section class="hero" aria-labelledby="hero-title"><div><p class="eyebrow">A LITTLE LESS WAIT. A LITTLE MORE PLAY.</p><h1 id="hero-title">Good games.<br>Wide open.</h1><p class="intro">Pick something good. Play in your browser. A controller or a fingertip is all you need.</p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span><span class="pill">No download</span></div></div><div class="hero-art" aria-hidden="true"><span class="art-corner">開ける / OPEN</span><span class="portal"><svg class="portal-brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></span><span class="orbit-dot"></span><span class="art-label">MAKE ROOM FOR PLAY ↗</span></div></section><section aria-labelledby="library-title"><div class="section-head"><h2 id="library-title">Find your next.</h2><span id="game-count" class="count" aria-live="polite"></span></div><div class="filters" id="filters" role="group" aria-label="Filter games"></div><div id="game-grid"></div></section><section class="values" aria-label="The Akeru way"><article><p class="value-number">01 /</p><h3>Just press play.</h3><p>No membership. No account required. A little window for a little escape.</p></article><article><p class="value-number">02 /</p><h3>Play your way.</h3><p>Every published game supports controller and touch. Settle in however you like.</p></article><article><p class="value-number">03 /</p><h3>Know what you play.</h3><p>Source, credits, controls and privacy details live on every game page.</p></article></section></div>';
+    if (location.pathname !== '/') {
+      main.querySelector('.hero').remove();
+      main.querySelector('.values').remove();
+    }
     for (const category of ['all', ...CATEGORIES]) {
       const b = node(
         'button',
@@ -483,7 +526,17 @@ export function mountCatalog({
     document.title = `${m.title} — Akeru`;
     telemetry({ type: 'detailView', titleId: m.id });
     main.innerHTML =
-      '<div class="wrap"><a class="back" href="/">← All games</a><section class="detail-top"><div id="detail-art" class="card-art detail-art" aria-hidden="true"></div><div class="detail-copy"><p id="category" class="eyebrow"></p><h1 id="title"></h1><p id="description" class="description"></p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span></div><button id="play-button" class="primary">Play now <span aria-hidden="true">↗</span></button><p id="play-note" class="fine">No account or membership needed.</p></div></section><dl class="facts" id="facts"></dl><section class="detail-info"><div><div class="info-block"><h2>Make yourself comfortable.</h2><h3>Controller</h3><div id="controller-help"></div><h3>Touch</h3><div id="touch-help"></div></div><div class="info-block"><h2>Your progress.</h2><p id="save-info"></p></div></div><div><div class="info-block"><h2>A few things to know.</h2><div id="privacy-info"></div></div><div class="info-block"><h2>Open by design.</h2><p id="source-license"></p><div id="source-links" class="source-links"></div><p class="fine">Source revision</p><p id="source-revision" class="revision"></p></div></div></section></div>';
+      '<div class="wrap"><a class="back" href="/games">← All games</a><section class="detail-top"><div id="detail-art" class="card-art detail-art" aria-hidden="true"></div><div class="detail-copy"><p id="category" class="eyebrow"></p><h1 id="title"></h1><p id="description" class="description"></p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span></div><button id="play-button" class="primary">Play now <span aria-hidden="true">↗</span></button><p id="play-note" class="fine">No account or membership needed.</p></div></section><dl class="facts" id="facts"></dl><section class="detail-info" id="game-details" tabindex="-1"><div><div class="info-block"><h2>Make yourself comfortable.</h2><h3>Controller</h3><div id="controller-help"></div><h3>Touch</h3><div id="touch-help"></div></div><div class="info-block"><h2>Your progress.</h2><p id="save-info"></p></div></div><div><div class="info-block"><h2>A few things to know.</h2><div id="privacy-info"></div></div><div class="info-block"><h2>Open by design.</h2><p id="source-license"></p><div id="source-links" class="source-links"></div><p class="fine">Source revision</p><p id="source-revision" class="revision"></p></div></div></section></div>';
+    const more = node('button', 'scroll-cue', 'Controls, credits & more ↓');
+    more.onclick = () => {
+      $('#game-details').scrollIntoView({
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'instant'
+          : 'smooth',
+      });
+      $('#game-details').focus({ preventScroll: true });
+    };
+    main.querySelector('.detail-top').after(more);
     $('#detail-art').classList.add(meta.category);
     if (meta.cover) {
       const image = node('img', 'game-cover');

@@ -95,7 +95,7 @@ export async function neutralGamepad(page) {
 }
 
 export async function launchDemo(page, url) {
-  await page.goto(url);
+  await page.goto(url + '/games');
   await page.getByRole('link', { name: /Orbit study/ }).click();
   await expect(page).toHaveURL(/\/g\/orbit-study$/);
   await page.getByRole('button', { name: /Play now/ }).click();

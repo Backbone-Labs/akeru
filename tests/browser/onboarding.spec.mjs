@@ -11,6 +11,7 @@ test('minimal guest flow is accessible, honest about accounts, and remembered', 
   page,
 }) => {
   await page.goto(demo.url);
+  await page.getByRole('button', { name: 'Start playing' }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
   await page.getByRole('button', { name: /Let’s get started/ }).click();
@@ -26,9 +27,13 @@ test('minimal guest flow is accessible, honest about accounts, and remembered', 
   ).toBeVisible();
   await page.getByRole('button', { name: /Play as a guest/ }).click();
   await expect(dialog).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: /Find your next/ }),
+  ).toBeVisible();
   await page.reload();
-  await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: /Find your next/ }),
+  ).toBeVisible();
   await expect(dialog).toHaveCount(0);
 });
 test('recognizes already connected Backbone, generic reconnection and disconnect', async ({
@@ -48,6 +53,7 @@ test('recognizes already connected Backbone, generic reconnection and disconnect
     });
   });
   await page.goto(demo.url);
+  await page.getByRole('button', { name: 'Start playing' }).click();
   await page.getByRole('button', { name: /Let’s get started/ }).click();
   await expect(page.locator('.connection-status')).toHaveText(
     'Backbone connected',
@@ -90,6 +96,7 @@ test('small screens and reduced motion preserve the skip path', async ({
   await page.setViewportSize({ width: 390, height: 740 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(demo.url);
+  await page.getByRole('button', { name: 'Start playing' }).click();
   await page.getByRole('button', { name: /Let’s get started/ }).click();
   expect(
     await page
@@ -98,4 +105,32 @@ test('small screens and reduced motion preserve the skip path', async ({
   ).toBe(true);
   await page.getByRole('button', { name: 'Skip setup' }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
+});
+test('landing, library and settings stay separate with persistent theme and remapping', async ({
+  page,
+}) => {
+  await page.goto(demo.url);
+  await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.getByRole('link', { name: 'Discover', exact: true }).click();
+  await expect(page.locator('.hero')).toHaveCount(0);
+  await page.getByRole('link', { name: 'Settings', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Your setup.' }),
+  ).toBeVisible();
+  const before = await page.locator('html').getAttribute('data-theme');
+  await page
+    .getByRole('button', { name: 'Switch light / dark', exact: true })
+    .click();
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-theme',
+    before === 'dark' ? 'light' : 'dark',
+  );
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-theme',
+    before === 'dark' ? 'light' : 'dark',
+  );
+  await page.getByRole('button', { name: 'Remap controller' }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
 });

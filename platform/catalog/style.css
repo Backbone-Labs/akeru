@@ -1291,7 +1291,7 @@ footer span {
 .onboarding-emblem {
   width: 104px;
   height: 112px;
-  color: #3c432e;
+  color: var(--ink);
   margin: 0 0 35px;
   transform: rotate(-8deg);
 }
@@ -1612,5 +1612,70 @@ body .runtime-stage {
   }
   body .runtime-wrap {
     padding: 8px;
+  }
+}
+
+.landing-start {
+  margin-top: 32px;
+}
+.settings-page {
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+.settings-page h1 {
+  font-size: clamp(40px, 7vw, 80px);
+  margin: 20px 0 40px;
+}
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.settings-card {
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--white);
+}
+.settings-card p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+.settings-card select {
+  display: block;
+  width: 100%;
+  margin: 12px 0 20px;
+  padding: 12px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.scroll-cue {
+  display: block;
+  margin: 0 auto 32px;
+  padding: 12px 20px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  animation: scroll-hint 2s ease-in-out infinite;
+}
+@keyframes scroll-hint {
+  50% {
+    transform: translateY(5px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue {
+    animation: none;
+  }
+}
+@media (max-width: 650px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+  .settings-card {
+    padding: 24px;
   }
 }

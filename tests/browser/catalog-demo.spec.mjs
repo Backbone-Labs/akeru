@@ -27,8 +27,10 @@ test.beforeEach(async () => {
 test('browses from catalog to detail and launches the isolated original fixture', async ({
   page,
 }) => {
-  await page.goto(demo.url);
-  await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible();
+  await page.goto(demo.url + '/games');
+  await expect(
+    page.getByRole('heading', { name: /Find your next/ }),
+  ).toBeVisible();
   await expect(page.getByText('1 game', { exact: true })).toBeVisible();
 
   await page.getByRole('link', { name: /Orbit study/ }).click();
@@ -202,7 +204,7 @@ test('renders paused, unpublished, and unknown routes safely', async ({
   await expect(
     page.getByRole('heading', { name: 'This game isn’t available.' }),
   ).toBeVisible();
-  await page.goto(demo.url);
+  await page.goto(demo.url + '/games');
   await expect(page.getByText('The library is being prepared.')).toBeVisible();
 
   await page.evaluate(() =>
@@ -217,8 +219,10 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(demo.url);
-  await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible();
+  await page.goto(demo.url + '/games');
+  await expect(
+    page.getByRole('heading', { name: /Find your next/ }),
+  ).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
   await page.getByRole('link', { name: /Orbit study/ }).click();
