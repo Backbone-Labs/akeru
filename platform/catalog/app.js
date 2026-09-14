@@ -1,11 +1,10 @@
+import { renderGameHome, readRecent, recordPlayed } from './home.js';
 import { mountOnboarding, needsOnboarding } from './onboarding.js';
 import { createSaveStore } from '/saves/index.js';
 import {
-  CATEGORIES,
   validateCatalog,
   routeFor,
   titleUrl,
-  filterEntries,
   createShellTelemetry,
 } from './model.js';
 import { createRuntimeChannel } from './channel.js';
@@ -156,6 +155,7 @@ export function mountCatalog({
     input = null;
   }
   function nav(event) {
+    if (document.querySelector('.akeru-control-settings:not([hidden])')) return;
     const modal = document.querySelector('dialog[open]');
     if (modal && ['back', 'menu'].includes(event.type)) {
       if (onboardingUi) onboardingUi.back();
@@ -412,116 +412,23 @@ export function mountCatalog({
     select.onchange = configure;
     configure();
   }
-  function renderCatalog() {
-    document.title = 'Akeru — Good games. Wide open.';
-    telemetry({ type: 'catalogView' });
-    main.innerHTML =
-      '<div class="wrap library-page"><section aria-labelledby="library-title"><div class="section-head"><h2 id="library-title">Find your next.</h2><span id="game-count" class="count" aria-live="polite"></span></div><div class="filters" id="filters" role="group" aria-label="Filter games"></div><div id="game-grid"></div></section></div>';
-    for (const category of ['all', ...CATEGORIES]) {
-      const b = node(
-        'button',
-        'filter',
-        category === 'all' ? 'All games' : cap(category),
-      );
-      b.setAttribute('aria-pressed', String(filters.category === category));
-      b.onclick = () => {
-        filters.category = category;
-        renderCatalog();
-        $('#filters button').focus();
-      };
-      $('#filters').append(b);
+  function browserStorage() {
+    try {
+      return localStorage;
+    } catch {
+      return null;
     }
-    const controller = node(
-      'button',
-      'filter controller-filter',
-      '⌘ Controller ready',
-    );
-    controller.setAttribute('aria-pressed', String(filters.controller));
-    controller.onclick = () => {
-      filters.controller = !filters.controller;
-      controller.setAttribute('aria-pressed', String(filters.controller));
-      renderCards();
-    };
-    $('#filters').append(controller);
-    const search = node('input', 'search');
-    search.type = 'search';
-    search.placeholder = 'Find a game';
-    search.setAttribute('aria-label', 'Search games');
-    search.maxLength = 120;
-    search.value = filters.query;
-    search.oninput = () => {
-      filters.query = search.value;
-      renderCards();
-    };
-    $('#filters').append(search);
-    renderCards();
   }
-  function renderCards() {
-    const entries = filterEntries(catalog.entries, filters);
-    $('#game-count').textContent =
-      `${entries.length} ${entries.length === 1 ? 'game' : 'games'}`;
-    const target = $('#game-grid');
-    target.replaceChildren();
-    if (!entries.length) {
-      const section = node('div', 'empty-library');
-      section.append(node('span', 'empty-icon', '↗'));
-      const copy = node('div');
-      copy.append(
-        node(
-          'h3',
-          '',
-          catalog.entries.length
-            ? 'Nothing here just yet.'
-            : 'Something good takes a little care.',
-        ),
-        node(
-          'p',
-          '',
-          catalog.entries.length
-            ? 'Try another category or a different search. Your next game might be one click away.'
-            : 'The library is being prepared. Games will appear here once they have passed review and are ready to play. No titles are published yet.',
-        ),
-      );
-      section.append(copy);
-      target.append(section);
-      return;
-    }
-    const grid = node('div', 'grid');
-    for (const e of entries) {
-      const a = node('a', 'game-card');
-      a.href = `/g/${e.manifest.id}`;
-      const art = node('div', `card-art ${e.metadata.category}`);
-      art.setAttribute('aria-hidden', 'true');
-      if (e.metadata.cover) {
-        const image = node('img', 'game-cover');
-        image.src = e.metadata.cover;
-        image.alt = '';
-        image.loading = 'lazy';
-        art.classList.add('has-cover');
-        art.append(image);
-      }
-      art.append(node('span', 'card-tag', cap(e.metadata.category)));
-      const copy = node('div', 'card-copy');
-      copy.append(
-        node('h3', '', e.manifest.title),
-        node('p', '', e.metadata.summary),
-      );
-      const bottom = node('div', 'card-bottom');
-      bottom.append(
-        node(
-          'span',
-          '',
-          e.availability === 'paused'
-            ? 'Temporarily unavailable'
-            : 'Controller + touch',
-        ),
-        node('span', 'arrow-button', '↗'),
-      );
-      copy.append(bottom);
-      a.append(art, copy);
-      grid.append(a);
-    }
-    target.append(grid);
+  function renderCatalog() {
+    document.title = 'Discover — Backbone Akeru';
+    telemetry({ type: 'catalogView' });
+    renderGameHome(main, catalog.entries, {
+      filters,
+      recent: readRecent(browserStorage()),
+      onFilters: (next) => {
+        filters = next;
+      },
+    });
   }
   function renderDetail(entry) {
     const m = entry.manifest,
@@ -720,6 +627,7 @@ export function mountCatalog({
       onEvent: (event) => {
         if (active !== session) return;
         if (event.type === 'playable') {
+          recordPlayed(browserStorage(), entry.manifest.id);
           $('#runtime-overlay').hidden = true;
           telemetry({
             type: 'playable',
@@ -777,6 +685,7 @@ export function mountCatalog({
     $('#runtime-controls').onclick = () => {
       pause();
       input?.showControls();
+      input?.start();
       input?.refreshControllers?.();
       stopControlsMonitor();
       controlsTimer = setInterval(() => input?.refreshControllers?.(), 250);

@@ -16,6 +16,7 @@ export function packageCatalog(cwd = process.cwd()) {
     'favicon.svg',
     'style.css',
     'app.js',
+    'home.js',
     'onboarding.js',
     'controller-model.js',
     'model.js',

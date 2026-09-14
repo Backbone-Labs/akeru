@@ -307,6 +307,7 @@ export function createBrowserInputProvider(options = {}) {
     updateControllerList(pads);
     const selected = chooseGamepad(pads);
     if (!selected) {
+      ui?.updateInput?.(null);
       if (activeGamepad !== null) {
         if (activeProvider === 'gamepad') release('gamepad', false);
         activeGamepad = null;
@@ -315,6 +316,7 @@ export function createBrowserInputProvider(options = {}) {
       }
     } else {
       const raw = readStandardGamepad(selected);
+      ui?.updateInput?.(focused ? raw : null, selected.id);
       if (selected.index !== activeGamepad) {
         if (activeProvider === 'gamepad') release('gamepad', false);
         activeGamepad = selected.index;

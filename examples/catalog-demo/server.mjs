@@ -252,7 +252,7 @@ export async function startCatalogDemo(options = {}) {
       ['/', '/games', '/settings'].includes(req.url) ||
       /^\/g\/[a-z0-9-]+\/?$/.test(req.url)
         ? 'platform/catalog/index.html'
-        : /^\/(?:favicon\.svg|style\.css|app\.js|onboarding\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js)$/.test(
+        : /^\/(?:favicon\.svg|style\.css|app\.js|home\.js|onboarding\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js)$/.test(
               req.url,
             )
           ? `platform/catalog${req.url}`
