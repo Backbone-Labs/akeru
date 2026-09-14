@@ -9,7 +9,9 @@ import { validateManifest } from '../../packages/contracts/src/index.js';
 const root = new URL('../../', import.meta.url),
   read = (p) => readFileSync(new URL(p, root));
 const hash = (b) => createHash('sha256').update(b).digest('hex');
-export async function startCatalogDemo() {
+export async function startCatalogDemo({
+  controllerModelPath = process.env.AKERU_CONTROLLER_MODEL,
+} = {}) {
   const servers = [];
   let state = 'available',
     shellOrigin;
@@ -163,16 +165,45 @@ export async function startCatalogDemo() {
         }),
       );
     }
+    if (req.url === '/local-controller.glb' && controllerModelPath) {
+      res.setHeader('Content-Type', 'model/gltf-binary');
+      return res.end(readFileSync(resolve(controllerModelPath)));
+    }
+    const vendor = {
+      '/vendor/three/meshopt_decoder.module.js':
+        'node_modules/three/examples/jsm/libs/meshopt_decoder.module.js',
+      '/vendor/three/three.module.js':
+        'node_modules/three/build/three.module.js',
+      '/vendor/three/three.core.js': 'node_modules/three/build/three.core.js',
+      '/vendor/three/GLTFLoader.js':
+        'node_modules/three/examples/jsm/loaders/GLTFLoader.js',
+      '/vendor/three/BufferGeometryUtils.js':
+        'node_modules/three/examples/jsm/utils/BufferGeometryUtils.js',
+    };
+    if (controllerModelPath && Object.hasOwn(vendor, req.url)) {
+      res.setHeader('Content-Type', 'text/javascript');
+      return res.end(
+        read(vendor[req.url])
+          .toString()
+          .replaceAll("from 'three'", "from '/vendor/three/three.module.js'")
+          .replaceAll(
+            "'../utils/BufferGeometryUtils.js'",
+            "'/vendor/three/BufferGeometryUtils.js'",
+          ),
+      );
+    }
     if (req.url === '/bootstrap.js') {
       res.setHeader('Content-Type', 'text/javascript');
       return res.end(
-        "import {mountCatalog} from '/app.js';import {createBrowserInputProvider} from '/input/browser.js';window.catalogPreview=mountCatalog({mode:'demo',inputProviderFactory:createBrowserInputProvider});",
+        "import {mountCatalog} from '/app.js';import {createBrowserInputProvider} from '/input/browser.js';window.catalogPreview=mountCatalog({mode:'demo',inputProviderFactory:createBrowserInputProvider,controllerModelUrl:" +
+          JSON.stringify(controllerModelPath ? '/local-controller.glb' : null) +
+          '});',
       );
     }
     const file =
       req.url === '/' || /^\/g\/[a-z0-9-]+\/?$/.test(req.url)
         ? 'platform/catalog/index.html'
-        : /^\/(?:favicon\.svg|style\.css|app\.js|model\.js|channel\.js|save-channel\.js)$/.test(
+        : /^\/(?:favicon\.svg|style\.css|app\.js|onboarding\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js)$/.test(
               req.url,
             )
           ? `platform/catalog${req.url}`

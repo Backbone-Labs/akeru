@@ -14,6 +14,13 @@ export const test = base.extend({
     page.on('pageerror', (error) =>
       failures.push(`pageerror: ${error.stack ?? error.message}`),
     );
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem('akeru.onboarding.v1', 'complete');
+      } catch {
+        /* No storage on some fixture origins. */
+      }
+    });
     await use(page);
     expect(failures, `Browser errors in ${testInfo.title}`).toEqual([]);
   },

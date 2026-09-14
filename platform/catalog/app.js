@@ -1,3 +1,4 @@
+import { mountOnboarding, needsOnboarding } from './onboarding.js';
 import { createSaveStore } from '/saves/index.js';
 import {
   CATEGORIES,
@@ -68,6 +69,8 @@ async function fetchRegistry() {
 /** Services are trusted shell integrations, never package-defined capabilities. */
 export function mountCatalog({
   mode = 'production',
+  onboarding = true,
+  controllerModelUrl = null,
   inputProviderFactory,
   telemetrySink,
   loadCatalog = fetchRegistry,
@@ -81,6 +84,8 @@ export function mountCatalog({
     navInput = null,
     disposed = false,
     loadVersion = 0;
+  let onboardingUi = null;
+  let firstRender = true;
   let filters = { category: 'all', controller: false, query: '' };
   let controlsTimer = null;
   function stopControlsMonitor() {
@@ -118,7 +123,8 @@ export function mountCatalog({
   function nav(event) {
     const modal = document.querySelector('dialog[open]');
     if (modal && ['back', 'menu'].includes(event.type)) {
-      modal.close();
+      if (onboardingUi) onboardingUi.back();
+      else modal.close();
       return;
     }
     if (event.type === 'back') {
@@ -152,7 +158,9 @@ export function mountCatalog({
       return;
     }
     const targets = [
-      ...scope.querySelectorAll('a[href],button:not([disabled]),input,select'),
+      ...scope.querySelectorAll(
+        'a[href],button:not([disabled]),input,select,summary',
+      ),
     ].filter((e) => !e.closest('[hidden]') && e.getClientRects().length);
     if (!targets.length) return;
     if (event.type === 'activate') {
@@ -303,6 +311,24 @@ export function mountCatalog({
         'There isn’t a page at this address. Let’s take you back to discover.',
       );
     bindInput('catalog');
+    if (firstRender) {
+      firstRender = false;
+      let storage;
+      try {
+        storage = localStorage;
+      } catch {
+        /* Optional storage. */
+      }
+      if (onboarding && needsOnboarding(storage))
+        onboardingUi = mountOnboarding({
+          input,
+          modelUrl: controllerModelUrl,
+          onComplete: () => {
+            onboardingUi = null;
+            main.focus();
+          },
+        });
+    }
   }
   function renderCatalog() {
     document.title = 'Akeru — Good games. Wide open.';
@@ -690,6 +716,7 @@ export function mountCatalog({
     refresh: initialize,
     dispose() {
       disposed = true;
+      onboardingUi?.dispose();
       loadVersion++;
       clearSession();
       window.removeEventListener('message', onMessage);
