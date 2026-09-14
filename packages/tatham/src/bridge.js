@@ -1,4 +1,6 @@
-/* global Module, command, UTF8ToString, HEAPU8, savefile_read_callback: writable, timer_callback: writable */
+/* global Module, command, UTF8ToString, HEAPU8, timer_callback: writable */
+// eslint-disable-next-line no-unused-vars -- The compiled upstream loader reads this assigned callback.
+/* global savefile_read_callback: writable */
 /* Runs inside the compiled upstream frontend scope. No direct persistent storage. */
 Module.postRun = [
   function () {

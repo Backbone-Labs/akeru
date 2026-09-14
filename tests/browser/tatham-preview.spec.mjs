@@ -183,6 +183,6 @@ for (const title of titles)
       window.tathamEngine.save(),
     );
     // Mines resumes its timer immediately; compare the puzzle and move history.
-    const withoutTime = (value) => value.replace(/^TIME    :.*\n/m, '');
+    const withoutTime = (value) => value.replace(/^TIME {4}:.*\n/m, '');
     expect(withoutTime(restored)).toBe(withoutTime(saved));
   });
