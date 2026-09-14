@@ -407,7 +407,7 @@ main:focus {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;
-  background: #ffffff;
+  background: var(--white);
   text-decoration: none;
   transition:
     transform 0.16s,
@@ -1057,7 +1057,7 @@ footer span {
   background: #f77041;
 }
 .akeru-control-settings {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid #dedede;
   border-radius: 20px;
   padding: 24px;

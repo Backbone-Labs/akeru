@@ -19,3 +19,13 @@ only on the shell origin and remain outside the title integrity records and
 public source tree. Capture them from the running games; do not substitute
 unreviewed promotional artwork. Set `AKERU_CONTROLLER_MODEL` to an external GLB
 path to enable the local onboarding model.
+
+The root URL is the landing page. **Start playing** opens first-run setup; after
+setup, it opens `/games`. Returning players go directly to the library from that
+button. **Discover** always opens the library; game deep links remain usable
+without an account or onboarding.
+
+**Settings** (`/settings`) offers light/dark appearance and per-game controller
+remapping. Theme and mappings persist in this browser. Account connection is
+unavailable in the local preview: do not enter credentials or a raw Backbone ID.
+Per-game save export/reset remains on each game's details page.
