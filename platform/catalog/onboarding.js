@@ -107,6 +107,15 @@ export function mountOnboarding({ input, onComplete, modelUrl = null }) {
     dialog.classList.remove('controller-connected');
     dialog.innerHTML = `<div class="onboarding-top"><span class="onboarding-brand">BACKBONE <span>/ AKERU</span></span><button class="text-button onboarding-skip">Skip setup</button></div><div class="onboarding-body" data-step="${step}"></div><div class="onboarding-bottom"><button class="text-button onboarding-back" ${step === 0 ? 'hidden' : ''}>← Back</button><span class="onboarding-progress" aria-label="Step ${step + 1} of 3">${[0, 1, 2].map((i) => `<span class="${i === step ? 'current' : ''}"></span>`).join('')}</span><span>0${step + 1} / 03</span></div>`;
     const body = dialog.querySelector('.onboarding-body');
+    const theme = document.createElement('button');
+    theme.className = 'text-button theme-toggle';
+    theme.type = 'button';
+    theme.textContent = 'Light / Dark';
+    theme.setAttribute('data-theme-toggle', '');
+    theme.setAttribute('aria-label', 'Switch light or dark theme');
+    dialog
+      .querySelector('.onboarding-top')
+      .insertBefore(theme, dialog.querySelector('.onboarding-skip'));
     if (step === 0) {
       body.innerHTML =
         '<div class="onboarding-emblem" aria-hidden="true"><svg viewBox="0 0 111 104"><use href="#backbone-mark"/></svg></div><p class="eyebrow">A LITTLE SPACE FOR PLAY</p><h1 id="onboarding-title" tabindex="-1">Good games.<br>Wide open.</h1><p class="onboarding-copy">Free games, right in your browser.<br>No downloads. No membership. Just play.</p><button class="primary onboarding-next">Let’s get started <span>→</span></button><p class="onboarding-fine">Made for your controller. Ready for touch.</p>';

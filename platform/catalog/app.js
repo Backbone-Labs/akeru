@@ -86,6 +86,34 @@ export function mountCatalog({
     loadVersion = 0;
   let onboardingUi = null;
   let firstRender = true;
+  const setTheme = (theme) => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem('akeru.theme', theme);
+    } catch {
+      /* Theme works without storage. */
+    }
+  };
+  let savedTheme;
+  try {
+    savedTheme = localStorage.getItem('akeru.theme');
+  } catch {
+    /* Use device preference. */
+  }
+  document.documentElement.dataset.theme = ['light', 'dark'].includes(
+    savedTheme,
+  )
+    ? savedTheme
+    : matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  const onThemeClick = (event) => {
+    if (event.target.closest('[data-theme-toggle]'))
+      setTheme(
+        document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark',
+      );
+  };
+  document.addEventListener('click', onThemeClick);
   let filters = { category: 'all', controller: false, query: '' };
   let controlsTimer = null;
   function stopControlsMonitor() {
@@ -653,6 +681,10 @@ export function mountCatalog({
     });
     $('#runtime-exit').onclick = () => navigate(`/g/${entry.manifest.id}`);
     const tools = document.querySelector('.runtime-tools');
+    const theme = node('button', 'secondary theme-toggle', 'Light / Dark');
+    theme.setAttribute('data-theme-toggle', '');
+    theme.setAttribute('aria-label', 'Switch light or dark theme');
+    tools.append(theme);
     const fullscreen = node('button', 'secondary', 'Fullscreen');
     fullscreen.id = 'runtime-fullscreen';
     fullscreen.onclick = async () => {
@@ -778,6 +810,7 @@ export function mountCatalog({
       document.removeEventListener('click', onClick);
       document.removeEventListener('visibilitychange', onVisibility);
       document.removeEventListener('fullscreenchange', onFullscreen);
+      document.removeEventListener('click', onThemeClick);
       $('#about-button').removeEventListener('click', openAbout);
       $('#close-about').removeEventListener('click', closeAbout);
     },
