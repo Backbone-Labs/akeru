@@ -20,6 +20,9 @@ test('original Server Survival builds services, saves through host, and restores
   const errors = [],
     external = [];
   page.on('pageerror', (e) => errors.push(e.message));
+  page.on('console', (m) => {
+    if (m.type() === 'error') errors.push(m.text());
+  });
   page.on('request', (r) => {
     if (!r.url().startsWith('http://127.0.0.1:')) external.push(r.url());
   });
@@ -73,7 +76,7 @@ test('original Server Survival builds services, saves through host, and restores
   mkdirSync(new URL('../../dist/previews/', import.meta.url), {
     recursive: true,
   });
-  await page.screenshot({
+  await restored.locator('body').screenshot({
     path: new URL('../../dist/previews/server-survival.png', import.meta.url)
       .pathname,
   });

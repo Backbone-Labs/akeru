@@ -48,3 +48,26 @@
 #menu-sfx-btn {
   display: none !important;
 }
+#main-menu-modal > div,
+#save-modal > div {
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+}
+@media (max-width: 700px), (max-height: 700px) {
+  #main-menu-modal > div,
+  #save-modal > div {
+    padding: 22px;
+  }
+  #main-menu-modal h1,
+  #save-modal h1 {
+    font-size: 38px;
+    line-height: 1.05;
+  }
+  #main-menu-modal .space-y-4 > * + * {
+    margin-top: 9px;
+  }
+  #main-menu-modal button {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}

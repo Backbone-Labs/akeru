@@ -107,7 +107,19 @@ export function buildServerSurvival() {
         )
         .replace(/\blocalStorage\b/g, 'window.akeruStorage')
         .replace(/new Audio\([^)]*\)/g, 'new window.AkeruSilentClip()')
-        .replaceAll('onclick=', 'data-upstream-click=');
+        .replaceAll('onclick=', 'data-upstream-click=')
+        .replace(/ style="([^"]*)"/g, (_, declaration) => {
+          // The pinned metrics label uses its fixed 46px sparkline width.
+          declaration = declaration.replace('${SPARK_W}', '46');
+          if (declaration.includes('${'))
+            throw new Error('Unreviewed dynamic style');
+          const id = createHash('sha256')
+            .update(declaration)
+            .digest('hex')
+            .slice(0, 12);
+          styles += `\n[data-runtime-style="${id}"]{${declaration}}`;
+          return ` data-runtime-style="${id}"`;
+        });
     }
     writeFileSync(resolve(out, flatten(f.path)), bytes);
   }
