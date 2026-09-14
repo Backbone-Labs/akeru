@@ -100,10 +100,7 @@ export function renderGameHome(main, entries, { filters, recent, onFilters }) {
   main.innerHTML =
     '<div class="wrap console-home"><header class="console-heading"><div><p class="eyebrow">BACKBONE / OPEN GAMES</p><h1>Find your next.</h1><p class="console-subtitle">A whole world of play. Already here.</p></div><a class="console-setup-link" href="/settings">⚙ Your setup</a></header><div id="console-discovery"></div><section id="recent-section" hidden><div class="section-head"><div><p class="eyebrow">ON THIS BROWSER</p><h2>Jump back in.</h2></div><span class="fine">Recently played</span></div><div class="recent-rail" id="recent-rail"></div></section><section id="collection-section"><div class="section-head"><h2>Discover your kind of play.</h2><span class="fine">Something for every mood</span></div><div class="collection-rail" id="collection-rail"></div></section><section id="all-games"><div class="section-head"><h2>All games.</h2><span id="game-count" class="count" aria-live="polite"></span></div><div class="filters" id="filters" role="group" aria-label="Filter games"></div><div id="game-grid"></div></section></div>';
   const find = (s) => main.querySelector(s);
-  const featured =
-    entries.find(
-      (e) => e.manifest.id === 'anarch' && e.availability !== 'paused',
-    ) ?? entries.find((e) => e.availability !== 'paused');
+  const featured = entries.find((e) => e.availability !== 'paused');
   if (featured) {
     const feature = el('section', 'console-feature');
     const art = cover(featured, 'feature-art');
