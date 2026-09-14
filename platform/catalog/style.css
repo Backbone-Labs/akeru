@@ -30,7 +30,7 @@
   }
   body .runtime-stage {
     min-height: 150px;
-    height: clamp(150px, calc(100svh - 230px), 600px);
+    height: clamp(150px, calc(100svh - 250px), 600px);
   }
   body .runtime-note {
     margin-block: 6px;
