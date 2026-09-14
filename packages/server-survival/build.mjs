@@ -12,38 +12,81 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { resolve, dirname, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parse, parseFragment, serialize } from 'parse5';
 import { verifySource } from '../puzzle-preview/build.mjs';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 export const flatten = (path) => path.replaceAll('/', '--');
 export function transformHtml(html) {
-  const handlers = [],
+  const document = parse(html),
+    handlers = [],
     styles = [];
-  html = html
-    .replace(/<script\b[\s\S]*?<\/script>/g, '')
-    .replace(/<meta[^>]*(?:og:|twitter:)[^>]*>/g, '')
-    .replace(/<link[^>]*rel="icon"[^>]*>/g, '');
-  html = html.replace(/\sstyle="([^"]*)"/g, (_, css) => {
-    const id = styles.length;
-    styles.push(`[data-inline-style="${id}"]{${css}}`);
-    return ` data-inline-style="${id}"`;
-  });
-  html = html.replace(/\son([a-z]+)="([^"]*)"/g, (_, event, body) => {
-    const id = handlers.length;
-    handlers.push(
-      `document.querySelector('[data-handler-${id}]').addEventListener(${JSON.stringify(event)},function(event){${body.replaceAll('&amp;', '&').replaceAll('&quot;', '"')}});`,
+  const visit = (parent) => {
+    parent.childNodes = (parent.childNodes ?? []).filter((element) => {
+      const attributes = element.attrs ?? [];
+      const attr = (name) =>
+        attributes.find((entry) => entry.name === name)?.value ?? '';
+      if (element.tagName === 'script') return false;
+      if (
+        element.tagName === 'meta' &&
+        /^(og:|twitter:)/.test(attr('property') || attr('name'))
+      )
+        return false;
+      if (
+        element.tagName === 'link' &&
+        attr('rel').split(/\s+/).includes('icon')
+      )
+        return false;
+      if (element.attrs) {
+        const replaced = [];
+        for (const attribute of attributes) {
+          if (attribute.name === 'style') {
+            const id = styles.length;
+            styles.push(`[data-inline-style="${id}"]{${attribute.value}}`);
+            replaced.push({ name: 'data-inline-style', value: String(id) });
+          } else if (/^on[a-z]+$/.test(attribute.name)) {
+            const id = handlers.length;
+            // parse5 has already decoded the original attribute exactly once.
+            handlers.push(
+              `document.querySelector('[data-handler-${id}]').addEventListener(${JSON.stringify(attribute.name.slice(2))},function(event){${attribute.value}});`,
+            );
+            replaced.push({ name: `data-handler-${id}`, value: '' });
+          } else replaced.push(attribute);
+        }
+        element.attrs = replaced;
+      }
+      visit(element);
+      if (element.content) visit(element.content);
+      return true;
+    });
+  };
+  visit(document);
+  const htmlElement = document.childNodes.find(
+    (element) => element.tagName === 'html',
+  );
+  const append = (tag, markup) => {
+    const parent = htmlElement.childNodes.find(
+      (element) => element.tagName === tag,
     );
-    return ` data-handler-${id}`;
-  });
-  html = html.replace(
-    '</head>',
-    '<link rel="stylesheet" href="utilities.css"><link rel="stylesheet" href="adapter.css"></head>',
+    for (const element of parseFragment(markup).childNodes) {
+      element.parentNode = parent;
+      parent.childNodes.push(element);
+    }
+  };
+  append(
+    'head',
+    '<link rel="stylesheet" href="utilities.css"><link rel="stylesheet" href="adapter.css">',
   );
-  html = html.replace(
-    '</body>',
-    '<div id="akeru-cursor" aria-hidden="true"></div><div id="akeru-help">D-pad / stick: move cursor · A: select / hold to drag · B: back <span id="save-status">Local guest save</span></div><script type="module" src="adapter.js"></script></body>',
+  append(
+    'body',
+    '<div id="akeru-cursor" aria-hidden="true"></div><div id="akeru-help">D-pad / stick: move cursor · A: select / hold to drag · B: back <span id="save-status">Local guest save</span></div><script type="module" src="adapter.js"></script>',
   );
-  return { html, handlers: handlers.join('\n'), styles: styles.join('\n') };
+  return {
+    html: serialize(document),
+    handlers: handlers.join('\n'),
+    styles: styles.join('\n'),
+  };
 }
+
 export function buildServerSurvival() {
   const inventory = JSON.parse(
       readFileSync(
