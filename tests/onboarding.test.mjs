@@ -1,5 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { startCatalogDemo } from '../examples/catalog-demo/server.mjs';
 import {
   controllerIdentity,
   needsOnboarding,
@@ -35,4 +39,19 @@ test('first run works when browser storage is absent or denied', () => {
   );
   assert.equal(needsOnboarding({ getItem: () => 'complete' }), false);
   assert.equal(needsOnboarding({ getItem: () => 'other' }), true);
+});
+test('local model serving rejects a substituted symbolic link before opening servers', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'akeru-model-'));
+  try {
+    const target = join(directory, 'target.glb');
+    const link = join(directory, 'model.glb');
+    writeFileSync(target, 'model bytes');
+    symlinkSync(target, link);
+    await assert.rejects(
+      startCatalogDemo({ controllerModelPath: link }),
+      /Expected regular file/,
+    );
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
