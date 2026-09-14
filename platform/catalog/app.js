@@ -382,7 +382,15 @@ export function mountCatalog({
   function renderSettings() {
     document.title = 'Settings — Akeru';
     main.innerHTML =
-      '<div class="wrap settings-page"><a class="back" href="/games">← All games</a><p class="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your setup.</h1><div class="settings-grid"><section class="settings-card"><h2>Appearance</h2><p>Choose the look that feels right. Your choice stays on this browser.</p><button class="secondary" data-theme-toggle>Switch light / dark</button></section><section class="settings-card"><h2>Controller</h2><p>Pair in your device’s Bluetooth settings, then press a controller button. Customize the layout for each game.</p><label for="settings-title">Game</label><select id="settings-title"></select><button id="settings-controls" class="secondary">Remap controller</button><div id="control-settings"></div><div id="settings-touch" hidden></div></section><section class="settings-card"><h2>Backbone account</h2><span class="pill">Playing as a guest</span><p>Account connection is not available in this preview yet. No account is needed to play, and your saves stay in this browser.</p></section><section class="settings-card"><h2>Your progress</h2><p>Open a game’s details to manage its local saves. Cloud sync and Backbone account activity will become available when account connection is ready.</p><a href="/games">Browse games ↗</a></section></div></div>';
+      '<div class="wrap settings-page"><a class="back" href="/games">← All games</a><p class="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your setup.</h1><div class="settings-grid"><section class="settings-card"><h2>Appearance</h2><p>Choose the look that feels right. Your choice stays on this browser.</p><button class="secondary" data-theme-toggle>Switch light / dark</button></section><section class="settings-card"><h2>Controller</h2><p>Pair in your device’s Bluetooth settings, then press a controller button. Customize the layout for each game.</p><label for="settings-title">Game</label><select id="settings-title"></select><button id="settings-controls" class="secondary">Remap controller</button><div id="control-settings"></div><div id="settings-touch" hidden></div></section><section class="settings-card"><h2>Backbone account</h2><span class="pill">Playing as a guest</span><p>Account connection is not available in this preview yet. No account is needed to play, and your saves stay in this browser.</p><button id="settings-sign-out" class="secondary">Sign out &amp; restart</button><p class="fine">Return to the welcome page and restart setup. Saved games, appearance and controller mappings stay on this device.</p></section><section class="settings-card"><h2>Your progress</h2><p>Open a game’s details to manage its local saves. Cloud sync and Backbone account activity will become available when account connection is ready.</p><a href="/games">Browse games ↗</a></section></div></div>';
+    $('#settings-sign-out').onclick = () => {
+      try {
+        browserStorage()?.removeItem('akeru.onboarding.v1');
+      } catch {
+        /* Storage may be unavailable; returning home still works. */
+      }
+      navigate('/');
+    };
     for (const entry of catalog.entries) {
       const option = node('option', '', entry.manifest.title);
       option.value = entry.manifest.id;
