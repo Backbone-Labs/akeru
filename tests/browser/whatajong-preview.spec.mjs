@@ -43,9 +43,12 @@ test('original Whatajong deal, blocked tiles, matching, lifecycle pause and pers
   await expect(frame.locator('.selected')).toHaveCount(1);
   await page.locator('#runtime-pause').click();
   await expect(frame.locator('#status')).toHaveText('Paused');
-  await frame.locator(`[data-id="${ids[1]}"]`).click({ force: true });
+  await frame
+    .locator(`[data-id="${ids[1]}"]`)
+    .evaluate((element) => element.click());
   await expect(frame.locator('.tile')).toHaveCount(54);
   await page.locator('#runtime-pause').click();
+  await expect(page.locator('#runtime-overlay')).toBeHidden();
   await frame.locator(`[data-id="${ids[1]}"]`).click();
   await expect(frame.locator('.tile')).toHaveCount(52);
   await expect(frame.locator('#score')).not.toHaveText('0');
