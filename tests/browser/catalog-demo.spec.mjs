@@ -250,3 +250,22 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
     .evaluate((element) => element.scrollWidth - element.clientWidth);
   expect(frameOverflow).toBeLessThanOrEqual(0);
 });
+
+test('controller remains active after pointer focus enters the isolated game', async ({
+  page,
+}) => {
+  await installSimulatedGamepad(page);
+  const runtime = await launchDemo(page, demo.url);
+  await neutralGamepad(page);
+  await runtime.getByRole('heading', { name: 'Find a little space.' }).click();
+  await expect
+    .poll(() => page.evaluate(() => document.activeElement?.tagName))
+    .toBe('IFRAME');
+  await page.waitForTimeout(100);
+  const before = await orbPosition(runtime);
+  await setGamepadButton(page, 15, 1);
+  await expect
+    .poll(async () => (await orbPosition(runtime)).x)
+    .toBeGreaterThan(before.x + 5);
+  await neutralGamepad(page);
+});

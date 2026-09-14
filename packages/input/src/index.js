@@ -410,7 +410,16 @@ export function createBrowserInputProvider(options = {}) {
       if (started) return;
       started = true;
       add(window, 'keydown', keydown);
-      add(window, 'blur', () => setFocused(false));
+      add(window, 'blur', (event) => {
+        // Entering an embedded runtime blurs its parent window, but the
+        // document still owns focus. A real tab/window exit does not.
+        const insideFrame =
+          event.isTrusted &&
+          document.activeElement?.tagName === 'IFRAME' &&
+          document.hasFocus?.() &&
+          document.visibilityState !== 'hidden';
+        setFocused(Boolean(insideFrame));
+      });
       add(window, 'focus', () =>
         setFocused(document.visibilityState !== 'hidden'),
       );
