@@ -13,6 +13,29 @@
   font-synthesis: none;
   line-height: 1.5;
 }
+/* Keep the game and touch controls together on phone-sized screens. */
+@media (max-width: 700px), (max-height: 550px) and (max-width: 1000px) {
+  body:has(.runtime-wrap) .masthead,
+  body:has(.runtime-wrap) > footer {
+    display: none;
+  }
+  body .runtime-wrap {
+    padding: 8px max(12px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+  body .runtime-bar {
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+  body .runtime-stage {
+    min-height: 150px;
+    height: clamp(150px, calc(100svh - 230px), 600px);
+  }
+  body .runtime-note {
+    margin-block: 6px;
+  }
+}
 * {
   box-sizing: border-box;
 }
