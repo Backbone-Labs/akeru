@@ -110,14 +110,7 @@ function pointer(type) {
   );
   return target;
 }
-function click() {
-  pointer('mousemove');
-  pointer('mousedown');
-  pointer('mouseup');
-  const target = document.elementFromPoint(cursorX, cursorY);
-  target?.click();
-  target?.focus?.();
-}
+
 function controller(frame) {
   buttons = frame.buttons ?? {};
   axes = frame.axes ?? {};
