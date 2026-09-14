@@ -1,0 +1,44 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #10100e;
+  color: #c4c5b9;
+  font: 12px system-ui;
+  text-align: center;
+}
+main {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+canvas {
+  width: min(100%, 960px);
+  max-height: 80vh;
+  aspect-ratio: 8/5;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+p {
+  margin: 6px;
+  line-height: 1.4;
+}
+@media (max-height: 350px) {
+  main {
+    padding: 2px;
+  }
+  canvas {
+    max-height: calc(100vh - 52px);
+  }
+  main > p:nth-of-type(2) {
+    display: none;
+  }
+  p {
+    margin: 2px;
+    font-size: 10px;
+  }
+}

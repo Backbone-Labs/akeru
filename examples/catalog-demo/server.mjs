@@ -9,9 +9,8 @@ import { validateManifest } from '../../packages/contracts/src/index.js';
 const root = new URL('../../', import.meta.url),
   read = (p) => readFileSync(new URL(p, root));
 const hash = (b) => createHash('sha256').update(b).digest('hex');
-export async function startCatalogDemo({
-  controllerModelPath = process.env.AKERU_CONTROLLER_MODEL,
-} = {}) {
+export async function startCatalogDemo(options = {}) {
+  const { controllerModelPath = process.env.AKERU_CONTROLLER_MODEL } = options;
   const servers = [];
   let state = 'available',
     shellOrigin;
@@ -21,12 +20,14 @@ export async function startCatalogDemo({
     await new Promise((r) => server.listen(0, '127.0.0.1', r));
     return `http://127.0.0.1:${server.address().port}`;
   };
-  const titleFiles = Object.fromEntries(
-    ['title.html', 'title.js', 'title.css'].map((p) => [
-      p,
-      read(`examples/catalog-demo/${p}`),
-    ]),
-  );
+  const titleFiles =
+    options.titleFiles ??
+    Object.fromEntries(
+      ['title.html', 'title.js', 'title.css'].map((p) => [
+        p,
+        read(`examples/catalog-demo/${p}`),
+      ]),
+    );
   titleFiles['save-client.js'] = read('packages/contracts/src/save-client.js');
   const digest = hash(
     Buffer.from(
@@ -41,7 +42,7 @@ export async function startCatalogDemo({
   const titleOrigin = await serve((req, res) => {
     res.setHeader(
       'Content-Security-Policy',
-      `default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
+      `default-src 'none'; script-src 'self' ${options.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self'; connect-src ${options.wasm ? "'self'" : "'none'"}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
     );
     res.setHeader(
       'Permissions-Policy',
@@ -61,57 +62,71 @@ export async function startCatalogDemo({
     }
     res.setHeader(
       'Content-Type',
-      path.endsWith('.html')
-        ? 'text/html'
-        : path.endsWith('.js')
-          ? 'text/javascript'
-          : 'text/css',
+      path.endsWith('.txt')
+        ? 'text/plain'
+        : path.endsWith('.wasm')
+          ? 'application/wasm'
+          : path.endsWith('.json')
+            ? 'application/json'
+            : path.endsWith('.html')
+              ? 'text/html'
+              : path.endsWith('.js')
+                ? 'text/javascript'
+                : 'text/css',
     );
     res.end(titleFiles[path]);
   });
-  const manifest = {
-    specVersion: '0.1.0',
-    id: 'orbit-study',
-    version: '0.1.0',
-    sdk: { range: '^0.1.0' },
-    title: 'Orbit study',
-    entry: 'title.html',
-    artifacts: Object.entries(titleFiles).map(([path, bytes]) => ({
-      path,
-      sha256: hash(bytes),
-    })),
-    provenance: {
-      source: {
-        url: 'https://github.com/Backbone-Labs/akeru',
-        revision: execFileSync('git', ['rev-parse', 'HEAD'], {
-          cwd: new URL('../../', import.meta.url),
-          encoding: 'utf8',
-        }).trim(),
-        license: 'MIT',
-        rightsStatus: 'unknown',
-      },
-      assets: Object.keys(titleFiles).map((path) => ({
-        path,
-        kind: 'original',
-        license: 'MIT',
-        evidence: ['https://github.com/Backbone-Labs/akeru'],
-      })),
-    },
-    input: { controller: true, touch: true },
-    runtime: {
-      graphics: { preferred: 'dom', fallback: null },
-      requiredFeatures: [],
-      optionalFeatures: [],
-    },
-    capabilities: ['save.local'],
-    saves: { schemaVersion: 1, guestLocal: true, accountSync: 'disabled' },
-  };
+  const manifest = options.manifest
+    ? {
+        ...options.manifest,
+        artifacts: Object.entries(titleFiles).map(([path, bytes]) => ({
+          path,
+          sha256: hash(bytes),
+        })),
+      }
+    : {
+        specVersion: '0.1.0',
+        id: 'orbit-study',
+        version: '0.1.0',
+        sdk: { range: '^0.1.0' },
+        title: 'Orbit study',
+        entry: 'title.html',
+        artifacts: Object.entries(titleFiles).map(([path, bytes]) => ({
+          path,
+          sha256: hash(bytes),
+        })),
+        provenance: {
+          source: {
+            url: 'https://github.com/Backbone-Labs/akeru',
+            revision: execFileSync('git', ['rev-parse', 'HEAD'], {
+              cwd: new URL('../../', import.meta.url),
+              encoding: 'utf8',
+            }).trim(),
+            license: 'MIT',
+            rightsStatus: 'unknown',
+          },
+          assets: Object.keys(titleFiles).map((path) => ({
+            path,
+            kind: 'original',
+            license: 'MIT',
+            evidence: ['https://github.com/Backbone-Labs/akeru'],
+          })),
+        },
+        input: { controller: true, touch: true },
+        runtime: {
+          graphics: { preferred: 'dom', fallback: null },
+          requiredFeatures: [],
+          optionalFeatures: [],
+        },
+        capabilities: ['save.local'],
+        saves: { schemaVersion: 1, guestLocal: true, accountSync: 'disabled' },
+      };
   const validation = validateManifest(manifest);
   if (!validation.valid) throw new Error(validation.errors.join('; '));
   const entry = {
     manifest,
     release: { digest, origin: titleOrigin },
-    metadata: {
+    metadata: options.metadata ?? {
       summary:
         'Move a little light. Find a little space. An original input study.',
       description:
