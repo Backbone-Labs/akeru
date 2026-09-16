@@ -78,13 +78,17 @@ try {
       put(
         dir,
         'sources/upstream.tar.gz',
-        execFileSync('git', [
-          '-C',
-          process.env.ANARCH_SOURCE,
-          'archive',
-          '--format=tar.gz',
-          entry.manifest.provenance.source.revision,
-        ]),
+        execFileSync(
+          'git',
+          [
+            '-C',
+            process.env.ANARCH_SOURCE,
+            'archive',
+            '--format=tar.gz',
+            entry.manifest.provenance.source.revision,
+          ],
+          { maxBuffer: 64 * 1024 * 1024 },
+        ),
       );
     }
     put(
@@ -101,6 +105,21 @@ try {
     if (origins) {
       if (!origins[id]) throw new Error('Missing deployed origin: ' + id);
       entry.release.origin = origins[id];
+      entry.metadata.notices.push({
+        label: 'Akeru source and build recipes ↗',
+        url: origins[id] + '/sources/akeru-source.tar.gz',
+      });
+      if (['freedoom1', 'freedoom2', 'freedm'].includes(id))
+        for (const kind of ['engine', 'data'])
+          entry.metadata.notices.push({
+            label: 'Pinned ' + kind + ' source ↗',
+            url: origins[id] + '/sources/' + kind + '.tar.gz',
+          });
+      if (id === 'anarch')
+        entry.metadata.notices.push({
+          label: 'Pinned upstream source ↗',
+          url: origins[id] + '/sources/upstream.tar.gz',
+        });
     }
   }
   const shell = resolve(out, 'shell');
