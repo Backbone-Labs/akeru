@@ -157,10 +157,28 @@ try {
       readFileSync(resolve('packages/input/src', file)),
     );
   put(shell, 'saves/index.js', readFileSync('packages/saves/src/index.js'));
+  const modelPath = process.env.AKERU_CONTROLLER_MODEL;
+  if (modelPath) {
+    for (const path of [
+      '/local-controller.glb',
+      '/vendor/three/RoomEnvironment.js',
+      '/vendor/three/meshopt_decoder.module.js',
+      '/vendor/three/three.module.js',
+      '/vendor/three/three.core.js',
+      '/vendor/three/GLTFLoader.js',
+      '/vendor/three/BufferGeometryUtils.js',
+    ]) {
+      const response = await fetch(demo.url + path);
+      if (!response.ok) throw new Error('Missing controller model asset');
+      put(shell, path.slice(1), Buffer.from(await response.arrayBuffer()));
+    }
+  }
   put(
     shell,
     'bootstrap.js',
-    "import {mountCatalog} from '/app.js';import {createBrowserInputProvider} from '/input/browser.js';mountCatalog({mode:'demo',inputProviderFactory:createBrowserInputProvider});",
+    "import {mountCatalog} from '/app.js';import {createBrowserInputProvider} from '/input/browser.js';mountCatalog({mode:'demo',inputProviderFactory:createBrowserInputProvider,controllerModelUrl:" +
+      JSON.stringify(modelPath ? '/local-controller.glb' : null) +
+      '});',
   );
   for (const entry of catalog.entries) {
     const file = resolve('dist/previews', entry.manifest.id + '.png');
