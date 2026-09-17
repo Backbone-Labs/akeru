@@ -8,6 +8,7 @@ import {
   routeFor,
   titleUrl,
   createShellTelemetry,
+  validateMetadata,
 } from '../platform/catalog/model.js';
 import { createRuntimeChannel } from '../platform/catalog/channel.js';
 const manifest = JSON.parse(
@@ -32,6 +33,20 @@ const registry = (entry) => ({
   schemaVersion: '0.1.0',
   mode: 'production',
   entries: [entry],
+});
+test('cover metadata allows only local preview image paths', () => {
+  const metadata = candidate().metadata;
+  assert.doesNotThrow(() =>
+    validateMetadata({ ...metadata, cover: '/previews/anarch.png' }),
+  );
+  for (const cover of [
+    'https://tracker.example/pixel.png',
+    '//tracker.example/x.png',
+    '/previews/../secret.png',
+    'data:image/svg+xml,test',
+  ]) {
+    assert.throws(() => validateMetadata({ ...metadata, cover }));
+  }
 });
 test('publication is independently denied by default; manifest validity and documented rights grant nothing', async () => {
   assert.deepEqual((await createPublishedCatalog([candidate()])).entries, []);

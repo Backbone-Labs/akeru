@@ -42,7 +42,11 @@ export function validateMetadata(m) {
       'controls',
       'privacy',
       'notices',
+      ...(m && Object.hasOwn(m, 'cover') ? ['cover'] : []),
     ]) ||
+    (Object.hasOwn(m, 'cover') &&
+      (typeof m.cover !== 'string' ||
+        !/^\/previews\/[a-z0-9][a-z0-9-]*\.png$/.test(m.cover))) ||
     !text(m.summary, 160) ||
     !text(m.description, 1600) ||
     !CATEGORIES.includes(m.category) ||
@@ -130,7 +134,9 @@ export function validateCatalog(
   return structuredClone(value);
 }
 export function routeFor(pathname) {
-  if (pathname === '/') return { view: 'catalog' };
+  if (pathname === '/') return { view: 'landing' };
+  if (pathname === '/games') return { view: 'catalog' };
+  if (pathname === '/settings') return { view: 'settings' };
   const match = /^\/g\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/.exec(pathname);
   return match && match[1].length <= 64
     ? { view: 'detail', id: match[1] }

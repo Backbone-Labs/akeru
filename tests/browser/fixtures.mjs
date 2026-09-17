@@ -14,6 +14,13 @@ export const test = base.extend({
     page.on('pageerror', (error) =>
       failures.push(`pageerror: ${error.stack ?? error.message}`),
     );
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem('akeru.onboarding.v1', 'complete');
+      } catch {
+        /* No storage on some fixture origins. */
+      }
+    });
     await use(page);
     expect(failures, `Browser errors in ${testInfo.title}`).toEqual([]);
   },
@@ -88,7 +95,7 @@ export async function neutralGamepad(page) {
 }
 
 export async function launchDemo(page, url) {
-  await page.goto(url);
+  await page.goto(url + '/games');
   await page.getByRole('link', { name: /Orbit study/ }).click();
   await expect(page).toHaveURL(/\/g\/orbit-study$/);
   await page.getByRole('button', { name: /Play now/ }).click();
@@ -99,6 +106,10 @@ export async function launchDemo(page, url) {
     'Ready when you are.',
   );
   await expect(page.locator('#runtime-overlay')).toBeHidden();
+  if (await page.locator('#touch-controls').isHidden())
+    await page
+      .getByRole('button', { name: 'Touch controls', exact: true })
+      .click();
   return runtime;
 }
 

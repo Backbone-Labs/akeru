@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #101b27;
+  color: #ecf1f5;
+  font:
+    15px system-ui,
+    sans-serif;
+}
+body {
+  max-width: 1024px;
+  margin: auto;
+  padding: 16px;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+small {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: #8abcc6;
+}
+h1 {
+  margin: 4px 0;
+  font-size: 27px;
+}
+.objective {
+  color: #becbd8;
+  margin: 10px 0;
+}
+button {
+  font: inherit;
+  border: 1px solid #52677b;
+  background: #203345;
+  color: #fff;
+  border-radius: 9px;
+  min-height: 40px;
+  padding: 8px 13px;
+  cursor: pointer;
+}
+button:focus-visible {
+  outline: 3px solid #70e2cd;
+}
+#gamemenu {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+#puzzlecanvascontain {
+  height: clamp(200px, 54vh, 540px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+canvas {
+  touch-action: none;
+  background: #d9d9d9;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  outline: none;
+}
+#statusbar {
+  text-align: center;
+  min-height: 24px;
+  color: #aec9d2;
+  margin-top: 6px;
+}
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+.controls div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.hint,
+#save-status {
+  font-size: 12px;
+  text-align: center;
+  color: #8aa4b8;
+}
+dialog {
+  max-width: 600px;
+  max-height: 85vh;
+  border: 1px solid #52677b;
+  border-radius: 16px;
+  background: #172939;
+  color: white;
+  overflow: auto;
+  line-height: 1.6;
+}
+dialog::backdrop {
+  background: #000a;
+}
+a {
+  color: #78e5d0;
+}
+body.paused main,
+body.paused .controls {
+  pointer-events: none;
+  opacity: 0.6;
+}
+#apology {
+  text-align: center;
+}
+@media (max-width: 520px) {
+  body {
+    padding: 10px;
+  }
+  h1 {
+    font-size: 22px;
+  }
+  .objective {
+    font-size: 13px;
+  }
+  button {
+    padding: 8px 10px;
+    min-height: 42px;
+  }
+  #puzzlecanvascontain {
+    height: 48vh;
+  }
+  .hint {
+    font-size: 10px;
+  }
+}
+
+[hidden] {
+  display: none !important;
+}
+#puzzlecanvascontain {
+  position: relative;
+}
+#controller-pointer {
+  position: absolute;
+  width: 19px;
+  height: 19px;
+  border: 3px solid #fd526f;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px white;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
