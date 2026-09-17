@@ -1,5 +1,11 @@
 /** Explicit public evaluation bundle. Does not approve or activate production titles. */
-import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
+import {
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  existsSync,
+  rmSync,
+} from 'node:fs';
 import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -157,28 +163,13 @@ try {
       readFileSync(resolve('packages/input/src', file)),
     );
   put(shell, 'saves/index.js', readFileSync('packages/saves/src/index.js'));
-  const modelPath = process.env.AKERU_CONTROLLER_MODEL;
-  if (modelPath) {
-    for (const path of [
-      '/local-controller.glb',
-      '/vendor/three/RoomEnvironment.js',
-      '/vendor/three/meshopt_decoder.module.js',
-      '/vendor/three/three.module.js',
-      '/vendor/three/three.core.js',
-      '/vendor/three/GLTFLoader.js',
-      '/vendor/three/BufferGeometryUtils.js',
-    ]) {
-      const response = await fetch(demo.url + path);
-      if (!response.ok) throw new Error('Missing controller model asset');
-      put(shell, path.slice(1), Buffer.from(await response.arrayBuffer()));
-    }
-  }
+  // Remove model assets left by an older bundle; onboarding no longer loads 3D.
+  rmSync(resolve(shell, 'local-controller.glb'), { force: true });
+  rmSync(resolve(shell, 'vendor/three'), { recursive: true, force: true });
   put(
     shell,
     'bootstrap.js',
-    "import {mountCatalog} from '/app.js';import {createBrowserInputProvider} from '/input/browser.js';mountCatalog({mode:'demo',inputProviderFactory:createBrowserInputProvider,controllerModelUrl:" +
-      JSON.stringify(modelPath ? '/local-controller.glb' : null) +
-      '});',
+    "import {mountCatalog} from '/app.js';import {createBrowserInputProvider} from '/input/browser.js';mountCatalog({mode:'demo',inputProviderFactory:createBrowserInputProvider});",
   );
   for (const entry of catalog.entries) {
     const file = resolve('dist/previews', entry.manifest.id + '.png');
@@ -197,7 +188,7 @@ try {
     'vercel.json',
     JSON.stringify(
       config(
-        `default-src 'none'; script-src 'self' ${modelPath ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self'; connect-src 'self'; frame-src ${origins ? Object.values(origins).join(' ') : "'none'"}; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
+        `default-src 'none'; script-src 'self' ; style-src 'self'; img-src 'self'; connect-src 'self'; frame-src ${origins ? Object.values(origins).join(' ') : "'none'"}; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
         [
           { source: '/games', destination: '/index.html' },
           { source: '/settings', destination: '/index.html' },

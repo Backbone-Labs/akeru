@@ -13,8 +13,8 @@ origin or use the mutable shared game-project alias in the registry.
 
 Set `ANARCH_SOURCE` to the pinned checkout and
 `AKERU_FREEDOOM_SOURCE_ARCHIVES` to the build directory containing the verified
-engine/data tar archives. Set `AKERU_CONTROLLER_MODEL` only when that supplied
-model is intended for this hosted preview. Build recipes are in each package.
+engine/data tar archives. The onboarding controller model is currently disabled; generated model assets
+are removed from the website bundle. Build recipes are in each package.
 
 1. Run `npm run check`, lint and type checks, then commit the source used for the
    build. The public source archive is generated from that commit.
