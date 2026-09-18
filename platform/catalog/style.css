@@ -2869,3 +2869,40 @@ body.direct-player .player-action-detail .player-menu-row {
     transform: none;
   }
 }
+
+/* The action rail shares the logo's origin and reveals toward the left. */
+body.direct-player .runtime-overlay.player-settings {
+  inset: 8px 8px auto auto;
+  width: min(376px, calc(100% - 16px));
+  max-height: calc(100% - 16px);
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  transform-origin: top right;
+}
+body.direct-player .player-menu {
+  box-shadow: none;
+}
+.player-settings .player-action-bar {
+  height: 44px;
+  padding: 0 48px 0 4px;
+  gap: 0;
+  align-items: center;
+}
+.player-settings .player-action {
+  flex: 1;
+  width: auto;
+  min-width: 40px;
+  min-height: 44px;
+  height: 44px;
+  padding: 4px 0;
+  border-radius: 16px;
+  gap: 3px;
+}
+.player-settings .player-action svg {
+  width: 19px;
+  height: 19px;
+}
+.player-settings .player-action-detail {
+  margin: 0 8px;
+}

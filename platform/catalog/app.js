@@ -40,16 +40,18 @@ function animatePanel(
       ]
     : [
         {
-          opacity: open ? 0 : 1,
-          transform: open ? 'translateY(-6px) scale(.94)' : 'none',
+          clipPath: open
+            ? 'inset(0 0 calc(100% - 44px) calc(100% - 44px) round 22px)'
+            : 'inset(0 0 0 0 round 22px)',
         },
         {
-          opacity: open ? 1 : 0,
-          transform: open ? 'none' : 'translateY(-4px) scale(.96)',
+          clipPath: open
+            ? 'inset(0 0 0 0 round 22px)'
+            : 'inset(0 0 calc(100% - 44px) calc(100% - 44px) round 22px)',
         },
       ];
   const animation = element.animate(frames, {
-    duration: reduced ? 0 : open ? 230 : 160,
+    duration: reduced ? 0 : resize ? 220 : open ? 320 : 240,
     easing: 'cubic-bezier(.2,.8,.2,1)',
   });
   panelAnimations.set(element, animation);
