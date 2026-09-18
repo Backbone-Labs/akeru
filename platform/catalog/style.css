@@ -2906,3 +2906,13 @@ body.direct-player .player-menu {
 .player-settings .player-action-detail {
   margin: 0 8px;
 }
+
+.runtime-home {
+  display: inline-flex;
+  color: inherit;
+  border-radius: 8px;
+}
+.runtime-home:focus-visible {
+  outline: 2px solid #f15623;
+  outline-offset: 4px;
+}
