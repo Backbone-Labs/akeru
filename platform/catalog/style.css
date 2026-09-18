@@ -2728,3 +2728,116 @@ body.direct-player .player-action-detail button:focus-visible {
   outline: 2px solid #ff895f;
   outline-offset: 2px;
 }
+
+/* Expanded controls prioritize readability and clear touch targets. */
+body.direct-player .runtime-overlay.player-settings {
+  width: min(356px, calc(100% - 16px));
+  background: #181a1e;
+  border-color: #ffffff30;
+  box-shadow: 0 12px 40px #0008;
+}
+.player-settings .player-action {
+  flex: 1;
+  width: 44px;
+  min-height: 62px;
+  gap: 6px;
+  border-radius: 16px;
+  color: #f4f4f5;
+}
+.player-action svg {
+  width: 25px;
+  height: 25px;
+  stroke-width: 1.9;
+}
+.player-action span {
+  font-size: 11px;
+  font-weight: 600;
+}
+body.direct-player .player-action-detail {
+  padding: 8px 8px 12px;
+}
+body.direct-player .player-detail-header h3 {
+  font-size: 17px;
+  font-weight: 600;
+}
+body.direct-player .player-action-detail .player-detail-close {
+  font-size: 26px;
+  color: #d5d7dc;
+}
+.player-save-state {
+  background: #292c32;
+  border: 1px solid #ffffff19;
+  border-radius: 16px;
+  padding: 18px 14px;
+  margin: 8px 0 12px;
+  align-items: center;
+  gap: 14px;
+}
+.player-save-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #ff784b24;
+  color: #ff9069;
+}
+.player-save-mark svg {
+  width: 25px;
+  height: 25px;
+}
+.player-save-state strong {
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+body.direct-player .player-save-state p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #d0d2d7;
+  margin-top: 6px !important;
+}
+body.direct-player .player-action-detail p,
+body.direct-player .player-action-detail .player-save-note {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #bfc2c9;
+}
+body.direct-player .player-action-detail button {
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 48px;
+  border-radius: 12px;
+  background: #30333b;
+  border: 1px solid #ffffff20;
+}
+body.direct-player .player-action-detail .player-text-action {
+  width: 100%;
+  text-align: center;
+  margin-top: 14px;
+  background: #ff784b;
+  border-color: transparent;
+  color: #171719;
+  padding: 12px;
+}
+body.direct-player .player-action-detail .player-switch {
+  padding: 14px;
+  background: #292c32;
+  border: 1px solid #ffffff19;
+  border-radius: 14px;
+  min-height: 64px;
+}
+.player-switch::after {
+  width: 40px;
+  height: 24px;
+  background:
+    radial-gradient(circle at 12px 12px, #fff 8px, transparent 8.5px), #5e626c;
+}
+.player-switch[aria-pressed='true']::after {
+  background:
+    radial-gradient(circle at 28px 12px, #171719 8px, transparent 8.5px),
+    #ff784b;
+}
+body.direct-player .player-action-detail .player-leave {
+  background: #ff784b;
+  color: #171719;
+  border-color: transparent;
+}
