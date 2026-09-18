@@ -16,6 +16,52 @@ const node = (tag, className, text) => {
   if (text !== undefined) e.textContent = text;
   return e;
 };
+// Cancel superseded transitions so rapid controller input cannot hide a reopened panel.
+const panelAnimations = new WeakMap();
+function animatePanel(
+  element,
+  open,
+  finish = () => {},
+  resize = false,
+  fromHeight,
+) {
+  panelAnimations.get(element)?.cancel();
+  element.inert = !open;
+  if (open) element.hidden = false;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const height = element.getBoundingClientRect().height;
+  const frames = resize
+    ? [
+        {
+          height: `${open ? (fromHeight ?? 0) : height}px`,
+          opacity: open ? 0 : 1,
+        },
+        { height: `${open ? height : 0}px`, opacity: open ? 1 : 0 },
+      ]
+    : [
+        {
+          opacity: open ? 0 : 1,
+          transform: open ? 'translateY(-6px) scale(.94)' : 'none',
+        },
+        {
+          opacity: open ? 1 : 0,
+          transform: open ? 'none' : 'translateY(-4px) scale(.96)',
+        },
+      ];
+  const animation = element.animate(frames, {
+    duration: reduced ? 0 : open ? 230 : 160,
+    easing: 'cubic-bezier(.2,.8,.2,1)',
+  });
+  panelAnimations.set(element, animation);
+  void animation.finished
+    .then(() => {
+      if (panelAnimations.get(element) !== animation) return;
+      panelAnimations.delete(element);
+      if (!open) element.hidden = true;
+      finish();
+    })
+    .catch(() => {});
+}
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 function link(label, url) {
   const e = node('a', '', label);
@@ -168,7 +214,9 @@ export function mountCatalog({
       return;
     }
     const playerPanel = isPlayer()
-      ? document.querySelector('.player-action-detail:not([hidden])')
+      ? document.querySelector(
+          '.player-action-detail:not([hidden]):not([inert])',
+        )
       : null;
     if (event.type === 'back' && playerPanel) {
       playerPanel.querySelector('[data-panel-back]')?.click();
@@ -216,7 +264,9 @@ export function mountCatalog({
       ...scope.querySelectorAll(
         'a[href],button:not([disabled]),input,select,summary',
       ),
-    ].filter((e) => !e.closest('[hidden]') && e.getClientRects().length);
+    ].filter(
+      (e) => !e.closest('[hidden], [inert]') && e.getClientRects().length,
+    );
     if (!targets.length) return;
     if (event.type === 'activate') {
       if (targets.includes(document.activeElement))
@@ -921,6 +971,9 @@ export function mountCatalog({
       detail.hidden = true;
       const show = (title, ...items) => {
         const trigger = document.activeElement;
+        const previousHeight = detail.hidden
+          ? 0
+          : detail.getBoundingClientRect().height;
         const header = node('div', 'player-detail-header');
         const close = node(
           'button',
@@ -930,7 +983,7 @@ export function mountCatalog({
         close.dataset.panelBack = 'true';
         close.setAttribute('aria-label', 'Close panel');
         close.onclick = () => {
-          detail.hidden = true;
+          animatePanel(detail, false, () => {}, true);
           (trigger?.isConnected
             ? trigger
             : bar.querySelector('button')
@@ -949,8 +1002,10 @@ export function mountCatalog({
           '↑ ↓ Move · A Select · B Back',
         );
         detail.replaceChildren(header, ...items, close, hint);
-        detail.hidden = false;
-        detail.querySelector('button:not([disabled])')?.focus();
+        animatePanel(detail, true, () => {}, true, previousHeight);
+        detail
+          .querySelector('button:not([disabled])')
+          ?.focus({ preventScroll: true });
       };
       const rumbleTab = iconButton(
         node('button'),
@@ -1008,7 +1063,8 @@ export function mountCatalog({
       o.replaceChildren(paused, bar, detail);
     }
     o.hidden = false;
-    b.focus();
+    if (isPlayer()) animatePanel(o, true);
+    b.focus({ preventScroll: true });
   }
   function resume() {
     if (!active?.channel.resume()) return;
@@ -1017,8 +1073,15 @@ export function mountCatalog({
     navInput = null;
     input?.hideControls();
     input?.start();
-    $('#runtime-overlay').hidden = true;
-    $('#runtime-overlay').classList.remove('player-settings');
+    const overlay = $('#runtime-overlay');
+    if (isPlayer())
+      animatePanel(overlay, false, () =>
+        overlay.classList.remove('player-settings'),
+      );
+    else {
+      overlay.hidden = true;
+      overlay.classList.remove('player-settings');
+    }
     $('#player-menu')?.setAttribute('aria-expanded', 'false');
     $('#runtime-pause').textContent = 'Pause';
     active.frame.contentWindow.focus();

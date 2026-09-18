@@ -197,3 +197,43 @@ test('controller navigates within a subpanel and B returns to its tile', async (
     await demo.close();
   }
 });
+
+for (const reducedMotion of ['no-preference', 'reduce']) {
+  test(`player transitions survive quick close and reopen with ${reducedMotion}`, async ({
+    page,
+  }) => {
+    const demo = await startCatalogDemo();
+    try {
+      await page.emulateMedia({ reducedMotion });
+      await page.goto(demo.url + '/play/orbit-study');
+      const menu = page.getByRole('button', { name: 'Game menu', exact: true });
+      await menu.click();
+      await page.evaluate(() => {
+        document.querySelector('#player-menu').click();
+        document.querySelector('#player-menu').click();
+      });
+      await expect(menu).toHaveAttribute('aria-expanded', 'true');
+      await page
+        .locator('#runtime-overlay')
+        .evaluate(async (e) =>
+          Promise.all(e.getAnimations().map((a) => a.finished.catch(() => {}))),
+        );
+      await expect(page.locator('#runtime-overlay')).toBeVisible();
+      await expect(page.locator('#runtime-overlay')).not.toHaveAttribute(
+        'inert',
+        '',
+      );
+      await page
+        .getByRole('button', { name: 'Rumble settings', exact: true })
+        .click();
+      await page
+        .getByRole('button', { name: 'Close panel', exact: true })
+        .click();
+      await expect(page.locator('.player-action-detail')).toBeHidden();
+      await menu.click();
+      await expect(page.locator('#runtime-overlay')).toBeHidden();
+    } finally {
+      await demo.close();
+    }
+  });
+}
