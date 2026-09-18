@@ -646,7 +646,9 @@ export function mountCatalog({
       $('#runtime-overlay h2').textContent =
         'Opening ' + entry.manifest.title + '…';
       $('#runtime-overlay p').textContent = '';
-      const menu = node('button', 'player-menu', 'Menu');
+      const menu = node('button', 'player-menu');
+      menu.innerHTML =
+        '<svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>';
       menu.id = 'player-menu';
       menu.setAttribute('aria-label', 'Game menu');
       menu.setAttribute('aria-expanded', 'false');
@@ -863,8 +865,77 @@ export function mountCatalog({
           { retry: true },
         );
       };
-      o.append(rumble, testRumble, feedback, progress, leave);
-      void refresh.onclick();
+      const icons = {
+        play: '<path d="m9 5 11 7-11 7Z"/>',
+        controller:
+          '<path d="M7 7h10c3 0 5 10 3 11-2 1-4-3-5-3H9c-1 0-3 4-5 3C2 17 4 7 7 7Z"/><path d="M7 9v5m-2-2h5m6-2h.01m2 3h.01"/>',
+        touch:
+          '<path d="M10 12V5a2 2 0 0 1 4 0v6l2-1 4 3-1 6H9l-5-6 2-2 4 3"/>',
+        rumble: '<path d="M8 8h8v8H8zM4 7l-2 5 2 5m16-10 2 5-2 5"/>',
+        save: '<path d="M5 3h12l4 4v14H3V3Z"/><path d="M7 3v6h10V3M7 21v-7h10v7"/>',
+        exit: '<path d="M10 4H4v16h6m4-13 5 5-5 5m-6-5h11"/>',
+      };
+      const iconButton = (button, icon, label, accessible) => {
+        button.className = 'player-action';
+        button.setAttribute('aria-label', accessible);
+        button.title = accessible;
+        button.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[icon]}</svg><span>${label}</span>`;
+        return button;
+      };
+      const bar = node('div', 'player-action-bar');
+      bar.setAttribute('role', 'group');
+      bar.setAttribute('aria-label', 'Game actions');
+      const detail = node('section', 'player-action-detail');
+      detail.hidden = true;
+      const show = (title, ...items) => {
+        detail.replaceChildren(node('h3', '', title), ...items);
+        detail.hidden = false;
+      };
+      const rumbleTab = iconButton(
+        node('button'),
+        'rumble',
+        'Rumble',
+        'Rumble settings',
+      );
+      rumbleTab.onclick = () =>
+        show('Controller rumble', rumble, testRumble, feedback);
+      const savesTab = iconButton(
+        node('button'),
+        'save',
+        'Saves',
+        'Saved progress',
+      );
+      savesTab.onclick = () => {
+        show('Saved progress', saveInfo, refresh);
+        void refresh.onclick();
+      };
+      const exitTab = iconButton(node('button'), 'exit', 'Leave', 'Leave game');
+      exitTab.onclick = () => {
+        leave.dataset.confirm = 'true';
+        leave.textContent = 'Confirm leave game';
+        const cancel = node('button', 'secondary', 'Keep playing');
+        cancel.onclick = resume;
+        show(
+          'Leave game?',
+          node(
+            'p',
+            'fine',
+            'Unsaved progress may be lost. Save using the game’s controls first.',
+          ),
+          leave,
+          cancel,
+        );
+      };
+      const paused = node('h2', 'player-sr-only', 'Paused');
+      bar.append(
+        iconButton(b, 'play', 'Resume', 'Resume'),
+        iconButton(controls, 'controller', 'Controls', 'Controller settings'),
+        iconButton(touch, 'touch', 'Touch', 'Touch controls'),
+        rumbleTab,
+        savesTab,
+        exitTab,
+      );
+      o.replaceChildren(paused, bar, detail);
     }
     o.hidden = false;
     b.focus();

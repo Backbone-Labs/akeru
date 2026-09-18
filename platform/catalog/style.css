@@ -2513,3 +2513,98 @@ body.direct-player .runtime-overlay.player-settings {
   background: #5b2c1d;
   border-color: #ff6939;
 }
+
+body.direct-player .player-menu {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  padding: 10px;
+  border: 1px solid #ff8a5740;
+  border-radius: 50%;
+  background: #17191ded;
+  color: #ff6939;
+  box-shadow: 0 4px 20px #0006;
+}
+.player-menu svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+body.direct-player .player-menu[aria-expanded='true'] {
+  background: #ff6939;
+  color: #161719;
+}
+body.direct-player .runtime-overlay.player-settings {
+  width: min(332px, calc(100% - 16px));
+  padding: 8px;
+  gap: 0;
+  border-radius: 28px;
+  background: #17191df5;
+  backdrop-filter: blur(18px);
+}
+.player-action-bar {
+  display: flex;
+  gap: 2px;
+  justify-content: space-between;
+}
+.player-settings .player-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 50px;
+  min-width: 44px;
+  min-height: 52px;
+  padding: 6px 0;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  color: #d5d7dc;
+  background: transparent;
+}
+.player-action svg {
+  width: 21px;
+  height: 21px;
+}
+.player-action span {
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+}
+.player-action:hover,
+.player-action:focus-visible {
+  background: #ffffff14;
+  color: #ff8a57;
+}
+.player-settings .player-action[aria-pressed='true'] {
+  color: #ff8a57;
+  background: #ff69391a;
+}
+.player-action-detail {
+  padding: 16px 12px 12px;
+  border-top: 1px solid #ffffff15;
+  margin-top: 8px;
+}
+.player-action-detail[hidden] {
+  display: none;
+}
+.player-action-detail h3 {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+.player-action-detail button {
+  width: 100%;
+  margin-top: 8px;
+}
+.player-action-detail p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 10px !important;
+}
+.player-settings .player-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}

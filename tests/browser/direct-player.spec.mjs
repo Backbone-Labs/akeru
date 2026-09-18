@@ -114,6 +114,9 @@ test('player pill exposes honest rumble/save status and confirms leaving without
     await menu.click();
     await expect(menu).toHaveAttribute('aria-expanded', 'true');
     await page
+      .getByRole('button', { name: 'Rumble settings', exact: true })
+      .click();
+    await page
       .getByRole('button', { name: 'Controller rumble', exact: true })
       .click();
     await expect(
@@ -123,6 +126,9 @@ test('player pill exposes honest rumble/save status and confirms leaving without
       .getByRole('button', { name: 'Test rumble', exact: true })
       .click();
     await expect(page.getByText(/No rumble sent/)).toBeVisible();
+    await page
+      .getByRole('button', { name: 'Saved progress', exact: true })
+      .click();
     await expect(
       page.getByText(/saved record\(s\) for this game/),
     ).toBeVisible();
