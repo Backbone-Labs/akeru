@@ -51,8 +51,8 @@ function animatePanel(
         },
       ];
   const animation = element.animate(frames, {
-    duration: reduced ? 0 : resize ? 220 : open ? 320 : 240,
-    easing: 'cubic-bezier(.2,.8,.2,1)',
+    duration: reduced ? 0 : resize ? 300 : open ? 460 : 360,
+    easing: 'cubic-bezier(.22,.68,.18,1)',
   });
   panelAnimations.set(element, animation);
   void animation.finished
