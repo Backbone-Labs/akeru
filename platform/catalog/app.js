@@ -799,12 +799,16 @@ export function mountCatalog({
       };
       o.append(controls, touch);
       const session = active;
-      const rumble = node('button', 'secondary', 'Controller rumble');
+      const rumble = node(
+        'button',
+        'secondary player-switch',
+        'Controller rumble',
+      );
       rumble.setAttribute('aria-pressed', String(session.rumble.enabled));
       const feedback = node(
         'p',
         'fine',
-        'Rumble requires a compatible controller and browser. Games must support rumble events.',
+        'Available with supported games and controllers.',
       );
       feedback.setAttribute('role', 'status');
       rumble.onclick = () => {
@@ -829,26 +833,44 @@ export function mountCatalog({
           : 'No rumble sent. Enable rumble and connect a supported controller.';
         testRumble.disabled = false;
       };
-      const progress = node('section', 'player-progress');
-      progress.append(node('h3', '', 'Saved progress'));
-      const saveInfo = node('p', 'fine', 'Checking this game’s local saves…');
-      progress.append(saveInfo);
-      const refresh = node('button', 'secondary', 'Refresh save status');
+      const saveInfo = node('div', 'player-save-state');
+      saveInfo.setAttribute('role', 'status');
+      const saveHeadline = node('strong', '', 'Checking progress…');
+      const saveCaption = node('p', '', 'Saved on this device');
+      const saveMark = node('span', 'player-save-mark');
+      saveMark.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3h12l4 4v14H3V3Z"/><path d="M7 3v6h10V3M7 21v-7h10v7"/></svg>';
+      const saveCopy = node('div');
+      saveCopy.append(saveHeadline, saveCaption);
+      saveInfo.append(saveMark, saveCopy);
+      const refresh = node(
+        'button',
+        'secondary player-text-action',
+        'Check again',
+      );
+      refresh.setAttribute('aria-label', 'Refresh save status');
       refresh.onclick = async () => {
         refresh.disabled = true;
         try {
           const result = await savesFor(session.entry).status();
-          saveInfo.textContent =
-            result.local === 'available'
-              ? `${result.quota.usedSlots} saved record(s) for this game. Use the game’s save or checkpoint controls. Exact-moment save states are not connected to this menu yet.`
-              : 'Local saves are unavailable. Progress may be lost.';
+          if (result.local !== 'available') {
+            saveHeadline.textContent = 'Saving unavailable';
+            saveCaption.textContent =
+              'Progress may not be kept on this device.';
+          } else {
+            saveHeadline.textContent = result.quota.usedSlots
+              ? 'Progress saved'
+              : 'No saves yet';
+            saveCaption.textContent = result.quota.usedSlots
+              ? 'Stored on this device'
+              : 'Use the game’s save or checkpoint controls.';
+          }
         } catch {
-          saveInfo.textContent =
-            'Could not read save status. Existing saves have not been changed.';
+          saveHeadline.textContent = 'Couldn’t check saves';
+          saveCaption.textContent = 'Your existing saves haven’t changed.';
         }
         refresh.disabled = false;
       };
-      progress.append(refresh);
       const leave = node('button', 'secondary player-leave', 'Leave game');
       leave.onclick = () => {
         if (leave.dataset.confirm !== 'true') {
@@ -888,7 +910,15 @@ export function mountCatalog({
       const detail = node('section', 'player-action-detail');
       detail.hidden = true;
       const show = (title, ...items) => {
-        detail.replaceChildren(node('h3', '', title), ...items);
+        const header = node('div', 'player-detail-header');
+        const close = node('button', 'player-detail-close', '×');
+        close.setAttribute('aria-label', 'Close panel');
+        close.onclick = () => {
+          detail.hidden = true;
+          bar.querySelector('button').focus();
+        };
+        header.append(node('h3', '', title), close);
+        detail.replaceChildren(header, ...items);
         detail.hidden = false;
       };
       const rumbleTab = iconButton(
@@ -906,7 +936,16 @@ export function mountCatalog({
         'Saved progress',
       );
       savesTab.onclick = () => {
-        show('Saved progress', saveInfo, refresh);
+        show(
+          'Your progress',
+          saveInfo,
+          node(
+            'p',
+            'player-save-note',
+            'Save states aren’t available for this game yet.',
+          ),
+          refresh,
+        );
         void refresh.onclick();
       };
       const exitTab = iconButton(node('button'), 'exit', 'Leave', 'Leave game');

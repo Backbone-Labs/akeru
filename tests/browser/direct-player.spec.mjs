@@ -130,7 +130,7 @@ test('player pill exposes honest rumble/save status and confirms leaving without
       .getByRole('button', { name: 'Saved progress', exact: true })
       .click();
     await expect(
-      page.getByText(/saved record\(s\) for this game/),
+      page.getByText(/No saves yet|Progress saved/, { exact: true }),
     ).toBeVisible();
     await page.getByRole('button', { name: 'Leave game', exact: true }).click();
     await expect(page.locator('iframe')).toHaveCount(1);
