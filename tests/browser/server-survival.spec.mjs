@@ -116,3 +116,32 @@ test('original Server Survival builds services, saves through host, and restores
       .pathname,
   });
 });
+
+test('phone landscape tutorial fits the viewport and its actions remain reachable', async ({
+  page,
+}) => {
+  test.skip(!built, 'Explicitly build upstream Server Survival first.');
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto(demo.url + '/play/server-survival');
+  const frame = page.frameLocator('iframe');
+  await frame.locator('[data-i18n=sandbox_mode]').click();
+  const game = page.frames().find((f) => f !== page.mainFrame());
+  await game.evaluate(() => {
+    window.tutorial.start();
+    window.tutorial.currentStep = 1;
+    window.tutorial.showStep();
+  });
+  const popup = frame.locator('#tutorial-popup');
+  await expect(popup).toBeVisible();
+  const box = await popup.boundingBox();
+  expect(box.y).toBeGreaterThanOrEqual(0);
+  expect(box.y + box.height).toBeLessThanOrEqual(390);
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(844);
+  await frame.locator('#tutorial-next').click();
+  await frame.locator('#tutorial-skip').click();
+  await expect(frame.locator('#tutorial-modal')).toBeHidden();
+  const canvas = await frame.locator('#canvas-container canvas').boundingBox();
+  expect(canvas.width).toBe(844);
+  expect(canvas.height).toBe(390);
+});

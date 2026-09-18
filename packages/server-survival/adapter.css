@@ -74,3 +74,41 @@ body:not([data-akeru-ready='true']) {
     padding-bottom: 10px;
   }
 }
+
+/* Keep upstream desktop dialogs reachable on short landscape phone screens. */
+[id$='-modal'] > .glass-panel,
+#modal-card,
+#tutorial-popup {
+  box-sizing: border-box;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-height: 500px), (max-width: 600px) {
+  #tutorial-popup {
+    /* Upstream anchors some steps 140px above the bottom, clipping the top. */
+    top: 16px !important;
+    bottom: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: min(560px, calc(100vw - 32px));
+    padding: 16px;
+  }
+  #tutorial-popup > .flex.justify-between {
+    position: sticky;
+    bottom: 0;
+    background: #0f172a;
+    padding: 8px 0;
+    z-index: 1;
+  }
+  #tutorial-skip,
+  #tutorial-next {
+    min-height: 44px;
+  }
+  #akeru-help {
+    display: none;
+  }
+}
