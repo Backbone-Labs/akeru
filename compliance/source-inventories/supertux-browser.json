@@ -1,0 +1,31 @@
+{
+  "upstream": "https://github.com/SuperTux/supertux/releases/tag/v0.6.3",
+  "approval": "unreviewed; local evaluation only",
+  "files": [
+    {
+      "path": "supertux2.js",
+      "sha256": "b83665c0c268e7cc302ac86a95bb319ec0843492ee49113f9a419858b057e17f"
+    },
+    {
+      "path": "supertux2.wasm",
+      "sha256": "cf2009dc7360b95a426532cfd75663a957676f0a63045ed61aa9d6edf3db120d"
+    },
+    {
+      "path": "supertux2.data",
+      "sha256": "bb0b48c62eeb357457c0dbcd869ef559795e5d55691c04d46d51dde60f1d0f2e"
+    },
+    {
+      "path": "supertux2.worker.js",
+      "sha256": "8410674d597418918b10e7b04e55fd9886c5094a3603b6a3a922a686e92841f6"
+    }
+  ],
+  "revision": "c1ddb4f28c54de77f07aa9965231a91c0ed06708",
+  "sourceCorrespondence": "unverified; recipe/source audit required before publication",
+  "downloads": [
+    {
+      "path": "supertux.zip",
+      "url": "https://github.com/SuperTux/supertux/releases/download/v0.6.3/SuperTux-v0.6.3-WASM.zip",
+      "sha256": "f9fa6eed36d403a283f3c544540b8a45b6c110375c1824e137ce1b4357e2d5df"
+    }
+  ]
+}

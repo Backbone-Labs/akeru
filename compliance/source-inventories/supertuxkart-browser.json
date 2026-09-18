@@ -1,0 +1,71 @@
+{
+  "upstream": "https://github.com/ading2210/stk-code/tree/wasm",
+  "approval": "unreviewed; local evaluation only",
+  "files": [
+    {
+      "path": "supertuxkart.js",
+      "sha256": "dc12c13070fac30ad47229a5ac108aea6f5b3a1d41b39419747c5e80635d985d"
+    },
+    {
+      "path": "supertuxkart.wasm",
+      "sha256": "42d245ba31d58fa8ab24a23c315cbbc772f0125ea988701525747e598a4a3698"
+    },
+    {
+      "path": "game.data",
+      "sha256": "1bfd4d33d1f027cb0a7a52500fcc3cbb4ce319af278d3aa9eca6afe9e4b79cf5"
+    },
+    {
+      "path": "files.json",
+      "sha256": "3dbadefdd21c2ef56a79d6899333941f2705982b08f7894b09e14271029e89d7"
+    }
+  ],
+  "revision": "43d3673a765d2bc2d01adc29fc87e990b7c90a3d",
+  "sourceCorrespondence": "unverified; recipe/source audit required before publication",
+  "downloads": [
+    {
+      "path": "kart/supertuxkart.js",
+      "url": "https://supertuxkart.pages.dev/game/supertuxkart.js",
+      "sha256": "dc12c13070fac30ad47229a5ac108aea6f5b3a1d41b39419747c5e80635d985d"
+    },
+    {
+      "path": "kart/supertuxkart.wasm",
+      "url": "https://supertuxkart.pages.dev/game/supertuxkart.wasm",
+      "sha256": "42d245ba31d58fa8ab24a23c315cbbc772f0125ea988701525747e598a4a3698"
+    },
+    {
+      "path": "kart/data_low.tar.gz.00",
+      "url": "https://supertuxkart.pages.dev/game/data_low.tar.gz.00",
+      "sha256": "d930ba20f0277f12bd7f24d3b8fd7c0bceeed317b93ea6748c665e98155f3437"
+    },
+    {
+      "path": "kart/data_low.tar.gz.01",
+      "url": "https://supertuxkart.pages.dev/game/data_low.tar.gz.01",
+      "sha256": "0b6594ac09f62cce742e62adb1eef61ba2b5477e8f945f9349e6c25f267025c2"
+    },
+    {
+      "path": "kart/data_low.tar.gz.02",
+      "url": "https://supertuxkart.pages.dev/game/data_low.tar.gz.02",
+      "sha256": "e2c2b361320d58d44c97ae995d3187cf0f216eb0c601603fa64b6a5fb22b9612"
+    },
+    {
+      "path": "kart/data_low.tar.gz.03",
+      "url": "https://supertuxkart.pages.dev/game/data_low.tar.gz.03",
+      "sha256": "941e308a3c0332f13b532ed4403d547f081fe4b7992eb330825c8a3225bced40"
+    },
+    {
+      "path": "kart/data_low.tar.gz.04",
+      "url": "https://supertuxkart.pages.dev/game/data_low.tar.gz.04",
+      "sha256": "46909263918e6393695f3f13e9b1943dd7c8aa232831a61f6f2ab6136236736c"
+    },
+    {
+      "path": "kart/data_low.tar.gz.05",
+      "url": "https://supertuxkart.pages.dev/game/data_low.tar.gz.05",
+      "sha256": "b07c4d188d96f4d89abf382b4f0384f9a7516ebcf62d4651725a6820b32bbaf2"
+    },
+    {
+      "path": "kart/data_low.tar.gz.06",
+      "url": "https://supertuxkart.pages.dev/game/data_low.tar.gz.06",
+      "sha256": "3d5a2b7a55d71a8f302b6d4f58f117c3e18ee71477e436b4cc9f3fabeb74cd12"
+    }
+  ]
+}

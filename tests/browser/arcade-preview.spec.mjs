@@ -48,6 +48,13 @@ for (const [id, options] of Object.entries(titles))
                 : window.akeruRace.components.shipControls.speed,
             id,
           );
+        // Let the host observe a neutral controller after the ready transition.
+        await page.evaluate(
+          () =>
+            new Promise((resolve) =>
+              requestAnimationFrame(() => requestAnimationFrame(resolve)),
+            ),
+        );
         await page.evaluate(() => window.__akeruTestGamepad.button(0, 1));
         await expect.poll(speed).toBeGreaterThan(1);
         await page.evaluate(() => window.__akeruTestGamepad.neutral());
@@ -63,6 +70,10 @@ for (const [id, options] of Object.entries(titles))
           .getByRole('button', { name: 'Resume', exact: true })
           .first()
           .click();
+        await expect(runtime.locator('body')).toHaveAttribute(
+          'data-paused',
+          'false',
+        );
         await runtime
           .getByRole('button', { name: 'Restart', exact: true })
           .click();
