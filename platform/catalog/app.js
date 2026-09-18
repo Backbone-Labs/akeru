@@ -620,7 +620,12 @@ export function mountCatalog({
       'allow-scripts allow-same-origin allow-pointer-lock',
     );
     frame.setAttribute('referrerpolicy', 'no-referrer');
-    frame.setAttribute('allow', 'gamepad');
+    frame.setAttribute(
+      'allow',
+      entry.manifest.runtime.requiredFeatures.includes('threads')
+        ? 'gamepad; cross-origin-isolated'
+        : 'gamepad',
+    );
     const nonce = crypto.randomUUID(),
       start = performance.now();
     frame.src = `${titleUrl(entry)}#${new URLSearchParams({ nonce, shell: location.origin })}`;
@@ -628,6 +633,9 @@ export function mountCatalog({
     active = { entry, frame, channel: null };
     const session = active;
     active.channel = createRuntimeChannel({
+      timeoutMs: entry.manifest.runtime.requiredFeatures.includes('threads')
+        ? 60000
+        : 15000,
       frame: frame.contentWindow,
       origin: entry.release.origin,
       nonce,

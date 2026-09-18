@@ -1,3 +1,5 @@
+import { options as supertuxOptions } from '../../packages/supertux/catalog.mjs';
+import { options as supertuxkartOptions } from '../../packages/supertuxkart/catalog.mjs';
 import { options as hexglOptions } from '../../packages/hexgl/catalog.mjs';
 import { options as racerOptions } from '../../packages/racer/catalog.mjs';
 import { options as astrayOptions } from '../../packages/astray/catalog.mjs';
@@ -18,6 +20,8 @@ import { titles as puzzleTitles } from '../../packages/tatham/titles.mjs';
 export function playableTitles() {
   return [
     anarchOptions(),
+    supertuxOptions(),
+    supertuxkartOptions(),
     hexglOptions(),
     racerOptions(),
     astrayOptions(),

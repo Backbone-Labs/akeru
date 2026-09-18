@@ -31,11 +31,22 @@ export function inspectPublicFile(path, content) {
   ) {
     errors.push('possible credential');
   }
+  // Emscripten's fixed virtual user path is shipped engine code, not a host account.
+  const virtualUserFiles = new Set([
+    'scripts/check-public-tree.mjs',
+    'packages/wasm-desktop-preview/build.mjs',
+    'packages/wasm-desktop-preview/runtime.js',
+    'tests/browser/tux-preview.spec.mjs',
+    'tests/wasm-desktop-preview.test.mjs',
+  ]);
+  const sourceReferences = virtualUserFiles.has(path)
+    ? content.replaceAll('/home/web_user/', '/emscripten-virtual-user/')
+    : content;
   if (
     /https:\/\/github\.com\/Backbone-Labs\/(?:ios|android|b3|cloud)(?:[/#?]|$)/iu.test(
       content,
     ) ||
-    /\/(?:Users|home)\/[A-Za-z0-9._-]+\//u.test(content)
+    /\/(?:Users|home)\/[A-Za-z0-9._-]+\//u.test(sourceReferences)
   ) {
     errors.push('private source reference or local account path');
   }

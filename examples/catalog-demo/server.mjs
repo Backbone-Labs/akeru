@@ -17,6 +17,7 @@ export async function startCatalogDemo(options = {}) {
         basename(controllerModelPath),
       )
     : null;
+  const threaded = (options.titles ?? [options]).some((t) => t.threaded);
   const servers = [];
   let state = 'available',
     shellOrigin;
@@ -52,9 +53,13 @@ export async function startCatalogDemo(options = {}) {
       ),
     );
     titleOrigin = await serve((req, res) => {
+      if (threaded) {
+        res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      }
       res.setHeader(
         'Content-Security-Policy',
-        `default-src 'none'; script-src 'self' ${titleOptions.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self'; media-src 'self'; connect-src ${titleOptions.wasm || titleOptions.assetRequests ? "'self'" : "'none'"}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
+        `default-src 'none'; script-src 'self' ${titleOptions.wasm ? "'wasm-unsafe-eval'" : ''}; ${titleOptions.threaded ? "worker-src 'self' blob:;" : ''} style-src 'self'; img-src 'self' ${titleOptions.threaded ? 'blob: data:' : ''}; media-src 'self' ${titleOptions.threaded ? 'blob: data:' : ''}; connect-src ${titleOptions.wasm || titleOptions.assetRequests ? "'self'" : "'none'"}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
       );
       res.setHeader(
         'Permissions-Policy',
@@ -189,6 +194,10 @@ export async function startCatalogDemo(options = {}) {
     entries.push(entry);
   }
   shellOrigin = await serve((req, res) => {
+    if (threaded) {
+      res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+      res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    }
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'no-referrer');

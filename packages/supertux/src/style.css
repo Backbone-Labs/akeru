@@ -1,0 +1,72 @@
+html,
+body {
+  margin: 0;
+  background: #101112;
+  color: #eee;
+  font: 14px system-ui;
+  height: 100%;
+  overflow: hidden;
+}
+#stage {
+  height: calc(100% - 90px);
+  display: grid;
+  place-items: center;
+}
+canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+p {
+  margin: 4px 12px;
+}
+nav {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+button {
+  background: #27292c;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 8px;
+  touch-action: none;
+}
+#save-status:empty {
+  display: none;
+}
+
+#stage {
+  position: absolute;
+  inset: 0 0 96px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: fill;
+}
+#status {
+  position: absolute;
+  bottom: 54px;
+  left: 0;
+  right: 0;
+  font-size: 12px;
+}
+#save-status {
+  position: absolute;
+  bottom: 78px;
+  left: 0;
+  right: 0;
+}
+nav {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  flex-wrap: wrap;
+}

@@ -68,6 +68,7 @@ export function connectGame(game) {
     controller.clear();
   };
   const setPause = (value) => {
+    if ((value || document.hidden) && ready && !blocked) dirty = true;
     paused = value;
     clear();
     document.body.dataset.paused = String(value || document.hidden);
@@ -116,7 +117,8 @@ export function connectGame(game) {
         document.body.dataset.ready = 'true';
         setPause(paused);
         send('playable', { sdkVersion: '0.1.0' });
-      } catch {
+      } catch (error) {
+        console.error('Game initialization failed', error);
         document.querySelector('#status').textContent =
           'This game could not start. Please exit and try again.';
         send('error', { code: 'initialization' });
@@ -152,6 +154,7 @@ export function connectGame(game) {
     KeyR: 'restart',
   };
   addEventListener('keydown', (e) => {
+    if (game.keyboard === false) return;
     const a = bindings[e.code];
     if (a) {
       e.preventDefault();
@@ -160,6 +163,7 @@ export function connectGame(game) {
     }
   });
   addEventListener('keyup', (e) => {
+    if (game.keyboard === false) return;
     const a = bindings[e.code];
     if (a) {
       e.preventDefault();
@@ -186,7 +190,12 @@ export function connectGame(game) {
       button.addEventListener('click', () => action(button.dataset.action)),
     );
   setInterval(() => {
-    if (game.dirty?.()) dirty = true;
+    try {
+      if (game.dirty?.()) dirty = true;
+    } catch {
+      blocked = true;
+      status('Saving unavailable. Existing progress is preserved.');
+    }
     void save();
   }, 750);
   return {
