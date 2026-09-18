@@ -10,8 +10,9 @@ channel, input provider and host-owned per-title saves. Unknown or unavailable
 titles never create a game frame. Runtime errors offer retry inside the player.
 No arbitrary game URL can be supplied through this route.
 
-The frame fills the dynamic viewport inside safe-area insets. Games retain their
-own aspect ratio and controls. The small Menu button pauses the title and opens
+The frame fills the dynamic viewport edge-to-edge. Safe-area insets apply to
+the shell menu and controls, not the game canvas. Games retain their own aspect
+ratio and controls. The small Menu button pauses the title and opens
 Resume, Controller settings and optional host Touch controls. Host touch buttons
 start hidden in this mode to avoid covering titles' own touch interfaces; enable
 them from Menu when needed. Native app chrome remains responsible for closing

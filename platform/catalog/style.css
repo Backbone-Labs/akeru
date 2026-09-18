@@ -2351,8 +2351,8 @@ body.direct-player .runtime-wrap {
 }
 body.direct-player .runtime-stage {
   position: absolute;
-  inset: var(--player-safe-top) var(--player-safe-right)
-    var(--player-safe-bottom) var(--player-safe-left);
+  /* The game draws edge-to-edge; only interactive shell UI uses safe areas. */
+  inset: 0;
   min-height: 0;
   margin: 0;
   border: 0;

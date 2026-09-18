@@ -37,10 +37,15 @@ for (const viewport of [
         document.body.style.setProperty('--player-safe-left', '24px');
       });
       const box = await page.locator('iframe').boundingBox();
-      expect(box.x).toBe(24);
-      expect(box.y).toBe(20);
-      expect(box.width).toBe(viewport.width - 48);
-      expect(box.height).toBe(viewport.height - 36);
+      expect(box.x).toBe(0);
+      expect(box.y).toBe(0);
+      expect(box.width).toBe(viewport.width);
+      expect(box.height).toBe(viewport.height);
+      const menuBox = await page.locator('#player-menu').boundingBox();
+      expect(menuBox.y).toBeGreaterThanOrEqual(20);
+      expect(menuBox.x + menuBox.width).toBeLessThanOrEqual(
+        viewport.width - 24,
+      );
       await page
         .getByRole('button', { name: 'Game menu', exact: true })
         .click();
@@ -59,7 +64,7 @@ for (const viewport of [
         height: viewport.width,
       });
       const rotated = await page.locator('iframe').boundingBox();
-      expect(rotated.height).toBe(viewport.width - 36);
+      expect(rotated.height).toBe(viewport.width);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,
@@ -263,6 +268,13 @@ test('controller opens the pill and selects a setting without touch', async ({
     await expect(
       page.getByRole('button', { name: 'Touch controls', exact: true }),
     ).toBeFocused();
+    await neutralGamepad(page);
+    await page.waitForTimeout(150);
+    await page.evaluate(() => window.__akeruTestGamepad.axis(0, 1));
+    await expect(
+      page.getByRole('button', { name: 'Rumble settings', exact: true }),
+    ).toBeFocused();
+    await neutralGamepad(page);
   } finally {
     await demo.close();
   }
