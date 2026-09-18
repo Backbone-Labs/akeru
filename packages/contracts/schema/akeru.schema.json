@@ -206,6 +206,7 @@
               "enum": [
                 "dom",
                 "canvas2d",
+                "webgl1",
                 "webgl2",
                 "webgpu"
               ]

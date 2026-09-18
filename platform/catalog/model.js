@@ -4,6 +4,7 @@ export const CATEGORIES = Object.freeze([
   'puzzle',
   'strategy',
   'sports',
+  'racing',
   'sandbox',
 ]);
 const fail = (message) => {

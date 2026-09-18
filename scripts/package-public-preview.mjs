@@ -44,7 +44,13 @@ const sourceArchive = execFileSync(
   ['archive', '--format=tar.gz', 'HEAD'],
   { maxBuffer: 64 * 1024 * 1024 },
 );
-const titleOptions = playableTitles();
+const titleOptions = playableTitles().filter((title) => {
+  if (!title.publicationBlocked) return true;
+  console.log(
+    'Excluded ' + title.manifest.id + ': ' + title.publicationBlocked,
+  );
+  return false;
+});
 const demo = await startCatalogDemo({ titles: titleOptions });
 try {
   const catalog = await (await fetch(demo.url + '/catalog.json')).json();
