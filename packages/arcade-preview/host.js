@@ -86,6 +86,13 @@ export function connectGame(game) {
     )
       return;
     received = m.sequence;
+    if (
+      m.type === 'controller-status' &&
+      typeof m.payload?.connected === 'boolean'
+    ) {
+      game.controllerChanged?.(m.payload.connected);
+      return;
+    }
     if (m.type === 'save-result') {
       saves.receive(m.payload);
       return;
@@ -192,6 +199,9 @@ export function connectGame(game) {
   return {
     held,
     action,
+    rumble(effect) {
+      if (ready && !paused && !document.hidden) send('rumble', effect);
+    },
     changed() {
       dirty = true;
     },

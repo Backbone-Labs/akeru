@@ -2310,3 +2310,609 @@ body .runtime-stage {
     overflow-wrap: anywhere;
   }
 }
+
+/* Direct WebView entry: the native app owns discovery and closing the screen. */
+body.direct-player {
+  --player-safe-top: env(safe-area-inset-top, 0px);
+  --player-safe-right: env(safe-area-inset-right, 0px);
+  --player-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --player-safe-left: env(safe-area-inset-left, 0px);
+  margin: 0;
+  background: #08090b;
+  color: #f5f5f5;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+body.direct-player > header,
+body.direct-player > footer,
+body.direct-player > .skip-link,
+body.direct-player #demo-banner,
+body.direct-player .runtime-bar,
+body.direct-player .controls-row {
+  display: none;
+}
+body.direct-player #main {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+body.direct-player .runtime-wrap {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  padding: 0;
+  gap: 0;
+  background: #08090b;
+}
+body.direct-player .runtime-stage {
+  position: absolute;
+  /* The game draws edge-to-edge; only interactive shell UI uses safe areas. */
+  inset: 0;
+  min-height: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: #08090b;
+}
+body.direct-player .runtime-stage iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.player-menu {
+  position: absolute;
+  top: calc(var(--player-safe-top) + 8px);
+  right: calc(var(--player-safe-right) + 8px);
+  z-index: 6;
+  min-width: 48px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid #ffffff40;
+  border-radius: 24px;
+  color: #fff;
+  background: #15171bdb;
+}
+body.direct-player .runtime-overlay,
+body.direct-player .status-card {
+  background: #101215;
+  color: #f5f5f5;
+  border: 0;
+  border-radius: 0;
+  text-align: center;
+  padding: 24px;
+  overflow: auto;
+}
+body.direct-player .runtime-overlay {
+  gap: 12px;
+  z-index: 5;
+}
+body.direct-player .runtime-overlay h2,
+body.direct-player .status-card h1 {
+  font-size: clamp(22px, 5vw, 32px);
+  margin: 0;
+}
+body.direct-player .runtime-overlay p,
+body.direct-player .status-card p {
+  color: #bbbfc6;
+  margin: 0;
+}
+body.direct-player #main > .wrap {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: calc(var(--player-safe-top) + 20px)
+    calc(var(--player-safe-right) + 20px) calc(var(--player-safe-bottom) + 20px)
+    calc(var(--player-safe-left) + 20px);
+}
+body.direct-player .status-card .eyebrow {
+  display: none;
+}
+body.direct-player #touch-controls {
+  position: absolute;
+  bottom: calc(var(--player-safe-bottom) + 8px);
+  left: calc(var(--player-safe-left) + 8px);
+  right: calc(var(--player-safe-right) + 8px);
+  z-index: 3;
+}
+body.direct-player #touch-controls button {
+  background: #15171bba;
+  color: #fff;
+  border-color: #ffffff50;
+  min-height: 44px;
+  padding: 6px;
+  border-radius: 14px;
+}
+body.direct-player #control-settings {
+  position: absolute;
+  z-index: 8;
+  inset: calc(var(--player-safe-top) + 8px) calc(var(--player-safe-right) + 8px)
+    auto calc(var(--player-safe-left) + 8px);
+}
+body.direct-player .akeru-control-settings {
+  max-height: calc(
+    100dvh - var(--player-safe-top) - var(--player-safe-bottom) - 16px
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  body.direct-player .spinner {
+    animation: none;
+  }
+}
+
+body.direct-player .runtime-overlay.player-settings {
+  inset: 58px 8px auto auto;
+  width: min(380px, calc(100% - 16px));
+  max-height: calc(100% - 66px);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  border: 1px solid #ffffff25;
+  border-radius: 24px;
+  box-shadow: 0 18px 60px #0009;
+  background: #1e2325;
+  padding: 20px;
+  animation: player-expand 160ms ease-out;
+}
+body.direct-player .player-settings[hidden] {
+  display: none;
+}
+.player-settings button {
+  flex-shrink: 0;
+  min-height: 44px;
+}
+.player-settings button[aria-pressed='true'] {
+  border-color: var(--player-accent);
+  background: #383838;
+}
+.player-progress {
+  border-block: 1px solid #ffffff25;
+  padding-block: 16px;
+}
+.player-progress h3 {
+  margin: 0 0 8px;
+}
+.player-progress button {
+  margin-top: 12px;
+}
+.player-settings .player-leave {
+  color: var(--player-accent);
+}
+@keyframes player-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.direct-player .runtime-overlay.player-settings {
+    animation: none;
+  }
+}
+body.direct-player .runtime-overlay.player-settings {
+  justify-content: flex-start;
+}
+.player-settings > * {
+  flex-shrink: 0;
+}
+.player-settings .secondary {
+  background: #383838;
+  color: #f5f5f5;
+  border-color: #ffffff25;
+}
+.player-settings .secondary[aria-pressed='true'] {
+  background: #383838;
+  border-color: var(--player-accent);
+}
+
+body.direct-player .player-menu {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  padding: 10px;
+  border: 1px solid #f1562320;
+  border-radius: 50%;
+  background: #1e2325;
+  color: var(--player-accent);
+  box-shadow: 0 4px 20px #0006;
+}
+.player-menu svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+body.direct-player .player-menu[aria-expanded='true'] {
+  background: var(--player-accent);
+  color: #111111;
+}
+body.direct-player .runtime-overlay.player-settings {
+  width: min(332px, calc(100% - 16px));
+  padding: 8px;
+  gap: 0;
+  border-radius: 28px;
+  background: #1e2325;
+  backdrop-filter: blur(18px);
+}
+.player-action-bar {
+  display: flex;
+  gap: 2px;
+  justify-content: space-between;
+}
+.player-settings .player-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 50px;
+  min-width: 44px;
+  min-height: 52px;
+  padding: 6px 0;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  color: #d5d7dc;
+  background: transparent;
+}
+.player-action svg {
+  width: 21px;
+  height: 21px;
+}
+.player-action span {
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+}
+.player-action:hover,
+.player-action:focus-visible {
+  background: #ffffff14;
+  color: var(--player-accent);
+}
+.player-settings .player-action[aria-pressed='true'] {
+  color: var(--player-accent);
+  background: #f1562320;
+}
+.player-action-detail {
+  padding: 16px 12px 12px;
+  border-top: 1px solid #ffffff15;
+  margin-top: 8px;
+}
+.player-action-detail[hidden] {
+  display: none;
+}
+.player-action-detail h3 {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+.player-action-detail button {
+  width: 100%;
+  margin-top: 8px;
+}
+.player-action-detail p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 10px !important;
+}
+.player-settings .player-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* Compact player panels use their own scale, independent of website CTAs. */
+body.direct-player .player-action-detail {
+  padding: 6px 12px 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: 0;
+}
+.player-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+body.direct-player .player-detail-header h3 {
+  font:
+    600 13px/1.4 Arial,
+    Helvetica,
+    sans-serif;
+  letter-spacing: 0;
+  margin: 0;
+  color: #f5f5f5;
+}
+body.direct-player .player-action-detail button {
+  min-height: 44px;
+  border-radius: 10px;
+  font:
+    500 12px/1.3 Arial,
+    Helvetica,
+    sans-serif;
+  letter-spacing: 0;
+  padding: 10px 12px;
+  margin: 6px 0 0;
+  border: 0;
+  background: #ffffff08;
+  box-shadow: none;
+}
+body.direct-player .player-action-detail .player-detail-close {
+  width: 44px;
+  margin: 0 -12px 0 0;
+  background: transparent;
+  color: #8d9199;
+  font-size: 22px;
+}
+.player-save-state {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0 12px;
+}
+.player-save-mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f1562320;
+  color: var(--player-accent);
+  flex: 0 0 auto;
+}
+.player-save-mark svg {
+  width: 19px;
+  height: 19px;
+}
+.player-save-state strong {
+  font-size: 13px;
+  font-weight: 500;
+  color: #f5f5f5;
+}
+body.direct-player .player-save-state p {
+  font:
+    400 11px/1.5 Arial,
+    Helvetica,
+    sans-serif;
+  color: #9b9ea5;
+  margin: 4px 0 0 !important;
+}
+body.direct-player .player-action-detail .player-save-note {
+  font-size: 10px;
+  color: #9b9ea5;
+  margin: 0 !important;
+}
+body.direct-player .player-action-detail .player-text-action {
+  width: auto;
+  color: var(--player-accent);
+  background: transparent;
+  padding: 10px 0;
+  text-align: left;
+  margin: 2px 0 0;
+}
+body.direct-player .player-action-detail .player-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  background: transparent;
+  border-block: 1px solid #ffffff0d;
+  border-radius: 0;
+  padding-inline: 0;
+}
+.player-switch::after {
+  content: '';
+  width: 32px;
+  height: 20px;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 10px 10px, #fff 6px, transparent 6.5px), #46484e;
+}
+.player-switch[aria-pressed='true']::after {
+  background:
+    radial-gradient(circle at 22px 10px, #111111 6px, transparent 6.5px),
+    var(--player-accent);
+}
+body.direct-player .player-action-detail .player-leave {
+  color: var(--player-accent);
+  background: #f1562320;
+}
+body.direct-player .player-action-detail button:focus-visible {
+  outline: 2px solid var(--player-accent);
+  outline-offset: 2px;
+}
+
+body.direct-player {
+  --player-accent: #f15623;
+}
+body.direct-player .runtime-overlay.player-settings {
+  background: #1e2325;
+  backdrop-filter: none;
+  border-color: #ffffff1a;
+  box-shadow: 0 8px 24px #0006;
+}
+body.direct-player .player-action-detail {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+}
+body.direct-player .player-detail-header h3,
+body.direct-player .player-action-detail button,
+body.direct-player .player-save-state p {
+  font-family: inherit;
+}
+.player-save-mark {
+  background: transparent;
+  color: var(--player-accent);
+}
+.player-settings .player-action[aria-pressed='true'],
+.player-settings .player-action:focus-visible {
+  background: #383838;
+  color: #fff;
+}
+body.direct-player .player-action-detail .player-text-action {
+  color: var(--player-accent);
+}
+
+/* Subpanels behave like console menus; the six-action launcher is unchanged. */
+body.direct-player .player-action-detail {
+  padding: 14px 8px 8px;
+}
+body.direct-player .player-detail-header {
+  margin: 0 6px 14px;
+}
+body.direct-player .player-detail-header h3 {
+  font-size: 15px;
+}
+body.direct-player .player-action-detail .player-menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  margin: 6px 0 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: #303437;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  transition:
+    background 100ms,
+    color 100ms;
+}
+body.direct-player .player-action-detail .player-menu-row:focus {
+  outline: none;
+  border-color: var(--player-accent);
+  background: #fff;
+  color: #111;
+  box-shadow: 0 0 0 1px var(--player-accent);
+}
+body.direct-player .player-action-detail .player-menu-row:hover:not(:focus) {
+  background: #45494c;
+}
+.player-menu-row:not(.player-switch)::after {
+  content: '›';
+  font-size: 21px;
+  line-height: 1;
+}
+body.direct-player .player-action-detail .player-panel-back {
+  background: transparent;
+  color: #c7c9cc;
+}
+body.direct-player .player-action-detail .player-panel-back:focus {
+  background: #fff;
+  color: #111;
+}
+body.direct-player .player-action-detail .player-navigation-hint {
+  font-size: 10px;
+  color: #a6a9af;
+  text-align: center;
+  margin: 14px 0 2px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.direct-player .player-action-detail .player-menu-row {
+    transition: none;
+  }
+}
+
+body.direct-player .runtime-overlay.player-settings {
+  animation: none;
+  transform-origin: top right;
+}
+.player-action-detail {
+  overflow: hidden;
+  box-sizing: border-box;
+}
+body.direct-player .player-menu {
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+body.direct-player .player-menu:active {
+  transform: scale(0.92);
+}
+.player-action,
+.player-action svg {
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+.player-action:active svg {
+  transform: scale(0.9);
+}
+body.direct-player .player-action-detail .player-menu-row {
+  transition:
+    background 130ms ease,
+    color 130ms ease,
+    border-color 130ms ease,
+    box-shadow 130ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.direct-player .player-menu,
+  .player-action,
+  .player-action svg,
+  body.direct-player .player-action-detail .player-menu-row {
+    transition: none;
+  }
+  body.direct-player .player-menu:active,
+  .player-action:active svg {
+    transform: none;
+  }
+}
+
+/* The action rail shares the logo's origin and reveals toward the left. */
+body.direct-player .runtime-overlay.player-settings {
+  inset: 8px 8px auto auto;
+  width: min(376px, calc(100% - 16px));
+  max-height: calc(100% - 16px);
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  transform-origin: top right;
+}
+body.direct-player .player-menu {
+  box-shadow: none;
+}
+.player-settings .player-action-bar {
+  height: 44px;
+  padding: 0 48px 0 4px;
+  gap: 0;
+  align-items: center;
+}
+.player-settings .player-action {
+  flex: 1;
+  width: auto;
+  min-width: 40px;
+  min-height: 44px;
+  height: 44px;
+  padding: 4px 0;
+  border-radius: 16px;
+  gap: 3px;
+}
+.player-settings .player-action svg {
+  width: 19px;
+  height: 19px;
+}
+.player-settings .player-action-detail {
+  margin: 0 8px;
+}
+
+.runtime-home {
+  display: inline-flex;
+  color: inherit;
+  border-radius: 8px;
+}
+.runtime-home:focus-visible {
+  outline: 2px solid #f15623;
+  outline-offset: 4px;
+}

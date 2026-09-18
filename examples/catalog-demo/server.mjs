@@ -256,9 +256,9 @@ export async function startCatalogDemo(options = {}) {
     }
     const file =
       ['/', '/games', '/settings'].includes(req.url) ||
-      /^\/g\/[a-z0-9-]+\/?$/.test(req.url)
+      /^\/(?:g|play)\/[a-z0-9-]+\/?$/.test(req.url)
         ? 'platform/catalog/index.html'
-        : /^\/(?:favicon\.svg|style\.css|app\.js|home\.js|onboarding\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js)$/.test(
+        : /^\/(?:favicon\.svg|style\.css|app\.js|home\.js|onboarding\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js|rumble\.js)$/.test(
               req.url,
             )
           ? `platform/catalog${req.url}`
@@ -284,7 +284,15 @@ export async function startCatalogDemo(options = {}) {
               ? 'text/css'
               : 'text/javascript',
       );
-      res.end(read(file));
+      const bytes = read(file);
+      res.end(
+        file.endsWith('index.html') && req.url.startsWith('/play/')
+          ? bytes
+              .toString()
+              .replace('<body>', '<body class="direct-player">')
+              .replace('Opening Akeru…', 'Opening game…')
+          : bytes,
+      );
     } catch {
       res.writeHead(404);
       res.end('Asset unavailable');

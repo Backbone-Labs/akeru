@@ -138,6 +138,9 @@ export function routeFor(pathname) {
   if (pathname === '/') return { view: 'landing' };
   if (pathname === '/games') return { view: 'catalog' };
   if (pathname === '/settings') return { view: 'settings' };
+  const player = /^\/play\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/.exec(pathname);
+  if (player && player[1].length <= 64)
+    return { view: 'player', id: player[1] };
   const match = /^\/g\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/.exec(pathname);
   return match && match[1].length <= 64
     ? { view: 'detail', id: match[1] }

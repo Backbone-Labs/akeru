@@ -146,6 +146,7 @@ try {
     'model.js',
     'channel.js',
     'save-channel.js',
+    'rumble.js',
   ];
   for (const file of files) {
     let bytes = readFileSync(resolve('platform/catalog', file));
@@ -168,6 +169,13 @@ try {
       'input/' + file,
       readFileSync(resolve('packages/input/src', file)),
     );
+  put(
+    shell,
+    'player.html',
+    readFileSync(resolve(shell, 'index.html'), 'utf8')
+      .replace('<body>', '<body class="direct-player">')
+      .replace('Opening Akeru…', 'Opening game…'),
+  );
   put(shell, 'saves/index.js', readFileSync('packages/saves/src/index.js'));
   // Remove model assets left by an older bundle; onboarding no longer loads 3D.
   rmSync(resolve(shell, 'local-controller.glb'), { force: true });
@@ -199,6 +207,7 @@ try {
           { source: '/games', destination: '/index.html' },
           { source: '/settings', destination: '/index.html' },
           { source: '/g/:id', destination: '/index.html' },
+          { source: '/play/:id', destination: '/player.html' },
         ],
       ),
       null,
