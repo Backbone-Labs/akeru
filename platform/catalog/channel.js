@@ -24,6 +24,7 @@ export function createRuntimeChannel({
   origin,
   nonce,
   onEvent = () => {},
+  onRumble,
   now = () => performance.now(),
   timeoutMs = 15000,
 }) {
@@ -101,6 +102,23 @@ export function createRuntimeChannel({
       )
         return false;
       received = v.sequence;
+      return true;
+    }
+    if (v.type === 'rumble') {
+      if (
+        state !== 'playable' ||
+        typeof onRumble !== 'function' ||
+        !exact(p, ['duration', 'strongMagnitude', 'weakMagnitude']) ||
+        !Number.isFinite(p.duration) ||
+        p.duration < 1 ||
+        p.duration > 500 ||
+        !['strongMagnitude', 'weakMagnitude'].every(
+          (k) => Number.isFinite(p[k]) && p[k] >= 0 && p[k] <= 1,
+        )
+      )
+        return false;
+      received = v.sequence;
+      onRumble({ ...p });
       return true;
     }
     if (v.type === 'loading') {

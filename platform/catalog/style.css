@@ -2443,3 +2443,73 @@ body.direct-player .akeru-control-settings {
     animation: none;
   }
 }
+
+body.direct-player .runtime-overlay.player-settings {
+  inset: 58px 8px auto auto;
+  width: min(380px, calc(100% - 16px));
+  max-height: calc(100% - 66px);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  border: 1px solid #ffffff25;
+  border-radius: 24px;
+  box-shadow: 0 18px 60px #0009;
+  background: #181a1ff5;
+  padding: 20px;
+  animation: player-expand 160ms ease-out;
+}
+body.direct-player .player-settings[hidden] {
+  display: none;
+}
+.player-settings button {
+  flex-shrink: 0;
+  min-height: 44px;
+}
+.player-settings button[aria-pressed='true'] {
+  border-color: #ff6939;
+  background: #5b2c1d;
+}
+.player-progress {
+  border-block: 1px solid #ffffff25;
+  padding-block: 16px;
+}
+.player-progress h3 {
+  margin: 0 0 8px;
+}
+.player-progress button {
+  margin-top: 12px;
+}
+.player-settings .player-leave {
+  color: #ffad93;
+}
+@keyframes player-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.direct-player .runtime-overlay.player-settings {
+    animation: none;
+  }
+}
+body.direct-player .runtime-overlay.player-settings {
+  justify-content: flex-start;
+}
+.player-settings > * {
+  flex-shrink: 0;
+}
+.player-settings .secondary {
+  background: #292d34;
+  color: #f5f5f5;
+  border-color: #ffffff25;
+}
+.player-settings .secondary[aria-pressed='true'] {
+  background: #5b2c1d;
+  border-color: #ff6939;
+}

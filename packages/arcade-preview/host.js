@@ -192,6 +192,9 @@ export function connectGame(game) {
   return {
     held,
     action,
+    rumble(effect) {
+      if (ready && !paused && !document.hidden) send('rumble', effect);
+    },
     changed() {
       dirty = true;
     },

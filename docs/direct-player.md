@@ -33,3 +33,23 @@ performance and save persistence. The current storage provider remains browser
 storage; this work does not establish native-backed saves, export support, cloud
 sync or persistence through WebView eviction. Real-device evidence is required
 before declaring those behaviors complete.
+
+## Expandable menu and rumble
+
+The player pill expands into a scrollable settings panel. Rumble is opt-in per
+session, with a hardware test and graceful unsupported-device feedback. The
+shell accepts authenticated `akeru.catalog.v1` `rumble` messages only while a
+game is playable and a host handler is installed. Payloads contain exactly
+`duration` (1–500 ms), `strongMagnitude` and `weakMagnitude` (0–1). The provider
+limits effects to ten starts per second and stops effects on pause, hiding,
+disable and disposal. A game cannot choose the controller or enable rumble.
+Racer sends this optional message on car/roadside collisions; other titles need
+their own meaningful event integration. Physical hardware support is unverified.
+
+Saved progress in the panel reads only the current title's host-owned storage.
+It does not promise snapshots or replace a game's save/checkpoint controls.
+Exact-moment save/load commands require a future per-title engine integration.
+Export is intentionally absent here until native download support is available.
+Leaving asks for confirmation, disposes the game session and shows a closed
+screen. It does not pretend to dismiss a native WebView: the app's existing
+back/close control remains the return path until a native host callback exists.

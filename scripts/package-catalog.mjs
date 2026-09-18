@@ -22,6 +22,7 @@ export function packageCatalog(cwd = process.cwd()) {
     'model.js',
     'channel.js',
     'save-channel.js',
+    'rumble.js',
     'catalog.json',
   ]) {
     add(

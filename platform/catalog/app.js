@@ -1,3 +1,4 @@
+import { createRumble } from './rumble.js';
 import { renderGameHome, readRecent, recordPlayed } from './home.js';
 import { mountOnboarding, needsOnboarding } from './onboarding.js';
 import { createSaveStore } from '/saves/index.js';
@@ -124,6 +125,7 @@ export function mountCatalog({
   const onMessage = (e) => active?.channel?.receive(e);
   window.addEventListener('message', onMessage);
   const onVisibility = () => {
+    if (document.hidden) active?.rumble?.stop();
     if (document.hidden && active?.channel?.state === 'playable') pause();
   };
   document.addEventListener('visibilitychange', onVisibility);
@@ -148,6 +150,7 @@ export function mountCatalog({
     navInput?.dispose();
     navInput = null;
     if (active) {
+      active.rumble?.dispose();
       active.channel?.dispose();
       active.frame?.remove();
       telemetry({ type: 'sessionExit', titleId: active.entry.manifest.id });
@@ -646,6 +649,8 @@ export function mountCatalog({
       const menu = node('button', 'player-menu', 'Menu');
       menu.id = 'player-menu';
       menu.setAttribute('aria-label', 'Game menu');
+      menu.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-controls', 'runtime-overlay');
       menu.disabled = true;
       menu.onclick = () =>
         active?.channel?.state === 'paused' ? resume() : pause();
@@ -663,13 +668,16 @@ export function mountCatalog({
       start = performance.now();
     frame.src = `${titleUrl(entry)}#${new URLSearchParams({ nonce, shell: location.origin })}`;
     $('#runtime-stage').prepend(frame);
-    active = { entry, frame, channel: null };
+    active = { entry, frame, channel: null, rumble: createRumble() };
     const session = active;
     active.channel = createRuntimeChannel({
       frame: frame.contentWindow,
       origin: entry.release.origin,
       nonce,
       saveService: savesFor(entry).service,
+      onRumble: (effect) => {
+        void session.rumble.play(effect);
+      },
       onEvent: (event) => {
         if (active !== session) return;
         if (event.type === 'playable') {
@@ -769,6 +777,9 @@ export function mountCatalog({
     b.onclick = resume;
     o.append(b);
     if (isPlayer()) {
+      active.rumble.stop();
+      $('#player-menu').setAttribute('aria-expanded', 'true');
+      o.classList.add('player-settings');
       o.querySelector('.eyebrow').remove();
       o.querySelector('h2').textContent = 'Paused';
       o.querySelector('p').textContent = active.entry.manifest.title;
@@ -785,6 +796,75 @@ export function mountCatalog({
         );
       };
       o.append(controls, touch);
+      const session = active;
+      const rumble = node('button', 'secondary', 'Controller rumble');
+      rumble.setAttribute('aria-pressed', String(session.rumble.enabled));
+      const feedback = node(
+        'p',
+        'fine',
+        'Rumble requires a compatible controller and browser. Games must support rumble events.',
+      );
+      feedback.setAttribute('role', 'status');
+      rumble.onclick = () => {
+        session.rumble.setEnabled(!session.rumble.enabled);
+        rumble.setAttribute('aria-pressed', String(session.rumble.enabled));
+        feedback.textContent = session.rumble.enabled
+          ? session.rumble.available
+            ? 'Rumble enabled for this session.'
+            : 'Enabled, but rumble is unavailable on this controller or browser.'
+          : 'Rumble off.';
+      };
+      const testRumble = node('button', 'secondary', 'Test rumble');
+      testRumble.onclick = async () => {
+        testRumble.disabled = true;
+        const ok = await session.rumble.play({
+          duration: 200,
+          strongMagnitude: 0.5,
+          weakMagnitude: 0.5,
+        });
+        feedback.textContent = ok
+          ? 'Test sent to your controller.'
+          : 'No rumble sent. Enable rumble and connect a supported controller.';
+        testRumble.disabled = false;
+      };
+      const progress = node('section', 'player-progress');
+      progress.append(node('h3', '', 'Saved progress'));
+      const saveInfo = node('p', 'fine', 'Checking this game’s local saves…');
+      progress.append(saveInfo);
+      const refresh = node('button', 'secondary', 'Refresh save status');
+      refresh.onclick = async () => {
+        refresh.disabled = true;
+        try {
+          const result = await savesFor(session.entry).status();
+          saveInfo.textContent =
+            result.local === 'available'
+              ? `${result.quota.usedSlots} saved record(s) for this game. Use the game’s save or checkpoint controls. Exact-moment save states are not connected to this menu yet.`
+              : 'Local saves are unavailable. Progress may be lost.';
+        } catch {
+          saveInfo.textContent =
+            'Could not read save status. Existing saves have not been changed.';
+        }
+        refresh.disabled = false;
+      };
+      progress.append(refresh);
+      const leave = node('button', 'secondary player-leave', 'Leave game');
+      leave.onclick = () => {
+        if (leave.dataset.confirm !== 'true') {
+          leave.dataset.confirm = 'true';
+          leave.textContent = 'Confirm leave game';
+          saveInfo.textContent =
+            'Save using the game’s controls before leaving. Unsaved progress may be lost.';
+          return;
+        }
+        clearSession();
+        status(
+          'Game closed',
+          'Use the Backbone app’s back or close control to return. You can also reopen this game.',
+          { retry: true },
+        );
+      };
+      o.append(rumble, testRumble, feedback, progress, leave);
+      void refresh.onclick();
     }
     o.hidden = false;
     b.focus();
@@ -797,6 +877,8 @@ export function mountCatalog({
     input?.hideControls();
     input?.start();
     $('#runtime-overlay').hidden = true;
+    $('#runtime-overlay').classList.remove('player-settings');
+    $('#player-menu')?.setAttribute('aria-expanded', 'false');
     $('#runtime-pause').textContent = 'Pause';
     active.frame.contentWindow.focus();
   }
@@ -807,6 +889,7 @@ export function mountCatalog({
     navInput = null;
     input?.dispose();
     input = null;
+    active.rumble?.dispose();
     active.channel.dispose();
     active.frame.remove();
     telemetry({

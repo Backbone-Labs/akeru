@@ -95,6 +95,8 @@ const game = connectGame({
     return changed;
   },
 });
+window.akeruCollision = () =>
+  game.rumble({ duration: 180, strongMagnitude: 0.65, weakMagnitude: 0.3 });
 function tick(t) {
   const dt = Math.min(0.05, (t - last) / 1000 || 0);
   last = t;

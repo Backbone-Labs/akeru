@@ -146,6 +146,7 @@ try {
     'model.js',
     'channel.js',
     'save-channel.js',
+    'rumble.js',
   ];
   for (const file of files) {
     let bytes = readFileSync(resolve('platform/catalog', file));

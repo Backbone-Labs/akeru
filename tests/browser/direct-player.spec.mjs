@@ -102,3 +102,41 @@ test('disabled direct game cannot launch and retry rechecks availability', async
     await demo.close();
   }
 });
+
+test('player pill exposes honest rumble/save status and confirms leaving without website navigation', async ({
+  page,
+}) => {
+  const demo = await startCatalogDemo();
+  try {
+    await page.goto(demo.url + '/play/orbit-study');
+    await expect(page.locator('#runtime-overlay')).toBeHidden();
+    const menu = page.getByRole('button', { name: 'Game menu', exact: true });
+    await menu.click();
+    await expect(menu).toHaveAttribute('aria-expanded', 'true');
+    await page
+      .getByRole('button', { name: 'Controller rumble', exact: true })
+      .click();
+    await expect(
+      page.getByRole('button', { name: 'Controller rumble', exact: true }),
+    ).toHaveAttribute('aria-pressed', 'true');
+    await page
+      .getByRole('button', { name: 'Test rumble', exact: true })
+      .click();
+    await expect(page.getByText(/No rumble sent/)).toBeVisible();
+    await expect(
+      page.getByText(/saved record\(s\) for this game/),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Leave game', exact: true }).click();
+    await expect(page.locator('iframe')).toHaveCount(1);
+    await page
+      .getByRole('button', { name: 'Confirm leave game', exact: true })
+      .click();
+    await expect(
+      page.getByRole('heading', { name: 'Game closed', exact: true }),
+    ).toBeVisible();
+    await expect(page.locator('iframe')).toHaveCount(0);
+    await expect(page).toHaveURL(/\/play\/orbit-study$/);
+  } finally {
+    await demo.close();
+  }
+});
