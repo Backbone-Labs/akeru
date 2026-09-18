@@ -53,3 +53,10 @@ Export is intentionally absent here until native download support is available.
 Leaving asks for confirmation, disposes the game session and shows a closed
 screen. It does not pretend to dismiss a native WebView: the app's existing
 back/close control remains the return path until a native host callback exists.
+
+The host sends optional authenticated `controller-status` messages with a boolean
+`connected` field while playable or paused. This reports controller availability
+separately from input activity so an idle controller never clears held touch input.
+Racer hides its title-owned controls while connected and restores them on disconnect.
+Its renderer adapts to the viewport without changing the current race; other titles
+retain their own aspect-ratio policies. Racer's evaluation package has no audio.

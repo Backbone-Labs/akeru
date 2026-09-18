@@ -237,3 +237,33 @@ for (const reducedMotion of ['no-preference', 'reduce']) {
     }
   });
 }
+
+test('controller opens the pill and selects a setting without touch', async ({
+  page,
+}) => {
+  const demo = await startCatalogDemo();
+  try {
+    await installSimulatedGamepad(page);
+    await page.goto(demo.url + '/play/orbit-study');
+    await expect(page.locator('#player-menu')).toBeEnabled();
+    await page.waitForTimeout(150);
+    await setGamepadButton(page, 9, 1);
+    await expect(
+      page.getByRole('button', { name: 'Resume', exact: true }),
+    ).toBeFocused();
+    await neutralGamepad(page);
+    await page.waitForTimeout(150);
+    await setGamepadButton(page, 15, 1);
+    await expect(
+      page.getByRole('button', { name: 'Controller settings', exact: true }),
+    ).toBeFocused();
+    await neutralGamepad(page);
+    await page.waitForTimeout(150);
+    await setGamepadButton(page, 15, 1);
+    await expect(
+      page.getByRole('button', { name: 'Touch controls', exact: true }),
+    ).toBeFocused();
+  } finally {
+    await demo.close();
+  }
+});

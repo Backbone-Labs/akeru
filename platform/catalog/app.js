@@ -130,6 +130,7 @@ export function mountCatalog({
     active = null,
     input = null,
     navInput = null,
+    controllerMonitor = null,
     disposed = false,
     loadVersion = 0;
   let onboardingUi = null;
@@ -193,6 +194,8 @@ export function mountCatalog({
     }
   }
   function clearSession() {
+    clearInterval(controllerMonitor);
+    controllerMonitor = null;
     stopControlsMonitor();
     loadVersion++;
     navInput?.dispose();
@@ -753,6 +756,17 @@ export function mountCatalog({
             durationMs: Math.min(600000, performance.now() - start),
           });
           bindInput(entry.manifest.id, true);
+          let lastConnected = null;
+          const syncController = () => {
+            const connected = (input?.refreshControllers?.().length ?? 0) > 0;
+            if (
+              connected !== lastConnected &&
+              session.channel.sendControllerStatus(connected)
+            )
+              lastConnected = connected;
+          };
+          syncController();
+          controllerMonitor = setInterval(syncController, 250);
           frame.contentWindow.focus();
         } else if (event.type === 'error') failRuntime(event.code);
         else if (event.type === 'exit') {

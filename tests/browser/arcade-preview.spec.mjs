@@ -63,6 +63,7 @@ for (const [id, options] of Object.entries(titles))
           .getByRole('button', { name: 'Resume', exact: true })
           .first()
           .click();
+        await page.evaluate(() => window.__akeruTestGamepad.connect(false));
         await runtime
           .getByRole('button', { name: 'Restart', exact: true })
           .click();
@@ -160,3 +161,35 @@ for (const [id, options] of Object.entries(titles))
       await demo.close();
     }
   });
+
+test('Racer fills the viewport and restores touch controls after disconnect', async ({
+  page,
+}) => {
+  const demo = await startCatalogDemo(racer());
+  try {
+    await installSimulatedGamepad(page);
+    await page.setViewportSize({ width: 932, height: 430 });
+    await page.goto(demo.url + '/play/racer');
+    const runtime = page.frameLocator('iframe');
+    await expect(runtime.locator('body')).toHaveAttribute('data-ready', 'true');
+    await expect(runtime.locator('.controls')).toBeHidden();
+    const frame = page.frames().find((f) => f !== page.mainFrame());
+    const aspectError = () =>
+      frame.evaluate(() =>
+        Math.abs(
+          document.querySelector('canvas').width /
+            document.querySelector('canvas').height -
+            innerWidth / innerHeight,
+        ),
+      );
+    await expect.poll(aspectError).toBeLessThan(0.01);
+    await page.setViewportSize({ width: 430, height: 932 });
+    await expect.poll(aspectError).toBeLessThan(0.01);
+    await page.evaluate(() => window.__akeruTestGamepad.connect(false));
+    await expect(runtime.locator('.controls')).toBeVisible();
+    await page.evaluate(() => window.__akeruTestGamepad.connect(true));
+    await expect(runtime.locator('.controls')).toBeHidden();
+  } finally {
+    await demo.close();
+  }
+});

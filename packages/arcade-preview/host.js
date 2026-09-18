@@ -86,6 +86,13 @@ export function connectGame(game) {
     )
       return;
     received = m.sequence;
+    if (
+      m.type === 'controller-status' &&
+      typeof m.payload?.connected === 'boolean'
+    ) {
+      game.controllerChanged?.(m.payload.connected);
+      return;
+    }
     if (m.type === 'save-result') {
       saves.receive(m.payload);
       return;

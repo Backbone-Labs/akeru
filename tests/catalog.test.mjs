@@ -308,3 +308,20 @@ test('direct game routes accept catalog IDs, never arbitrary destinations', () =
   ])
     assert.equal(routeFor(path).view, 'not-found');
 });
+
+test('controller presence is boolean-only and cannot outlive the runtime', () => {
+  const s = setup();
+  try {
+    assert.equal(s.channel.sendControllerStatus(true), false);
+    s.channel.connect();
+    s.channel.receive(s.event('playable', { sdkVersion: '0.1.0' }));
+    assert.equal(s.channel.sendControllerStatus('connected'), false);
+    assert.equal(s.channel.sendControllerStatus(true), true);
+    s.channel.pause();
+    assert.equal(s.channel.sendControllerStatus(false), true);
+    s.channel.dispose();
+    assert.equal(s.channel.sendControllerStatus(true), false);
+  } finally {
+    s.channel.dispose();
+  }
+});

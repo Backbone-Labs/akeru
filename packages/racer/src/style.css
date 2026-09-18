@@ -1,1 +1,3 @@
-/* Title-specific styles. */
+.controls[hidden] {
+  display: none;
+}

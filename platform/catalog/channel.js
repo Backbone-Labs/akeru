@@ -198,6 +198,16 @@ export function createRuntimeChannel({
   return Object.freeze({
     receive,
     sendInput,
+    sendControllerStatus(connected) {
+      if (
+        closed ||
+        !['playable', 'paused'].includes(state) ||
+        typeof connected !== 'boolean'
+      )
+        return false;
+      send('controller-status', { connected });
+      return true;
+    },
     connect() {
       if (connected || closed) return;
       connected = true;
