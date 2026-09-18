@@ -84,6 +84,8 @@ export function mountCatalog({
     disposed = false,
     loadVersion = 0;
   let onboardingUi = null;
+  const isPlayer = () => location.pathname.startsWith('/play/');
+  document.body.classList.toggle('direct-player', isPlayer());
   const setTheme = (theme) => {
     document.documentElement.dataset.theme = theme;
     try {
@@ -163,8 +165,10 @@ export function mountCatalog({
       return;
     }
     if (event.type === 'back') {
-      if (active) navigate(`/g/${active.entry.manifest.id}`);
-      else if (
+      if (active) {
+        if (isPlayer()) pause();
+        else navigate(`/g/${active.entry.manifest.id}`);
+      } else if (
         ['detail', 'settings'].includes(routeFor(location.pathname).view)
       )
         navigate('/games');
@@ -307,7 +311,7 @@ export function mountCatalog({
       b.onclick = initialize;
       actions.append(b);
     }
-    if (back) {
+    if (back && !isPlayer()) {
       const a = node('a', 'secondary', 'Back to discover');
       a.href = '/';
       actions.append(a);
@@ -323,8 +327,10 @@ export function mountCatalog({
       if (data) renderRoute();
     } catch {
       status(
-        'Couldn’t open the library.',
-        'The catalog is temporarily unavailable. Your next game can wait a moment.',
+        isPlayer() ? 'Couldn’t open the game.' : 'Couldn’t open the library.',
+        isPlayer()
+          ? 'Check your connection and try again.'
+          : 'The catalog is temporarily unavailable. Your next game can wait a moment.',
         { retry: true },
       );
       bindInput('catalog');
@@ -335,6 +341,19 @@ export function mountCatalog({
     clearSession();
     if (!catalog) return;
     const route = routeFor(location.pathname);
+    document.body.classList.toggle('direct-player', isPlayer());
+    if (route.view === 'player') {
+      const entry = catalog.entries.find((e) => e.manifest.id === route.id);
+      if (entry) {
+        status('Opening ' + entry.manifest.title + '…', '');
+        void launch(entry);
+      } else
+        status(
+          'Game unavailable',
+          'This game is no longer available. Return to the Backbone app to choose another.',
+        );
+      return;
+    }
     if (route.view === 'landing') renderLanding();
     else if (route.view === 'settings') renderSettings();
     else if (route.view === 'catalog') renderCatalog();
@@ -588,7 +607,13 @@ export function mountCatalog({
         return;
       }
       if (entry.availability !== 'available') {
-        renderDetail(entry);
+        if (isPlayer())
+          status(
+            'Game unavailable',
+            'This game is temporarily unavailable. Please try again later.',
+            { retry: true },
+          );
+        else renderDetail(entry);
         return;
       }
       if (mode === 'production') {
@@ -613,6 +638,19 @@ export function mountCatalog({
     main.innerHTML =
       '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay" role="status"><span class="spinner" aria-hidden="true"></span><h2>Finding your orbit…</h2><p>Opening the isolated test fixture.</p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
     $('#runtime-title').textContent = entry.manifest.title;
+    if (isPlayer()) {
+      document.title = entry.manifest.title + ' · Backbone';
+      $('#runtime-overlay h2').textContent =
+        'Opening ' + entry.manifest.title + '…';
+      $('#runtime-overlay p').textContent = '';
+      const menu = node('button', 'player-menu', 'Menu');
+      menu.id = 'player-menu';
+      menu.setAttribute('aria-label', 'Game menu');
+      menu.disabled = true;
+      menu.onclick = () =>
+        active?.channel?.state === 'paused' ? resume() : pause();
+      document.querySelector('.runtime-wrap').append(menu);
+    }
     const frame = node('iframe');
     frame.title = `${entry.manifest.title} isolated runtime`;
     frame.setAttribute(
@@ -637,6 +675,7 @@ export function mountCatalog({
         if (event.type === 'playable') {
           recordPlayed(browserStorage(), entry.manifest.id);
           $('#runtime-overlay').hidden = true;
+          if ($('#player-menu')) $('#player-menu').disabled = false;
           telemetry({
             type: 'playable',
             titleId: entry.manifest.id,
@@ -645,7 +684,16 @@ export function mountCatalog({
           bindInput(entry.manifest.id, true);
           frame.contentWindow.focus();
         } else if (event.type === 'error') failRuntime(event.code);
-        else if (event.type === 'exit') navigate(`/g/${entry.manifest.id}`);
+        else if (event.type === 'exit') {
+          if (isPlayer()) {
+            clearSession();
+            status(
+              'Game closed',
+              'Return to the Backbone app, or play again.',
+              { retry: true },
+            );
+          } else navigate(`/g/${entry.manifest.id}`);
+        }
       },
     });
     frame.addEventListener('load', () => {
@@ -681,7 +729,7 @@ export function mountCatalog({
     tools.prepend(fullscreen);
     const touch = node('button', 'secondary', 'Touch controls');
     const touchVisible = matchMedia('(pointer: coarse)').matches;
-    $('#touch-controls').hidden = !touchVisible;
+    $('#touch-controls').hidden = isPlayer() || !touchVisible;
     touch.setAttribute('aria-pressed', String(touchVisible));
     touch.onclick = () => {
       $('#touch-controls').hidden = !$('#touch-controls').hidden;
@@ -720,6 +768,24 @@ export function mountCatalog({
     const b = node('button', 'primary', 'Keep playing ↗');
     b.onclick = resume;
     o.append(b);
+    if (isPlayer()) {
+      o.querySelector('.eyebrow').remove();
+      o.querySelector('h2').textContent = 'Paused';
+      o.querySelector('p').textContent = active.entry.manifest.title;
+      b.textContent = 'Resume';
+      const controls = node('button', 'secondary', 'Controller settings');
+      controls.onclick = () => $('#runtime-controls').click();
+      const touch = node('button', 'secondary', 'Touch controls');
+      touch.setAttribute('aria-pressed', String(!$('#touch-controls').hidden));
+      touch.onclick = () => {
+        $('#touch-controls').hidden = !$('#touch-controls').hidden;
+        touch.setAttribute(
+          'aria-pressed',
+          String(!$('#touch-controls').hidden),
+        );
+      };
+      o.append(controls, touch);
+    }
     o.hidden = false;
     b.focus();
   }
@@ -753,15 +819,16 @@ export function mountCatalog({
     o.replaceChildren(
       node('p', 'eyebrow', 'LET’S TRY THAT AGAIN'),
       node('h2', '', 'The game couldn’t open.'),
-      node('p', '', 'The runtime did not become ready, or ended unexpectedly.'),
+      node('p', '', 'The game stopped responding. Please try again.'),
     );
     const b = node('button', 'primary', 'Try again ↗');
     b.onclick = () => {
-      navigate(`/g/${e.manifest.id}`);
-      launch(e);
+      if (!isPlayer()) navigate(`/g/${e.manifest.id}`);
+      void launch(e);
     };
     o.append(b);
     o.hidden = false;
+    if ($('#player-menu')) $('#player-menu').disabled = true;
     $('#runtime-pause').disabled = true;
     $('#runtime-controls').disabled = true;
     if (inputProviderFactory) {

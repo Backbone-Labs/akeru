@@ -2310,3 +2310,136 @@ body .runtime-stage {
     overflow-wrap: anywhere;
   }
 }
+
+/* Direct WebView entry: the native app owns discovery and closing the screen. */
+body.direct-player {
+  --player-safe-top: env(safe-area-inset-top, 0px);
+  --player-safe-right: env(safe-area-inset-right, 0px);
+  --player-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --player-safe-left: env(safe-area-inset-left, 0px);
+  margin: 0;
+  background: #08090b;
+  color: #f5f5f5;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+body.direct-player > header,
+body.direct-player > footer,
+body.direct-player > .skip-link,
+body.direct-player #demo-banner,
+body.direct-player .runtime-bar,
+body.direct-player .controls-row {
+  display: none;
+}
+body.direct-player #main {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+body.direct-player .runtime-wrap {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  padding: 0;
+  gap: 0;
+  background: #08090b;
+}
+body.direct-player .runtime-stage {
+  position: absolute;
+  inset: var(--player-safe-top) var(--player-safe-right)
+    var(--player-safe-bottom) var(--player-safe-left);
+  min-height: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: #08090b;
+}
+body.direct-player .runtime-stage iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.player-menu {
+  position: absolute;
+  top: calc(var(--player-safe-top) + 8px);
+  right: calc(var(--player-safe-right) + 8px);
+  z-index: 6;
+  min-width: 48px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid #ffffff40;
+  border-radius: 24px;
+  color: #fff;
+  background: #15171bdb;
+}
+body.direct-player .runtime-overlay,
+body.direct-player .status-card {
+  background: #101215;
+  color: #f5f5f5;
+  border: 0;
+  border-radius: 0;
+  text-align: center;
+  padding: 24px;
+  overflow: auto;
+}
+body.direct-player .runtime-overlay {
+  gap: 12px;
+  z-index: 5;
+}
+body.direct-player .runtime-overlay h2,
+body.direct-player .status-card h1 {
+  font-size: clamp(22px, 5vw, 32px);
+  margin: 0;
+}
+body.direct-player .runtime-overlay p,
+body.direct-player .status-card p {
+  color: #bbbfc6;
+  margin: 0;
+}
+body.direct-player #main > .wrap {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: calc(var(--player-safe-top) + 20px)
+    calc(var(--player-safe-right) + 20px) calc(var(--player-safe-bottom) + 20px)
+    calc(var(--player-safe-left) + 20px);
+}
+body.direct-player .status-card .eyebrow {
+  display: none;
+}
+body.direct-player #touch-controls {
+  position: absolute;
+  bottom: calc(var(--player-safe-bottom) + 8px);
+  left: calc(var(--player-safe-left) + 8px);
+  right: calc(var(--player-safe-right) + 8px);
+  z-index: 3;
+}
+body.direct-player #touch-controls button {
+  background: #15171bba;
+  color: #fff;
+  border-color: #ffffff50;
+  min-height: 44px;
+  padding: 6px;
+  border-radius: 14px;
+}
+body.direct-player #control-settings {
+  position: absolute;
+  z-index: 8;
+  inset: calc(var(--player-safe-top) + 8px) calc(var(--player-safe-right) + 8px)
+    auto calc(var(--player-safe-left) + 8px);
+}
+body.direct-player .akeru-control-settings {
+  max-height: calc(
+    100dvh - var(--player-safe-top) - var(--player-safe-bottom) - 16px
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  body.direct-player .spinner {
+    animation: none;
+  }
+}

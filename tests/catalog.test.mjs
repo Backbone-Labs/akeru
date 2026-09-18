@@ -294,3 +294,17 @@ test('a missing playable handshake produces a timeout and closes the session', a
   assert.deepEqual(events, [{ type: 'error', code: 'timeout' }]);
   assert.equal(c.state, 'closed');
 });
+
+test('direct game routes accept catalog IDs, never arbitrary destinations', () => {
+  assert.deepEqual(routeFor('/play/freedoom1'), {
+    view: 'player',
+    id: 'freedoom1',
+  });
+  for (const path of [
+    '/play/https://example.com',
+    '/play/../settings',
+    '/play/%2Fexample',
+    '/play/' + 'a'.repeat(65),
+  ])
+    assert.equal(routeFor(path).view, 'not-found');
+});
