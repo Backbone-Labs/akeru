@@ -167,6 +167,13 @@ export function mountCatalog({
       else modal.close();
       return;
     }
+    const playerPanel = isPlayer()
+      ? document.querySelector('.player-action-detail:not([hidden])')
+      : null;
+    if (event.type === 'back' && playerPanel) {
+      playerPanel.querySelector('[data-panel-back]')?.click();
+      return;
+    }
     if (event.type === 'back') {
       if (active) {
         if (isPlayer()) pause();
@@ -186,7 +193,9 @@ export function mountCatalog({
       return;
     }
     const scope =
-      modal ?? (active ? document.querySelector('.runtime-wrap') : main);
+      playerPanel ??
+      modal ??
+      (active ? document.querySelector('.runtime-wrap') : main);
     if (
       event.type === 'move' &&
       document.activeElement?.tagName === 'SELECT' &&
@@ -850,7 +859,8 @@ export function mountCatalog({
       );
       refresh.setAttribute('aria-label', 'Refresh save status');
       refresh.onclick = async () => {
-        refresh.disabled = true;
+        if (refresh.getAttribute('aria-busy') === 'true') return;
+        refresh.setAttribute('aria-busy', 'true');
         try {
           const result = await savesFor(session.entry).status();
           if (result.local !== 'available') {
@@ -869,7 +879,7 @@ export function mountCatalog({
           saveHeadline.textContent = 'Couldn’t check saves';
           saveCaption.textContent = 'Your existing saves haven’t changed.';
         }
-        refresh.disabled = false;
+        refresh.setAttribute('aria-busy', 'false');
       };
       const leave = node('button', 'secondary player-leave', 'Leave game');
       leave.onclick = () => {
@@ -910,16 +920,37 @@ export function mountCatalog({
       const detail = node('section', 'player-action-detail');
       detail.hidden = true;
       const show = (title, ...items) => {
+        const trigger = document.activeElement;
         const header = node('div', 'player-detail-header');
-        const close = node('button', 'player-detail-close', '×');
+        const close = node(
+          'button',
+          'player-menu-row player-panel-back',
+          'Back to game menu',
+        );
+        close.dataset.panelBack = 'true';
         close.setAttribute('aria-label', 'Close panel');
         close.onclick = () => {
           detail.hidden = true;
-          bar.querySelector('button').focus();
+          (trigger?.isConnected
+            ? trigger
+            : bar.querySelector('button')
+          ).focus();
         };
-        header.append(node('h3', '', title), close);
-        detail.replaceChildren(header, ...items);
+        header.append(node('h3', '', title));
+        for (const item of items)
+          if (item.tagName === 'BUTTON') {
+            item.classList.add('player-menu-row');
+            if (!item.hasAttribute('aria-label'))
+              item.setAttribute('aria-label', item.textContent);
+          }
+        const hint = node(
+          'p',
+          'player-navigation-hint',
+          '↑ ↓ Move · A Select · B Back',
+        );
+        detail.replaceChildren(header, ...items, close, hint);
         detail.hidden = false;
+        detail.querySelector('button:not([disabled])')?.focus();
       };
       const rumbleTab = iconButton(
         node('button'),

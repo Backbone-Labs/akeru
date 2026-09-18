@@ -1,4 +1,10 @@
-import { test, expect } from './fixtures.mjs';
+import {
+  test,
+  expect,
+  installSimulatedGamepad,
+  setGamepadButton,
+  neutralGamepad,
+} from './fixtures.mjs';
 import { startCatalogDemo } from '../../examples/catalog-demo/server.mjs';
 for (const viewport of [
   { width: 390, height: 844 },
@@ -142,6 +148,51 @@ test('player pill exposes honest rumble/save status and confirms leaving without
     ).toBeVisible();
     await expect(page.locator('iframe')).toHaveCount(0);
     await expect(page).toHaveURL(/\/play\/orbit-study$/);
+  } finally {
+    await demo.close();
+  }
+});
+
+test('controller navigates within a subpanel and B returns to its tile', async ({
+  page,
+}) => {
+  const demo = await startCatalogDemo();
+  try {
+    await installSimulatedGamepad(page);
+    await page.goto(demo.url + '/play/orbit-study');
+    await page.getByRole('button', { name: 'Game menu', exact: true }).click();
+    await page
+      .getByRole('button', { name: 'Rumble settings', exact: true })
+      .click();
+    const toggle = page.getByRole('button', {
+      name: 'Controller rumble',
+      exact: true,
+    });
+    const testButton = page.getByRole('button', {
+      name: 'Test rumble',
+      exact: true,
+    });
+    await expect(toggle).toBeFocused();
+    await page.waitForTimeout(100);
+    await setGamepadButton(page, 13, 1);
+    await expect(testButton).toBeFocused();
+    await neutralGamepad(page);
+    await page.waitForTimeout(100);
+    await setGamepadButton(page, 12, 1);
+    await expect(toggle).toBeFocused();
+    await neutralGamepad(page);
+    await page.waitForTimeout(100);
+    await setGamepadButton(page, 0, 1);
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await neutralGamepad(page);
+    await page.waitForTimeout(100);
+    await setGamepadButton(page, 1, 1);
+    await expect(page.locator('.player-action-detail')).toBeHidden();
+    await expect(
+      page.getByRole('button', { name: 'Rumble settings', exact: true }),
+    ).toBeFocused();
+    await expect(page.locator('#runtime-overlay')).toBeVisible();
+    await neutralGamepad(page);
   } finally {
     await demo.close();
   }

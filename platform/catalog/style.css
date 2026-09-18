@@ -2758,3 +2758,67 @@ body.direct-player .player-save-state p {
 body.direct-player .player-action-detail .player-text-action {
   color: var(--player-accent);
 }
+
+/* Subpanels behave like console menus; the six-action launcher is unchanged. */
+body.direct-player .player-action-detail {
+  padding: 14px 8px 8px;
+}
+body.direct-player .player-detail-header {
+  margin: 0 6px 14px;
+}
+body.direct-player .player-detail-header h3 {
+  font-size: 15px;
+}
+body.direct-player .player-action-detail .player-menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  margin: 6px 0 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: #303437;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  transition:
+    background 100ms,
+    color 100ms;
+}
+body.direct-player .player-action-detail .player-menu-row:focus {
+  outline: none;
+  border-color: var(--player-accent);
+  background: #fff;
+  color: #111;
+  box-shadow: 0 0 0 1px var(--player-accent);
+}
+body.direct-player .player-action-detail .player-menu-row:hover:not(:focus) {
+  background: #45494c;
+}
+.player-menu-row:not(.player-switch)::after {
+  content: '›';
+  font-size: 21px;
+  line-height: 1;
+}
+body.direct-player .player-action-detail .player-panel-back {
+  background: transparent;
+  color: #c7c9cc;
+}
+body.direct-player .player-action-detail .player-panel-back:focus {
+  background: #fff;
+  color: #111;
+}
+body.direct-player .player-action-detail .player-navigation-hint {
+  font-size: 10px;
+  color: #a6a9af;
+  text-align: center;
+  margin: 14px 0 2px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.direct-player .player-action-detail .player-menu-row {
+    transition: none;
+  }
+}
