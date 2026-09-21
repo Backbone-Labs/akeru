@@ -195,18 +195,39 @@ function draw(at) {
 requestAnimationFrame(draw);
 setInterval(persist, 15000);
 const audioButton = document.querySelector('#audio');
-audioButton.addEventListener('click', async () => {
-  const fresh = !audio;
-  audio ??= new AudioContext();
-  if (!fresh && audio.state === 'running') {
-    await audio.suspend();
-    audioButton.textContent = 'Sound off';
-  } else {
+const audioPrompt = document.querySelector('#enable-audio');
+let muted = false;
+function updateAudioUI() {
+  const running = audio?.state === 'running';
+  audioButton.textContent = running ? 'Sound on' : 'Sound off';
+  audioButton.setAttribute('aria-pressed', String(running));
+  audioPrompt.hidden = running || muted;
+}
+async function enableAudio() {
+  if (muted) return;
+  try {
+    if (!audio) {
+      audio = new AudioContext();
+      audio.addEventListener('statechange', updateAudioUI);
+    }
     await audio.resume();
     nextAudio = audio.currentTime;
-    audioButton.textContent = 'Sound on';
+  } catch {
+    audioPrompt.textContent = 'Tap to retry sound';
   }
+  updateAudioUI();
+}
+audioPrompt.addEventListener('click', () => void enableAudio());
+audioButton.addEventListener('click', async () => {
+  muted = audio?.state === 'running';
+  if (muted) await audio.suspend();
+  else await enableAudio();
+  updateAudioUI();
 });
+// A real gesture inside the game unlocks Web Audio; controller messages alone
+// are not a browser user activation. Keep an explicit touch fallback visible.
+canvas.addEventListener('pointerdown', () => void enableAudio());
+canvas.addEventListener('keydown', () => void enableAudio());
 
 function releaseInput() {
   mask = 0;

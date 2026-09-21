@@ -39,6 +39,11 @@ for (const id of ['freedoom1', 'freedoom2', 'freedm']) {
               .evaluate(() => window.gameTestState().state),
           )
           .toBe(0);
+        await expect(frame.locator('footer')).not.toBeVisible();
+        await frame
+          .getByRole('button', { name: 'Tap to enable sound' })
+          .click();
+        await expect(frame.locator('#enable-audio')).toBeHidden();
         const before = await frame
           .locator('canvas')
           .evaluate((c) => c.toDataURL());
@@ -81,7 +86,7 @@ for (const id of ['freedoom1', 'freedoom2', 'freedm']) {
             frame.locator('canvas').evaluate(() => window.gameTestState().mask),
           )
           .toBe(0);
-        await frame.getByRole('button', { name: 'Sound off' }).click();
+        await frame.locator('summary').click();
         await expect(
           frame.getByRole('button', { name: 'Sound on' }),
         ).toBeVisible();
@@ -129,6 +134,12 @@ for (const id of ['freedoom1', 'freedoom2', 'freedm']) {
             frame.locator('canvas').evaluate(() => window.gameTestState().tic),
           )
           .toBeGreaterThan(tic);
+        await page
+          .getByRole('button', { name: 'Controls', exact: true })
+          .click();
+        await expect(
+          page.getByRole('region', { name: 'Game controls guide' }),
+        ).toContainText('open doors');
         await page.reload();
         await page.getByRole('button', { name: /Play now/ }).click();
         await expect(

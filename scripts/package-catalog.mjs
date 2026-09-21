@@ -18,6 +18,7 @@ export function packageCatalog(cwd = process.cwd()) {
     'app.js',
     'home.js',
     'onboarding.js',
+    'promotions.js',
     'controller-model.js',
     'model.js',
     'channel.js',

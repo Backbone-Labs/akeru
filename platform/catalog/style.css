@@ -2916,3 +2916,54 @@ body.direct-player .player-menu {
   outline: 2px solid #f15623;
   outline-offset: 4px;
 }
+
+.title-control-guide {
+  padding: 16px;
+  margin-block: 16px;
+  border: 1px solid var(--border, #555);
+  border-radius: 12px;
+}
+.title-control-guide li {
+  margin-block: 8px;
+}
+
+.acquisition-card {
+  grid-column: 1 / -1;
+  border: 1px solid var(--border, #555);
+  padding: 24px;
+  border-radius: 20px;
+}
+.acquisition-card h3 {
+  margin: 0 0 8px;
+}
+.acquisition-card p {
+  margin-bottom: 20px;
+}
+.acquisition-card a,
+.acquisition-card button {
+  display: inline-block;
+  margin: 4px 12px 4px 0;
+  padding: 10px 16px;
+  border-radius: 24px;
+  font: inherit;
+}
+.acquisition-card a {
+  color: #111;
+  background: #ff5b20;
+  text-decoration: none;
+  font-weight: 600;
+}
+.acquisition-card button {
+  border: 1px solid currentColor;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.acquisition-card :focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 4px;
+}
+
+.detail-top + .acquisition-card {
+  margin-block: 24px;
+}

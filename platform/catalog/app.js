@@ -1,3 +1,4 @@
+import { createPromotions } from './promotions.js';
 import { createRumble } from './rumble.js';
 import { renderGameHome, readRecent, recordPlayed } from './home.js';
 import { mountOnboarding, needsOnboarding } from './onboarding.js';
@@ -121,6 +122,8 @@ export function mountCatalog({
   controllerModelUrl = null,
   inputProviderFactory,
   telemetrySink,
+  acquisitionSink,
+  acquisitionConsent = () => false,
   loadCatalog = fetchRegistry,
   saveStore = createSaveStore(),
 } = {}) {
@@ -134,6 +137,11 @@ export function mountCatalog({
     disposed = false,
     loadVersion = 0;
   let onboardingUi = null;
+  const promotions = createPromotions({
+    storage: browserStorage(),
+    sink: acquisitionSink,
+    consent: acquisitionConsent,
+  });
   const isPlayer = () => location.pathname.startsWith('/play/');
   document.body.classList.toggle('direct-player', isPlayer());
   const setTheme = (theme) => {
@@ -566,6 +574,14 @@ export function mountCatalog({
     $('#touch-help').append(list(meta.controls.touch));
     $('#privacy-info').append(list(meta.privacy));
     renderSaveControls(entry, $('#save-info'));
+    const promotion = promotions.mount($('#game-details'), {
+      path: location.pathname,
+      embedded: window.self !== window.top,
+    });
+    if (promotion) {
+      promotion.id = 'more-ways-to-play';
+      main.querySelector('.detail-top').after(promotion);
+    }
     $('#source-license').textContent =
       `Source license: ${m.provenance.source.license}`;
     $('#source-revision').textContent = m.provenance.source.revision;
@@ -826,6 +842,23 @@ export function mountCatalog({
     $('#runtime-controls').onclick = () => {
       pause();
       input?.showControls();
+      const panel = $('#control-settings .akeru-control-settings');
+      if (panel && !panel.querySelector('.title-control-guide')) {
+        const guide = node('section', 'title-control-guide');
+        guide.setAttribute('aria-label', 'Game controls guide');
+        guide.append(node('h3', '', entry.manifest.title + ' controls'));
+        guide.append(
+          node(
+            'p',
+            '',
+            'Default layout · custom mappings below may change these buttons.',
+          ),
+        );
+        guide.append(list(entry.metadata.controls.controller));
+        guide.append(node('h4', '', 'Touch / keyboard'));
+        guide.append(list(entry.metadata.controls.touch));
+        panel.querySelector('.control-panel-header')?.after(guide);
+      }
       input?.start();
       input?.refreshControllers?.();
       stopControlsMonitor();

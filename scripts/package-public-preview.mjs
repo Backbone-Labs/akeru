@@ -142,6 +142,7 @@ try {
     'app.js',
     'home.js',
     'onboarding.js',
+    'promotions.js',
     'controller-model.js',
     'model.js',
     'channel.js',

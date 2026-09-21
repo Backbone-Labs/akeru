@@ -11,12 +11,16 @@
       tabindex="0"
       aria-label="Freedoom game.  WASD to move, mouse to look, click to fire."
     ></canvas>
-    <footer>
-      <span id="status" role="status">Loading Freedoom…</span>
-      <button id="save" type="button">Save</button>
-      <button id="next" type="button" hidden>Next map</button>
-      <button id="audio" type="button">Sound off</button>
-    </footer>
+    <button id="enable-audio" type="button">Tap to enable sound</button>
+    <details id="game-options">
+      <summary>Game options</summary>
+      <footer>
+        <span id="status" role="status">Loading Freedoom…</span>
+        <button id="save" type="button">Save</button>
+        <button id="next" type="button" hidden>Next map</button>
+        <button id="audio" type="button">Sound off</button>
+      </footer>
+    </details>
   </main>
   <script type="module" src="title.js"></script>
 </html>
