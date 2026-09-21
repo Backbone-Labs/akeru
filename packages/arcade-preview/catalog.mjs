@@ -5,7 +5,9 @@ export function titleOptions(
   metadata,
   { graphics = 'canvas2d', assetRequests = false, license = 'unknown' } = {},
 ) {
-  if (!['hexgl', 'racer', 'astray', 'breaklock'].includes(id))
+  if (
+    !['hexgl', 'racer', 'astray', 'breaklock', 'old-san-juan-kart'].includes(id)
+  )
     throw new Error('Unknown title');
   const titleFiles = readBuiltTitle(
     new URL(`../../dist/${id}/`, import.meta.url),

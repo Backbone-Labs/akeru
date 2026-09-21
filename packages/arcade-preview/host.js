@@ -130,6 +130,7 @@ export function connectGame(game) {
       }
     } else if (m.type === 'input' && ready && !paused) {
       const { buttons = {}, axes = {} } = m.payload || {};
+      game.input?.({ buttons, axes });
       const next = new Set(
         Object.entries(buttons)
           .filter(([, v]) => Number.isFinite(v) && v > 0.5)

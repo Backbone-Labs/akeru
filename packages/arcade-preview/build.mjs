@@ -14,7 +14,9 @@ import { fileURLToPath } from 'node:url';
 import { verifySource } from '../puzzle-preview/build.mjs';
 export const root = fileURLToPath(new URL('../../', import.meta.url));
 export function beginBuild(id) {
-  if (!['hexgl', 'racer', 'astray', 'breaklock'].includes(id))
+  if (
+    !['hexgl', 'racer', 'astray', 'breaklock', 'old-san-juan-kart'].includes(id)
+  )
     throw new Error('Unknown title');
   const inventory = JSON.parse(
     readFileSync(resolve(root, `compliance/source-inventories/${id}.json`)),
