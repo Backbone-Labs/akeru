@@ -45,6 +45,9 @@ export function createPromotions({
     }
   }
   return {
+    click(kind) {
+      if (Object.hasOwn(destinations, kind)) record('click', kind);
+    },
     mount(root, { path, embedded = false } = {}) {
       if (
         embedded ||

@@ -527,6 +527,7 @@ export function mountCatalog({
     renderGameHome(main, catalog.entries, {
       filters,
       recent: readRecent(browserStorage()),
+      onPromotion: (kind) => promotions.click(kind),
       onFilters: (next) => {
         filters = next;
       },

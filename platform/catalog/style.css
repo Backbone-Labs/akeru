@@ -2967,3 +2967,14 @@ body.direct-player .player-menu {
 .detail-top + .acquisition-card {
   margin-block: 24px;
 }
+
+.discovery-acquisition {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-block: 20px;
+}
+.discovery-acquisition a {
+  text-align: center;
+  text-decoration: none;
+}

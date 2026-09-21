@@ -17,3 +17,5 @@ A trusted host can supply `acquisitionConsent` and `acquisitionSink` to `mountCa
 - Confirm reporting in the team's analytics destination, including consent denial/revocation.
 
 Until those integrations and tests are complete, end-to-end install/purchase attribution is not delivered.
+
+Discover includes permanent app/controller links in its top side card. These navigational links remain available after dismissal of the optional detail-page prompt and share its consent-gated click hook.
