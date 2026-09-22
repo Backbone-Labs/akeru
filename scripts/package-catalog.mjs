@@ -14,6 +14,7 @@ export function packageCatalog(cwd = process.cwd()) {
   for (const path of [
     'index.html',
     'favicon.svg',
+    'backbone-pro.png',
     'style.css',
     'app.js',
     'home.js',
@@ -29,15 +30,17 @@ export function packageCatalog(cwd = process.cwd()) {
     add(
       path,
       committed(`platform/catalog/${path}`),
-      path.endsWith('.svg')
-        ? 'image/svg+xml'
-        : path.endsWith('.html')
-          ? 'text/html; charset=utf-8'
-          : path.endsWith('.css')
-            ? 'text/css; charset=utf-8'
-            : path.endsWith('.js')
-              ? 'text/javascript; charset=utf-8'
-              : 'application/json; charset=utf-8',
+      path.endsWith('.png')
+        ? 'image/png'
+        : path.endsWith('.svg')
+          ? 'image/svg+xml'
+          : path.endsWith('.html')
+            ? 'text/html; charset=utf-8'
+            : path.endsWith('.css')
+              ? 'text/css; charset=utf-8'
+              : path.endsWith('.js')
+                ? 'text/javascript; charset=utf-8'
+                : 'application/json; charset=utf-8',
     );
   }
   // Publication is a separate reviewed integration. No candidate manifests,

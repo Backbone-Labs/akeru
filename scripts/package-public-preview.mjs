@@ -138,6 +138,7 @@ try {
   const files = [
     'index.html',
     'favicon.svg',
+    'backbone-pro.png',
     'style.css',
     'app.js',
     'home.js',

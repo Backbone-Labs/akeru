@@ -46,7 +46,8 @@ export function createCatalogWorker(release) {
       file.path.includes('..') ||
       files.has(`/${file.path}`) ||
       (!types.has(file.type) &&
-        !(file.path === 'favicon.svg' && file.type === 'image/svg+xml')) ||
+        !(file.path === 'favicon.svg' && file.type === 'image/svg+xml') &&
+        !(file.path === 'backbone-pro.png' && file.type === 'image/png')) ||
       !Number.isSafeInteger(file.size) ||
       file.size < 0 ||
       !/^[a-f0-9]{64}$/.test(file.sha256)
