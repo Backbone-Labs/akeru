@@ -15,7 +15,7 @@ export function catalogHeaders(titleOrigins = []) {
   )
     throw new Error('Expected exact HTTPS title origins');
   return {
-    'Content-Security-Policy': `default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; font-src 'self'; frame-src ${titleOrigins.length ? [...new Set(titleOrigins)].join(' ') : "'none'"}; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
+    'Content-Security-Policy': `default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' https://backbone.com; font-src 'self'; frame-src ${titleOrigins.length ? [...new Set(titleOrigins)].join(' ') : "'none'"}; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
     'Permissions-Policy':
       'camera=(), microphone=(), geolocation=(), payment=(), usb=(), gamepad=(self)',
     'X-Content-Type-Options': 'nosniff',
