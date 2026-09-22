@@ -203,7 +203,7 @@ try {
     'vercel.json',
     JSON.stringify(
       config(
-        `default-src 'none'; script-src 'self' ; style-src 'self'; img-src 'self'; connect-src 'self'; frame-src ${origins ? Object.values(origins).join(' ') : "'none'"}; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
+        `default-src 'none'; script-src 'self' ; style-src 'self'; img-src 'self' https://backbone.com; connect-src 'self'; frame-src ${origins ? Object.values(origins).join(' ') : "'none'"}; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
         [
           { source: '/games', destination: '/index.html' },
           { source: '/settings', destination: '/index.html' },

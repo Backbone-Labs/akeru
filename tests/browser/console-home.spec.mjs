@@ -72,7 +72,7 @@ test('paused runtime control panel keeps live input polling active', async ({
   await setGamepadButton(page, 2, 0);
 });
 
-test('Discover spotlight scrolls with keyboard, keeps acquisition visible, and respects reduced motion', async ({
+test('Discover selection updates the feature, supports keyboard, and respects reduced motion', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -82,9 +82,9 @@ test('Discover spotlight scrolls with keyboard, keeps acquisition visible, and r
   await expect(
     page.getByRole('link', { name: 'Get the Backbone app' }),
   ).toBeVisible();
-  await page.getByText('How do I connect?', { exact: true }).click();
+  await page.getByText('Pairing a Backbone Pro?', { exact: true }).click();
   await expect(
-    page.getByText(/pair it in your device’s Bluetooth settings/),
+    page.getByText(/connect in your device’s Bluetooth settings/),
   ).toBeVisible();
   await page.evaluate(async () => {
     const { renderGameHome } = await import('/home.js');
@@ -103,22 +103,33 @@ test('Discover spotlight scrolls with keyboard, keeps acquisition visible, and r
       onFilters: () => {},
     });
   });
-  const track = page.locator('#spotlight-track');
   await expect(
-    page.getByRole('button', { name: 'Previous spotlight games' }),
+    page.getByRole('button', { name: 'Previous featured game' }),
   ).toBeDisabled();
-  await page.getByRole('button', { name: 'Next spotlight games' }).click();
-  await expect
-    .poll(() => track.evaluate((e) => e.scrollLeft))
-    .toBeGreaterThan(100);
-  await track.focus();
+  await page.getByRole('button', { name: 'Next featured game' }).click();
+  await expect(page.locator('#featured-copy h2')).toHaveText('Game 1');
+  await expect(page.locator('#featured-launch')).toHaveAttribute(
+    'href',
+    '/g/game-1',
+  );
+  await expect(
+    page.getByRole('button', { name: 'Feature Game 1', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await page
+    .getByRole('button', { name: 'Feature Game 1', exact: true })
+    .focus();
   await page.keyboard.press('ArrowLeft');
-  await expect.poll(() => track.evaluate((e) => e.scrollLeft)).toBe(0);
+  await expect(page.locator('#featured-copy h2')).toHaveText('Game 0');
+  await page.keyboard.press('End');
+  await expect(page.locator('#featured-copy h2')).toHaveText('Game 5');
+  await expect(
+    page.getByRole('button', { name: 'Next featured game' }),
+  ).toBeDisabled();
   expect(
     await page
-      .locator('.controller-graphic')
-      .evaluate((e) => getComputedStyle(e).animationName),
-  ).toBe('none');
+      .locator('#feature-scene')
+      .evaluate((e) => e.getAnimations().length),
+  ).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
     390,
   );

@@ -103,27 +103,23 @@ export function renderGameHome(
   { filters, recent, onFilters, onPromotion = () => {} },
 ) {
   main.innerHTML = `
-    <div class="wrap console-home discover-v2">
-      <header class="discovery-intro">
-        <div><p class="eyebrow"><span class="live-dot"></span> BACKBONE / AKERU</p><h1>Less waiting.<br><span>More playing.</span></h1><p>Great games. Wide open. Find your next favorite and make yourself at home.</p></div>
-        <div class="discovery-meta"><span id="library-total"></span><p>Free to explore.<br>Nothing to install.</p><a href="#all-games" class="browse-library">Explore the library ↓</a></div>
-      </header>
-      <section class="spotlight" aria-label="Spotlight games" aria-roledescription="carousel">
-        <div class="spotlight-heading"><p class="eyebrow">IN THE SPOTLIGHT</p><div class="spotlight-navigation"><span id="spotlight-position" aria-live="polite"></span><button type="button" id="spotlight-prev" aria-label="Previous spotlight games">←</button><button type="button" id="spotlight-next" aria-label="Next spotlight games">→</button></div></div>
-        <div id="spotlight-track" class="spotlight-track" tabindex="0" aria-label="Scroll spotlight games"></div>
-        <div class="spotlight-caption"><span>YOUR NEXT “ONE MORE ROUND.”</span><span>Swipe, scroll, or explore →</span></div>
+    <div class="wrap console-home discover-studio">
+      <header class="library-heading"><div><p class="eyebrow">BACKBONE AKERU</p><h1>Discover</h1></div><div class="library-heading-tools"><span>Open games. Ready to play.</span><a class="studio-link" href="/settings">Your setup ↗</a></div></header>
+      <section class="feature-stage" aria-label="Featured games" aria-roledescription="carousel">
+        <div id="feature-scene" class="feature-scene"></div>
+        <div class="feature-stage-content"><p class="feature-kicker"><span></span> THE OPEN COLLECTION</p><div id="featured-copy" aria-live="polite"></div><div class="feature-stage-actions"><a id="featured-launch" class="studio-play">▶ <span>Explore game</span></a><a class="studio-browse" href="#all-games">Browse all games ↓</a></div><p class="feature-footnote">No download. No account. Just play.</p></div>
+        <div class="feature-stage-index"><span id="spotlight-position"></span><button type="button" id="spotlight-prev" aria-label="Previous featured game">←</button><button type="button" id="spotlight-next" aria-label="Next featured game">→</button></div>
       </section>
-      <section class="backbone-hub" aria-label="Play your way">
-        <div class="controller-story"><div class="controller-graphic" aria-hidden="true"><svg viewBox="0 0 320 150" fill="none"><path d="M91 28h138c26 0 40 17 47 42l14 48c5 23-19 35-35 18l-31-30H96l-31 30c-16 17-40 5-35-18l14-48c7-25 21-42 47-42Z" fill="#303234" stroke="#666" stroke-width="2"/><path d="M75 56v34M58 73h34" stroke="#a4a7aa" stroke-width="11" stroke-linecap="round"/><circle cx="124" cy="89" r="17" fill="#18191a" stroke="#777" stroke-width="3"/><circle cx="194" cy="89" r="17" fill="#18191a" stroke="#777" stroke-width="3"/><g fill="#c4c4c4"><circle cx="242" cy="53" r="6"/><circle cx="257" cy="68" r="6"/><circle cx="227" cy="68" r="6"/><circle cx="242" cy="83" r="6"/></g><circle cx="160" cy="60" r="7" fill="#ff5b20"/></svg><span class="controller-orbit"></span></div>
-        <div><p class="eyebrow">PUT PLAY IN YOUR HANDS</p><h2>Better with<br>a Backbone.</h2><p>Feel every turn. Own every move. Connect your controller, or keep playing with touch, keyboard and mouse.</p><div class="hub-actions" id="controller-actions"><a href="/settings" class="primary">Set up your controller ↗</a></div><details class="pairing-help"><summary>How do I connect?</summary><p>For a wired Backbone, connect it to your phone. For Backbone Pro wireless play, pair it in your device’s Bluetooth settings, return here, then press a controller button. Browser pairing isn’t available from this page.</p></details></div></div>
-        <div class="app-story"><div class="phone-preview" aria-hidden="true"><div class="phone-camera"></div><div id="phone-game-art"></div><span>PLAY. ANYWHERE.</span></div><div><p class="eyebrow">TAKE PLAY WITH YOU</p><h2>Your phone.<br>Your next console.</h2><p>Open Akeru in your phone’s browser for instant play. Get the Backbone app to bring your games, platforms and controller together.</p><div class="hub-actions" id="app-actions"></div><p class="device-note">iPhone + Android · No account needed for browser play</p></div></div>
-      </section>
-      <section id="recent-section" hidden><div class="section-head"><div><p class="eyebrow">RIGHT WHERE YOU LEFT OFF</p><h2>Jump back in.</h2></div><span class="fine">Played in this browser</span></div><div class="recent-rail" id="recent-rail"></div></section>
-      <section id="collection-section"><div class="section-head"><h2>Find your kind of play.</h2><span class="fine">Follow your mood</span></div><div class="collection-rail" id="collection-rail"></div></section>
-      <section id="all-games"><div class="section-head"><div><p class="eyebrow">THE WHOLE PLAYGROUND</p><h2>All games.</h2></div><span id="game-count" class="count" aria-live="polite"></span></div><div class="filters" id="filters" role="group" aria-label="Filter games"></div><div id="game-grid"></div></section>
+      <div id="spotlight-track" class="selection-rail" role="group" aria-label="Choose a featured game"></div>
+      <section class="hardware-band" aria-label="Play with Backbone"><div class="hardware-copy"><p class="eyebrow">MADE FOR YOUR HANDS</p><h2>Meet your player two.</h2><p>Bring a Backbone to the game.<br>Or jump in with the controls you already have.</p><div id="controller-actions" class="hardware-actions"><a class="studio-button" href="/settings">Connect a controller ↗</a></div><details class="pairing-help"><summary>Pairing a Backbone Pro?</summary><p>Put your Backbone Pro in pairing mode and connect in your device’s Bluetooth settings. Return here and press a button. For wired play, connect your Backbone directly to your phone.</p></details></div><div class="hardware-image"><img src="https://backbone.com/cdn/shop/files/04-09-25_Niji_3Quarter_Light-BG.png?v=1774547122&width=800" alt="Backbone Pro wireless controller" loading="lazy" referrerpolicy="no-referrer" width="800" height="450"><span>BACKBONE PRO <span>HANDHELD + WIRELESS</span></span></div></section>
+      <section class="app-invitation" aria-label="Backbone on your phone"><div class="app-emblem" aria-hidden="true"><svg viewBox="0 0 111 104"><use href="#backbone-mark"/></svg></div><div><p class="eyebrow">YOUR PHONE IS A PLACE TO PLAY</p><h2>Take your next session with you.</h2><p>Play Akeru in your phone’s browser. Explore the Backbone app to bring your games and platforms together.</p><span class="fine">iPhone & Android · Browser progress stays on this device</span></div><div id="app-actions"></div></section>
+      <section id="recent-section" hidden><div class="section-head"><div><p class="eyebrow">RECENTLY PLAYED</p><h2>Jump back in</h2></div><span class="fine">On this browser</span></div><div class="recent-rail" id="recent-rail"></div></section>
+      <section id="collection-section"><div class="section-head"><h2>Pick your pace</h2><span class="fine">Something for every kind of player</span></div><div class="collection-rail" id="collection-rail"></div></section>
+      <section id="all-games"><div class="section-head"><div><p class="eyebrow">YOUR NEXT GOOD GAME</p><h2>The library</h2></div><span id="game-count" class="count" aria-live="polite"></span></div><div class="filters" id="filters" role="group" aria-label="Filter games"></div><div id="game-grid"></div></section>
+
     </div>`;
-  const find = (s) => main.querySelector(s);
-  find('.browse-library').onclick = (event) => {
+  const find = (selector) => main.querySelector(selector);
+  find('.studio-browse').onclick = (event) => {
     event.preventDefault();
     event.stopPropagation();
     const library = find('#all-games');
@@ -135,96 +131,129 @@ export function renderGameHome(
         : 'smooth',
     });
   };
-  find('#library-total').textContent = String(entries.length).padStart(2, '0');
-  const candidates = entries.filter((e) => e.availability !== 'paused');
   const preferred = [
     'freedoom1',
-    'old-san-juan-kart',
     'open-golf',
+    'old-san-juan-kart',
     'hextris',
     'anarch',
     'server-survival',
   ];
-  const picks = [...candidates]
+  const picks = entries
+    .filter((e) => e.availability !== 'paused')
     .sort((a, b) => {
-      const score = (e) =>
+      const rank = (e) =>
         preferred.includes(e.manifest.id)
           ? preferred.indexOf(e.manifest.id)
           : preferred.length;
-      return score(a) - score(b);
+      return rank(a) - rank(b);
     })
     .slice(0, 6);
-  const track = find('#spotlight-track');
-  for (const [index, entry] of picks.entries()) {
-    const tile = el('a', 'spotlight-tile');
-    tile.href = '/g/' + entry.manifest.id;
-    tile.setAttribute('aria-label', 'Explore ' + entry.manifest.title);
-    const art = cover(entry, 'spotlight-art');
-    const img = art.querySelector('img');
-    if (img && index < 2) img.loading = 'eager';
-    art.append(el('span', 'spotlight-genre', cap(entry.metadata.category)));
-    const text = el('div', 'spotlight-copy');
-    text.append(
-      el('span', 'spotlight-number', String(index + 1).padStart(2, '0')),
+  const rail = find('#spotlight-track');
+  let selected = 0;
+  const buttons = [];
+  let sceneAnimation;
+  function select(index, reveal = false) {
+    if (!picks.length) return;
+    selected = Math.max(0, Math.min(index, picks.length - 1));
+    const entry = picks[selected];
+    const scene = find('#feature-scene');
+    const art = cover(entry, 'stage-art');
+    const image = art.querySelector('img');
+    if (image) image.loading = 'eager';
+    sceneAnimation?.cancel();
+    scene.replaceChildren(art);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches)
+      sceneAnimation = scene.animate(
+        [
+          { opacity: 0.65, transform: 'scale(1.015)' },
+          { opacity: 1, transform: 'scale(1)' },
+        ],
+        { duration: 280, easing: 'cubic-bezier(.23,1,.32,1)' },
+      );
+    const copy = find('#featured-copy');
+    copy.replaceChildren(
+      el(
+        'p',
+        'feature-category',
+        cap(entry.metadata.category) + ' / Open-source',
+      ),
       el('h2', '', entry.manifest.title),
-      el('p', '', entry.metadata.summary),
-      el('span', 'spotlight-play', 'Explore game ↗'),
+      el('p', 'feature-description', entry.metadata.summary),
     );
-    tile.append(art, text);
-    track.append(tile);
-  }
-  const prev = find('#spotlight-prev'),
-    next = find('#spotlight-next');
-  const move = (direction) =>
-    track.scrollBy({
-      left:
-        direction *
-        (track.firstElementChild?.getBoundingClientRect().width + 28 || 320),
-      behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'instant'
-        : 'smooth',
-    });
-  prev.onclick = () => move(-1);
-  next.onclick = () => move(1);
-  track.addEventListener('keydown', (e) => {
-    if (e.target === track && ['ArrowLeft', 'ArrowRight'].includes(e.key)) {
-      e.preventDefault();
-      move(e.key === 'ArrowLeft' ? -1 : 1);
+    find('#featured-launch').href = '/g/' + entry.manifest.id;
+    find('#spotlight-position').textContent =
+      String(selected + 1).padStart(2, '0') +
+      ' / ' +
+      String(picks.length).padStart(2, '0');
+    find('#spotlight-prev').disabled = selected === 0;
+    find('#spotlight-next').disabled = selected === picks.length - 1;
+    buttons.forEach((button, i) =>
+      button.setAttribute('aria-pressed', String(i === selected)),
+    );
+    if (reveal) {
+      const button = buttons[selected];
+      const target =
+        button.offsetLeft -
+        rail.offsetLeft -
+        (rail.clientWidth - button.clientWidth) / 2;
+      rail.scrollTo({
+        left: target,
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'instant'
+          : 'smooth',
+      });
     }
-  });
-  const progress = () => {
-    const max = track.scrollWidth - track.clientWidth;
-    prev.disabled = track.scrollLeft <= 2;
-    next.disabled = track.scrollLeft >= max - 2;
-    const index = Math.min(
-      picks.length,
-      Math.round(
-        track.scrollLeft /
-          ((track.firstElementChild?.getBoundingClientRect().width ?? 1) + 28),
-      ) + 1,
+  }
+  picks.forEach((entry, index) => {
+    const button = el('button', 'selection-item');
+    button.type = 'button';
+    button.setAttribute('aria-label', 'Feature ' + entry.manifest.title);
+    const text = el('span', 'selection-text');
+    text.append(
+      el('strong', '', entry.manifest.title),
+      el('span', '', cap(entry.metadata.category)),
     );
-    find('#spotlight-position').textContent = picks.length
-      ? String(index).padStart(2, '0') +
-        ' / ' +
-        String(picks.length).padStart(2, '0')
-      : 'Coming soon';
-  };
-  track.addEventListener('scroll', progress, { passive: true });
-  const resize = new ResizeObserver(progress);
-  resize.observe(track);
-  progress();
+    button.append(cover(entry, 'selection-art'), text);
+    button.onclick = () => select(index, true);
+    button.onkeydown = (e) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+      e.preventDefault();
+      select(
+        e.key === 'Home'
+          ? 0
+          : e.key === 'End'
+            ? picks.length - 1
+            : selected + (e.key === 'ArrowLeft' ? -1 : 1),
+        true,
+      );
+      buttons[selected].focus({ preventScroll: true });
+    };
+    buttons.push(button);
+    rail.append(button);
+  });
+  find('#spotlight-prev').onclick = () => select(selected - 1, true);
+  find('#spotlight-next').onclick = () => select(selected + 1, true);
+  if (picks.length) select(0);
+  else {
+    find('.feature-stage').hidden = true;
+    rail.hidden = true;
+  }
   for (const [kind, root, label] of [
     ['controller', '#controller-actions', 'Shop Backbone ↗'],
     ['app', '#app-actions', 'Get the Backbone app ↗'],
   ]) {
-    const link = el('a', kind === 'app' ? 'primary' : 'hub-text-link', label);
+    const link = el(
+      'a',
+      kind === 'app' ? 'studio-button' : 'studio-link',
+      label,
+    );
     link.href = promotionUrl(kind);
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
-    link.addEventListener('click', () => onPromotion(kind));
+    link.onclick = () => onPromotion(kind);
     find(root).append(link);
   }
-  if (picks.length) find('#phone-game-art').append(cover(picks[0]));
   const recentEntries = recent
     .map((row) => entries.find((e) => e.manifest.id === row.id))
     .filter(Boolean)
@@ -234,11 +263,11 @@ export function renderGameHome(
     for (const e of recentEntries) find('#recent-rail').append(card(e, true));
   }
   const moods = [
-    ['action', 'Turn it up.', 'Fast moves. Big energy.'],
-    ['puzzle', 'Find your focus.', 'A little room to think.'],
-    ['sandbox', 'Make it yours.', 'Build something unexpected.'],
-    ['sports', 'One more round.', 'Find your competitive side.'],
-    ['strategy', 'Think ahead.', 'Make every move count.'],
+    ['action', 'Action', 'Fast hands. Faster decisions.'],
+    ['puzzle', 'Puzzle', 'Find a little flow.'],
+    ['sandbox', 'Sandbox', 'Make it your own.'],
+    ['sports', 'Sports', 'One more round.'],
+    ['strategy', 'Strategy', 'Stay one move ahead.'],
   ];
   for (const [category, title, description] of moods) {
     const count = entries.filter(
@@ -353,5 +382,5 @@ export function renderGameHome(
     grid.append(tiles);
   }
   update();
-  return () => resize.disconnect();
+  return () => sceneAnimation?.cancel();
 }

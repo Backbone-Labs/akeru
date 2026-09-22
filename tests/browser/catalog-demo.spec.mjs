@@ -29,7 +29,7 @@ test('browses from catalog to detail and launches the isolated original fixture'
 }) => {
   await page.goto(demo.url + '/games');
   await expect(
-    page.getByRole('heading', { name: /Less waiting/ }),
+    page.getByRole('heading', { name: 'Discover', level: 1 }),
   ).toBeVisible();
   await expect(page.getByText('1 game', { exact: true })).toBeVisible();
 
@@ -224,7 +224,7 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(demo.url + '/games');
   await expect(
-    page.getByRole('heading', { name: /Less waiting/ }),
+    page.getByRole('heading', { name: 'Discover', level: 1 }),
   ).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
