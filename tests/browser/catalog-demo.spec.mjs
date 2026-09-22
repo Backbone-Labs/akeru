@@ -29,11 +29,14 @@ test('browses from catalog to detail and launches the isolated original fixture'
 }) => {
   await page.goto(demo.url + '/games');
   await expect(
-    page.getByRole('heading', { name: /Find your next/ }),
+    page.getByRole('heading', { name: /Less waiting/ }),
   ).toBeVisible();
   await expect(page.getByText('1 game', { exact: true })).toBeVisible();
 
-  await page.getByRole('link', { name: /Orbit study/ }).click();
+  await page
+    .locator('#game-grid')
+    .getByRole('link', { name: /Orbit study/ })
+    .click();
   await expect(page).toHaveURL(/\/g\/orbit-study$/);
   await expect(
     page.getByRole('heading', { name: 'Orbit study' }),
@@ -221,11 +224,14 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(demo.url + '/games');
   await expect(
-    page.getByRole('heading', { name: /Find your next/ }),
+    page.getByRole('heading', { name: /Less waiting/ }),
   ).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
-  await page.getByRole('link', { name: /Orbit study/ }).click();
+  await page
+    .locator('#game-grid')
+    .getByRole('link', { name: /Orbit study/ })
+    .click();
   await expect(
     page.getByRole('heading', { name: 'Orbit study' }),
   ).toBeVisible();

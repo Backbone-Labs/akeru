@@ -2978,3 +2978,542 @@ body.direct-player .player-menu {
   text-align: center;
   text-decoration: none;
 }
+
+/* Discover: floating artwork, quiet chrome, and a library that stays accessible. */
+.discover-v2 {
+  --discovery-orange: #ff5b20;
+  padding-top: 54px;
+}
+.discovery-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 32px;
+  padding: 8px 0 32px;
+}
+.discovery-intro h1 {
+  font-size: clamp(48px, 6.5vw, 98px);
+  letter-spacing: -0.07em;
+  line-height: 0.98;
+  margin: 26px 0 22px;
+  font-weight: 750;
+}
+.discovery-intro h1 span {
+  color: var(--discovery-orange);
+}
+.discovery-intro > div > p:not(.eyebrow) {
+  color: var(--muted);
+  max-width: 390px;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--discovery-orange);
+  margin-right: 8px;
+  box-shadow: 0 0 18px #ff5b2055;
+}
+.discovery-meta {
+  text-align: right;
+  padding-bottom: 8px;
+}
+.discovery-meta > span {
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+.discovery-meta p {
+  font-size: 13px !important;
+}
+.browse-library {
+  display: inline-block;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  padding-block: 10px;
+  font-size: 13px;
+}
+.spotlight {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: 28px;
+}
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 5% -4% 0;
+  z-index: -1;
+  background: radial-gradient(ellipse at 48% 52%, #ff5b201c, transparent 62%);
+  pointer-events: none;
+}
+.spotlight-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+.spotlight-navigation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.spotlight-navigation > span {
+  margin-right: 16px;
+  font: 11px monospace;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+.spotlight-navigation button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 20px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.spotlight-navigation button:hover:not(:disabled) {
+  background: var(--discovery-orange);
+  color: #111;
+  transform: scale(1.08);
+}
+.spotlight-navigation button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.spotlight-track {
+  display: flex;
+  gap: 28px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  padding: 38px 18px 48px;
+  margin-inline: -18px;
+  scrollbar-width: none;
+  perspective: 1400px;
+}
+.spotlight-track::-webkit-scrollbar {
+  display: none;
+}
+.spotlight-tile {
+  flex: 0 0 clamp(290px, 39vw, 560px);
+  scroll-snap-align: center;
+  text-decoration: none;
+  color: #fff;
+  position: relative;
+  border-radius: 24px;
+  min-height: 370px;
+  aspect-ratio: 1.35;
+  overflow: hidden;
+  background: #202020;
+  border: 1px solid #ffffff28;
+  box-shadow:
+    0 22px 32px -15px #0009,
+    0 2px 0 #ffffff17 inset;
+  transform: rotate(-1.6deg) translateY(7px);
+  transition:
+    transform 0.65s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.65s;
+  isolation: isolate;
+}
+.spotlight-tile:nth-child(even) {
+  transform: rotate(1.6deg) translateY(-4px);
+}
+.spotlight-tile:hover,
+.spotlight-tile:focus-visible {
+  transform: translateY(-12px) rotate(0);
+  box-shadow: 0 30px 45px -15px #000b;
+}
+.spotlight-art {
+  position: absolute;
+  inset: 0;
+  aspect-ratio: auto;
+  z-index: -2;
+}
+.spotlight-art img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.spotlight-tile:hover img {
+  transform: scale(1.045);
+}
+.spotlight-tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #0001 15%, #0002 35%, #000d 100%);
+}
+.spotlight-genre {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #1119;
+  backdrop-filter: blur(16px);
+  border: 1px solid #ffffff30;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.spotlight-copy {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  padding: 26px;
+}
+.spotlight-number {
+  font: 11px monospace;
+  opacity: 0.65;
+}
+.spotlight-copy h2 {
+  margin: 7px 0;
+  font-size: clamp(26px, 3vw, 42px);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+.spotlight-copy p {
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 350px;
+  color: #dedede;
+  margin: 10px 0 20px;
+}
+.spotlight-play {
+  display: inline-block;
+  padding: 9px 15px;
+  border: 1px solid #ffffff60;
+  border-radius: 999px;
+  background: #ffffff18;
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+}
+.spotlight-caption {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  color: var(--muted);
+  margin-top: -12px;
+}
+.backbone-hub {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  margin: 24px 0 64px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.controller-story,
+.app-story {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.6fr) minmax(0, 1fr);
+  gap: 24px;
+  padding: 40px 24px 40px 0;
+  align-items: center;
+}
+.app-story {
+  border-left: 1px solid var(--line);
+  padding-left: 28px;
+}
+.backbone-hub h2 {
+  font-size: clamp(26px, 2.6vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  margin: 12px 0;
+}
+.backbone-hub p:not(.eyebrow) {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.backbone-hub .eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+}
+.controller-graphic {
+  position: relative;
+  transform: rotate(-20deg);
+  color: var(--ink);
+  filter: drop-shadow(0 20px 12px #0004);
+  animation: controller-drift 7s ease-in-out infinite;
+}
+.controller-graphic svg {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+.controller-orbit {
+  position: absolute;
+  inset: -35% -6%;
+  border: 1px solid #ff5b2045;
+  border-radius: 50%;
+  transform: rotate(-25deg);
+}
+.controller-orbit::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  right: 4%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--discovery-orange);
+}
+.hub-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+.hub-actions .primary {
+  padding: 11px 15px;
+  font-size: 12px;
+  text-decoration: none;
+  background: var(--discovery-orange);
+  color: #111;
+}
+.hub-text-link {
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 12px;
+  border-bottom: 1px solid var(--line);
+  padding-block: 5px;
+}
+.pairing-help {
+  font-size: 12px;
+  margin-top: 18px;
+  color: var(--muted);
+}
+.pairing-help summary {
+  cursor: pointer;
+}
+.pairing-help p {
+  max-width: 320px;
+}
+.phone-preview {
+  aspect-ratio: 9/17;
+  max-width: 145px;
+  border-radius: 24px;
+  border: 4px solid #3a3a3a;
+  background: #141414;
+  position: relative;
+  overflow: hidden;
+  transform: rotate(9deg);
+  box-shadow: 10px 16px 30px #0003;
+}
+.phone-preview #phone-game-art,
+.phone-preview .console-art {
+  position: absolute;
+  inset: 0;
+  aspect-ratio: auto;
+}
+.phone-preview .console-art img {
+  height: 100%;
+  object-fit: cover;
+}
+.phone-preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 45%, #111e);
+}
+.phone-preview > span {
+  position: absolute;
+  bottom: 22px;
+  left: 12px;
+  right: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  z-index: 2;
+}
+.phone-camera {
+  position: absolute;
+  top: 7px;
+  left: 32%;
+  right: 32%;
+  height: 8px;
+  background: #111;
+  border-radius: 10px;
+  z-index: 2;
+}
+.device-note {
+  font-size: 10px !important;
+  margin-top: 14px;
+}
+.discover-v2 #recent-section {
+  margin-bottom: 58px;
+}
+.discover-v2 .recent-card {
+  min-width: 220px;
+  border: 1px solid var(--line);
+}
+.discover-v2 .collection-tile {
+  background: var(--surface);
+  border-radius: 14px;
+  min-height: 150px;
+  transition:
+    background 0.25s,
+    transform 0.25s;
+}
+.discover-v2 .collection-tile:hover {
+  background: color-mix(in srgb, var(--discovery-orange) 12%, var(--surface));
+}
+.discover-v2 .collection-arrow {
+  color: var(--discovery-orange);
+}
+.discover-v2 .console-card {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+.discover-v2 .console-card .console-art {
+  border-radius: 16px;
+  aspect-ratio: 1.5;
+  border: 1px solid var(--line);
+}
+.discover-v2 .console-card .card-copy {
+  padding: 16px 0 24px;
+}
+.discover-v2 .console-card:hover {
+  transform: translateY(-5px);
+}
+.discover-v2 .console-card .console-card-action {
+  color: var(--muted);
+}
+.discover-v2 #all-games {
+  scroll-margin-top: 24px;
+}
+@keyframes controller-drift {
+  0%,
+  100% {
+    transform: rotate(-20deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-16deg) translateY(-8px);
+  }
+}
+@media (max-width: 1050px) {
+  .backbone-hub {
+    grid-template-columns: 1fr 1fr;
+  }
+  .controller-story,
+  .app-story {
+    grid-template-columns: 1fr;
+  }
+  .controller-graphic {
+    width: 155px;
+    margin: 12px 0 20px 15px;
+  }
+  .phone-preview {
+    width: 110px;
+    height: 150px;
+    margin-bottom: 12px;
+  }
+}
+@media (max-width: 700px) {
+  .discover-v2 {
+    padding-top: 28px;
+  }
+  .discovery-intro {
+    gap: 12px;
+  }
+  .discovery-intro h1 {
+    font-size: 48px;
+  }
+  .discovery-intro > div > p:not(.eyebrow) {
+    font-size: 14px;
+    max-width: 260px;
+  }
+  .discovery-meta {
+    display: none;
+  }
+  .spotlight-track {
+    padding-block: 28px 38px;
+    gap: 28px;
+  }
+  .spotlight-tile {
+    flex-basis: 82%;
+    min-height: 340px;
+  }
+  .spotlight-copy {
+    padding: 20px;
+  }
+  .spotlight-caption {
+    font-size: 8px;
+    letter-spacing: 0.06em;
+  }
+  .backbone-hub {
+    grid-template-columns: 1fr;
+    margin-bottom: 40px;
+  }
+  .controller-story,
+  .app-story {
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 20px;
+    padding: 32px 0;
+  }
+  .app-story {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .controller-graphic {
+    width: 105px;
+    margin: 0;
+  }
+  .phone-preview {
+    width: 90px;
+    height: 155px;
+    margin: 0;
+  }
+  .spotlight-navigation > span {
+    margin-right: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .controller-graphic {
+    animation: none;
+  }
+  .spotlight-tile,
+  .spotlight-art img,
+  .discover-v2 .console-card,
+  .discover-v2 .collection-tile {
+    transition: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .spotlight-tile {
+    animation: spotlight-arrive 0.85s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .spotlight-tile:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  .spotlight-tile:nth-child(3) {
+    animation-delay: 0.18s;
+  }
+}
+@keyframes spotlight-arrive {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}

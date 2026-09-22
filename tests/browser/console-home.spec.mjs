@@ -71,3 +71,57 @@ test('paused runtime control panel keeps live input polling active', async ({
   await expect(page.locator('#runtime-overlay')).toBeVisible();
   await setGamepadButton(page, 2, 0);
 });
+
+test('Discover spotlight scrolls with keyboard, keeps acquisition visible, and respects reduced motion', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(demo.url + '/games');
+  await expect(page.getByRole('link', { name: 'Shop Backbone' })).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Get the Backbone app' }),
+  ).toBeVisible();
+  await page.getByText('How do I connect?', { exact: true }).click();
+  await expect(
+    page.getByText(/pair it in your device’s Bluetooth settings/),
+  ).toBeVisible();
+  await page.evaluate(async () => {
+    const { renderGameHome } = await import('/home.js');
+    const catalog = await (await fetch('/catalog.json')).json();
+    const entries = Array.from({ length: 6 }, (_, i) => ({
+      ...catalog.entries[0],
+      manifest: {
+        ...catalog.entries[0].manifest,
+        id: 'game-' + i,
+        title: 'Game ' + i,
+      },
+    }));
+    renderGameHome(document.querySelector('#main'), entries, {
+      filters: { query: '', category: 'all' },
+      recent: [],
+      onFilters: () => {},
+    });
+  });
+  const track = page.locator('#spotlight-track');
+  await expect(
+    page.getByRole('button', { name: 'Previous spotlight games' }),
+  ).toBeDisabled();
+  await page.getByRole('button', { name: 'Next spotlight games' }).click();
+  await expect
+    .poll(() => track.evaluate((e) => e.scrollLeft))
+    .toBeGreaterThan(100);
+  await track.focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect.poll(() => track.evaluate((e) => e.scrollLeft)).toBe(0);
+  expect(
+    await page
+      .locator('.controller-graphic')
+      .evaluate((e) => getComputedStyle(e).animationName),
+  ).toBe('none');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    390,
+  );
+  await page.getByRole('searchbox').fill('Game 3');
+  await expect(page.locator('#game-grid .game-card')).toHaveCount(1);
+});

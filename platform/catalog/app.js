@@ -137,6 +137,7 @@ export function mountCatalog({
     disposed = false,
     loadVersion = 0;
   let onboardingUi = null;
+  let disposeHome = null;
   const promotions = createPromotions({
     storage: browserStorage(),
     sink: acquisitionSink,
@@ -413,6 +414,8 @@ export function mountCatalog({
   }
   function renderRoute() {
     if (disposed) return;
+    disposeHome?.();
+    disposeHome = null;
     clearSession();
     if (!catalog) return;
     const route = routeFor(location.pathname);
@@ -524,7 +527,7 @@ export function mountCatalog({
   function renderCatalog() {
     document.title = 'Discover — Backbone Akeru';
     telemetry({ type: 'catalogView' });
-    renderGameHome(main, catalog.entries, {
+    disposeHome = renderGameHome(main, catalog.entries, {
       filters,
       recent: readRecent(browserStorage()),
       onPromotion: (kind) => promotions.click(kind),
@@ -1180,6 +1183,7 @@ export function mountCatalog({
     refresh: initialize,
     dispose() {
       disposed = true;
+      disposeHome?.();
       onboardingUi?.dispose();
       loadVersion++;
       clearSession();
