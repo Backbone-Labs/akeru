@@ -1,9 +1,16 @@
+import { existsSync } from 'node:fs';
 import { test, expect, installSimulatedGamepad } from './fixtures.mjs';
 import { startCatalogDemo } from '../../examples/catalog-demo/server.mjs';
 import { freedoomOptions } from '../../packages/freedoom/catalog.mjs';
 test('Doom direct player has audible samples, separate snapshot restore, and no bottom toolbar', async ({
   page,
 }) => {
+  test.skip(
+    !existsSync(
+      new URL('../../dist/freedoom1/build-record.json', import.meta.url),
+    ),
+    'Explicit upstream build required',
+  );
   test.setTimeout(60000);
   await installSimulatedGamepad(page);
   await page.addInitScript(() => {

@@ -200,6 +200,10 @@ export async function startCatalogDemo(options = {}) {
       res.setHeader('Content-Type', 'image/png');
       return res.end(previewImages[req.url]);
     }
+    if (req.url === '/backbone-pro.png') {
+      res.setHeader('Content-Type', 'image/png');
+      return res.end(read('platform/catalog/backbone-pro.png'));
+    }
     if (req.url === '/favicon.ico') {
       res.writeHead(204);
       return res.end();

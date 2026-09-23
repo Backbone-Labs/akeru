@@ -1,9 +1,19 @@
+import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { startCatalogDemo } from '../../examples/catalog-demo/server.mjs';
 import { options } from '../../packages/old-san-juan-kart/catalog.mjs';
 import { installSimulatedGamepad, setGamepadButton } from './fixtures.mjs';
 let demo;
 test.beforeAll(async () => {
+  test.skip(
+    !existsSync(
+      new URL(
+        '../../dist/old-san-juan-kart/build-record.json',
+        import.meta.url,
+      ),
+    ),
+    'Explicit upstream build required',
+  );
   demo = await startCatalogDemo({ titles: [options()] });
 });
 test.afterAll(async () => {

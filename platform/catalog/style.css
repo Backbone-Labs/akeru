@@ -3871,3 +3871,11 @@ body.direct-player .player-menu {
     transition: none !important;
   }
 }
+
+/* The virtual pad overlays gameplay instead of extending the mobile page. */
+.runtime-wrap #touch-controls {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+}

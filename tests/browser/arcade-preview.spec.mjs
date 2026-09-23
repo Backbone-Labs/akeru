@@ -165,6 +165,10 @@ for (const [id, options] of Object.entries(titles))
 test('Racer fills the viewport and restores touch controls after disconnect', async ({
   page,
 }) => {
+  test.skip(
+    !existsSync(new URL('../../dist/racer/build-record.json', import.meta.url)),
+    'Explicit upstream build required',
+  );
   const demo = await startCatalogDemo(racer());
   try {
     await installSimulatedGamepad(page);

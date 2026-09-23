@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { test, expect } from './fixtures.mjs';
 import { startCatalogDemo } from '../../examples/catalog-demo/server.mjs';
 for (const accepted of [true, false])
@@ -58,6 +59,12 @@ for (const accepted of [true, false])
 test('native Doom menu saves a dated snapshot, restarts without deleting it, and toggles audio', async ({
   page,
 }) => {
+  test.skip(
+    !existsSync(
+      new URL('../../dist/freedoom1/build-record.json', import.meta.url),
+    ),
+    'Explicit upstream build required',
+  );
   test.setTimeout(60000);
   const { freedoomOptions } =
     await import('../../packages/freedoom/catalog.mjs');
