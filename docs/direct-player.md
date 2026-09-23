@@ -61,3 +61,15 @@ separately from input activity so an idle controller never clears held touch inp
 Racer hides its title-owned controls while connected and restores them on disconnect.
 Its renderer adapts to the viewport without changing the current race; other titles
 retain their own aspect-ratio policies. Racer's evaluation package has no audio.
+
+## Native action replies
+
+The native host calls `window.akeruNative.command(action, payload, 2)` after the
+menu handshake. Version 2 returns `{ ok, message, state }`. `message` is display
+copy only; consumers must not infer save availability or audio state from it.
+Optional state fields are `audioState` (`on`, `off`, `blocked`),
+`hasManualSave` (boolean), and `savedAt` (positive Unix milliseconds or null).
+The authenticated runtime channel rejects unknown fields and invalid types or
+timestamps. Older native clients can omit the version and receive the existing
+string response. Deploy this web contract before distributing native clients
+that require version 2. Native clients localize their own menu/status copy.

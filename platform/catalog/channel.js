@@ -130,7 +130,11 @@ export function createRuntimeChannel({
     if (v.type === 'action-result') {
       if (
         !['playable', 'paused'].includes(state) ||
-        !exact(p, ['id', 'ok', 'message']) ||
+        !(
+          exact(p, ['id', 'ok', 'message']) ||
+          (exact(p, ['id', 'ok', 'message', 'state']) &&
+            validActionState(p.state))
+        ) ||
         !Number.isSafeInteger(p.id) ||
         typeof p.ok !== 'boolean' ||
         typeof p.message !== 'string' ||
@@ -142,7 +146,11 @@ export function createRuntimeChannel({
       const task = pending.get(p.id);
       clearTimeout(task.timer);
       pending.delete(p.id);
-      task.resolve({ ok: p.ok, message: p.message });
+      task.resolve({
+        ok: p.ok,
+        message: p.message,
+        ...(p.state ? { state: p.state } : {}),
+      });
       return true;
     }
     if (v.type === 'save') {
@@ -314,4 +322,30 @@ export function createRuntimeChannel({
       return state;
     },
   });
+}
+
+function validActionState(state) {
+  if (!state || typeof state !== 'object' || Array.isArray(state)) return false;
+  if (
+    !Object.keys(state).every((key) =>
+      ['audioState', 'hasManualSave', 'savedAt'].includes(key),
+    )
+  )
+    return false;
+  if (
+    'audioState' in state &&
+    !['on', 'off', 'blocked'].includes(state.audioState)
+  )
+    return false;
+  if ('hasManualSave' in state && typeof state.hasManualSave !== 'boolean')
+    return false;
+  if (
+    'savedAt' in state &&
+    state.savedAt !== null &&
+    (!Number.isSafeInteger(state.savedAt) ||
+      state.savedAt <= 0 ||
+      state.savedAt > 8640000000000000)
+  )
+    return false;
+  return true;
 }

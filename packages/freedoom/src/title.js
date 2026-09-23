@@ -384,8 +384,10 @@ async function handleAction(payload) {
     ].includes(payload.action)
   )
     return;
-  const reply = (ok, message) =>
-    send('action-result', { id: payload.id, ok, message });
+  const reply = (ok, message, state = {}) =>
+    send('action-result', { id: payload.id, ok, message, state });
+  const audioState = () =>
+    muted ? 'off' : audio?.state === 'running' ? 'on' : 'blocked';
   if (
     actionBusy ||
     (saving &&
@@ -404,6 +406,7 @@ async function handleAction(payload) {
           : audio?.state === 'running'
             ? 'Sound on.'
             : 'Sound needs activation.',
+        { audioState: audioState() },
       );
     } else if (payload.action === 'save') {
       if (saveBlocked) throw new Error('Saving unavailable');
@@ -417,12 +420,16 @@ async function handleAction(payload) {
         engine._akeru_save() + size,
       );
       const previous = await saves.service.read('snapshot');
+      const snapshot = snapshotBytes(bytes);
       await saves.service.write(
         'snapshot',
-        { schemaVersion: 1, bytes: snapshotBytes(bytes) },
+        { schemaVersion: 1, bytes: snapshot },
         previous?.revision ?? null,
       );
-      reply(true, 'Snapshot saved on this device.');
+      reply(true, 'Snapshot saved on this device.', {
+        hasManualSave: true,
+        savedAt: snapshotTime(snapshot),
+      });
     } else if (payload.action === 'restore') {
       const record = await saves.service.read('snapshot');
       if (!record) {
@@ -438,7 +445,11 @@ async function handleAction(payload) {
       reply(true, 'Saved game restored. Resume to play.');
     } else if (payload.action === 'save-status') {
       const record = await saves.service.read('snapshot');
-      if (!record) reply(true, 'No manual save yet.');
+      if (!record)
+        reply(true, 'No manual save yet.', {
+          hasManualSave: false,
+          savedAt: null,
+        });
       else {
         snapshotContents(record);
         const at = snapshotTime(record.bytes);
@@ -447,6 +458,7 @@ async function handleAction(payload) {
           at
             ? 'Last saved ' + new Date(at).toLocaleString()
             : 'Saved game available · date unavailable.',
+          { hasManualSave: true, savedAt: at },
         );
       }
     } else if (payload.action === 'restart') {
@@ -470,6 +482,7 @@ async function handleAction(payload) {
           : audio?.state === 'running'
             ? 'Sound on.'
             : 'Sound is blocked. Resume and tap the game to enable audio.',
+        { audioState: audioState() },
       );
     }
   } catch {
