@@ -3670,3 +3670,204 @@ body.direct-player .player-menu {
     scroll-behavior: auto !important;
   }
 }
+
+/* Shared glass virtual-pad geometry; controls alone intercept touches. */
+.runtime-wrap #touch-controls {
+  pointer-events: none;
+}
+.runtime-wrap .akeru-touch-controls {
+  position: relative;
+  display: block;
+  height: 310px;
+  width: 100%;
+  opacity: 0.72;
+  pointer-events: none;
+  user-select: none;
+}
+.runtime-wrap #touch-controls .touch-glass {
+  box-sizing: border-box;
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  min-width: 0;
+  border: 1px solid #ffffff30;
+  background: #20202066;
+  color: white;
+  border-radius: 999px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 1px 1px #ffffff20,
+    0 2px 8px #0002;
+  pointer-events: auto;
+  touch-action: none;
+  font:
+    700 22px ui-rounded,
+    system-ui,
+    sans-serif;
+  transition:
+    background 80ms,
+    scale 80ms;
+}
+.runtime-wrap #touch-controls button[data-pressed='true'] {
+  background: #ffffff48;
+  scale: 0.9;
+}
+.runtime-wrap #touch-controls .touch-stick {
+  width: 130px;
+  height: 130px;
+  bottom: 16px;
+}
+.touch-stick-left {
+  left: calc(50% - 205px);
+}
+.touch-stick-right {
+  right: calc(50% - 205px);
+}
+.runtime-wrap #touch-controls .touch-knob {
+  width: 56px;
+  height: 56px;
+  left: calc(50% - 28px);
+  top: calc(50% - 28px);
+  pointer-events: none;
+}
+.touch-stick:not([data-pressed='true']) .touch-knob {
+  transition: transform 150ms ease-out;
+}
+.runtime-wrap #touch-controls .touch-dpad {
+  width: clamp(96px, 13vw, 128px);
+  height: clamp(96px, 13vw, 128px);
+  bottom: 16px;
+  left: 16px;
+  display: grid;
+  place-items: center;
+}
+.touch-cross {
+  font: 72px/1 system-ui;
+  opacity: 0.45;
+  pointer-events: none;
+}
+.runtime-wrap #touch-controls .akeru-touch-south,
+.runtime-wrap #touch-controls .akeru-touch-east,
+.runtime-wrap #touch-controls .akeru-touch-west,
+.runtime-wrap #touch-controls .akeru-touch-north {
+  width: 54px;
+  height: 54px;
+}
+.akeru-touch-south {
+  right: 62px;
+  bottom: 24px;
+}
+.akeru-touch-east {
+  right: 16px;
+  bottom: 70px;
+}
+.akeru-touch-west {
+  right: 108px;
+  bottom: 70px;
+}
+.akeru-touch-north {
+  right: 62px;
+  bottom: 116px;
+}
+.runtime-wrap #touch-controls .akeru-touch-leftShoulder,
+.runtime-wrap #touch-controls .akeru-touch-rightShoulder,
+.runtime-wrap #touch-controls .akeru-touch-leftTrigger,
+.runtime-wrap #touch-controls .akeru-touch-rightTrigger {
+  width: 66px;
+  height: 38px;
+  font-size: 15px;
+}
+.akeru-touch-leftShoulder {
+  left: 40px;
+  bottom: 204px;
+}
+.akeru-touch-rightShoulder {
+  right: 56px;
+  bottom: 204px;
+}
+.akeru-touch-leftTrigger {
+  left: 40px;
+  bottom: 252px;
+}
+.akeru-touch-rightTrigger {
+  right: 56px;
+  bottom: 252px;
+}
+.runtime-wrap #touch-controls .akeru-touch-select,
+.runtime-wrap #touch-controls .akeru-touch-start {
+  width: 38px;
+  height: 38px;
+  bottom: 16px;
+  font-size: 18px;
+}
+.akeru-touch-select {
+  left: calc(50% - 48px);
+}
+.akeru-touch-start {
+  right: calc(50% - 48px);
+}
+@media (max-width: 740px) {
+  .runtime-wrap #touch-controls .touch-stick {
+    width: 104px;
+    height: 104px;
+  }
+  .touch-stick-left {
+    left: 24%;
+  }
+  .touch-stick-right {
+    right: 24%;
+  }
+  .runtime-wrap #touch-controls .touch-dpad {
+    width: 88px;
+    height: 88px;
+    left: 4px;
+  }
+}
+@media (max-width: 520px) {
+  .runtime-wrap .akeru-touch-controls {
+    height: 330px;
+  }
+  .touch-stick-left {
+    left: 8px;
+  }
+  .touch-stick-right {
+    right: 8px;
+  }
+  .runtime-wrap #touch-controls .touch-dpad {
+    bottom: 144px;
+    left: 12px;
+  }
+  .akeru-touch-south {
+    bottom: 132px;
+  }
+  .akeru-touch-east,
+  .akeru-touch-west {
+    bottom: 178px;
+  }
+  .akeru-touch-north {
+    bottom: 224px;
+  }
+  .akeru-touch-leftShoulder,
+  .akeru-touch-rightShoulder {
+    bottom: 286px;
+  }
+  .akeru-touch-leftTrigger {
+    left: 114px;
+    bottom: 286px;
+  }
+  .akeru-touch-rightTrigger {
+    right: 130px;
+    bottom: 286px;
+  }
+  .runtime-wrap #touch-controls .akeru-touch-leftTrigger,
+  .runtime-wrap #touch-controls .akeru-touch-rightTrigger {
+    width: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .runtime-wrap #touch-controls * {
+    transition: none !important;
+  }
+}

@@ -783,6 +783,10 @@ export function mountCatalog({
           let lastConnected = null;
           const syncController = () => {
             const connected = (input?.refreshControllers?.().length ?? 0) > 0;
+            if (connected !== lastConnected) {
+              $('#touch-controls').hidden =
+                connected || !matchMedia('(pointer: coarse)').matches;
+            }
             if (
               connected !== lastConnected &&
               session.channel.sendControllerStatus(connected)
@@ -838,7 +842,7 @@ export function mountCatalog({
     tools.prepend(fullscreen);
     const touch = node('button', 'secondary', 'Touch controls');
     const touchVisible = matchMedia('(pointer: coarse)').matches;
-    $('#touch-controls').hidden = isPlayer() || !touchVisible;
+    $('#touch-controls').hidden = !touchVisible;
     touch.setAttribute('aria-pressed', String(touchVisible));
     touch.onclick = () => {
       $('#touch-controls').hidden = !$('#touch-controls').hidden;
