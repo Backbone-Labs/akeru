@@ -127,9 +127,7 @@ test('player pill exposes honest rumble/save status and confirms leaving without
     await page
       .getByRole('button', { name: 'Sound and vibration', exact: true })
       .click();
-    await page
-      .getByRole('button', { name: 'Vibration', exact: true })
-      .click();
+    await page.getByRole('button', { name: 'Vibration', exact: true }).click();
     await expect(
       page.getByRole('button', { name: 'Vibration', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');
@@ -255,12 +253,6 @@ test('controller opens the pill and selects a setting without touch', async ({
     await setGamepadButton(page, 9, 1);
     await expect(
       page.getByRole('button', { name: 'Resume', exact: true }),
-    ).toBeFocused();
-    await neutralGamepad(page);
-    await page.waitForTimeout(150);
-    await setGamepadButton(page, 15, 1);
-    await expect(
-      page.getByRole('button', { name: 'Controller settings', exact: true }),
     ).toBeFocused();
     await neutralGamepad(page);
     await page.waitForTimeout(150);

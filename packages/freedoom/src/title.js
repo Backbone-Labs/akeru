@@ -250,7 +250,20 @@ async function enableAudio() {
       audio = new AudioContext();
       audio.addEventListener('statechange', updateAudioUI);
     }
-    await audio.resume();
+    let timer;
+    try {
+      await Promise.race([
+        audio.resume(),
+        new Promise((_, reject) => {
+          timer = setTimeout(
+            () => reject(new Error('Audio needs a gesture')),
+            2000,
+          );
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
     nextAudio = audio.currentTime;
   } catch {
     audioPrompt.textContent = 'Tap to retry sound';
@@ -399,7 +412,7 @@ async function handleAction(payload) {
       if (muted) {
         stopAudio();
         await audio?.suspend();
-      } else void enableAudio();
+      } else await enableAudio();
       updateAudioUI();
       reply(
         true,

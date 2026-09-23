@@ -202,7 +202,78 @@ export function mountCatalog({
       /* An unavailable metrics sink must not block play. */
     }
   }
+  let nativeMenu = false;
+  let nativeSequence = 0;
+  globalThis.akeruNative = Object.freeze({
+    async command(action, payload = {}) {
+      if (!nativeMenu || !active) throw new Error('Native menu unavailable');
+      if (action === 'pause') {
+        input?.stop();
+        active.channel.pause();
+        return 'Paused';
+      }
+      if (action === 'resume') {
+        active.channel.resume();
+        input?.start();
+        return 'Playing';
+      }
+      if (action === 'input') {
+        const bits = Number(payload.buttons) || 0;
+        const down = (bit) => (bits & bit ? 1 : 0);
+        const axis = (value) =>
+          Math.max(-1, Math.min(1, (Number(value) || 0) / 32767));
+        active.channel.sendInput({
+          sequence: ++nativeSequence,
+          timeMs: performance.now(),
+          provider: 'touch',
+          connected: true,
+          buttons: {
+            confirm: down(1),
+            cancel: down(2),
+            west: down(4),
+            north: down(8),
+            up: down(16),
+            down: down(32),
+            left: down(64),
+            right: down(128),
+            menu: down(256),
+            view: down(512),
+            leftShoulder: down(4096),
+            rightShoulder: down(8192),
+            rightTrigger: (Number(payload.rightTrigger) || 0) / 255,
+          },
+          axes: {
+            moveX: axis(payload.leftX),
+            moveY: -axis(payload.leftY),
+            lookX: axis(payload.rightX),
+            lookY: -axis(payload.rightY),
+          },
+        });
+        return 'Input';
+      }
+      if (!['save', 'restore', 'audio'].includes(action))
+        throw new Error('Unknown action');
+      const result = await active.channel.requestAction(action);
+      return result.message;
+    },
+  });
+  async function attachNativeMenu(session) {
+    if (!isPlayer() || !globalThis.webkit?.messageHandlers?.akeruPlayer) return;
+    try {
+      const accepted =
+        await globalThis.webkit.messageHandlers.akeruPlayer.postMessage({
+          action: 'menu',
+        });
+      if (accepted !== true || active !== session) return;
+      nativeMenu = true;
+      if ($('#player-menu')) $('#player-menu').hidden = true;
+      $('#touch-controls').hidden = true;
+    } catch {
+      /* Older app versions keep the web menu. */
+    }
+  }
   function clearSession() {
+    nativeMenu = false;
     clearInterval(controllerMonitor);
     controllerMonitor = null;
     stopControlsMonitor();
@@ -308,13 +379,22 @@ export function mountCatalog({
         let menuHeld = false;
         input.subscribe((snapshot) => {
           const pressed = (snapshot.buttons.menu ?? 0) > 0.5;
-          if (pressed && !menuHeld && active?.channel?.state === 'playable') {
+          if (
+            !nativeMenu &&
+            pressed &&
+            !menuHeld &&
+            active?.channel?.state === 'playable'
+          ) {
             menuHeld = true;
             pause();
             return;
           }
           menuHeld = pressed;
-          active?.channel?.sendInput(snapshot);
+          active?.channel?.sendInput({
+            ...snapshot,
+            sequence: ++nativeSequence,
+            timeMs: performance.now(),
+          });
         });
       }
       input.subscribeNavigation(nav);
@@ -723,7 +803,7 @@ export function mountCatalog({
   function renderRuntime(entry) {
     clearSession();
     main.innerHTML =
-      '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><a class="runtime-home" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></a><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay" role="status"><span class="spinner" aria-hidden="true"></span><h2>Finding your orbit…</h2><p>Opening the isolated test fixture.</p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
+      '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><a class="runtime-home" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></a><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" hidden class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay" role="status"><span class="spinner" aria-hidden="true"></span><h2>Finding your orbit…</h2><p>Opening the isolated test fixture.</p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
     $('#runtime-title').textContent = entry.manifest.title;
     if (isPlayer()) {
       document.title = entry.manifest.title + ' · Backbone';
@@ -780,12 +860,15 @@ export function mountCatalog({
             durationMs: Math.min(600000, performance.now() - start),
           });
           bindInput(entry.manifest.id, true);
+          void attachNativeMenu(session);
           let lastConnected = null;
           const syncController = () => {
             const connected = (input?.refreshControllers?.().length ?? 0) > 0;
             if (connected !== lastConnected) {
               $('#touch-controls').hidden =
-                connected || !matchMedia('(pointer: coarse)').matches;
+                nativeMenu ||
+                connected ||
+                !matchMedia('(pointer: coarse)').matches;
             }
             if (
               connected !== lastConnected &&
@@ -1182,7 +1265,7 @@ export function mountCatalog({
       const paused = node('h2', 'player-sr-only', 'Paused');
       bar.append(
         iconButton(b, 'play', 'Resume', 'Resume'),
-        iconButton(controls, 'controller', 'Controls', 'Controller settings'),
+
         iconButton(touch, 'touch', 'Touch', 'Touch controls'),
         rumbleTab,
         savesTab,
