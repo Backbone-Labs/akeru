@@ -145,6 +145,7 @@ addEventListener('message', (event) => {
   } else if (m.type === 'resume') {
     paused = false;
     releaseInput();
+    void enableAudio();
   }
 });
 let lastMask = 0;
@@ -280,7 +281,7 @@ document.addEventListener('visibilitychange', () => {
     releaseInput();
     stopAudio();
     void persist();
-  }
+  } else if (!paused) void enableAudio();
 });
 addEventListener('keydown', (event) => {
   if (!ready || paused || event.target.closest?.('button, input, textarea'))
@@ -394,7 +395,7 @@ async function handleAction(payload) {
         throw new Error('Incompatible save');
       reply(true, 'Saved game restored. Resume to play.');
     } else {
-      muted = !muted;
+      muted = audio?.state === 'running' && !muted;
       if (muted) {
         stopAudio();
         await audio?.suspend();
