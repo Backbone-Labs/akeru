@@ -52,18 +52,16 @@ test('kart launches at phone width, drives, and pauses without stuck throttle', 
     .toBe(false);
   expect(await game.evaluate(() => window.akeruKart.controls.throttle)).toBe(0);
   await page.evaluate(() =>
-    document
-      .querySelector('iframe')
-      .contentWindow.postMessage(
-        {
-          protocol: 'akeru.catalog.v1',
-          nonce: 'forged',
-          sequence: 999999,
-          type: 'input',
-          payload: { buttons: { confirm: 1 }, axes: {} },
-        },
-        '*',
-      ),
+    document.querySelector('iframe').contentWindow.postMessage(
+      {
+        protocol: 'akeru.catalog.v1',
+        nonce: 'forged',
+        sequence: 999999,
+        type: 'input',
+        payload: { buttons: { confirm: 1 }, axes: {} },
+      },
+      '*',
+    ),
   );
   await page.waitForTimeout(100);
   expect(await game.evaluate(() => window.akeruKart.controls.throttle)).toBe(0);
