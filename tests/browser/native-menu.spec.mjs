@@ -119,6 +119,19 @@ test('native Doom menu saves a dated snapshot, restarts without deleting it, and
       .evaluate(() => window.doomTest().tic);
     const savedStatus = await command('save-status');
     expect(savedStatus).toMatch(/^Last saved /);
+    const structured = await page.evaluate(() =>
+      window.akeruNative.command('save-status', {}, 2),
+    );
+    expect(structured.ok).toBe(true);
+    expect(structured.state.hasManualSave).toBe(true);
+    expect(structured.state.savedAt).toBeGreaterThan(0);
+    expect(
+      (
+        await page.evaluate(() =>
+          window.akeruNative.command('audio-status', {}, 2),
+        )
+      ).state.audioState,
+    ).toBe('on');
     expect(await command('audio-status')).toBe('Sound on.');
     expect(await command('audio')).toBe('Sound off.');
     await command('resume');

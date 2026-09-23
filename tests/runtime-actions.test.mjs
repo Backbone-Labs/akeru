@@ -55,3 +55,66 @@ test('runtime actions require advertised support, authenticated results, and dis
   channel.dispose();
   await assert.rejects(pending, /closed/);
 });
+
+test('action state is typed, bounded and independent of display copy', async () => {
+  const sent = [];
+  const frame = { postMessage: (m) => sent.push(m) };
+  const origin = 'https://game.example';
+  const nonce = 'b'.repeat(32);
+  const channel = createRuntimeChannel({ frame, origin, nonce });
+  let sequence = 0;
+  const event = (type, payload) => ({
+    source: frame,
+    origin,
+    data: {
+      protocol: 'akeru.catalog.v1',
+      nonce,
+      sequence: sequence++,
+      type,
+      payload,
+    },
+  });
+  channel.receive(event('playable', { sdkVersion: '0.1.0' }));
+  channel.receive(event('actions', { supported: ['save-status'] }));
+  const pending = channel.requestAction('save-status');
+  const id = sent.at(-1).payload.id;
+  for (const state of [
+    null,
+    [],
+    { hasManualSave: 'yes' },
+    { audioState: 'unknown' },
+    { savedAt: Infinity },
+    { savedAt: -1 },
+    { credentials: 'denied' },
+  ]) {
+    assert.equal(
+      channel.receive(
+        event('action-result', {
+          id,
+          ok: true,
+          message: 'Translated copy',
+          state,
+        }),
+      ),
+      false,
+    );
+  }
+  const state = { hasManualSave: true, savedAt: 1770000000000 };
+  assert.equal(
+    channel.receive(
+      event('action-result', {
+        id,
+        ok: true,
+        message: 'Translated copy',
+        state,
+      }),
+    ),
+    true,
+  );
+  assert.deepEqual(await pending, {
+    ok: true,
+    message: 'Translated copy',
+    state,
+  });
+  channel.dispose();
+});

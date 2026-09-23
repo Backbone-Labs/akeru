@@ -205,17 +205,19 @@ export function mountCatalog({
   let nativeMenu = false;
   let nativeSequence = 0;
   globalThis.akeruNative = Object.freeze({
-    async command(action, payload = {}) {
+    async command(action, payload = {}, version = 1) {
+      const reply = (message) =>
+        version === 2 ? { ok: true, message, state: {} } : message;
       if (!nativeMenu || !active) throw new Error('Native menu unavailable');
       if (action === 'pause') {
         input?.stop();
         active.channel.pause();
-        return 'Paused';
+        return reply('Paused');
       }
       if (action === 'resume') {
         active.channel.resume();
         input?.start();
-        return 'Playing';
+        return reply('Playing');
       }
       if (action === 'input') {
         const bits = Number(payload.buttons) || 0;
@@ -249,7 +251,7 @@ export function mountCatalog({
             lookY: -axis(payload.rightY),
           },
         });
-        return 'Input';
+        return reply('Input');
       }
       if (
         ![
@@ -263,7 +265,9 @@ export function mountCatalog({
       )
         throw new Error('Unknown action');
       const result = await active.channel.requestAction(action);
-      return result.message;
+      return version === 2
+        ? { ...result, state: result.state ?? {} }
+        : result.message;
     },
   });
   async function attachNativeMenu(session) {
