@@ -759,6 +759,9 @@ export function mountCatalog({
     active.channel = createRuntimeChannel({
       frame: frame.contentWindow,
       presentation: isPlayer() ? 'embedded' : 'web',
+      timeoutMs: entry.manifest.runtime.requiredFeatures.includes('wasm')
+        ? 60000
+        : 15000,
       origin: entry.release.origin,
       nonce,
       saveService: savesFor(entry).service,
@@ -912,11 +915,7 @@ export function mountCatalog({
       };
       o.append(controls, touch);
       const session = active;
-      const rumble = node(
-        'button',
-        'secondary player-switch',
-        'Vibration',
-      );
+      const rumble = node('button', 'secondary player-switch', 'Vibration');
       rumble.setAttribute('aria-pressed', String(session.rumble.enabled));
       const feedback = node(
         'p',
