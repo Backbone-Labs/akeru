@@ -307,6 +307,7 @@ export function createBrowserInputProvider(options = {}) {
     updateControllerList(pads);
     const selected = chooseGamepad(pads);
     if (!selected) {
+      ui?.updateInput?.(null);
       if (activeGamepad !== null) {
         if (activeProvider === 'gamepad') release('gamepad', false);
         activeGamepad = null;
@@ -315,6 +316,7 @@ export function createBrowserInputProvider(options = {}) {
       }
     } else {
       const raw = readStandardGamepad(selected);
+      ui?.updateInput?.(focused ? raw : null, selected.id);
       if (selected.index !== activeGamepad) {
         if (activeProvider === 'gamepad') release('gamepad', false);
         activeGamepad = selected.index;
@@ -410,7 +412,16 @@ export function createBrowserInputProvider(options = {}) {
       if (started) return;
       started = true;
       add(window, 'keydown', keydown);
-      add(window, 'blur', () => setFocused(false));
+      add(window, 'blur', (event) => {
+        // Entering an embedded runtime blurs its parent window, but the
+        // document still owns focus. A real tab/window exit does not.
+        const insideFrame =
+          event.isTrusted &&
+          document.activeElement?.tagName === 'IFRAME' &&
+          document.hasFocus?.() &&
+          document.visibilityState !== 'hidden';
+        setFocused(Boolean(insideFrame));
+      });
       add(window, 'focus', () =>
         setFocused(document.visibilityState !== 'hidden'),
       );

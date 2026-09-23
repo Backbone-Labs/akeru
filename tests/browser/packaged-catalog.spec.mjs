@@ -34,8 +34,10 @@ test.afterAll(async () => {
 test('serves the validated production release with an empty catalog', async ({
   page,
 }) => {
-  await page.goto(url);
-  await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible();
+  await page.goto(url + '/games');
+  await expect(
+    page.getByRole('heading', { name: /Find your next/ }),
+  ).toBeVisible();
   await expect(page.getByText('0 games', { exact: true })).toBeVisible();
   await expect(page.getByText('The library is being prepared.')).toBeVisible();
   await expect(page.locator('#demo-banner')).toBeHidden();

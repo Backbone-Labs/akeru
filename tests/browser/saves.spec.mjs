@@ -11,7 +11,7 @@ test.afterAll(async () => {
 test('restores guest progress after a reload and resets only on confirmation', async ({
   page,
 }) => {
-  await page.goto(demo.url);
+  await page.goto(demo.url + '/games');
   await launchDemo(page, demo.url);
   const frame = page.frameLocator('iframe');
   await expect(frame.locator('#save-status')).toContainText('this browser');
@@ -57,7 +57,7 @@ test('restores guest progress after a reload and resets only on confirmation', a
 test('IndexedDB isolates titles and prevents stale writes across connections', async ({
   page,
 }) => {
-  await page.goto(demo.url);
+  await page.goto(demo.url + '/games');
   const result = await page.evaluate(async () => {
     const { createSaveStore } = await import('/saves/index.js');
     const a = createSaveStore(),

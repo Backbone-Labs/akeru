@@ -85,7 +85,9 @@ export function createCatalogWorker(release) {
           'application/json; charset=utf-8',
         );
       const match = /^\/g\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/.exec(url.pathname);
-      const route = url.pathname === '/' || (match && match[1].length <= 64);
+      const route =
+        ['/', '/games', '/settings'].includes(url.pathname) ||
+        (match && match[1].length <= 64);
       const path = route ? '/index.html' : url.pathname;
       const file = files.get(path);
       if (!file) return respond(404, 'Not found');

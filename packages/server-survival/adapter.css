@@ -1,0 +1,76 @@
+body:not([data-akeru-ready='true']) {
+  visibility: hidden;
+}
+#akeru-cursor {
+  display: none;
+  position: fixed;
+  width: 22px;
+  height: 22px;
+  border: 3px solid #ff7043;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 2px 12px #000;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+}
+#akeru-help {
+  position: fixed;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 10px;
+  background: #111e;
+  color: #bbb;
+  font: 10px system-ui;
+  z-index: 99998;
+  pointer-events: none;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+#save-status {
+  margin-left: 12px;
+  color: #ffab91;
+}
+@media (max-width: 700px) {
+  #akeru-help {
+    font-size: 8px;
+    white-space: normal;
+    max-width: 90vw;
+    width: max-content;
+  }
+  #save-status {
+    display: block;
+    margin: 0;
+  }
+}
+#tool-music,
+#tool-sfx,
+#menu-music-btn,
+#menu-sfx-btn {
+  display: none !important;
+}
+#main-menu-modal > div,
+#save-modal > div {
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+}
+@media (max-width: 700px), (max-height: 700px) {
+  #main-menu-modal > div,
+  #save-modal > div {
+    padding: 22px;
+  }
+  #main-menu-modal h1,
+  #save-modal h1 {
+    font-size: 38px;
+    line-height: 1.05;
+  }
+  #main-menu-modal .space-y-4 > * + * {
+    margin-top: 9px;
+  }
+  #main-menu-modal button {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
