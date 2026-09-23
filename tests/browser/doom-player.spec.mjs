@@ -92,10 +92,10 @@ test('Doom direct player has audible samples, separate snapshot restore, and no 
       .getByRole('button', { name: 'Sound and vibration', exact: true })
       .click();
     await page
-      .getByRole('button', { name: 'Controller rumble', exact: true })
+      .getByRole('button', { name: 'Vibration', exact: true })
       .click();
     await page
-      .getByRole('button', { name: 'Test rumble', exact: true })
+      .getByRole('button', { name: 'Test vibration', exact: true })
       .click();
     await expect
       .poll(() => page.evaluate(() => window.rumbles.length))

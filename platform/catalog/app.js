@@ -915,7 +915,7 @@ export function mountCatalog({
       const rumble = node(
         'button',
         'secondary player-switch',
-        'Controller rumble',
+        'Vibration',
       );
       rumble.setAttribute('aria-pressed', String(session.rumble.enabled));
       const feedback = node(
@@ -933,7 +933,7 @@ export function mountCatalog({
             : 'Enabled, but rumble is unavailable on this controller or browser.'
           : 'Rumble off.';
       };
-      const testRumble = node('button', 'secondary', 'Test rumble');
+      const testRumble = node('button', 'secondary', 'Test vibration');
       testRumble.onclick = async () => {
         testRumble.disabled = true;
         const ok = await session.rumble.play({
@@ -1090,7 +1090,7 @@ export function mountCatalog({
           feedback,
         );
         feedback.textContent = session.rumble.available
-          ? 'Controller vibration is available. Enable it to feel fire-button feedback.'
+          ? 'Vibration is available. On iPhone, feedback comes from the phone. Enable it for fire-button feedback.'
           : 'Vibration is unavailable on this device. The app may need a native haptics connection.';
       };
       const gameAction = (label, action) => {

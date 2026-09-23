@@ -128,13 +128,13 @@ test('player pill exposes honest rumble/save status and confirms leaving without
       .getByRole('button', { name: 'Sound and vibration', exact: true })
       .click();
     await page
-      .getByRole('button', { name: 'Controller rumble', exact: true })
+      .getByRole('button', { name: 'Vibration', exact: true })
       .click();
     await expect(
-      page.getByRole('button', { name: 'Controller rumble', exact: true }),
+      page.getByRole('button', { name: 'Vibration', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');
     await page
-      .getByRole('button', { name: 'Test rumble', exact: true })
+      .getByRole('button', { name: 'Test vibration', exact: true })
       .click();
     await expect(page.getByText(/No rumble sent/)).toBeVisible();
     await page
@@ -170,11 +170,11 @@ test('controller navigates within a subpanel and B returns to its tile', async (
       .getByRole('button', { name: 'Sound and vibration', exact: true })
       .click();
     const toggle = page.getByRole('button', {
-      name: 'Controller rumble',
+      name: 'Vibration',
       exact: true,
     });
     const testButton = page.getByRole('button', {
-      name: 'Test rumble',
+      name: 'Test vibration',
       exact: true,
     });
     await expect(toggle).toBeFocused();
