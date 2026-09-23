@@ -131,3 +131,27 @@ test('rumble messages are authenticated, bounded and rejected while paused or wi
   );
   denied.dispose();
 });
+
+test('native phone impacts remain opt-in, bounded, and disabled after disposal', async () => {
+  const calls = [];
+  const rumble = createRumble({
+    getGamepads: () => [],
+    visible: () => true,
+    native: {
+      postMessage: async (message) => {
+        calls.push(message);
+        return true;
+      },
+    },
+  });
+  await Promise.resolve();
+  assert.equal(rumble.available, true);
+  const effect = { duration: 90, strongMagnitude: 0.25, weakMagnitude: 0.5 };
+  assert.equal(await rumble.play(effect), false);
+  rumble.setEnabled(true);
+  assert.equal(await rumble.play(effect), true);
+  assert.deepEqual(calls.at(-1), { action: 'impact', intensity: 0.5 });
+  assert.equal(await rumble.play(effect), false);
+  rumble.dispose();
+  assert.equal(await rumble.play(effect), false);
+});

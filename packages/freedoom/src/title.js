@@ -70,15 +70,17 @@ async function initialize() {
         ? 'Progress restored. ' + hint
         : hint;
     send('playable', { sdkVersion: '0.1.0' });
+    send('actions', { supported: ['save', 'restore', 'audio'] });
+    void enableAudio();
   } catch (error) {
     status.textContent =
       'Could not load the local Freedoom build. ' + error.message;
   }
 }
 async function persist() {
-  if (!ready || saving || saveBlocked) return;
+  if (!ready || saving || saveBlocked) return false;
   const size = engine._akeru_serialize();
-  if (!size) return;
+  if (!size) return false;
   saving = true;
   try {
     const bytes = engine.HEAPU8.slice(
@@ -92,9 +94,11 @@ async function persist() {
     );
     revision = record.revision;
     status.textContent = 'Progress saved in this browser.';
+    return true;
   } catch (error) {
     if (error.code === 'conflict') saveBlocked = true;
     status.textContent = 'Could not save. Previous progress is preserved.';
+    return false;
   } finally {
     saving = false;
   }
@@ -120,9 +124,15 @@ addEventListener('message', (event) => {
   )
     return;
   received = m.sequence;
+  if (m.type === 'action' && ready) {
+    void handleAction(m.payload);
+    return;
+  }
   if (m.type === 'save-result') return saves.receive(m.payload);
   if (m.type === 'connect' && !connected && m.payload?.sdkVersion === '0.1.0') {
     connected = true;
+    document.querySelector('#game-options').hidden =
+      m.payload.presentation === 'embedded';
     void initialize();
   } else if (m.type === 'input' && connected && !paused)
     mask = inputMask(m.payload);
@@ -130,15 +140,29 @@ addEventListener('message', (event) => {
     paused = true;
     releaseInput();
     if (document.pointerLockElement === canvas) document.exitPointerLock();
+    stopAudio();
     void persist();
   } else if (m.type === 'resume') {
     paused = false;
     releaseInput();
   }
 });
+let lastMask = 0;
 let previous = performance.now(),
   accumulator = 0,
   frame;
+const audioSources = new Set();
+function stopAudio() {
+  for (const source of audioSources) {
+    try {
+      source.stop();
+    } catch {
+      /* already ended */
+    }
+  }
+  audioSources.clear();
+  nextAudio = audio?.currentTime ?? 0;
+}
 let audio,
   nextAudio = 0;
 function playAudio() {
@@ -161,6 +185,8 @@ function playAudio() {
   const source = audio.createBufferSource();
   source.buffer = buffer;
   source.connect(audio.destination);
+  audioSources.add(source);
+  source.onended = () => audioSources.delete(source);
   source.start(nextAudio);
   nextAudio += count / 44100;
 }
@@ -171,7 +197,20 @@ function draw(at) {
     while (accumulator >= 1000 / engine._akeru_fps()) {
       const local = desktop.read(at);
       engine._akeru_mouse(local.x, 0);
-      engine._akeru_tick(mask | local.mask);
+      const combined = mask | local.mask;
+      // Fire-button feedback; it does not claim the engine fired a shot.
+      if (
+        combined & (1 << 9) &&
+        !(lastMask & (1 << 9)) &&
+        engine._akeru_state() === 0
+      )
+        send('rumble', {
+          duration: 90,
+          strongMagnitude: 0.25,
+          weakMagnitude: 0.5,
+        });
+      lastMask = combined;
+      engine._akeru_tick(combined);
       playAudio();
       accumulator -= 1000 / engine._akeru_fps();
     }
@@ -237,7 +276,11 @@ function releaseInput() {
 }
 addEventListener('blur', releaseInput);
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) releaseInput();
+  if (document.hidden) {
+    releaseInput();
+    stopAudio();
+    void persist();
+  }
 });
 addEventListener('keydown', (event) => {
   if (!ready || paused || event.target.closest?.('button, input, textarea'))
@@ -295,3 +338,80 @@ document.addEventListener('pointerlockchange', () => {
   }
 });
 canvas.addEventListener('contextmenu', (event) => event.preventDefault());
+
+// The host owns these controls; no extra toolbar competes with the app overlay.
+
+let actionBusy = false;
+async function handleAction(payload) {
+  if (
+    !payload ||
+    !Number.isSafeInteger(payload.id) ||
+    !['save', 'restore', 'audio'].includes(payload.action)
+  )
+    return;
+  const reply = (ok, message) =>
+    send('action-result', { id: payload.id, ok, message });
+  if (actionBusy || saving) {
+    reply(false, 'A save is in progress. Try again in a moment.');
+    return;
+  }
+  actionBusy = true;
+  try {
+    if (payload.action === 'save') {
+      if (saveBlocked) throw new Error('Saving unavailable');
+      const size = engine._akeru_serialize();
+      if (!size) {
+        reply(false, 'Save after returning to gameplay.');
+        return;
+      }
+      const bytes = engine.HEAPU8.slice(
+        engine._akeru_save(),
+        engine._akeru_save() + size,
+      );
+      const previous = await saves.service.read('snapshot');
+      await saves.service.write(
+        'snapshot',
+        { schemaVersion: 1, bytes },
+        previous?.revision ?? null,
+      );
+      reply(true, 'Snapshot saved on this device.');
+    } else if (payload.action === 'restore') {
+      const record = await saves.service.read('snapshot');
+      if (!record) {
+        reply(false, 'No saved game yet.');
+        return;
+      }
+      if (
+        record.schemaVersion !== 1 ||
+        record.bytes.length < 196608 ||
+        record.bytes.length > 1048576
+      )
+        throw new Error('Invalid save');
+      releaseInput();
+      stopAudio();
+      engine.HEAPU8.set(record.bytes, engine._akeru_save());
+      if (!engine._akeru_restore(record.bytes.length))
+        throw new Error('Incompatible save');
+      reply(true, 'Saved game restored. Resume to play.');
+    } else {
+      muted = !muted;
+      if (muted) {
+        stopAudio();
+        await audio?.suspend();
+      } else void enableAudio();
+      updateAudioUI();
+      reply(
+        true,
+        muted
+          ? 'Sound off.'
+          : audio?.state === 'running'
+            ? 'Sound on.'
+            : 'Resume, then tap the sound button in the game.',
+      );
+    }
+  } catch {
+    reply(false, 'Could not restore. Your saved data is unchanged.');
+  } finally {
+    actionBusy = false;
+  }
+}

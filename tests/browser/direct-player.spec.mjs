@@ -125,7 +125,7 @@ test('player pill exposes honest rumble/save status and confirms leaving without
     await menu.click();
     await expect(menu).toHaveAttribute('aria-expanded', 'true');
     await page
-      .getByRole('button', { name: 'Rumble settings', exact: true })
+      .getByRole('button', { name: 'Sound and vibration', exact: true })
       .click();
     await page
       .getByRole('button', { name: 'Controller rumble', exact: true })
@@ -167,7 +167,7 @@ test('controller navigates within a subpanel and B returns to its tile', async (
     await page.goto(demo.url + '/play/orbit-study');
     await page.getByRole('button', { name: 'Game menu', exact: true }).click();
     await page
-      .getByRole('button', { name: 'Rumble settings', exact: true })
+      .getByRole('button', { name: 'Sound and vibration', exact: true })
       .click();
     const toggle = page.getByRole('button', {
       name: 'Controller rumble',
@@ -194,7 +194,7 @@ test('controller navigates within a subpanel and B returns to its tile', async (
     await setGamepadButton(page, 1, 1);
     await expect(page.locator('.player-action-detail')).toBeHidden();
     await expect(
-      page.getByRole('button', { name: 'Rumble settings', exact: true }),
+      page.getByRole('button', { name: 'Sound and vibration', exact: true }),
     ).toBeFocused();
     await expect(page.locator('#runtime-overlay')).toBeVisible();
     await neutralGamepad(page);
@@ -229,7 +229,7 @@ for (const reducedMotion of ['no-preference', 'reduce']) {
         '',
       );
       await page
-        .getByRole('button', { name: 'Rumble settings', exact: true })
+        .getByRole('button', { name: 'Sound and vibration', exact: true })
         .click();
       await page
         .getByRole('button', { name: 'Close panel', exact: true })
@@ -272,7 +272,7 @@ test('controller opens the pill and selects a setting without touch', async ({
     await page.waitForTimeout(150);
     await page.evaluate(() => window.__akeruTestGamepad.axis(0, 1));
     await expect(
-      page.getByRole('button', { name: 'Rumble settings', exact: true }),
+      page.getByRole('button', { name: 'Sound and vibration', exact: true }),
     ).toBeFocused();
     await neutralGamepad(page);
   } finally {

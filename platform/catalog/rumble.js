@@ -1,5 +1,6 @@
 /** Shell-owned, opt-in, bounded haptics. Games never choose a device. */
 export function createRumble({
+  native = globalThis.webkit?.messageHandlers?.akeruPlayer,
   getGamepads = () => navigator.getGamepads?.() ?? [],
   visible = () => !document.hidden,
   now = () => performance.now(),
@@ -7,6 +8,15 @@ export function createRumble({
   let enabled = false,
     disposed = false,
     last = -Infinity;
+  let nativeAvailable = false;
+  if (native?.postMessage) {
+    Promise.resolve(native.postMessage({ action: 'available' })).then(
+      (result) => {
+        nativeAvailable = result === true;
+      },
+      () => {},
+    );
+  }
   const running = new Set();
   const actuator = () => {
     try {
@@ -30,7 +40,7 @@ export function createRumble({
   };
   return {
     get available() {
-      return !disposed && !!actuator();
+      return !disposed && (!!actuator() || nativeAvailable);
     },
     get enabled() {
       return enabled;
@@ -56,7 +66,20 @@ export function createRumble({
       )
         return false;
       const a = actuator();
-      if (!a) return false;
+      if (!a) {
+        if (!nativeAvailable) return false;
+        last = now();
+        try {
+          return (
+            (await native.postMessage({
+              action: 'impact',
+              intensity: Math.max(effect.strongMagnitude, effect.weakMagnitude),
+            })) === true
+          );
+        } catch {
+          return false;
+        }
+      }
       last = now();
       running.add(a);
       try {

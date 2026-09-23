@@ -749,7 +749,7 @@ export function mountCatalog({
       'allow-scripts allow-same-origin allow-pointer-lock',
     );
     frame.setAttribute('referrerpolicy', 'no-referrer');
-    frame.setAttribute('allow', 'gamepad');
+    frame.setAttribute('allow', 'gamepad; autoplay');
     const nonce = crypto.randomUUID(),
       start = performance.now();
     frame.src = `${titleUrl(entry)}#${new URLSearchParams({ nonce, shell: location.origin })}`;
@@ -758,6 +758,7 @@ export function mountCatalog({
     const session = active;
     active.channel = createRuntimeChannel({
       frame: frame.contentWindow,
+      presentation: isPlayer() ? 'embedded' : 'web',
       origin: entry.release.origin,
       nonce,
       saveService: savesFor(entry).service,
@@ -985,13 +986,24 @@ export function mountCatalog({
         refresh.setAttribute('aria-busy', 'false');
       };
       const leave = node('button', 'secondary player-leave', 'Leave game');
-      leave.onclick = () => {
+      leave.onclick = async () => {
         if (leave.dataset.confirm !== 'true') {
           leave.dataset.confirm = 'true';
           leave.textContent = 'Confirm leave game';
           saveInfo.textContent =
             'Save using the game’s controls before leaving. Unsaved progress may be lost.';
           return;
+        }
+        const nativePlayer = globalThis.webkit?.messageHandlers?.akeruPlayer;
+        if (nativePlayer) {
+          try {
+            if ((await nativePlayer.postMessage({ action: 'exit' })) === true) {
+              clearSession();
+              return;
+            }
+          } catch {
+            /* Older app: retain the web close fallback. */
+          }
         }
         clearSession();
         status(
@@ -1063,11 +1075,60 @@ export function mountCatalog({
       const rumbleTab = iconButton(
         node('button'),
         'rumble',
-        'Rumble',
-        'Rumble settings',
+        'Sound',
+        'Sound and vibration',
       );
-      rumbleTab.onclick = () =>
-        show('Controller rumble', rumble, testRumble, feedback);
+      rumbleTab.onclick = () => {
+        const audioAction = gameAction('Toggle game sound', 'audio');
+        show(
+          'Sound & vibration',
+          ...(session.channel.actions.includes('audio')
+            ? [audioAction, saveCaption]
+            : []),
+          rumble,
+          testRumble,
+          feedback,
+        );
+        feedback.textContent = session.rumble.available
+          ? 'Controller vibration is available. Enable it to feel fire-button feedback.'
+          : 'Vibration is unavailable on this device. The app may need a native haptics connection.';
+      };
+      const gameAction = (label, action) => {
+        const button = node('button', 'secondary', label);
+        button.onclick = async () => {
+          button.disabled = true;
+          saveCaption.textContent = 'Working…';
+          try {
+            const result = await session.channel.requestAction(action);
+            saveCaption.textContent = result.message;
+            saveHeadline.textContent = result.ok
+              ? 'Ready'
+              : 'Action not completed';
+          } catch {
+            saveCaption.textContent = 'Game did not respond. Try again.';
+          } finally {
+            button.disabled = false;
+          }
+        };
+        return button;
+      };
+      const saveNow = gameAction('Save snapshot', 'save');
+      const restoreNow = gameAction('Restore snapshot', 'restore');
+      const restoreAction = restoreNow.onclick;
+      restoreNow.onclick = () => {
+        if (restoreNow.dataset.confirm !== 'true') {
+          restoreNow.dataset.confirm = 'true';
+          restoreNow.textContent = 'Confirm restore snapshot';
+          restoreNow.setAttribute('aria-label', 'Confirm restore snapshot');
+          saveCaption.textContent =
+            'This replaces your current session with the snapshot.';
+        } else {
+          delete restoreNow.dataset.confirm;
+          restoreNow.textContent = 'Restore snapshot';
+          restoreNow.setAttribute('aria-label', 'Restore snapshot');
+          void restoreAction();
+        }
+      };
       const savesTab = iconButton(
         node('button'),
         'save',
@@ -1081,8 +1142,13 @@ export function mountCatalog({
           node(
             'p',
             'player-save-note',
-            'Save states aren’t available for this game yet.',
+            session.channel.actions.includes('save')
+              ? 'Auto-resume saves every 15 seconds and on pause. Your manual snapshot stays separate.'
+              : 'Save states aren’t available for this game yet.',
           ),
+          ...(session.channel.actions.includes('save')
+            ? [saveNow, restoreNow]
+            : []),
           refresh,
         );
         void refresh.onclick();

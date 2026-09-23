@@ -40,9 +40,8 @@ for (const id of ['freedoom1', 'freedoom2', 'freedm']) {
           )
           .toBe(0);
         await expect(frame.locator('footer')).not.toBeVisible();
-        await frame
-          .getByRole('button', { name: 'Tap to enable sound' })
-          .click();
+        if (await frame.locator('#enable-audio').isVisible())
+          await frame.locator('#enable-audio').click();
         await expect(frame.locator('#enable-audio')).toBeHidden();
         const before = await frame
           .locator('canvas')
