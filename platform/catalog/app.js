@@ -251,7 +251,16 @@ export function mountCatalog({
         });
         return 'Input';
       }
-      if (!['save', 'restore', 'audio'].includes(action))
+      if (
+        ![
+          'save',
+          'restore',
+          'audio',
+          'save-status',
+          'restart',
+          'audio-status',
+        ].includes(action)
+      )
         throw new Error('Unknown action');
       const result = await active.channel.requestAction(action);
       return result.message;

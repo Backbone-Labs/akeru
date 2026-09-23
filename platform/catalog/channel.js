@@ -109,9 +109,18 @@ export function createRuntimeChannel({
         !['playable', 'paused'].includes(state) ||
         !exact(p, ['supported']) ||
         !Array.isArray(p.supported) ||
-        p.supported.length > 3 ||
+        p.supported.length > 6 ||
         new Set(p.supported).size !== p.supported.length ||
-        !p.supported.every((a) => ['save', 'restore', 'audio'].includes(a))
+        !p.supported.every((a) =>
+          [
+            'save',
+            'restore',
+            'audio',
+            'save-status',
+            'restart',
+            'audio-status',
+          ].includes(a),
+        )
       )
         return false;
       actions = [...p.supported];

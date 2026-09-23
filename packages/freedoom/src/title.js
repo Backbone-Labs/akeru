@@ -15,6 +15,7 @@ const hint =
 let sequence = 0,
   received = -1,
   connected = false,
+  embedded = false,
   paused = false,
   mask = 0,
   engine,
@@ -70,7 +71,16 @@ async function initialize() {
         ? 'Progress restored. ' + hint
         : hint;
     send('playable', { sdkVersion: '0.1.0' });
-    send('actions', { supported: ['save', 'restore', 'audio'] });
+    send('actions', {
+      supported: [
+        'save',
+        'restore',
+        'audio',
+        'save-status',
+        'restart',
+        'audio-status',
+      ],
+    });
     void enableAudio();
   } catch (error) {
     status.textContent =
@@ -131,8 +141,9 @@ addEventListener('message', (event) => {
   if (m.type === 'save-result') return saves.receive(m.payload);
   if (m.type === 'connect' && !connected && m.payload?.sdkVersion === '0.1.0') {
     connected = true;
-    document.querySelector('#game-options').hidden =
-      m.payload.presentation === 'embedded';
+    embedded = m.payload.presentation === 'embedded';
+    document.querySelector('#game-options').hidden = embedded;
+    updateAudioUI();
     void initialize();
   } else if (m.type === 'input' && connected && !paused)
     mask = inputMask(m.payload);
@@ -167,7 +178,7 @@ function stopAudio() {
 let audio,
   nextAudio = 0;
 function playAudio() {
-  if (!audio || audio.state !== 'running' || document.hidden) return;
+  if (muted || !audio || audio.state !== 'running' || document.hidden) return;
   const count = engine._akeru_audio_count();
   if (!count) return;
   const data = engine.HEAPF32.subarray(
@@ -241,13 +252,16 @@ function updateAudioUI() {
   const running = audio?.state === 'running';
   audioButton.textContent = running ? 'Sound on' : 'Sound off';
   audioButton.setAttribute('aria-pressed', String(running));
-  audioPrompt.hidden = running || muted;
+  audioPrompt.hidden = embedded || running || muted;
 }
 async function enableAudio() {
   if (muted) return;
   try {
-    if (!audio) {
-      audio = new AudioContext();
+    // WebKit's Web Audio session is separate from the app's native session.
+    // Playback mode keeps game audio audible when the phone's ringer is silent.
+    if (navigator.audioSession) navigator.audioSession.type = 'playback';
+    if (!audio || audio.state === 'closed') {
+      audio = new AudioContext({ sampleRate: 44100 });
       audio.addEventListener('statechange', updateAudioUI);
     }
     let timer;
@@ -360,18 +374,38 @@ async function handleAction(payload) {
   if (
     !payload ||
     !Number.isSafeInteger(payload.id) ||
-    !['save', 'restore', 'audio'].includes(payload.action)
+    ![
+      'save',
+      'restore',
+      'audio',
+      'save-status',
+      'restart',
+      'audio-status',
+    ].includes(payload.action)
   )
     return;
   const reply = (ok, message) =>
     send('action-result', { id: payload.id, ok, message });
-  if (actionBusy || saving) {
+  if (
+    actionBusy ||
+    (saving &&
+      !['audio', 'save-status', 'audio-status'].includes(payload.action))
+  ) {
     reply(false, 'A save is in progress. Try again in a moment.');
     return;
   }
   actionBusy = true;
   try {
-    if (payload.action === 'save') {
+    if (payload.action === 'audio-status') {
+      reply(
+        true,
+        muted
+          ? 'Sound off.'
+          : audio?.state === 'running'
+            ? 'Sound on.'
+            : 'Sound needs activation.',
+      );
+    } else if (payload.action === 'save') {
       if (saveBlocked) throw new Error('Saving unavailable');
       const size = engine._akeru_serialize();
       if (!size) {
@@ -385,7 +419,7 @@ async function handleAction(payload) {
       const previous = await saves.service.read('snapshot');
       await saves.service.write(
         'snapshot',
-        { schemaVersion: 1, bytes },
+        { schemaVersion: 1, bytes: snapshotBytes(bytes) },
         previous?.revision ?? null,
       );
       reply(true, 'Snapshot saved on this device.');
@@ -395,18 +429,33 @@ async function handleAction(payload) {
         reply(false, 'No saved game yet.');
         return;
       }
-      if (
-        record.schemaVersion !== 1 ||
-        record.bytes.length < 196608 ||
-        record.bytes.length > 1048576
-      )
-        throw new Error('Invalid save');
+      const bytes = snapshotContents(record);
       releaseInput();
       stopAudio();
-      engine.HEAPU8.set(record.bytes, engine._akeru_save());
-      if (!engine._akeru_restore(record.bytes.length))
+      engine.HEAPU8.set(bytes, engine._akeru_save());
+      if (!engine._akeru_restore(bytes.length))
         throw new Error('Incompatible save');
       reply(true, 'Saved game restored. Resume to play.');
+    } else if (payload.action === 'save-status') {
+      const record = await saves.service.read('snapshot');
+      if (!record) reply(true, 'No manual save yet.');
+      else {
+        snapshotContents(record);
+        const at = snapshotTime(record.bytes);
+        reply(
+          true,
+          at
+            ? 'Last saved ' + new Date(at).toLocaleString()
+            : 'Saved game available · date unavailable.',
+        );
+      }
+    } else if (payload.action === 'restart') {
+      releaseInput();
+      stopAudio();
+      engine._akeru_restart(1);
+      engine._akeru_tick(0);
+      await persist();
+      reply(true, 'New game started. Your manual save is still available.');
     } else {
       muted = audio?.state === 'running' && !muted;
       if (muted) {
@@ -415,17 +464,61 @@ async function handleAction(payload) {
       } else await enableAudio();
       updateAudioUI();
       reply(
-        true,
+        muted || audio?.state === 'running',
         muted
           ? 'Sound off.'
           : audio?.state === 'running'
             ? 'Sound on.'
-            : 'Resume, then tap the sound button in the game.',
+            : 'Sound is blocked. Resume and tap the game to enable audio.',
       );
     }
   } catch {
-    reply(false, 'Could not restore. Your saved data is unchanged.');
+    reply(
+      false,
+      payload.action === 'audio'
+        ? 'Audio unavailable. Try again.'
+        : 'Could not complete. Your manual save is unchanged.',
+    );
   } finally {
     actionBusy = false;
   }
+}
+
+// Timestamp travels atomically with the snapshot, inside title-owned bytes.
+// Legacy snapshots without a trailer remain readable.
+const snapshotMarker = [65, 75, 69, 82, 85, 83, 86, 49];
+function snapshotTime(bytes) {
+  if (
+    bytes.length < 16 ||
+    !snapshotMarker.every((v, i) => bytes[bytes.length - 16 + i] === v)
+  )
+    return null;
+  const at = new DataView(
+    bytes.buffer,
+    bytes.byteOffset,
+    bytes.byteLength,
+  ).getFloat64(bytes.length - 8);
+  if (!Number.isSafeInteger(at) || at <= 0 || at > 8640000000000000)
+    throw new Error('Invalid save date');
+  return at;
+}
+function snapshotBytes(bytes) {
+  if (bytes.length + 16 > 1048576) throw new Error('Save too large');
+  const result = new Uint8Array(bytes.length + 16);
+  result.set(bytes);
+  result.set(snapshotMarker, bytes.length);
+  new DataView(result.buffer).setFloat64(bytes.length + 8, Date.now());
+  return result;
+}
+function snapshotContents(record) {
+  if (
+    record.schemaVersion !== 1 ||
+    !(record.bytes instanceof Uint8Array) ||
+    record.bytes.length < 196608 ||
+    record.bytes.length > 1048576
+  )
+    throw new Error('Invalid save');
+  return snapshotTime(record.bytes)
+    ? record.bytes.subarray(0, -16)
+    : record.bytes;
 }
