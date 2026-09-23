@@ -32,7 +32,7 @@ test('Doom direct player has audible samples, separate snapshot restore, and no 
         response,
         body:
           (await response.text()) +
-          '\nwindow.doomState=()=>({tic:engine?._akeru_tic(),audio:audio?.state,peak:engine?Math.max(...engine.HEAPF32.subarray(engine._akeru_audio()/4,engine._akeru_audio()/4+engine._akeru_audio_count()*2).map(Math.abs)):0});',
+          '\nwindow.doomSuspend=()=>audio.suspend();window.doomState=()=>({tic:engine?._akeru_tic(),audio:audio?.state,peak:engine?Math.max(...engine.HEAPF32.subarray(engine._akeru_audio()/4,engine._akeru_audio()/4+engine._akeru_audio_count()*2).map(Math.abs)):0});',
       });
     });
     await page.goto(demo.url + '/play/freedoom1');
@@ -66,7 +66,13 @@ test('Doom direct player has audible samples, separate snapshot restore, and no 
     const savedTic = await frame
       .locator('canvas')
       .evaluate(() => window.doomState().tic);
+    await frame.locator('canvas').evaluate(() => window.doomSuspend());
     await page.getByRole('button', { name: 'Resume', exact: true }).click();
+    await expect
+      .poll(() =>
+        frame.locator('canvas').evaluate(() => window.doomState().audio),
+      )
+      .toBe('running');
     await expect
       .poll(() =>
         frame.locator('canvas').evaluate(() => window.doomState().tic),
@@ -91,9 +97,7 @@ test('Doom direct player has audible samples, separate snapshot restore, and no 
     await page
       .getByRole('button', { name: 'Sound and vibration', exact: true })
       .click();
-    await page
-      .getByRole('button', { name: 'Vibration', exact: true })
-      .click();
+    await page.getByRole('button', { name: 'Vibration', exact: true }).click();
     await page
       .getByRole('button', { name: 'Test vibration', exact: true })
       .click();
