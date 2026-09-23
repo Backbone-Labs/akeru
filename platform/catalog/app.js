@@ -1078,11 +1078,17 @@ export function mountCatalog({
         'Sound and vibration',
       );
       rumbleTab.onclick = () => {
-        const audioAction = gameAction('Toggle game sound', 'audio');
+        const audioStatus = node('p', 'fine');
+        audioStatus.setAttribute('role', 'status');
+        const audioAction = gameAction(
+          'Toggle game sound',
+          'audio',
+          audioStatus,
+        );
         show(
           'Sound & vibration',
           ...(session.channel.actions.includes('audio')
-            ? [audioAction, saveCaption]
+            ? [audioAction, audioStatus]
             : []),
           rumble,
           testRumble,
@@ -1092,19 +1098,19 @@ export function mountCatalog({
           ? 'Vibration is available. On iPhone, feedback comes from the phone. Enable it for fire-button feedback.'
           : 'Vibration is unavailable on this device. The app may need a native haptics connection.';
       };
-      const gameAction = (label, action) => {
+      const gameAction = (label, action, actionStatus = saveCaption) => {
         const button = node('button', 'secondary', label);
         button.onclick = async () => {
           button.disabled = true;
-          saveCaption.textContent = 'Working…';
+          actionStatus.textContent = 'Working…';
           try {
             const result = await session.channel.requestAction(action);
-            saveCaption.textContent = result.message;
+            actionStatus.textContent = result.message;
             saveHeadline.textContent = result.ok
               ? 'Ready'
               : 'Action not completed';
           } catch {
-            saveCaption.textContent = 'Game did not respond. Try again.';
+            actionStatus.textContent = 'Game did not respond. Try again.';
           } finally {
             button.disabled = false;
           }

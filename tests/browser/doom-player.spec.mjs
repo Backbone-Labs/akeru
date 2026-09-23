@@ -104,6 +104,10 @@ test('Doom direct player has audible samples, separate snapshot restore, and no 
     await expect
       .poll(() => page.evaluate(() => window.rumbles.length))
       .toBeGreaterThan(0);
+    await page
+      .getByRole('button', { name: 'Saved progress', exact: true })
+      .click();
+    await expect(page.locator('.player-save-state p')).toBeVisible();
     await page.getByRole('button', { name: 'Resume', exact: true }).click();
     await page.reload();
     await expect(page.locator('#player-menu')).toBeEnabled({ timeout: 20000 });
