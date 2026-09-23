@@ -516,7 +516,8 @@ export function mountCatalog({
     if (route.view === 'player') {
       const entry = catalog.entries.find((e) => e.manifest.id === route.id);
       if (entry) {
-        status('Opening ' + entry.manifest.title + '…', '');
+        main.innerHTML =
+          '<div class="runtime-overlay prelaunch" role="status" aria-label="Opening game"><span class="launch-backbone">BACKBONE</span></div>';
         void launch(entry);
       } else
         status(
@@ -851,6 +852,7 @@ export function mountCatalog({
     $('#runtime-stage').prepend(frame);
     active = { entry, frame, channel: null, rumble: createRumble() };
     const session = active;
+    const introStarted = performance.now();
     active.channel = createRuntimeChannel({
       frame: frame.contentWindow,
       presentation: isPlayer() ? 'embedded' : 'web',
@@ -863,9 +865,22 @@ export function mountCatalog({
       onRumble: (effect) => {
         void session.rumble.play(effect);
       },
-      onEvent: (event) => {
+      onEvent: async (event) => {
         if (active !== session) return;
         if (event.type === 'playable') {
+          session.channel.pause();
+          // Finish the reveal and hold the full wordmark for one second, even on a warm cache.
+          const minimum = matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 500
+            : 3500;
+          await new Promise((resolve) =>
+            setTimeout(
+              resolve,
+              Math.max(0, minimum - (performance.now() - introStarted)),
+            ),
+          );
+          if (active !== session || session.channel.state !== 'paused') return;
+          session.channel.resume();
           recordPlayed(browserStorage(), entry.manifest.id);
           $('#runtime-overlay').hidden = true;
           $('#runtime-overlay').classList.remove('launch-screen');

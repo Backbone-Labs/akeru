@@ -3900,7 +3900,7 @@ body.direct-player .player-menu {
   align-items: center;
   gap: 12px;
   font-weight: 700;
-  animation: launch-settle 1.2s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: launch-settle 1.6s 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .launch-backbone svg {
   width: 0.85em;
@@ -3914,7 +3914,7 @@ body.direct-player .player-menu {
 .launch-akeru {
   display: block;
   font-weight: 400;
-  animation: launch-reveal 1.2s 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: launch-reveal 1.6s 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .launch-akeru i {
   color: #ff5b1a;
@@ -3968,4 +3968,24 @@ body.direct-player .runtime-overlay.launch-screen h2 {
   .runtime-overlay.launch-screen h2::after {
     animation: none;
   }
+}
+
+body:has(.initial-state),
+body:has(.prelaunch) {
+  background: #080909;
+}
+.initial-state,
+.runtime-overlay.prelaunch {
+  position: fixed;
+  inset: 0;
+  background: #080909;
+  color: #f5f5f4;
+  display: grid;
+  place-content: center;
+  margin: 0;
+}
+.initial-state .launch-backbone,
+.prelaunch .launch-backbone {
+  animation: none;
+  font-size: clamp(22px, 4.5vw, 56px);
 }
