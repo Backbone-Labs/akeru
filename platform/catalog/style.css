@@ -3879,3 +3879,93 @@ body.direct-player .player-menu {
   right: 12px;
   bottom: 12px;
 }
+
+/* One ready-gated opening surface for both the website and embedded player. */
+.runtime-overlay.launch-screen {
+  background: #080909;
+  gap: 0;
+  overflow: hidden;
+}
+.launch-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #f5f5f4;
+  font-size: clamp(22px, 4.5vw, 56px);
+  letter-spacing: -1.5px;
+  white-space: nowrap;
+}
+.launch-backbone {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  animation: launch-settle 1.2s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.launch-backbone svg {
+  width: 0.85em;
+  height: 0.85em;
+  fill: currentColor;
+}
+.launch-reveal {
+  overflow: hidden;
+  padding: 8px 0;
+}
+.launch-akeru {
+  display: block;
+  font-weight: 400;
+  animation: launch-reveal 1.2s 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.launch-akeru i {
+  color: #ff5b1a;
+  font-style: normal;
+  margin-right: 0.15em;
+}
+.runtime-overlay.launch-screen h2,
+body.direct-player .runtime-overlay.launch-screen h2 {
+  margin: 40px 0 0;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: #a6a7a7;
+}
+.runtime-overlay.launch-screen h2::after {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 2px;
+  background: #ff5b1a;
+  margin: 18px auto 0;
+  animation: launch-pulse 1s infinite alternate;
+}
+@keyframes launch-settle {
+  from {
+    transform: translateX(1.5em);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes launch-reveal {
+  from {
+    opacity: 0;
+    transform: translateX(110%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes launch-pulse {
+  to {
+    opacity: 0.3;
+    transform: scaleX(0.5);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .launch-backbone,
+  .launch-akeru,
+  .runtime-overlay.launch-screen h2::after {
+    animation: none;
+  }
+}

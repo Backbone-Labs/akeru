@@ -816,8 +816,10 @@ export function mountCatalog({
   function renderRuntime(entry) {
     clearSession();
     main.innerHTML =
-      '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><a class="runtime-home" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></a><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay" role="status"><span class="spinner" aria-hidden="true"></span><h2>Finding your orbit…</h2><p>Opening the isolated test fixture.</p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
+      '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><a class="runtime-home" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></a><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay launch-screen" role="status"><div class="launch-brand" aria-label="Backbone / Akeru"><span class="launch-backbone"><svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>BACKBONE</span><span class="launch-reveal"><span class="launch-akeru"><i>/</i> AKERU</span></span></div><h2>Opening game…</h2><p></p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
     $('#runtime-title').textContent = entry.manifest.title;
+    $('#runtime-overlay h2').textContent =
+      'Opening ' + entry.manifest.title + '…';
     if (isPlayer()) {
       document.title = entry.manifest.title + ' · Backbone';
       $('#runtime-overlay h2').textContent =
@@ -866,6 +868,7 @@ export function mountCatalog({
         if (event.type === 'playable') {
           recordPlayed(browserStorage(), entry.manifest.id);
           $('#runtime-overlay').hidden = true;
+          $('#runtime-overlay').classList.remove('launch-screen');
           if ($('#player-menu')) $('#player-menu').disabled = false;
           telemetry({
             type: 'playable',
@@ -986,6 +989,7 @@ export function mountCatalog({
     }
     $('#runtime-pause').textContent = 'Resume';
     const o = $('#runtime-overlay');
+    o.classList.remove('launch-screen');
     o.replaceChildren(
       node('p', 'eyebrow', 'TAKE YOUR TIME'),
       node('h2', '', 'A little breather.'),
@@ -1327,6 +1331,7 @@ export function mountCatalog({
     });
     const e = active.entry,
       o = $('#runtime-overlay');
+    o.classList.remove('launch-screen');
     o.replaceChildren(
       node('p', 'eyebrow', 'LET’S TRY THAT AGAIN'),
       node('h2', '', 'The game couldn’t open.'),
