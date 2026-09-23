@@ -20,10 +20,12 @@ const control = (v, min) =>
   );
 export function createRuntimeChannel({
   frame,
+  presentation = 'web',
   saveService,
   origin,
   nonce,
   onEvent = () => {},
+  onRumble,
   now = () => performance.now(),
   timeoutMs = 15000,
 }) {
@@ -60,6 +62,9 @@ export function createRuntimeChannel({
         origin,
       );
   };
+  let actions = [];
+  const pending = new Map();
+  let actionId = 0;
   const saves = createSaveChannel(saveService, send);
   const timeout = setTimeout(() => {
     if (state === 'loading' && !closed) {
@@ -72,6 +77,11 @@ export function createRuntimeChannel({
     if (closed) return;
     clearTimeout(timeout);
     saves.dispose();
+    for (const { reject, timer } of pending.values()) {
+      clearTimeout(timer);
+      reject(new Error('Game closed'));
+    }
+    pending.clear();
     closed = true;
     state = 'closed';
   }
@@ -94,6 +104,47 @@ export function createRuntimeChannel({
     }
     if (++budget > 60) return false;
     const p = v.payload;
+    if (v.type === 'actions') {
+      if (
+        !['playable', 'paused'].includes(state) ||
+        !exact(p, ['supported']) ||
+        !Array.isArray(p.supported) ||
+        p.supported.length > 6 ||
+        new Set(p.supported).size !== p.supported.length ||
+        !p.supported.every((a) =>
+          [
+            'save',
+            'restore',
+            'audio',
+            'save-status',
+            'restart',
+            'audio-status',
+          ].includes(a),
+        )
+      )
+        return false;
+      actions = [...p.supported];
+      received = v.sequence;
+      return true;
+    }
+    if (v.type === 'action-result') {
+      if (
+        !['playable', 'paused'].includes(state) ||
+        !exact(p, ['id', 'ok', 'message']) ||
+        !Number.isSafeInteger(p.id) ||
+        typeof p.ok !== 'boolean' ||
+        typeof p.message !== 'string' ||
+        p.message.length > 200 ||
+        !pending.has(p.id)
+      )
+        return false;
+      received = v.sequence;
+      const task = pending.get(p.id);
+      clearTimeout(task.timer);
+      pending.delete(p.id);
+      task.resolve({ ok: p.ok, message: p.message });
+      return true;
+    }
     if (v.type === 'save') {
       if (
         !['loading', 'playable', 'paused'].includes(state) ||
@@ -101,6 +152,23 @@ export function createRuntimeChannel({
       )
         return false;
       received = v.sequence;
+      return true;
+    }
+    if (v.type === 'rumble') {
+      if (
+        state !== 'playable' ||
+        typeof onRumble !== 'function' ||
+        !exact(p, ['duration', 'strongMagnitude', 'weakMagnitude']) ||
+        !Number.isFinite(p.duration) ||
+        p.duration < 1 ||
+        p.duration > 500 ||
+        !['strongMagnitude', 'weakMagnitude'].every(
+          (k) => Number.isFinite(p[k]) && p[k] >= 0 && p[k] <= 1,
+        )
+      )
+        return false;
+      received = v.sequence;
+      onRumble({ ...p });
       return true;
     }
     if (v.type === 'loading') {
@@ -179,13 +247,45 @@ export function createRuntimeChannel({
   }
   return Object.freeze({
     receive,
+    get actions() {
+      return [...actions];
+    },
+    requestAction(action) {
+      if (
+        closed ||
+        !['playable', 'paused'].includes(state) ||
+        !actions.includes(action) ||
+        pending.size
+      )
+        return Promise.reject(new Error('Action unavailable'));
+      return new Promise((resolve, reject) => {
+        const id = ++actionId;
+        const timer = setTimeout(() => {
+          pending.delete(id);
+          reject(new Error('Game did not respond'));
+        }, 8000);
+        pending.set(id, { resolve, reject, timer });
+        send('action', { id, action });
+      });
+    },
     sendInput,
+    sendControllerStatus(connected) {
+      if (
+        closed ||
+        !['playable', 'paused'].includes(state) ||
+        typeof connected !== 'boolean'
+      )
+        return false;
+      send('controller-status', { connected });
+      return true;
+    },
     connect() {
       if (connected || closed) return;
       connected = true;
       const finish = (status) =>
         send('connect', {
           sdkVersion: '0.1.0',
+          presentation: presentation === 'embedded' ? 'embedded' : 'web',
           saves: {
             local: status?.local === 'available' ? 'available' : 'unavailable',
             sync: 'disabled',

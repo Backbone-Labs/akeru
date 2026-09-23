@@ -36,7 +36,7 @@ test('serves the validated production release with an empty catalog', async ({
 }) => {
   await page.goto(url + '/games');
   await expect(
-    page.getByRole('heading', { name: /Find your next/ }),
+    page.getByRole('heading', { name: 'Discover', level: 1 }),
   ).toBeVisible();
   await expect(page.getByText('0 games', { exact: true })).toBeVisible();
   await expect(page.getByText('The library is being prepared.')).toBeVisible();

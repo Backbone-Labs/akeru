@@ -28,11 +28,11 @@ test('minimal guest flow is accessible, honest about accounts, and remembered', 
   await page.getByRole('button', { name: /Play as a guest/ }).click();
   await expect(dialog).toHaveCount(0);
   await expect(
-    page.getByRole('heading', { name: /Find your next/ }),
+    page.getByRole('heading', { name: 'Discover', level: 1 }),
   ).toBeVisible();
   await page.reload();
   await expect(
-    page.getByRole('heading', { name: /Find your next/ }),
+    page.getByRole('heading', { name: 'Discover', level: 1 }),
   ).toBeVisible();
   await expect(dialog).toHaveCount(0);
 });

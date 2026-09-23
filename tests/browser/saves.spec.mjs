@@ -16,9 +16,9 @@ test('restores guest progress after a reload and resets only on confirmation', a
   const frame = page.frameLocator('iframe');
   await expect(frame.locator('#save-status')).toContainText('this browser');
   const box = await page
-    .getByRole('button', { name: 'Right', exact: true })
+    .locator('[aria-label="Directional pad"]')
     .boundingBox();
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.move(box.x + box.width * 0.85, box.y + box.height / 2);
   await page.mouse.down();
   await page.waitForTimeout(250);
   await page.mouse.up();

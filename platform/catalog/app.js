@@ -1,3 +1,5 @@
+import { createPromotions } from './promotions.js';
+import { createRumble } from './rumble.js';
 import { renderGameHome, readRecent, recordPlayed } from './home.js';
 import { mountOnboarding, needsOnboarding } from './onboarding.js';
 import { createSaveStore } from '/saves/index.js';
@@ -15,6 +17,54 @@ const node = (tag, className, text) => {
   if (text !== undefined) e.textContent = text;
   return e;
 };
+// Cancel superseded transitions so rapid controller input cannot hide a reopened panel.
+const panelAnimations = new WeakMap();
+function animatePanel(
+  element,
+  open,
+  finish = () => {},
+  resize = false,
+  fromHeight,
+) {
+  panelAnimations.get(element)?.cancel();
+  element.inert = !open;
+  if (open) element.hidden = false;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const height = element.getBoundingClientRect().height;
+  const frames = resize
+    ? [
+        {
+          height: `${open ? (fromHeight ?? 0) : height}px`,
+          opacity: open ? 0 : 1,
+        },
+        { height: `${open ? height : 0}px`, opacity: open ? 1 : 0 },
+      ]
+    : [
+        {
+          clipPath: open
+            ? 'inset(0 0 calc(100% - 44px) calc(100% - 44px) round 22px)'
+            : 'inset(0 0 0 0 round 22px)',
+        },
+        {
+          clipPath: open
+            ? 'inset(0 0 0 0 round 22px)'
+            : 'inset(0 0 calc(100% - 44px) calc(100% - 44px) round 22px)',
+        },
+      ];
+  const animation = element.animate(frames, {
+    duration: reduced ? 0 : resize ? 300 : open ? 460 : 360,
+    easing: 'cubic-bezier(.22,.68,.18,1)',
+  });
+  panelAnimations.set(element, animation);
+  void animation.finished
+    .then(() => {
+      if (panelAnimations.get(element) !== animation) return;
+      panelAnimations.delete(element);
+      if (!open) element.hidden = true;
+      finish();
+    })
+    .catch(() => {});
+}
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 function link(label, url) {
   const e = node('a', '', label);
@@ -72,6 +122,8 @@ export function mountCatalog({
   controllerModelUrl = null,
   inputProviderFactory,
   telemetrySink,
+  acquisitionSink,
+  acquisitionConsent = () => false,
   loadCatalog = fetchRegistry,
   saveStore = createSaveStore(),
 } = {}) {
@@ -81,9 +133,18 @@ export function mountCatalog({
     active = null,
     input = null,
     navInput = null,
+    controllerMonitor = null,
     disposed = false,
     loadVersion = 0;
   let onboardingUi = null;
+  let disposeHome = null;
+  const promotions = createPromotions({
+    storage: browserStorage(),
+    sink: acquisitionSink,
+    consent: acquisitionConsent,
+  });
+  const isPlayer = () => location.pathname.startsWith('/play/');
+  document.body.classList.toggle('direct-player', isPlayer());
   const setTheme = (theme) => {
     document.documentElement.dataset.theme = theme;
     try {
@@ -122,6 +183,7 @@ export function mountCatalog({
   const onMessage = (e) => active?.channel?.receive(e);
   window.addEventListener('message', onMessage);
   const onVisibility = () => {
+    if (document.hidden) active?.rumble?.stop();
     if (document.hidden && active?.channel?.state === 'playable') pause();
   };
   document.addEventListener('visibilitychange', onVisibility);
@@ -140,12 +202,95 @@ export function mountCatalog({
       /* An unavailable metrics sink must not block play. */
     }
   }
+  let nativeMenu = false;
+  let nativeSequence = 0;
+  globalThis.akeruNative = Object.freeze({
+    async command(action, payload = {}) {
+      if (!nativeMenu || !active) throw new Error('Native menu unavailable');
+      if (action === 'pause') {
+        input?.stop();
+        active.channel.pause();
+        return 'Paused';
+      }
+      if (action === 'resume') {
+        active.channel.resume();
+        input?.start();
+        return 'Playing';
+      }
+      if (action === 'input') {
+        const bits = Number(payload.buttons) || 0;
+        const down = (bit) => (bits & bit ? 1 : 0);
+        const axis = (value) =>
+          Math.max(-1, Math.min(1, (Number(value) || 0) / 32767));
+        active.channel.sendInput({
+          sequence: ++nativeSequence,
+          timeMs: performance.now(),
+          provider: 'touch',
+          connected: true,
+          buttons: {
+            confirm: down(1),
+            cancel: down(2),
+            west: down(4),
+            north: down(8),
+            up: down(16),
+            down: down(32),
+            left: down(64),
+            right: down(128),
+            menu: down(256),
+            view: down(512),
+            leftShoulder: down(4096),
+            rightShoulder: down(8192),
+            rightTrigger: (Number(payload.rightTrigger) || 0) / 255,
+          },
+          axes: {
+            moveX: axis(payload.leftX),
+            moveY: -axis(payload.leftY),
+            lookX: axis(payload.rightX),
+            lookY: -axis(payload.rightY),
+          },
+        });
+        return 'Input';
+      }
+      if (
+        ![
+          'save',
+          'restore',
+          'audio',
+          'save-status',
+          'restart',
+          'audio-status',
+        ].includes(action)
+      )
+        throw new Error('Unknown action');
+      const result = await active.channel.requestAction(action);
+      return result.message;
+    },
+  });
+  async function attachNativeMenu(session) {
+    if (!isPlayer() || !globalThis.webkit?.messageHandlers?.akeruPlayer) return;
+    try {
+      const accepted =
+        await globalThis.webkit.messageHandlers.akeruPlayer.postMessage({
+          action: 'menu',
+        });
+      if (accepted !== true || active !== session) return;
+      nativeMenu = true;
+      if ($('#player-menu')) $('#player-menu').hidden = true;
+      $('#touch-controls').hidden = true;
+    } catch {
+      /* Older app versions keep the web menu. */
+    }
+  }
   function clearSession() {
+    nativeMenu = false;
+    clearInterval(controllerMonitor);
+    controllerMonitor = null;
     stopControlsMonitor();
     loadVersion++;
     navInput?.dispose();
     navInput = null;
     if (active) {
+      active.rumble?.dispose();
       active.channel?.dispose();
       active.frame?.remove();
       telemetry({ type: 'sessionExit', titleId: active.entry.manifest.id });
@@ -162,9 +307,20 @@ export function mountCatalog({
       else modal.close();
       return;
     }
+    const playerPanel = isPlayer()
+      ? document.querySelector(
+          '.player-action-detail:not([hidden]):not([inert])',
+        )
+      : null;
+    if (event.type === 'back' && playerPanel) {
+      playerPanel.querySelector('[data-panel-back]')?.click();
+      return;
+    }
     if (event.type === 'back') {
-      if (active) navigate(`/g/${active.entry.manifest.id}`);
-      else if (
+      if (active) {
+        if (isPlayer()) pause();
+        else navigate(`/g/${active.entry.manifest.id}`);
+      } else if (
         ['detail', 'settings'].includes(routeFor(location.pathname).view)
       )
         navigate('/games');
@@ -179,7 +335,9 @@ export function mountCatalog({
       return;
     }
     const scope =
-      modal ?? (active ? document.querySelector('.runtime-wrap') : main);
+      playerPanel ??
+      modal ??
+      (active ? document.querySelector('.runtime-wrap') : main);
     if (
       event.type === 'move' &&
       document.activeElement?.tagName === 'SELECT' &&
@@ -200,7 +358,9 @@ export function mountCatalog({
       ...scope.querySelectorAll(
         'a[href],button:not([disabled]),input,select,summary',
       ),
-    ].filter((e) => !e.closest('[hidden]') && e.getClientRects().length);
+    ].filter(
+      (e) => !e.closest('[hidden], [inert]') && e.getClientRects().length,
+    );
     if (!targets.length) return;
     if (event.type === 'activate') {
       if (targets.includes(document.activeElement))
@@ -228,13 +388,22 @@ export function mountCatalog({
         let menuHeld = false;
         input.subscribe((snapshot) => {
           const pressed = (snapshot.buttons.menu ?? 0) > 0.5;
-          if (pressed && !menuHeld && active?.channel?.state === 'playable') {
+          if (
+            !nativeMenu &&
+            pressed &&
+            !menuHeld &&
+            active?.channel?.state === 'playable'
+          ) {
             menuHeld = true;
             pause();
             return;
           }
           menuHeld = pressed;
-          active?.channel?.sendInput(snapshot);
+          active?.channel?.sendInput({
+            ...snapshot,
+            sequence: ++nativeSequence,
+            timeMs: performance.now(),
+          });
         });
       }
       input.subscribeNavigation(nav);
@@ -307,7 +476,7 @@ export function mountCatalog({
       b.onclick = initialize;
       actions.append(b);
     }
-    if (back) {
+    if (back && !isPlayer()) {
       const a = node('a', 'secondary', 'Back to discover');
       a.href = '/';
       actions.append(a);
@@ -323,8 +492,10 @@ export function mountCatalog({
       if (data) renderRoute();
     } catch {
       status(
-        'Couldn’t open the library.',
-        'The catalog is temporarily unavailable. Your next game can wait a moment.',
+        isPlayer() ? 'Couldn’t open the game.' : 'Couldn’t open the library.',
+        isPlayer()
+          ? 'Check your connection and try again.'
+          : 'The catalog is temporarily unavailable. Your next game can wait a moment.',
         { retry: true },
       );
       bindInput('catalog');
@@ -332,9 +503,24 @@ export function mountCatalog({
   }
   function renderRoute() {
     if (disposed) return;
+    disposeHome?.();
+    disposeHome = null;
     clearSession();
     if (!catalog) return;
     const route = routeFor(location.pathname);
+    document.body.classList.toggle('direct-player', isPlayer());
+    if (route.view === 'player') {
+      const entry = catalog.entries.find((e) => e.manifest.id === route.id);
+      if (entry) {
+        status('Opening ' + entry.manifest.title + '…', '');
+        void launch(entry);
+      } else
+        status(
+          'Game unavailable',
+          'This game is no longer available. Return to the Backbone app to choose another.',
+        );
+      return;
+    }
     if (route.view === 'landing') renderLanding();
     else if (route.view === 'settings') renderSettings();
     else if (route.view === 'catalog') renderCatalog();
@@ -430,9 +616,10 @@ export function mountCatalog({
   function renderCatalog() {
     document.title = 'Discover — Backbone Akeru';
     telemetry({ type: 'catalogView' });
-    renderGameHome(main, catalog.entries, {
+    disposeHome = renderGameHome(main, catalog.entries, {
       filters,
       recent: readRecent(browserStorage()),
+      onPromotion: (kind) => promotions.click(kind),
       onFilters: (next) => {
         filters = next;
       },
@@ -480,6 +667,14 @@ export function mountCatalog({
     $('#touch-help').append(list(meta.controls.touch));
     $('#privacy-info').append(list(meta.privacy));
     renderSaveControls(entry, $('#save-info'));
+    const promotion = promotions.mount($('#game-details'), {
+      path: location.pathname,
+      embedded: window.self !== window.top,
+    });
+    if (promotion) {
+      promotion.id = 'more-ways-to-play';
+      main.querySelector('.detail-top').after(promotion);
+    }
     $('#source-license').textContent =
       `Source license: ${m.provenance.source.license}`;
     $('#source-revision').textContent = m.provenance.source.revision;
@@ -588,7 +783,13 @@ export function mountCatalog({
         return;
       }
       if (entry.availability !== 'available') {
-        renderDetail(entry);
+        if (isPlayer())
+          status(
+            'Game unavailable',
+            'This game is temporarily unavailable. Please try again later.',
+            { retry: true },
+          );
+        else renderDetail(entry);
         return;
       }
       if (mode === 'production') {
@@ -611,8 +812,25 @@ export function mountCatalog({
   function renderRuntime(entry) {
     clearSession();
     main.innerHTML =
-      '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay" role="status"><span class="spinner" aria-hidden="true"></span><h2>Finding your orbit…</h2><p>Opening the isolated test fixture.</p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
+      '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><a class="runtime-home" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></a><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay" role="status"><span class="spinner" aria-hidden="true"></span><h2>Finding your orbit…</h2><p>Opening the isolated test fixture.</p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
     $('#runtime-title').textContent = entry.manifest.title;
+    if (isPlayer()) {
+      document.title = entry.manifest.title + ' · Backbone';
+      $('#runtime-overlay h2').textContent =
+        'Opening ' + entry.manifest.title + '…';
+      $('#runtime-overlay p').textContent = '';
+      const menu = node('button', 'player-menu');
+      menu.innerHTML =
+        '<svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>';
+      menu.id = 'player-menu';
+      menu.setAttribute('aria-label', 'Game menu');
+      menu.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-controls', 'runtime-overlay');
+      menu.disabled = true;
+      menu.onclick = () =>
+        active?.channel?.state === 'paused' ? resume() : pause();
+      document.querySelector('.runtime-wrap').append(menu);
+    }
     const frame = node('iframe');
     frame.title = `${entry.manifest.title} isolated runtime`;
     frame.setAttribute(
@@ -620,32 +838,67 @@ export function mountCatalog({
       'allow-scripts allow-same-origin allow-pointer-lock',
     );
     frame.setAttribute('referrerpolicy', 'no-referrer');
-    frame.setAttribute('allow', 'gamepad');
+    frame.setAttribute('allow', 'gamepad; autoplay');
     const nonce = crypto.randomUUID(),
       start = performance.now();
     frame.src = `${titleUrl(entry)}#${new URLSearchParams({ nonce, shell: location.origin })}`;
     $('#runtime-stage').prepend(frame);
-    active = { entry, frame, channel: null };
+    active = { entry, frame, channel: null, rumble: createRumble() };
     const session = active;
     active.channel = createRuntimeChannel({
       frame: frame.contentWindow,
+      presentation: isPlayer() ? 'embedded' : 'web',
+      timeoutMs: entry.manifest.runtime.requiredFeatures.includes('wasm')
+        ? 60000
+        : 15000,
       origin: entry.release.origin,
       nonce,
       saveService: savesFor(entry).service,
+      onRumble: (effect) => {
+        void session.rumble.play(effect);
+      },
       onEvent: (event) => {
         if (active !== session) return;
         if (event.type === 'playable') {
           recordPlayed(browserStorage(), entry.manifest.id);
           $('#runtime-overlay').hidden = true;
+          if ($('#player-menu')) $('#player-menu').disabled = false;
           telemetry({
             type: 'playable',
             titleId: entry.manifest.id,
             durationMs: Math.min(600000, performance.now() - start),
           });
           bindInput(entry.manifest.id, true);
+          void attachNativeMenu(session);
+          let lastConnected = null;
+          const syncController = () => {
+            const connected = (input?.refreshControllers?.().length ?? 0) > 0;
+            if (connected !== lastConnected) {
+              $('#touch-controls').hidden =
+                nativeMenu ||
+                connected ||
+                !matchMedia('(pointer: coarse)').matches;
+            }
+            if (
+              connected !== lastConnected &&
+              session.channel.sendControllerStatus(connected)
+            )
+              lastConnected = connected;
+          };
+          syncController();
+          controllerMonitor = setInterval(syncController, 250);
           frame.contentWindow.focus();
         } else if (event.type === 'error') failRuntime(event.code);
-        else if (event.type === 'exit') navigate(`/g/${entry.manifest.id}`);
+        else if (event.type === 'exit') {
+          if (isPlayer()) {
+            clearSession();
+            status(
+              'Game closed',
+              'Return to the Backbone app, or play again.',
+              { retry: true },
+            );
+          } else navigate(`/g/${entry.manifest.id}`);
+        }
       },
     });
     frame.addEventListener('load', () => {
@@ -693,6 +946,23 @@ export function mountCatalog({
     $('#runtime-controls').onclick = () => {
       pause();
       input?.showControls();
+      const panel = $('#control-settings .akeru-control-settings');
+      if (panel && !panel.querySelector('.title-control-guide')) {
+        const guide = node('section', 'title-control-guide');
+        guide.setAttribute('aria-label', 'Game controls guide');
+        guide.append(node('h3', '', entry.manifest.title + ' controls'));
+        guide.append(
+          node(
+            'p',
+            '',
+            'Default layout · custom mappings below may change these buttons.',
+          ),
+        );
+        guide.append(list(entry.metadata.controls.controller));
+        guide.append(node('h4', '', 'Touch / keyboard'));
+        guide.append(list(entry.metadata.controls.touch));
+        panel.querySelector('.control-panel-header')?.after(guide);
+      }
       input?.start();
       input?.refreshControllers?.();
       stopControlsMonitor();
@@ -720,8 +990,301 @@ export function mountCatalog({
     const b = node('button', 'primary', 'Keep playing ↗');
     b.onclick = resume;
     o.append(b);
+    if (isPlayer()) {
+      active.rumble.stop();
+      $('#player-menu').setAttribute('aria-expanded', 'true');
+      o.classList.add('player-settings');
+      o.querySelector('.eyebrow').remove();
+      o.querySelector('h2').textContent = 'Paused';
+      o.querySelector('p').textContent = active.entry.manifest.title;
+      b.textContent = 'Resume';
+      const controls = node('button', 'secondary', 'Controller settings');
+      controls.onclick = () => $('#runtime-controls').click();
+      const touch = node('button', 'secondary', 'Touch controls');
+      touch.setAttribute('aria-pressed', String(!$('#touch-controls').hidden));
+      touch.onclick = () => {
+        $('#touch-controls').hidden = !$('#touch-controls').hidden;
+        touch.setAttribute(
+          'aria-pressed',
+          String(!$('#touch-controls').hidden),
+        );
+      };
+      o.append(controls, touch);
+      const session = active;
+      const rumble = node('button', 'secondary player-switch', 'Vibration');
+      rumble.setAttribute('aria-pressed', String(session.rumble.enabled));
+      const feedback = node(
+        'p',
+        'fine',
+        'Available with supported games and controllers.',
+      );
+      feedback.setAttribute('role', 'status');
+      rumble.onclick = () => {
+        session.rumble.setEnabled(!session.rumble.enabled);
+        rumble.setAttribute('aria-pressed', String(session.rumble.enabled));
+        feedback.textContent = session.rumble.enabled
+          ? session.rumble.available
+            ? 'Rumble enabled for this session.'
+            : 'Enabled, but rumble is unavailable on this controller or browser.'
+          : 'Rumble off.';
+      };
+      const testRumble = node('button', 'secondary', 'Test vibration');
+      testRumble.onclick = async () => {
+        testRumble.disabled = true;
+        const ok = await session.rumble.play({
+          duration: 200,
+          strongMagnitude: 0.5,
+          weakMagnitude: 0.5,
+        });
+        feedback.textContent = ok
+          ? 'Test sent to your controller.'
+          : 'No rumble sent. Enable rumble and connect a supported controller.';
+        testRumble.disabled = false;
+      };
+      const saveInfo = node('div', 'player-save-state');
+      saveInfo.setAttribute('role', 'status');
+      const saveHeadline = node('strong', '', 'Checking progress…');
+      const saveCaption = node('p', '', 'Saved on this device');
+      const saveMark = node('span', 'player-save-mark');
+      saveMark.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3h12l4 4v14H3V3Z"/><path d="M7 3v6h10V3M7 21v-7h10v7"/></svg>';
+      const saveCopy = node('div');
+      saveCopy.append(saveHeadline, saveCaption);
+      saveInfo.append(saveMark, saveCopy);
+      const refresh = node(
+        'button',
+        'secondary player-text-action',
+        'Check again',
+      );
+      refresh.setAttribute('aria-label', 'Refresh save status');
+      refresh.onclick = async () => {
+        if (refresh.getAttribute('aria-busy') === 'true') return;
+        refresh.setAttribute('aria-busy', 'true');
+        try {
+          const result = await savesFor(session.entry).status();
+          if (result.local !== 'available') {
+            saveHeadline.textContent = 'Saving unavailable';
+            saveCaption.textContent =
+              'Progress may not be kept on this device.';
+          } else {
+            saveHeadline.textContent = result.quota.usedSlots
+              ? 'Progress saved'
+              : 'No saves yet';
+            saveCaption.textContent = result.quota.usedSlots
+              ? 'Stored on this device'
+              : 'Use the game’s save or checkpoint controls.';
+          }
+        } catch {
+          saveHeadline.textContent = 'Couldn’t check saves';
+          saveCaption.textContent = 'Your existing saves haven’t changed.';
+        }
+        refresh.setAttribute('aria-busy', 'false');
+      };
+      const leave = node('button', 'secondary player-leave', 'Leave game');
+      leave.onclick = async () => {
+        if (leave.dataset.confirm !== 'true') {
+          leave.dataset.confirm = 'true';
+          leave.textContent = 'Confirm leave game';
+          saveInfo.textContent =
+            'Save using the game’s controls before leaving. Unsaved progress may be lost.';
+          return;
+        }
+        const nativePlayer = globalThis.webkit?.messageHandlers?.akeruPlayer;
+        if (nativePlayer) {
+          try {
+            if ((await nativePlayer.postMessage({ action: 'exit' })) === true) {
+              clearSession();
+              return;
+            }
+          } catch {
+            /* Older app: retain the web close fallback. */
+          }
+        }
+        clearSession();
+        status(
+          'Game closed',
+          'Use the Backbone app’s back or close control to return. You can also reopen this game.',
+          { retry: true },
+        );
+      };
+      const icons = {
+        play: '<path d="m9 5 11 7-11 7Z"/>',
+        controller:
+          '<path d="M7 7h10c3 0 5 10 3 11-2 1-4-3-5-3H9c-1 0-3 4-5 3C2 17 4 7 7 7Z"/><path d="M7 9v5m-2-2h5m6-2h.01m2 3h.01"/>',
+        touch:
+          '<path d="M10 12V5a2 2 0 0 1 4 0v6l2-1 4 3-1 6H9l-5-6 2-2 4 3"/>',
+        rumble: '<path d="M8 8h8v8H8zM4 7l-2 5 2 5m16-10 2 5-2 5"/>',
+        save: '<path d="M5 3h12l4 4v14H3V3Z"/><path d="M7 3v6h10V3M7 21v-7h10v7"/>',
+        exit: '<path d="M10 4H4v16h6m4-13 5 5-5 5m-6-5h11"/>',
+      };
+      const iconButton = (button, icon, label, accessible) => {
+        button.className = 'player-action';
+        button.setAttribute('aria-label', accessible);
+        button.title = accessible;
+        button.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[icon]}</svg><span>${label}</span>`;
+        return button;
+      };
+      const bar = node('div', 'player-action-bar');
+      bar.setAttribute('role', 'group');
+      bar.setAttribute('aria-label', 'Game actions');
+      const detail = node('section', 'player-action-detail');
+      detail.hidden = true;
+      const show = (title, ...items) => {
+        const trigger = document.activeElement;
+        const previousHeight = detail.hidden
+          ? 0
+          : detail.getBoundingClientRect().height;
+        const header = node('div', 'player-detail-header');
+        const close = node(
+          'button',
+          'player-menu-row player-panel-back',
+          'Back to game menu',
+        );
+        close.dataset.panelBack = 'true';
+        close.setAttribute('aria-label', 'Close panel');
+        close.onclick = () => {
+          animatePanel(detail, false, () => {}, true);
+          (trigger?.isConnected
+            ? trigger
+            : bar.querySelector('button')
+          ).focus();
+        };
+        header.append(node('h3', '', title));
+        for (const item of items)
+          if (item.tagName === 'BUTTON') {
+            item.classList.add('player-menu-row');
+            if (!item.hasAttribute('aria-label'))
+              item.setAttribute('aria-label', item.textContent);
+          }
+        const hint = node(
+          'p',
+          'player-navigation-hint',
+          '↑ ↓ Move · A Select · B Back',
+        );
+        detail.replaceChildren(header, ...items, close, hint);
+        animatePanel(detail, true, () => {}, true, previousHeight);
+        detail
+          .querySelector('button:not([disabled])')
+          ?.focus({ preventScroll: true });
+      };
+      const rumbleTab = iconButton(
+        node('button'),
+        'rumble',
+        'Sound',
+        'Sound and vibration',
+      );
+      rumbleTab.onclick = () => {
+        const audioStatus = node('p', 'fine');
+        audioStatus.setAttribute('role', 'status');
+        const audioAction = gameAction(
+          'Toggle game sound',
+          'audio',
+          audioStatus,
+        );
+        show(
+          'Sound & vibration',
+          ...(session.channel.actions.includes('audio')
+            ? [audioAction, audioStatus]
+            : []),
+          rumble,
+          testRumble,
+          feedback,
+        );
+        feedback.textContent = session.rumble.available
+          ? 'Vibration is available. On iPhone, feedback comes from the phone. Enable it for fire-button feedback.'
+          : 'Vibration is unavailable on this device. The app may need a native haptics connection.';
+      };
+      const gameAction = (label, action, actionStatus = saveCaption) => {
+        const button = node('button', 'secondary', label);
+        button.onclick = async () => {
+          button.disabled = true;
+          actionStatus.textContent = 'Working…';
+          try {
+            const result = await session.channel.requestAction(action);
+            actionStatus.textContent = result.message;
+            saveHeadline.textContent = result.ok
+              ? 'Ready'
+              : 'Action not completed';
+          } catch {
+            actionStatus.textContent = 'Game did not respond. Try again.';
+          } finally {
+            button.disabled = false;
+          }
+        };
+        return button;
+      };
+      const saveNow = gameAction('Save snapshot', 'save');
+      const restoreNow = gameAction('Restore snapshot', 'restore');
+      const restoreAction = restoreNow.onclick;
+      restoreNow.onclick = () => {
+        if (restoreNow.dataset.confirm !== 'true') {
+          restoreNow.dataset.confirm = 'true';
+          restoreNow.textContent = 'Confirm restore snapshot';
+          restoreNow.setAttribute('aria-label', 'Confirm restore snapshot');
+          saveCaption.textContent =
+            'This replaces your current session with the snapshot.';
+        } else {
+          delete restoreNow.dataset.confirm;
+          restoreNow.textContent = 'Restore snapshot';
+          restoreNow.setAttribute('aria-label', 'Restore snapshot');
+          void restoreAction();
+        }
+      };
+      const savesTab = iconButton(
+        node('button'),
+        'save',
+        'Saves',
+        'Saved progress',
+      );
+      savesTab.onclick = () => {
+        show(
+          'Your progress',
+          saveInfo,
+          node(
+            'p',
+            'player-save-note',
+            session.channel.actions.includes('save')
+              ? 'Auto-resume saves every 15 seconds and on pause. Your manual snapshot stays separate.'
+              : 'Save states aren’t available for this game yet.',
+          ),
+          ...(session.channel.actions.includes('save')
+            ? [saveNow, restoreNow]
+            : []),
+          refresh,
+        );
+        void refresh.onclick();
+      };
+      const exitTab = iconButton(node('button'), 'exit', 'Leave', 'Leave game');
+      exitTab.onclick = () => {
+        leave.dataset.confirm = 'true';
+        leave.textContent = 'Confirm leave game';
+        const cancel = node('button', 'secondary', 'Keep playing');
+        cancel.onclick = resume;
+        show(
+          'Leave game?',
+          node(
+            'p',
+            'fine',
+            'Unsaved progress may be lost. Save using the game’s controls first.',
+          ),
+          leave,
+          cancel,
+        );
+      };
+      const paused = node('h2', 'player-sr-only', 'Paused');
+      bar.append(
+        iconButton(b, 'play', 'Resume', 'Resume'),
+
+        iconButton(touch, 'touch', 'Touch', 'Touch controls'),
+        rumbleTab,
+        savesTab,
+        exitTab,
+      );
+      o.replaceChildren(paused, bar, detail);
+    }
     o.hidden = false;
-    b.focus();
+    if (isPlayer()) animatePanel(o, true);
+    b.focus({ preventScroll: true });
   }
   function resume() {
     if (!active?.channel.resume()) return;
@@ -730,7 +1293,16 @@ export function mountCatalog({
     navInput = null;
     input?.hideControls();
     input?.start();
-    $('#runtime-overlay').hidden = true;
+    const overlay = $('#runtime-overlay');
+    if (isPlayer())
+      animatePanel(overlay, false, () =>
+        overlay.classList.remove('player-settings'),
+      );
+    else {
+      overlay.hidden = true;
+      overlay.classList.remove('player-settings');
+    }
+    $('#player-menu')?.setAttribute('aria-expanded', 'false');
     $('#runtime-pause').textContent = 'Pause';
     active.frame.contentWindow.focus();
   }
@@ -741,6 +1313,7 @@ export function mountCatalog({
     navInput = null;
     input?.dispose();
     input = null;
+    active.rumble?.dispose();
     active.channel.dispose();
     active.frame.remove();
     telemetry({
@@ -753,15 +1326,16 @@ export function mountCatalog({
     o.replaceChildren(
       node('p', 'eyebrow', 'LET’S TRY THAT AGAIN'),
       node('h2', '', 'The game couldn’t open.'),
-      node('p', '', 'The runtime did not become ready, or ended unexpectedly.'),
+      node('p', '', 'The game stopped responding. Please try again.'),
     );
     const b = node('button', 'primary', 'Try again ↗');
     b.onclick = () => {
-      navigate(`/g/${e.manifest.id}`);
-      launch(e);
+      if (!isPlayer()) navigate(`/g/${e.manifest.id}`);
+      void launch(e);
     };
     o.append(b);
     o.hidden = false;
+    if ($('#player-menu')) $('#player-menu').disabled = true;
     $('#runtime-pause').disabled = true;
     $('#runtime-controls').disabled = true;
     if (inputProviderFactory) {
@@ -776,6 +1350,7 @@ export function mountCatalog({
     refresh: initialize,
     dispose() {
       disposed = true;
+      disposeHome?.();
       onboardingUi?.dispose();
       loadVersion++;
       clearSession();

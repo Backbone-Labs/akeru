@@ -29,11 +29,14 @@ test('browses from catalog to detail and launches the isolated original fixture'
 }) => {
   await page.goto(demo.url + '/games');
   await expect(
-    page.getByRole('heading', { name: /Find your next/ }),
+    page.getByRole('heading', { name: 'Discover', level: 1 }),
   ).toBeVisible();
   await expect(page.getByText('1 game', { exact: true })).toBeVisible();
 
-  await page.getByRole('link', { name: /Orbit study/ }).click();
+  await page
+    .locator('#game-grid')
+    .getByRole('link', { name: /Orbit study/ })
+    .click();
   await expect(page).toHaveURL(/\/g\/orbit-study$/);
   await expect(
     page.getByRole('heading', { name: 'Orbit study' }),
@@ -57,11 +60,15 @@ test('holds and releases touch input while an idle controller remains connected'
 }) => {
   await installSimulatedGamepad(page);
   const runtime = await launchDemo(page, demo.url);
-  const right = page.getByRole('button', { name: 'Right', exact: true });
+  const right = page.locator('[aria-label="Directional pad"]');
   const before = await orbPosition(runtime);
   const box = await right.boundingBox();
   const browser = await page.context().newCDPSession(page);
-  const point = { x: box.x + box.width / 2, y: box.y + box.height / 2, id: 41 };
+  const point = {
+    x: box.x + box.width * 0.85,
+    y: box.y + box.height / 2,
+    id: 41,
+  };
 
   await browser.send('Input.dispatchTouchEvent', {
     type: 'touchStart',
@@ -221,11 +228,14 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(demo.url + '/games');
   await expect(
-    page.getByRole('heading', { name: /Find your next/ }),
+    page.getByRole('heading', { name: 'Discover', level: 1 }),
   ).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
-  await page.getByRole('link', { name: /Orbit study/ }).click();
+  await page
+    .locator('#game-grid')
+    .getByRole('link', { name: /Orbit study/ })
+    .click();
   await expect(
     page.getByRole('heading', { name: 'Orbit study' }),
   ).toBeVisible();

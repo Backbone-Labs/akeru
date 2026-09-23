@@ -294,3 +294,34 @@ test('a missing playable handshake produces a timeout and closes the session', a
   assert.deepEqual(events, [{ type: 'error', code: 'timeout' }]);
   assert.equal(c.state, 'closed');
 });
+
+test('direct game routes accept catalog IDs, never arbitrary destinations', () => {
+  assert.deepEqual(routeFor('/play/freedoom1'), {
+    view: 'player',
+    id: 'freedoom1',
+  });
+  for (const path of [
+    '/play/https://example.com',
+    '/play/../settings',
+    '/play/%2Fexample',
+    '/play/' + 'a'.repeat(65),
+  ])
+    assert.equal(routeFor(path).view, 'not-found');
+});
+
+test('controller presence is boolean-only and cannot outlive the runtime', () => {
+  const s = setup();
+  try {
+    assert.equal(s.channel.sendControllerStatus(true), false);
+    s.channel.connect();
+    s.channel.receive(s.event('playable', { sdkVersion: '0.1.0' }));
+    assert.equal(s.channel.sendControllerStatus('connected'), false);
+    assert.equal(s.channel.sendControllerStatus(true), true);
+    s.channel.pause();
+    assert.equal(s.channel.sendControllerStatus(false), true);
+    s.channel.dispose();
+    assert.equal(s.channel.sendControllerStatus(true), false);
+  } finally {
+    s.channel.dispose();
+  }
+});

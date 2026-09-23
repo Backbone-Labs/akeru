@@ -74,11 +74,26 @@ const game = connectGame({
     best = state?.best || 0;
     window.Dom.storage.fast_lap_time = best || 86400;
     artwork();
-    window.reset({ width: 960, height: 540, drawDistance: 180 });
+    const resize = () => {
+      const { width, height } = document
+        .querySelector('#stage')
+        .getBoundingClientRect();
+      const scale = Math.min(1, 1440 / Math.max(width, height));
+      window.reset({
+        width: Math.max(1, Math.round(width * scale)),
+        height: Math.max(1, Math.round(height * scale)),
+        drawDistance: 180,
+      });
+    };
+    resize();
+    new ResizeObserver(resize).observe(document.querySelector('#stage'));
     window.updateHud('fast_lap_time', best ? window.formatTime(best) : '—');
     document.querySelector('#status').textContent =
       'Steer: arrows / WASD / left stick · Accelerate: ↑ / A · Brake: ↓ / B';
     requestAnimationFrame(tick);
+  },
+  controllerChanged(connected) {
+    document.querySelector('.controls').hidden = connected;
   },
   action(a) {
     if (a === 'restart') {
@@ -95,6 +110,8 @@ const game = connectGame({
     return changed;
   },
 });
+window.akeruCollision = () =>
+  game.rumble({ duration: 180, strongMagnitude: 0.65, weakMagnitude: 0.3 });
 function tick(t) {
   const dt = Math.min(0.05, (t - last) / 1000 || 0);
   last = t;

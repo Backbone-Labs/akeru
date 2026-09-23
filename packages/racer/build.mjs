@@ -22,6 +22,16 @@ if (begin < 0 || end < begin) throw new Error('Missing racer boot boundary');
 engine = engine.slice(0, begin) + engine.slice(end);
 engine = engine.slice(0, engine.indexOf("    Dom.on('resolution'"));
 engine = replaceRequired(engine, '      refreshTweakUI();', '');
+engine = replaceRequired(
+  engine,
+  'speed = maxSpeed/5;',
+  'window.akeruCollision?.(); speed = maxSpeed/5;',
+);
+engine = replaceRequired(
+  engine,
+  'speed    = car.speed * (car.speed/speed);',
+  'window.akeruCollision?.(); speed = car.speed * (car.speed/speed);',
+);
 b.put('engine.js', common + '\n' + engine);
 b.put('UPSTREAM-LICENSE.txt', b.read('LICENSE'));
 b.finish();

@@ -63,7 +63,11 @@ export function freedoomOptions(id = 'freedoom1') {
       ageLabel: 'Unrated · pixelated combat',
       controls: {
         controller: [
-          'Left stick — move and strafe. Right stick / D-pad — turn. A / trigger — fire. B — use. Y — next weapon. Menu — game menu.',
+          'Left stick — move forward/back and strafe sideways.',
+          'Right stick left/right — turn. D-pad up/down — move; left/right — turn.',
+          'A / right trigger — fire. B / X — use (open doors and activate switches).',
+          'Y — next weapon. Left / right shoulder — strafe.',
+          'Open the Backbone overlay to pause or return to this controls guide.',
         ],
         touch: [
           'Arrows — move and turn. A — fire. B — use. Keyboard: WASD, mouse look, click fire, E / Space use, Q / R weapon, M menu.',

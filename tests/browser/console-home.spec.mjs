@@ -71,3 +71,68 @@ test('paused runtime control panel keeps live input polling active', async ({
   await expect(page.locator('#runtime-overlay')).toBeVisible();
   await setGamepadButton(page, 2, 0);
 });
+
+test('Discover selection updates the feature, supports keyboard, and respects reduced motion', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(demo.url + '/games');
+  await expect(page.getByRole('link', { name: 'Shop Backbone' })).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Get the Backbone app' }),
+  ).toBeVisible();
+  await page.getByText('Pairing a Backbone Pro?', { exact: true }).click();
+  await expect(
+    page.getByText(/connect in your device’s Bluetooth settings/),
+  ).toBeVisible();
+  await page.evaluate(async () => {
+    const { renderGameHome } = await import('/home.js');
+    const catalog = await (await fetch('/catalog.json')).json();
+    const entries = Array.from({ length: 6 }, (_, i) => ({
+      ...catalog.entries[0],
+      manifest: {
+        ...catalog.entries[0].manifest,
+        id: 'game-' + i,
+        title: 'Game ' + i,
+      },
+    }));
+    renderGameHome(document.querySelector('#main'), entries, {
+      filters: { query: '', category: 'all' },
+      recent: [],
+      onFilters: () => {},
+    });
+  });
+  await expect(
+    page.getByRole('button', { name: 'Previous featured game' }),
+  ).toBeDisabled();
+  await page.getByRole('button', { name: 'Next featured game' }).click();
+  await expect(page.locator('#featured-copy h2')).toHaveText('Game 1');
+  await expect(page.locator('#featured-launch')).toHaveAttribute(
+    'href',
+    '/g/game-1',
+  );
+  await expect(
+    page.getByRole('button', { name: 'Feature Game 1', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await page
+    .getByRole('button', { name: 'Feature Game 1', exact: true })
+    .focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.locator('#featured-copy h2')).toHaveText('Game 0');
+  await page.keyboard.press('End');
+  await expect(page.locator('#featured-copy h2')).toHaveText('Game 5');
+  await expect(
+    page.getByRole('button', { name: 'Next featured game' }),
+  ).toBeDisabled();
+  expect(
+    await page
+      .locator('#feature-scene')
+      .evaluate((e) => e.getAnimations().length),
+  ).toBe(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    390,
+  );
+  await page.getByRole('searchbox').fill('Game 3');
+  await expect(page.locator('#game-grid .game-card')).toHaveCount(1);
+});

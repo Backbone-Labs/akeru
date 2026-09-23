@@ -1,0 +1,41 @@
+#akeru-start {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-content: center;
+  text-align: center;
+  background: #05070cbb;
+  z-index: 40;
+  padding: 24px;
+  overflow: auto;
+}
+body[data-ready='true'] #akeru-start {
+  display: grid;
+}
+body[data-racing='true'] #akeru-start {
+  display: none;
+}
+#race {
+  background: #ff5c28;
+  color: #fff;
+  border: 0;
+  border-radius: 32px;
+  padding: 14px 38px;
+  font: 700 20px system-ui;
+  cursor: pointer;
+  min-height: 48px;
+}
+body[data-controller='true'] #touch {
+  display: none !important;
+}
+#title {
+  display: none !important;
+}
+#akeru-start h1 {
+  margin: 8px;
+  font: 800 30px system-ui;
+}
+#akeru-start p {
+  margin: 10px;
+  font: 14px system-ui;
+}

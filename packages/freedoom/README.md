@@ -1,6 +1,6 @@
 # Freedoom local source ports
 
-This package runs the original Freedoom Phase 1 and Phase 2 campaigns and FreeDM maps in a locally compiled libretro-PrBoom WebAssembly engine. It adds an Akeru-owned browser frontend, normalized controller/touch input, keyboard/mouse controls, optional audio, and guest saves through the host save service. No engine, WAD, artwork, or other third-party source is checked in.
+This package runs the original Freedoom Phase 1 and Phase 2 campaigns and FreeDM maps in a locally compiled libretro-PrBoom WebAssembly engine. It adds an Akeru-owned browser frontend, normalized controller/touch input, keyboard/mouse controls, gesture-unlocked audio, and guest saves through the host save service. No engine, WAD, artwork, or other third-party source is checked in.
 
 FreeDM is **solo map practice**. The selected engine has no supported bot implementation, so this build has no opponents or multiplayer. The Next map button visits all 32 arenas. This is not a completed bot deathmatch port.
 
@@ -21,7 +21,9 @@ The build reads the exact revisions in `sources.mjs` with `git archive`, verifie
 
 Use WASD to move/strafe, arrows or mouse to turn, click/Enter to fire, E/Space to use, Q/R to change weapon, and M for the game menu. A controller uses left stick for movement, right stick for turn, A/trigger to fire, B to use, and Y for next weapon. Touch uses host arrows and A/B. Pointer lock is optional and host fullscreen/lifecycle remain host-owned.
 
-Guest progress is saved every 15 seconds, when paused, or with Save. Save slots are scoped by host title identity; the engine only sees an in-memory filesystem. The frontend refuses invalid/incompatible saves and preserves the previous record after conflicts or read failures. Browser saves are tied to the exact engine build and may not survive future upstream changes. Engine menus can also save to temporary memory, but only the host Save action persists across sessions.
+Guest progress is saved every 15 seconds, when paused, or with Save. Save slots are scoped by host title identity; the engine only sees an in-memory filesystem. The frontend refuses invalid/incompatible saves and preserves the previous record after conflicts or read failures. Browser saves are tied to the exact engine build and may not survive future upstream changes. The direct player hides the game toolbar: use the host pill to save or restore a separate manual `snapshot` slot. Restoring requires confirmation; automatic `progress` saves never overwrite that snapshot. Audio starts automatically when permitted, otherwise a tap inside the game unlocks it. Fire-button feedback uses bounded host rumble, with phone impacts available in the updated Akeru iOS bridge. This is input feedback, not engine damage/weapon telemetry.
+
+Engine menus can also save to temporary memory, but only the host Save action persists across sessions.
 
 ## Verification and rights boundaries
 
