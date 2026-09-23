@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "upstreamUrl": "https://github.com/wwwtyro/Astray",
+  "revision": "d3c4f61f2cbbe35752fbfa205f85a41d7f9fe0f0",
+  "scope": "source-tree",
+  "rightsStatus": "unreviewed",
+  "limitation": "Per-file source identity only; no publication or asset-rights approval.",
+  "files": [
+    {
+      "path": "Box2dWeb.min.js",
+      "gitObjectId": "f00518460f493e88bd54117f8c4e022d0a8341f3",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "License.md",
+      "gitObjectId": "fdddb29aa445bf3d6a5d843d6dd77e10a9f99657",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "a7d99993a8ca0575ebb79353a30618eabda41dba",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "Three.js",
+      "gitObjectId": "c043be70a18e96cd6085643d3113cd1f0ae8dc76",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "ball.png",
+      "gitObjectId": "d63f1945f437dd43b44153b55c4216a412aa6923",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "brick.png",
+      "gitObjectId": "270c478f229fae61f88c8635441a55f567729692",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "concrete.png",
+      "gitObjectId": "538409b2f1d5736083a7f6a532be85f360bc9eb4",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "index.html",
+      "gitObjectId": "6c54e229ab2021d95aa538787b89a69d87516edb",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "jquery.js",
+      "gitObjectId": "16ad06c5acaad09ee4d6e9d7c428506db028aeeb",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "keyboard.js",
+      "gitObjectId": "b4112f26703658736f79391c26003eb6c537effe",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "maze.js",
+      "gitObjectId": "f804ca105984db8064c47b53dd877c4a07866ab8",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    }
+  ]
+}

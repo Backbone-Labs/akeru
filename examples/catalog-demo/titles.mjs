@@ -1,3 +1,8 @@
+import { options as kartOptions } from '../../packages/old-san-juan-kart/catalog.mjs';
+import { options as hexglOptions } from '../../packages/hexgl/catalog.mjs';
+import { options as racerOptions } from '../../packages/racer/catalog.mjs';
+import { options as astrayOptions } from '../../packages/astray/catalog.mjs';
+import { options as breaklockOptions } from '../../packages/breaklock/catalog.mjs';
 import { anarchOptions } from '../../packages/anarch/preview.mjs';
 import { puzzleOptions } from '../../packages/puzzle-preview/catalog.mjs';
 
@@ -14,6 +19,11 @@ import { titles as puzzleTitles } from '../../packages/tatham/titles.mjs';
 export function playableTitles() {
   return [
     anarchOptions(),
+    hexglOptions(),
+    racerOptions(),
+    kartOptions(),
+    astrayOptions(),
+    breaklockOptions(),
     puzzleOptions('2048'),
     puzzleOptions('hextris'),
     serverSurvivalOptions(),

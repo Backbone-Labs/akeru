@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>breaklock</title>
+    <link rel="stylesheet" href="common.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="stage">
+      <section>
+        <div id="selection"></div>
+        <div id="board" aria-label="Pattern dots"></div>
+      </section>
+      <section>
+        <p id="instructions">
+          Tap dots, or move with the D-pad and press A. A straight line over an
+          unused middle dot includes it automatically.
+        </p>
+        <ol id="history" aria-live="polite"></ol>
+      </section>
+    </div>
+    <header>
+      <div>
+        <strong>BreakLock</strong>
+        <div id="status">Loading game…</div>
+      </div>
+      <div id="hud"></div>
+    </header>
+    <div id="overlay"></div>
+    <div class="controls">
+      <div><button data-action="cancel">Clear pattern / B</button></div>
+      <div><button data-action="restart">New lock</button></div>
+    </div>
+    <div id="save-status" role="status"></div>
+    <script src="engine.js"></script>
+    <script type="module" src="title.js"></script>
+  </body>
+</html>

@@ -42,13 +42,16 @@ const actionLabels = {
   lookY: 'Look vertically',
 };
 const touchButtons = [
-  ['dpadUp', 'Up'],
-  ['dpadLeft', 'Left'],
-  ['dpadDown', 'Down'],
-  ['dpadRight', 'Right'],
-  ['east', 'Cancel'],
-  ['south', 'Confirm'],
-  ['start', 'Menu'],
+  ['south', 'A'],
+  ['east', 'B'],
+  ['west', 'X'],
+  ['north', 'Y'],
+  ['leftShoulder', 'LB'],
+  ['rightShoulder', 'RB'],
+  ['leftTrigger', 'LT'],
+  ['rightTrigger', 'RT'],
+  ['select', '▱'],
+  ['start', '☰'],
 ];
 
 function element(document, tag, attributes = {}, text = '') {
@@ -85,34 +88,142 @@ export function createInputUi({
     role: 'group',
     'aria-label': 'Game controls',
   });
-  if (touch.style) touch.style.touchAction = 'none';
+  const held = new Map();
+  const controls = [];
+  const clearTouch = () => {
+    for (const [id, value] of held) onTouch('end', value, id);
+    held.clear();
+    for (const node of controls) {
+      node.setAttribute('data-pressed', 'false');
+      delete node.dataset.pointer;
+      const knob = node.querySelector?.('.touch-knob');
+      if (knob) knob.style.transform = '';
+    }
+  };
+  function track(node, resolve, sticky = false) {
+    controls.push(node);
+    const update = (event) => {
+      const value = resolve(event);
+      held.set(event.pointerId, value);
+      onTouch('start', value, event.pointerId);
+      node.setAttribute('data-pressed', 'true');
+    };
+    listen(node, 'pointerdown', (event) => {
+      event.preventDefault();
+      if (sticky && node.dataset.pointer) return;
+      node.dataset.pointer = String(event.pointerId);
+      node.setPointerCapture?.(event.pointerId);
+      update(event);
+    });
+    listen(node, 'pointermove', (event) => {
+      if (!held.has(event.pointerId)) return;
+      event.preventDefault();
+      update(event);
+    });
+    const end = (event) => {
+      const value = held.get(event.pointerId);
+      if (!value) return;
+      event.preventDefault();
+      onTouch('end', value, event.pointerId);
+      held.delete(event.pointerId);
+      delete node.dataset.pointer;
+      node.setAttribute('data-pressed', 'false');
+      delete node.dataset.pointer;
+      const knob = node.querySelector?.('.touch-knob');
+      if (knob) knob.style.transform = '';
+    };
+    for (const type of ['pointerup', 'pointercancel', 'lostpointercapture'])
+      listen(node, type, end);
+  }
   for (const [control, label] of touchButtons) {
     const button = element(
       document,
       'button',
       {
-        className: `akeru-touch-${control}`,
+        className: `touch-glass akeru-touch-${control}`,
         type: 'button',
         'data-control': control,
-        'aria-label': label,
+        'aria-label': sourceLabels[control],
       },
       label,
     );
-    if (button.style) button.style.touchAction = 'none';
-    const begin = (event) => {
-      event.preventDefault();
-      button.setPointerCapture?.(event.pointerId);
-      onTouch('start', control, event.pointerId);
-    };
-    const end = (event) => {
-      event.preventDefault();
-      onTouch('end', control, event.pointerId);
-    };
-    listen(button, 'pointerdown', begin);
-    for (const type of ['pointerup', 'pointercancel', 'lostpointercapture'])
-      listen(button, type, end);
+    track(button, (event) => {
+      // A held button finger can roll onto a neighbouring button.
+      const target = document.elementFromPoint?.(event.clientX, event.clientY);
+      const name = target?.closest?.('[data-control]')?.dataset.control;
+      return {
+        buttons: { [name || control]: target && !name ? 0 : 1 },
+        axes: {},
+      };
+    });
     touch.appendChild(button);
   }
+  for (const side of ['left', 'right']) {
+    const stick = element(document, 'div', {
+      className: `touch-glass touch-stick touch-stick-${side}`,
+      'aria-label': `${side} thumbstick`,
+    });
+    const knob = element(document, 'span', {
+      className: 'touch-glass touch-knob',
+    });
+    stick.appendChild(knob);
+    track(
+      stick,
+      (event) => {
+        const rect = stick.getBoundingClientRect();
+        const travel = (rect.width * 44) / 130;
+        const x = (event.clientX - rect.left - rect.width / 2) / travel;
+        const y = (event.clientY - rect.top - rect.height / 2) / travel;
+        const length = Math.hypot(x, y);
+        const strength = Math.max(0, Math.min(1, (length - 0.1) / 0.9));
+        const dx = length ? (x / length) * strength : 0;
+        const dy = length ? (y / length) * strength : 0;
+        knob.style.transform = `translate(${dx * travel}px, ${dy * travel}px) scale(${strength ? 1.08 : 1})`;
+        return { buttons: {}, axes: { [side + 'X']: dx, [side + 'Y']: dy } };
+      },
+      true,
+    );
+    touch.appendChild(stick);
+  }
+  const dpad = element(document, 'div', {
+    className: 'touch-glass touch-dpad',
+    'aria-label': 'Directional pad',
+  });
+  dpad.appendChild(
+    element(document, 'span', { className: 'touch-cross' }, '✚'),
+  );
+  track(
+    dpad,
+    (event) => {
+      const rect = dpad.getBoundingClientRect();
+      const x = event.clientX - rect.left - rect.width / 2;
+      const y = event.clientY - rect.top - rect.height / 2;
+      const buttons = {};
+      if (Math.hypot(x, y) > (rect.width / 2) * 0.22) {
+        const degrees = ((Math.atan2(-y, x) * 180) / Math.PI + 360) % 360;
+        const nearest = Math.round(degrees / 90);
+        const offset = degrees - nearest * 90;
+        const names = ['dpadRight', 'dpadUp', 'dpadLeft', 'dpadDown'];
+        buttons[names[nearest % 4]] = 1;
+        if (Math.abs(offset) > 20)
+          buttons[names[(nearest + (offset > 0 ? 1 : 3)) % 4]] = 1;
+      }
+      return { buttons, axes: {} };
+    },
+    true,
+  );
+  touch.appendChild(dpad);
+  const observer =
+    typeof MutationObserver === 'function'
+      ? new MutationObserver(() => {
+          if (touchRoot.hidden) clearTouch();
+        })
+      : null;
+  observer?.observe(touchRoot, {
+    attributes: true,
+    attributeFilter: ['hidden'],
+  });
+  removers.push(() => observer?.disconnect());
   touchRoot.appendChild(touch);
 
   let overlay = null;
@@ -430,7 +541,9 @@ export function createInputUi({
         }
       }
     },
+    resetTouch: clearTouch,
     unmount() {
+      clearTouch();
       for (const remove of removers.splice(0)) remove();
       touch.remove();
       overlay?.remove();

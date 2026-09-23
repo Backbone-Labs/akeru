@@ -42,3 +42,14 @@ repository commits. The GPL engine previews provide pinned source downloads and
 Akeru build recipes. These downloads do not fabricate a completed rights audit.
 Rollback the website to its previous verified deployment to restore the previous
 registry and title origins; retain immutable title deployments used by it.
+
+## Additional arcade previews
+
+The public evaluation packager excludes titles with `publicationBlocked` and
+prints their reasons. HexGL has conflicting upstream license declarations;
+Astray's legacy dependency and image notices need review. Neither is included in
+the public catalog. Golden Axe has no supplied authorized build and is absent.
+Retro Road Racer uses MIT driving code with newly generated procedural artwork;
+borrowed OutRun images and music are excluded. BreakLock uses its MIT pattern
+model with a new Akeru interface. Both bundles retain upstream license notices.
+These evaluation additions do not change production publication approval.

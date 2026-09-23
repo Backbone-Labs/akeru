@@ -182,6 +182,7 @@ export function createBrowserInputProvider(options = {}) {
   const emitNavigation = (event) =>
     navigation.emit(Object.freeze({ ...event }));
   const resetInput = () => {
+    ui?.resetTouch?.();
     if (focused) release(activeProvider, true);
     activeProvider = null;
     lastSnapshotSignature = '';
@@ -210,14 +211,38 @@ export function createBrowserInputProvider(options = {}) {
       buttons: Object.fromEntries(GAMEPAD_BUTTONS.map((name) => [name, 0])),
       axes: {},
     };
-    for (const name of touchPointers.values()) raw.buttons[name] = 1;
+    for (const value of touchPointers.values()) {
+      if (typeof value === 'string') raw.buttons[value] = 1;
+      else {
+        for (const [name, pressed] of Object.entries(value.buttons))
+          raw.buttons[name] = Math.max(raw.buttons[name] || 0, pressed);
+        Object.assign(raw.axes, value.axes);
+      }
+    }
     emitSnapshot(
       'touch',
       true,
       normalizeRawControls(
         raw,
-        preferences.mappings.touch,
-        preferences.deadzone,
+        {
+          buttons: {
+            west: 'west',
+            north: 'north',
+            leftShoulder: 'leftShoulder',
+            rightShoulder: 'rightShoulder',
+            leftTrigger: 'leftTrigger',
+            rightTrigger: 'rightTrigger',
+            select: 'view',
+            ...preferences.mappings.touch.buttons,
+          },
+          axes: {
+            leftX: 'moveX',
+            leftY: 'moveY',
+            rightX: 'lookX',
+            rightY: 'lookY',
+          },
+        },
+        0,
       ),
       true,
     );
@@ -410,6 +435,7 @@ export function createBrowserInputProvider(options = {}) {
     start() {
       if (disposed) throw new Error('Input provider disposed');
       if (started) return;
+      ui?.resetTouch?.();
       started = true;
       add(window, 'keydown', keydown);
       add(window, 'blur', (event) => {

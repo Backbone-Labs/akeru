@@ -54,7 +54,7 @@ export async function startCatalogDemo(options = {}) {
     titleOrigin = await serve((req, res) => {
       res.setHeader(
         'Content-Security-Policy',
-        `default-src 'none'; script-src 'self' ${titleOptions.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self'; connect-src ${titleOptions.wasm ? "'self'" : "'none'"}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
+        `default-src 'none'; script-src 'self' ${titleOptions.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self'; media-src 'self'; connect-src ${titleOptions.wasm || titleOptions.assetRequests ? "'self'" : "'none'"}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
       );
       res.setHeader(
         'Permissions-Policy',
@@ -74,17 +74,23 @@ export async function startCatalogDemo(options = {}) {
       }
       res.setHeader(
         'Content-Type',
-        path.endsWith('.txt')
-          ? 'text/plain'
-          : path.endsWith('.wasm')
-            ? 'application/wasm'
-            : path.endsWith('.json')
-              ? 'application/json'
-              : path.endsWith('.html')
-                ? 'text/html'
-                : path.endsWith('.js')
-                  ? 'text/javascript'
-                  : 'text/css',
+        path.endsWith('.png')
+          ? 'image/png'
+          : path.endsWith('.jpg')
+            ? 'image/jpeg'
+            : path.endsWith('.ogg')
+              ? 'audio/ogg'
+              : path.endsWith('.txt')
+                ? 'text/plain'
+                : path.endsWith('.wasm')
+                  ? 'application/wasm'
+                  : path.endsWith('.json')
+                    ? 'application/json'
+                    : path.endsWith('.html')
+                      ? 'text/html'
+                      : path.endsWith('.js')
+                        ? 'text/javascript'
+                        : 'text/css',
       );
       res.end(titleFiles[path]);
     });
@@ -194,6 +200,10 @@ export async function startCatalogDemo(options = {}) {
       res.setHeader('Content-Type', 'image/png');
       return res.end(previewImages[req.url]);
     }
+    if (req.url === '/backbone-pro.png') {
+      res.setHeader('Content-Type', 'image/png');
+      return res.end(read('platform/catalog/backbone-pro.png'));
+    }
     if (req.url === '/favicon.ico') {
       res.writeHead(204);
       return res.end();
@@ -250,9 +260,9 @@ export async function startCatalogDemo(options = {}) {
     }
     const file =
       ['/', '/games', '/settings'].includes(req.url) ||
-      /^\/g\/[a-z0-9-]+\/?$/.test(req.url)
+      /^\/(?:g|play)\/[a-z0-9-]+\/?$/.test(req.url)
         ? 'platform/catalog/index.html'
-        : /^\/(?:favicon\.svg|style\.css|app\.js|home\.js|onboarding\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js)$/.test(
+        : /^\/(?:favicon\.svg|style\.css|app\.js|home\.js|onboarding\.js|promotions\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js|rumble\.js)$/.test(
               req.url,
             )
           ? `platform/catalog${req.url}`
@@ -278,7 +288,15 @@ export async function startCatalogDemo(options = {}) {
               ? 'text/css'
               : 'text/javascript',
       );
-      res.end(read(file));
+      const bytes = read(file);
+      res.end(
+        file.endsWith('index.html') && req.url.startsWith('/play/')
+          ? bytes
+              .toString()
+              .replace('<body>', '<body class="direct-player">')
+              .replace('Opening Akeru…', 'Opening game…')
+          : bytes,
+      );
     } catch {
       res.writeHead(404);
       res.end('Asset unavailable');

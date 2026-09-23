@@ -32,11 +32,19 @@ const headers = (csp) => [
       'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), gamepad=(self)',
   },
 ];
-const config = (csp, rewrites = []) => ({
+const config = (csp, rewrites = [], noStore = false) => ({
   framework: null,
   buildCommand: null,
   installCommand: null,
-  headers: [{ source: '/(.*)', headers: headers(csp) }],
+  headers: [
+    {
+      source: '/(.*)',
+      headers: [
+        ...headers(csp),
+        ...(noStore ? [{ key: 'Cache-Control', value: 'no-store' }] : []),
+      ],
+    },
+  ],
   rewrites,
 });
 const sourceArchive = execFileSync(
@@ -44,7 +52,13 @@ const sourceArchive = execFileSync(
   ['archive', '--format=tar.gz', 'HEAD'],
   { maxBuffer: 64 * 1024 * 1024 },
 );
-const titleOptions = playableTitles();
+const titleOptions = playableTitles().filter((title) => {
+  if (!title.publicationBlocked) return true;
+  console.log(
+    'Excluded ' + title.manifest.id + ': ' + title.publicationBlocked,
+  );
+  return false;
+});
 const demo = await startCatalogDemo({ titles: titleOptions });
 try {
   const catalog = await (await fetch(demo.url + '/catalog.json')).json();
@@ -132,20 +146,29 @@ try {
   const files = [
     'index.html',
     'favicon.svg',
+    'backbone-pro.png',
     'style.css',
     'app.js',
     'home.js',
     'onboarding.js',
+    'promotions.js',
     'controller-model.js',
     'model.js',
     'channel.js',
     'save-channel.js',
+    'rumble.js',
   ];
   for (const file of files) {
     let bytes = readFileSync(resolve('platform/catalog', file));
     if (file === 'index.html')
       bytes = Buffer.from(
-        bytes.toString().replace('LOCAL PREVIEW', 'PUBLIC PREVIEW'),
+        bytes
+          .toString()
+          .replace('LOCAL PREVIEW', 'PUBLIC PREVIEW')
+          .replace(
+            '</head>',
+            `<meta name="akeru-catalog-release" content="${hash(JSON.stringify(catalog))}" /></head>`,
+          ),
       );
     put(shell, file, bytes);
   }
@@ -162,6 +185,13 @@ try {
       'input/' + file,
       readFileSync(resolve('packages/input/src', file)),
     );
+  put(
+    shell,
+    'player.html',
+    readFileSync(resolve(shell, 'index.html'), 'utf8')
+      .replace('<body>', '<body class="direct-player">')
+      .replace('Opening Akeru…', 'Opening game…'),
+  );
   put(shell, 'saves/index.js', readFileSync('packages/saves/src/index.js'));
   // Remove model assets left by an older bundle; onboarding no longer loads 3D.
   rmSync(resolve(shell, 'local-controller.glb'), { force: true });
@@ -188,12 +218,14 @@ try {
     'vercel.json',
     JSON.stringify(
       config(
-        `default-src 'none'; script-src 'self' ; style-src 'self'; img-src 'self'; connect-src 'self'; frame-src ${origins ? Object.values(origins).join(' ') : "'none'"}; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
+        `default-src 'none'; script-src 'self' ; style-src 'self'; img-src 'self' https://backbone.com; connect-src 'self'; frame-src ${origins ? Object.values(origins).join(' ') : "'none'"}; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
         [
           { source: '/games', destination: '/index.html' },
           { source: '/settings', destination: '/index.html' },
           { source: '/g/:id', destination: '/index.html' },
+          { source: '/play/:id', destination: '/player.html' },
         ],
+        true,
       ),
       null,
       2,
