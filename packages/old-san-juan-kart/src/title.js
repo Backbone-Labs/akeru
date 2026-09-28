@@ -93,6 +93,7 @@ const host = connectGame({
     if (!connected) bridge.controls = neutral();
   },
   pause(paused) {
+    multiplayer.pause(paused);
     bridge.controls = neutral();
     const game = globalThis.__game;
     game?.input.keys.clear();
