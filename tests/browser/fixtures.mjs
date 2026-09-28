@@ -20,6 +20,12 @@ export const test = base.extend({
       } catch {
         /* No storage on some fixture origins. */
       }
+      // Physical controllers on the test machine must not drive tests; the
+      // simulated gamepad below replaces this when a test installs it.
+      Object.defineProperty(navigator, 'getGamepads', {
+        configurable: true,
+        value: () => [],
+      });
     });
     await use(page);
     expect(failures, `Browser errors in ${testInfo.title}`).toEqual([]);

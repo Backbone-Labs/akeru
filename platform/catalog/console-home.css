@@ -2340,3 +2340,498 @@ body[data-input='controller'] .console-profile .profile-row:focus {
     padding-bottom: 3em;
   }
 }
+
+/* Console web player: dark stage, glass HUD and a guide that slides out on pause.
+   The embedded /play/ player keeps its own styles. */
+body:has(.console-runtime) {
+  background: #050608;
+}
+body .runtime-wrap.console-runtime {
+  --hud-glass: #101216c7;
+  position: relative;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  padding: 0;
+  gap: 0;
+  display: flex;
+  flex-direction: column;
+  background: #050608;
+  color: #f5f3ef;
+  font-size: clamp(14px, calc(8px + 0.42vw), 17px);
+}
+body .console-runtime .runtime-bar {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 1em;
+  min-height: 0;
+  margin: 0;
+  padding: max(0.6em, env(safe-area-inset-top, 0px))
+    max(1em, env(safe-area-inset-right, 0px)) 0.6em
+    max(1em, env(safe-area-inset-left, 0px));
+  background: linear-gradient(180deg, #0c0d11, #08090c);
+  border-bottom: 1px solid #ffffff12;
+}
+.console-runtime .runtime-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  min-width: 0;
+  padding: 0.3em 1.1em 0.3em 0.3em;
+  border-radius: 999px;
+  background: var(--hud-glass);
+  box-shadow: inset 0 0 0 1px #ffffff17;
+}
+.console-runtime .runtime-home {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5em;
+  height: 2.5em;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ak-orange);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -8px var(--ak-glow);
+  transition:
+    transform 220ms var(--ak-spring),
+    box-shadow 220ms;
+}
+.console-runtime .runtime-home:hover {
+  transform: scale(1.07);
+}
+.console-runtime .runtime-home .brand-mark {
+  width: 1.3em;
+  height: 1.3em;
+}
+.runtime-heading {
+  min-width: 0;
+}
+.console-runtime #runtime-title {
+  margin: 0;
+  font-size: 1.02em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.runtime-status {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  margin: 0.15em 0 0;
+  font-size: 0.74em;
+  font-weight: 700;
+  color: #ffffffa3;
+}
+.runtime-dot {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: #8b909b;
+  transition:
+    background-color 240ms,
+    box-shadow 240ms;
+}
+.console-runtime[data-state='playing'] .runtime-dot {
+  background: #2fbf5a;
+  box-shadow: 0 0 0 3px #2fbf5a33;
+}
+.console-runtime[data-state='paused'] .runtime-dot {
+  background: var(--ak-orange);
+  box-shadow: 0 0 0 3px #ff681f33;
+}
+.runtime-session:not(:empty)::before {
+  content: '·';
+  margin-right: 0.45em;
+}
+body .console-runtime .runtime-tools {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.3em;
+  border-radius: 999px;
+  background: var(--hud-glass);
+  box-shadow: inset 0 0 0 1px #ffffff17;
+}
+body .runtime-wrap.console-runtime .runtime-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-width: 2.5em;
+  min-height: 0;
+  height: 2.5em;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.92em;
+  font-weight: 750;
+  cursor: pointer;
+  transition:
+    background-color 180ms,
+    color 180ms,
+    transform 180ms var(--ak-ease);
+}
+body .runtime-wrap.console-runtime .runtime-tool:hover:not(:disabled) {
+  background: #ffffff1f;
+}
+body .runtime-wrap.console-runtime .runtime-tool:active {
+  transform: scale(0.95);
+}
+body .runtime-wrap.console-runtime .runtime-tool-wide {
+  padding: 0 1.05em 0 0.85em;
+}
+body .runtime-wrap.console-runtime .runtime-tool .console-icon {
+  width: 1.3em;
+  height: 1.3em;
+}
+body .runtime-wrap.console-runtime .runtime-tool[aria-pressed='true'] {
+  background: #ffffff21;
+  color: var(--ak-orange-2);
+}
+body .runtime-wrap.console-runtime #runtime-pause {
+  background: var(--ak-orange);
+  box-shadow: 0 8px 20px -10px var(--ak-glow);
+}
+body .runtime-wrap.console-runtime #runtime-pause:hover {
+  background: var(--ak-orange-2);
+}
+.console-runtime
+  :is(.runtime-tool, .runtime-home, .guide-switch-item):focus-visible,
+body[data-input='controller']
+  .console-runtime
+  :is(.runtime-tool, .runtime-home, .guide-switch-item):focus {
+  outline: 3px solid var(--ak-orange);
+  outline-offset: 3px;
+}
+body .console-runtime .runtime-stage {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: radial-gradient(ellipse at 50% 40%, #13151b, #050608 72%);
+}
+.console-runtime .runtime-stage iframe {
+  background: #050608;
+}
+.console-runtime #control-settings {
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(620px, 100vw);
+  pointer-events: none;
+}
+.console-runtime #control-settings > .akeru-control-settings:not([hidden]) {
+  height: 100%;
+  overflow-y: auto;
+  border-radius: 24px 0 0 24px;
+  pointer-events: auto;
+  box-shadow: -30px 0 80px -20px #000c;
+  animation: guide-in-right 380ms cubic-bezier(0.2, 0.86, 0.24, 1);
+}
+@keyframes guide-in-right {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+}
+
+/* The guide itself. */
+body .console-runtime .runtime-overlay.runtime-guide {
+  display: block;
+  padding: 0;
+  text-align: left;
+  color: var(--ak-ink);
+  background: linear-gradient(
+    90deg,
+    #050608e6 0%,
+    #050608a8 42%,
+    #0506085c 100%
+  );
+  backdrop-filter: blur(3px);
+}
+.guide-panel {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.05em;
+  width: min(440px, 100vw);
+  padding: 1.3em 1.4em max(1.1em, env(safe-area-inset-bottom, 0px))
+    max(1.4em, env(safe-area-inset-left, 0px));
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--ak-surface) 95%, transparent);
+  backdrop-filter: blur(28px) saturate(1.3);
+  box-shadow:
+    30px 0 90px -20px #000d,
+    inset -1px 0 0 var(--ak-line);
+  color: var(--ak-ink);
+  font-size: clamp(14px, calc(8px + 0.42vw), 17px);
+}
+.guide-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.guide-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  font-size: 0.74em;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.guide-brand svg {
+  width: 1.7em;
+  height: 1.7em;
+  fill: var(--ak-orange);
+}
+.guide-brand i {
+  color: var(--ak-orange);
+  font-style: normal;
+}
+.guide-clock {
+  font-size: 1.05em;
+  font-weight: 800;
+}
+.guide-now {
+  display: flex;
+  align-items: center;
+  gap: 0.95em;
+  padding: 0.85em;
+  border-radius: 18px;
+  background: var(--ak-card);
+  box-shadow: inset 0 0 0 1px var(--ak-line);
+}
+.guide-art {
+  flex: none;
+  width: 6.2em;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.guide-art .console-cover {
+  width: 100%;
+  height: 100%;
+}
+.guide-now-copy {
+  display: grid;
+  gap: 0.2em;
+  min-width: 0;
+}
+.guide-panel .guide-kicker {
+  margin: 0;
+  max-width: none;
+  font-size: 0.66em;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--ak-orange-text);
+}
+.guide-now strong {
+  font-size: 1.1em;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.guide-now span {
+  font-size: 0.8em;
+  color: var(--ak-ink-2);
+}
+.guide-panel .guide-copy .eyebrow {
+  margin: 0;
+  font-size: 0.66em;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--ak-orange-text);
+}
+.guide-panel .guide-copy h2 {
+  margin: 0.2em 0 0.25em;
+  font-size: 1.65em;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--ak-ink);
+}
+.guide-panel .guide-copy p:not(.eyebrow) {
+  margin: 0;
+  max-width: none;
+  font-size: 0.88em;
+  color: var(--ak-ink-2);
+}
+.guide-menu {
+  display: grid;
+  gap: 0.2em;
+}
+.guide-panel .guide-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  width: 100%;
+  min-height: 3.1em;
+  margin: 0;
+  padding: 0 1em;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--ak-ink);
+  font-family: inherit;
+  font-size: 1em;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 160ms,
+    color 160ms,
+    box-shadow 160ms;
+}
+.guide-row .console-icon {
+  width: 1.3em;
+  height: 1.3em;
+}
+.guide-row em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 0.8em;
+  font-weight: 800;
+  color: var(--ak-muted);
+}
+.guide-panel .guide-row:hover:not(:disabled) {
+  background: var(--ak-surface-2);
+}
+.guide-panel .guide-row:focus-visible,
+body[data-input='controller'] .guide-panel .guide-row:focus {
+  outline: none;
+  background: var(--ak-ink);
+  color: var(--ak-paper);
+  box-shadow:
+    0 0 0 4px var(--ak-glow),
+    0 14px 34px -14px var(--ak-glow);
+}
+.guide-panel .guide-row:is(:focus-visible, :focus) em {
+  color: inherit;
+  opacity: 0.7;
+}
+.guide-panel .guide-row.is-primary .console-icon {
+  color: var(--ak-orange);
+}
+.guide-panel .guide-row.is-danger {
+  color: #dc2626;
+}
+[data-theme='dark'] .guide-panel .guide-row.is-danger {
+  color: #ff7a7a;
+}
+.guide-panel .guide-row[data-confirm='true'] {
+  color: #dc2626;
+  box-shadow: inset 0 0 0 1.5px #ef4444;
+}
+.guide-rule {
+  width: 100%;
+  margin: 0.35em 0;
+  border: 0;
+  border-top: 1px solid var(--ak-line);
+}
+.guide-panel .guide-status {
+  margin: 0;
+  max-width: none;
+  min-height: 1.3em;
+  font-size: 0.82em;
+  color: var(--ak-ink-2);
+}
+.guide-panel .guide-status:empty {
+  display: none;
+}
+.guide-switch {
+  display: grid;
+  gap: 0.6em;
+}
+.guide-switch-list {
+  display: flex;
+  gap: 0.6em;
+}
+.guide-switch-item {
+  display: block;
+  width: 5.4em;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--ak-line);
+  transition: transform 220ms var(--ak-spring);
+}
+.guide-switch-item:hover {
+  transform: translateY(-3px);
+}
+.guide-switch-item .console-cover {
+  width: 100%;
+  height: 100%;
+}
+.guide-panel .guide-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2em;
+  margin: auto 0 0;
+  padding-top: 0.6em;
+  max-width: none;
+  font-size: 0.8em;
+  font-weight: 650;
+  color: var(--ak-ink-2);
+}
+.guide-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+@media (max-width: 700px), (max-height: 550px) and (max-width: 1000px) {
+  .console-runtime .runtime-heading {
+    display: none;
+  }
+  .console-runtime .runtime-brand {
+    padding-right: 0.3em;
+  }
+  body .runtime-wrap.console-runtime .runtime-tool-wide {
+    width: 2.5em;
+    padding: 0;
+  }
+  body .runtime-wrap.console-runtime .runtime-tool-wide span {
+    display: none;
+  }
+  .guide-panel {
+    width: min(400px, 100vw);
+  }
+}
+@media (pointer: coarse) {
+  body:not([data-input='controller']) .guide-panel .guide-legend {
+    display: none;
+  }
+}
+.console-runtime:has(#runtime-overlay.runtime-guide:not([hidden]))
+  #touch-controls {
+  visibility: hidden;
+}
+.guide-panel .guide-row.is-primary:not(:focus-visible) {
+  background: var(--ak-surface-2);
+}
+body[data-input='controller']
+  .guide-panel
+  .guide-row.is-primary:not(:focus):not(:hover) {
+  background: transparent;
+}

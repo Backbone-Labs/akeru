@@ -255,16 +255,26 @@ test('saved games stay in a shell-owned library across reloads', async ({
   await expect(page.locator('#row-saved')).toHaveCount(0);
 });
 
-test('controller A on a home cover launches through availability checks and B closes the sheet it returns to', async ({
+test('controller A on a home cover opens its sheet first, then A on Play now launches and B closes the sheet it returns to', async ({
   page,
 }) => {
   await installSimulatedGamepad(page);
   await page.goto(demo.url + '/games');
   await expect(page.locator('#featured-launch')).toBeVisible();
+  await expect(page.locator('[data-shortcut="play"]')).toHaveText('ASelect');
+  const pressA = async () => {
+    await setGamepadButton(page, 0, 1);
+    await page.waitForTimeout(100);
+    await setGamepadButton(page, 0, 0);
+    await page.waitForTimeout(100);
+  };
   await page.locator('.bento-feature .bento-link').focus();
-  await setGamepadButton(page, 0, 1);
-  await page.waitForTimeout(100);
-  await setGamepadButton(page, 0, 0);
+  await pressA();
+  await expect(page).toHaveURL(/\/g\/orbit-study$/);
+  await expect(page.getByRole('dialog', { name: 'Orbit study' })).toBeVisible();
+  await expect(page.locator('iframe')).toHaveCount(0);
+  await expect(page.locator('#play-button')).toBeFocused();
+  await pressA();
   await expect(
     page
       .frameLocator('iframe[title="Orbit study isolated runtime"]')

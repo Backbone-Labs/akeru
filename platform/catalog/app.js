@@ -4,6 +4,11 @@ import {
   wrapConsolePage,
   openConsoleKeyboard,
   icon,
+  cover,
+  runtimeMarkup,
+  runtimeTool,
+  setRuntimeTool,
+  sessionClock,
 } from './console-ui.js';
 import { createRumble } from './rumble.js';
 import {
@@ -240,11 +245,30 @@ export function mountCatalog({
   document.addEventListener('visibilitychange', onVisibility);
   const onFullscreen = () => {
     const button = $('#runtime-fullscreen');
-    if (button)
+    if (button?.classList.contains('runtime-tool')) syncConsoleFullscreen();
+    else if (button)
       button.textContent = document.fullscreenElement
         ? 'Exit fullscreen'
         : 'Fullscreen';
   };
+  function syncConsoleFullscreen(unavailable = false) {
+    const button = $('#runtime-fullscreen');
+    if (!button) return;
+    const on = Boolean(
+      document.fullscreenElement || document.querySelector('.expanded-player'),
+    );
+    setRuntimeTool(
+      button,
+      on ? 'shrink' : 'expand',
+      unavailable
+        ? 'Fullscreen unavailable'
+        : on
+          ? 'Exit fullscreen'
+          : 'Fullscreen',
+    );
+    const row = document.querySelector('[data-guide-fullscreen] em');
+    if (row) row.textContent = on ? 'On' : 'Off';
+  }
   document.addEventListener('fullscreenchange', onFullscreen);
   function telemetry(event) {
     try {
@@ -418,7 +442,10 @@ export function mountCatalog({
     if (event.type === 'back') {
       if (active) {
         if (isPlayer()) pause();
-        else navigate(`/g/${active.entry.manifest.id}`);
+        // Console web player: B opens the guide and closes it again.
+        else if (introPending()) return;
+        else if (active.channel.state === 'paused') resume();
+        else pause();
       } else if (
         ['detail', 'settings'].includes(routeFor(location.pathname).view)
       )
@@ -428,14 +455,22 @@ export function mountCatalog({
     }
     if (event.type === 'menu') {
       if (active) {
+        if (introPending()) return;
         if (active.channel.state === 'paused') resume();
         else pause();
       } else $('#about-dialog').showModal();
       return;
     }
+    const guidePanel =
+      active && !isPlayer()
+        ? document.querySelector(
+            '#runtime-overlay.runtime-guide:not([hidden]) .guide-panel',
+          )
+        : null;
     const scope =
       controlPanel ??
       playerPanel ??
+      guidePanel ??
       modal ??
       (active ? document.querySelector('.runtime-wrap') : main);
     if (
@@ -947,8 +982,10 @@ export function mountCatalog({
   function renderRuntime(entry) {
     disposeView();
     clearSession();
-    main.innerHTML =
-      '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><a class="runtime-home" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></a><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay launch-screen" role="status"><div class="launch-brand" aria-label="Backbone / Akeru"><span class="launch-backbone"><svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>BACKBONE</span><span class="launch-reveal"><span class="launch-akeru"><i>/</i> AKERU</span></span></div><h2>Opening game…</h2><p></p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
+    const consoleRuntime = !isPlayer();
+    main.innerHTML = consoleRuntime
+      ? runtimeMarkup()
+      : '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><a class="runtime-home" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></a><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay launch-screen" role="status"><div class="launch-brand" aria-label="Backbone / Akeru"><span class="launch-backbone"><svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>BACKBONE</span><span class="launch-reveal"><span class="launch-akeru"><i>/</i> AKERU</span></span></div><h2>Opening game…</h2><p></p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
     $('#runtime-title').textContent = entry.manifest.title;
     $('#runtime-overlay h2').textContent =
       'Opening ' + entry.manifest.title + '…';
@@ -1059,11 +1096,15 @@ export function mountCatalog({
     });
     $('#runtime-exit').onclick = () => navigate(`/g/${entry.manifest.id}`);
     const tools = document.querySelector('.runtime-tools');
-    const theme = node('button', 'secondary theme-toggle', 'Light / Dark');
-    theme.setAttribute('data-theme-toggle', '');
-    theme.setAttribute('aria-label', 'Switch light or dark theme');
-    tools.append(theme);
-    const fullscreen = node('button', 'secondary', 'Fullscreen');
+    if (!consoleRuntime) {
+      const theme = node('button', 'secondary theme-toggle', 'Light / Dark');
+      theme.setAttribute('data-theme-toggle', '');
+      theme.setAttribute('aria-label', 'Switch light or dark theme');
+      tools.append(theme);
+    }
+    const fullscreen = consoleRuntime
+      ? runtimeTool('expand', 'Fullscreen')
+      : node('button', 'secondary', 'Fullscreen');
     fullscreen.id = 'runtime-fullscreen';
     fullscreen.onclick = async () => {
       try {
@@ -1074,18 +1115,25 @@ export function mountCatalog({
           document
             .querySelector('.runtime-wrap')
             .classList.toggle('expanded-player');
-        fullscreen.textContent =
-          document.fullscreenElement ||
-          document.querySelector('.expanded-player')
-            ? 'Exit fullscreen'
-            : 'Fullscreen';
+        if (consoleRuntime) syncConsoleFullscreen();
+        else
+          fullscreen.textContent =
+            document.fullscreenElement ||
+            document.querySelector('.expanded-player')
+              ? 'Exit fullscreen'
+              : 'Fullscreen';
         frame.contentWindow.focus();
       } catch {
-        fullscreen.textContent = 'Fullscreen unavailable';
+        if (consoleRuntime) syncConsoleFullscreen(true);
+        else fullscreen.textContent = 'Fullscreen unavailable';
       }
     };
-    tools.prepend(fullscreen);
-    const touch = node('button', 'secondary', 'Touch controls');
+    if (consoleRuntime) tools.insertBefore(fullscreen, $('#runtime-pause'));
+    else tools.prepend(fullscreen);
+    const touch = consoleRuntime
+      ? runtimeTool('touch', 'Touch controls')
+      : node('button', 'secondary', 'Touch controls');
+    if (consoleRuntime) touch.id = 'runtime-touch';
     const touchVisible = matchMedia('(pointer: coarse)').matches;
     $('#touch-controls').hidden = !touchVisible;
     touch.setAttribute('aria-pressed', String(touchVisible));
@@ -1093,9 +1141,17 @@ export function mountCatalog({
       $('#touch-controls').hidden = !$('#touch-controls').hidden;
       touch.setAttribute('aria-pressed', String(!$('#touch-controls').hidden));
     };
-    tools.append(touch);
-    $('#runtime-pause').onclick = () =>
-      active?.channel.state === 'paused' ? resume() : pause();
+    if (consoleRuntime) tools.insertBefore(touch, fullscreen);
+    else tools.append(touch);
+    $('#runtime-pause').onclick = () => {
+      if (introPending()) return;
+      if (active?.channel.state === 'paused') resume();
+      else pause();
+    };
+    if (consoleRuntime) {
+      $('#runtime-guide').onclick = () => $('#runtime-pause').click();
+      startConsoleHud(session);
+    }
     $('#runtime-controls').onclick = () => {
       pause();
       input?.showControls();
@@ -1123,8 +1179,18 @@ export function mountCatalog({
     };
     main.focus();
   }
+  // The web player's opening reveal holds the channel paused; toggles wait for it.
+  function introPending() {
+    return Boolean(
+      active &&
+      !isPlayer() &&
+      active.channel?.state === 'paused' &&
+      active.consoleHud?.playingSince() === null,
+    );
+  }
   function pause() {
     if (active?.channel.state !== 'playable') return;
+    active.consoleHud?.tick();
     input?.stop();
     active.channel.pause();
     if (inputProviderFactory) {
@@ -1133,9 +1199,15 @@ export function mountCatalog({
       navInput.subscribeNavigation(nav);
       navInput.start();
     }
-    $('#runtime-pause').textContent = 'Resume';
+    if (isPlayer()) $('#runtime-pause').textContent = 'Resume';
+    else
+      setRuntimeTool($('#runtime-pause'), 'play', 'Resume', 'Resume (Start)');
     const o = $('#runtime-overlay');
     o.classList.remove('launch-screen');
+    if (!isPlayer()) {
+      openConsoleGuide(o);
+      return;
+    }
     o.replaceChildren(
       node('p', 'eyebrow', 'TAKE YOUR TIME'),
       node('h2', '', 'A little breather.'),
@@ -1452,13 +1524,292 @@ export function mountCatalog({
       animatePanel(overlay, false, () =>
         overlay.classList.remove('player-settings'),
       );
-    else {
-      overlay.hidden = true;
-      overlay.classList.remove('player-settings');
-    }
+    else closeConsoleGuide(overlay);
     $('#player-menu')?.setAttribute('aria-expanded', 'false');
-    $('#runtime-pause').textContent = 'Pause';
+    if (isPlayer()) $('#runtime-pause').textContent = 'Pause';
+    else setRuntimeTool($('#runtime-pause'), 'pause', 'Pause', 'Pause (Start)');
+    active.consoleHud?.tick();
     active.frame.contentWindow.focus();
+  }
+  function startConsoleHud(session) {
+    const wrap = document.querySelector('.runtime-wrap');
+    const stateLabel = wrap.querySelector('[data-runtime-state]');
+    const sessionLabel = wrap.querySelector('[data-runtime-session]');
+    const labels = {
+      loading: 'Loading',
+      playing: 'Playing',
+      paused: 'Paused',
+      stopped: 'Stopped',
+    };
+    let playingSince = null;
+    const tick = () => {
+      if (!wrap.isConnected || active !== session) {
+        clearInterval(timer);
+        return;
+      }
+      const state = session.channel?.state;
+      if (state === 'playable' && playingSince === null)
+        playingSince = performance.now();
+      const view =
+        state === 'playable'
+          ? 'playing'
+          : state === 'paused'
+            ? playingSince === null
+              ? 'loading'
+              : 'paused'
+            : state === 'loading'
+              ? 'loading'
+              : 'stopped';
+      wrap.dataset.state = view;
+      stateLabel.textContent = labels[view];
+      sessionLabel.textContent =
+        playingSince === null
+          ? ''
+          : sessionClock(performance.now() - playingSince);
+    };
+    const timer = setInterval(tick, 1000);
+    session.consoleHud = { tick, playingSince: () => playingSince };
+    tick();
+  }
+  function openConsoleGuide(o) {
+    const session = active;
+    const entry = session.entry;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    o.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+    o.classList.add('runtime-guide');
+    o.setAttribute('role', 'group');
+    o.setAttribute('aria-label', 'Game menu');
+    const panel = node('aside', 'guide-panel');
+    const top = node('div', 'guide-top');
+    top.innerHTML =
+      '<span class="guide-brand"><svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>BACKBONE <i>/</i> AKERU</span>';
+    top.append(
+      node(
+        'time',
+        'guide-clock',
+        new Intl.DateTimeFormat(undefined, {
+          hour: 'numeric',
+          minute: '2-digit',
+        }).format(new Date()),
+      ),
+    );
+    const now = node('div', 'guide-now');
+    const art = node('span', 'guide-art');
+    art.append(cover(entry, { label: false }));
+    const since = session.consoleHud?.playingSince();
+    const nowCopy = node('div', 'guide-now-copy');
+    nowCopy.append(
+      node('p', 'guide-kicker', 'NOW PLAYING · PAUSED'),
+      node('strong', '', entry.manifest.title),
+      node(
+        'span',
+        '',
+        `${typeof since !== 'number' ? '' : `Session ${sessionClock(performance.now() - since)} · `}Saves stay on this browser`,
+      ),
+    );
+    now.append(art, nowCopy);
+    const head = node('div', 'guide-copy');
+    head.append(
+      node('p', 'eyebrow', 'TAKE YOUR TIME'),
+      node('h2', '', 'A little breather.'),
+      node('p', '', 'Your session is paused. Come back when you’re ready.'),
+    );
+    const status = node('p', 'guide-status');
+    status.setAttribute('aria-live', 'polite');
+    const row = (iconName, label, onClick, { hint = '', cls = '' } = {}) => {
+      const button = node('button', `guide-row ${cls}`.trim());
+      button.type = 'button';
+      button.innerHTML = `${icon(iconName)}<span></span><em></em>`;
+      button.querySelector('span').textContent = label;
+      button.querySelector('em').textContent = hint;
+      button.onclick = onClick;
+      return button;
+    };
+    const gameAction = (label, action, iconName, confirmText) => {
+      const button = row(iconName, label, null);
+      button.onclick = async () => {
+        if (confirmText && button.dataset.confirm !== 'true') {
+          button.dataset.confirm = 'true';
+          button.querySelector('span').textContent =
+            `Confirm ${label.toLowerCase()}`;
+          status.textContent = confirmText;
+          return;
+        }
+        delete button.dataset.confirm;
+        button.querySelector('span').textContent = label;
+        button.disabled = true;
+        status.textContent = 'Working…';
+        try {
+          const result = await session.channel.requestAction(action);
+          status.textContent = result.message;
+          const audio = result.state?.audioState;
+          if (audio)
+            button.querySelector('em').textContent =
+              audio === 'off' ? 'Off' : audio === 'blocked' ? 'Blocked' : 'On';
+        } catch {
+          status.textContent = 'Game did not respond. Try again.';
+        } finally {
+          button.disabled = false;
+        }
+      };
+      return button;
+    };
+    const menu = node('div', 'guide-menu');
+    menu.setAttribute('role', 'group');
+    menu.setAttribute('aria-label', 'Game actions');
+    const keep = row('play', 'Keep playing', resume, {
+      hint: 'A',
+      cls: 'is-primary',
+    });
+    menu.append(keep);
+    const actions = session.channel.actions;
+    if (actions.includes('save'))
+      menu.append(gameAction('Save snapshot', 'save', 'save'));
+    if (actions.includes('restore'))
+      menu.append(
+        gameAction(
+          'Restore snapshot',
+          'restore',
+          'undo',
+          'This replaces your current session with the snapshot.',
+        ),
+      );
+    if (actions.includes('audio'))
+      menu.append(gameAction('Game sound', 'audio', 'sound'));
+    menu.append(
+      row('controller', 'Controller layout', () =>
+        $('#runtime-controls').click(),
+      ),
+    );
+    const touchRow = row(
+      'touch',
+      'On-screen controls',
+      () => {
+        $('#runtime-touch')?.click();
+        touchRow.querySelector('em').textContent = $('#touch-controls').hidden
+          ? 'Off'
+          : 'On';
+      },
+      { hint: $('#touch-controls').hidden ? 'Off' : 'On' },
+    );
+    const fullscreenRow = row(
+      'expand',
+      'Full screen',
+      () => $('#runtime-fullscreen')?.click(),
+      {
+        hint:
+          document.fullscreenElement ||
+          document.querySelector('.expanded-player')
+            ? 'On'
+            : 'Off',
+      },
+    );
+    fullscreenRow.dataset.guideFullscreen = '';
+    const dark = document.documentElement.dataset.theme === 'dark';
+    const themeRow = row(dark ? 'sun' : 'moon', 'Appearance', () =>
+      setTimeout(() => {
+        themeRow.querySelector('em').textContent =
+          document.documentElement.dataset.theme === 'dark' ? 'Dark' : 'Light';
+      }),
+    );
+    themeRow.querySelector('em').textContent = dark ? 'Dark' : 'Light';
+    themeRow.setAttribute('data-theme-toggle', '');
+    menu.append(
+      touchRow,
+      fullscreenRow,
+      themeRow,
+      node('hr', 'guide-rule'),
+      row('exit', 'Exit game', () => navigate(`/g/${entry.manifest.id}`), {
+        cls: 'is-danger',
+      }),
+    );
+    panel.append(top, now, head, menu, status);
+    const others = readRecent(browserStorage())
+      .map((r) => catalog.entries.find((e) => e.manifest.id === r.id))
+      .filter(
+        (e) =>
+          e &&
+          e.manifest.id !== entry.manifest.id &&
+          e.availability === 'available',
+      )
+      .slice(0, 4);
+    if (others.length) {
+      const quick = node('div', 'guide-switch');
+      quick.append(node('p', 'guide-kicker', 'QUICK SWITCH'));
+      const list = node('div', 'guide-switch-list');
+      for (const other of others) {
+        const link = node('a', 'guide-switch-item');
+        link.href = `/g/${other.manifest.id}`;
+        link.setAttribute('aria-label', `Switch to ${other.manifest.title}`);
+        link.title = other.manifest.title;
+        link.append(cover(other, { label: false }));
+        list.append(link);
+      }
+      quick.append(list);
+      panel.append(quick);
+    }
+    const legend = node('p', 'guide-legend');
+    legend.setAttribute('aria-hidden', 'true');
+    legend.innerHTML =
+      '<span><kbd class="glyph-a">A</kbd>Select</span><span><kbd class="glyph-b">B</kbd>Keep playing</span><span><kbd class="glyph-trigger">☰</kbd>Close</span>';
+    panel.append(legend);
+    o.replaceChildren(panel);
+    o.hidden = false;
+    session.consoleHud?.tick();
+    if (!reduced) {
+      o.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: 240,
+        easing: 'ease-out',
+      });
+      panel.animate(
+        [{ transform: 'translateX(-104%)' }, { transform: 'translateX(0)' }],
+        { duration: 420, easing: 'cubic-bezier(.2,.86,.24,1)' },
+      );
+      [...panel.children].forEach((child, index) =>
+        child.animate(
+          [
+            { opacity: 0, transform: 'translateX(-18px)' },
+            { opacity: 1, transform: 'translateX(0)' },
+          ],
+          {
+            duration: 320,
+            delay: 90 + Math.min(index, 7) * 35,
+            easing: 'cubic-bezier(.2,.8,.2,1)',
+            fill: 'backwards',
+          },
+        ),
+      );
+    }
+    keep.focus({ preventScroll: true });
+  }
+  function closeConsoleGuide(overlay) {
+    const session = active;
+    const finish = () => {
+      overlay.hidden = true;
+      overlay.classList.remove('player-settings', 'runtime-guide');
+      overlay.setAttribute('role', 'status');
+      overlay.removeAttribute('aria-label');
+      overlay.replaceChildren();
+    };
+    const panel = overlay.querySelector('.guide-panel');
+    if (!panel || matchMedia('(prefers-reduced-motion: reduce)').matches)
+      return finish();
+    overlay.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 220,
+      easing: 'ease-in',
+    });
+    panel
+      .animate(
+        [{ transform: 'translateX(0)' }, { transform: 'translateX(-104%)' }],
+        { duration: 220, easing: 'cubic-bezier(.4,0,.8,.3)' },
+      )
+      .finished.then(
+        () => {
+          if (active === session && session.channel.state === 'playable')
+            finish();
+        },
+        () => {},
+      );
   }
   function failRuntime(code) {
     if (!active) return;
@@ -1477,7 +1828,9 @@ export function mountCatalog({
     });
     const e = active.entry,
       o = $('#runtime-overlay');
-    o.classList.remove('launch-screen');
+    o.classList.remove('launch-screen', 'runtime-guide');
+    o.setAttribute('role', 'status');
+    o.removeAttribute('aria-label');
     o.replaceChildren(
       node('p', 'eyebrow', 'LET’S TRY THAT AGAIN'),
       node('h2', '', 'The game couldn’t open.'),

@@ -857,8 +857,8 @@ export function renderGameHome(
   for (const button of main.querySelectorAll('[data-search]'))
     button.onclick = searchGames;
   find('[data-shortcut="play"]').onclick = () => {
-    const game = document.activeElement?.closest?.('[data-game]');
-    launchEntry(game ? byId.get(game.dataset.game) : feature);
+    const game = document.activeElement?.closest?.('a[data-game]');
+    (game ?? featureLink())?.click();
   };
   find('[data-shortcut="details"]').onclick = () => {
     const game = document.activeElement?.closest?.('[data-game]');
@@ -913,14 +913,11 @@ export function renderGameHome(
         target.click();
       }
     } else if (key === 'a') {
-      const entry = game
-        ? byId.get(game.dataset.game)
-        : view === 'play'
-          ? feature
-          : null;
-      if (entry) {
+      // A selects: open the game's sheet; Play now inside it starts the game.
+      const target = game ?? (view === 'play' ? featureLink() : null);
+      if (target) {
         event.preventDefault();
-        launchEntry(entry);
+        target.click();
       }
     } else if (event.key === 'Escape' && view !== 'play') {
       event.preventDefault();
@@ -943,8 +940,8 @@ export function renderGameHome(
     const focused = document.activeElement;
     const game = main.contains(focused) ? focused.closest('[data-game]') : null;
     const tabs = ['play', 'discover', 'library'];
-    if (type === 'activate' && game) launchEntry(byId.get(game.dataset.game));
-    else if (type === 'nextTab' || type === 'previousTab') {
+    // A on a game falls through to the default activate, which opens its sheet.
+    if (type === 'nextTab' || type === 'previousTab') {
       showView(tabs[(tabs.indexOf(view) + (type === 'nextTab' ? 1 : 2)) % 3]);
       find(`.console-tabs [data-view="${view}"]`).focus({
         preventScroll: true,

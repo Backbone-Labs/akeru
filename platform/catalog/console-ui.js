@@ -39,6 +39,12 @@ const paths = {
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   sparkle:
     '<path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7Z"/>',
+  pause:
+    '<rect x="6.5" y="5" width="3.5" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="3.5" height="14" rx="1" fill="currentColor"/>',
+  exit: '<path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5m5-12 4 4-4 4m-8-4h12"/>',
+  expand: '<path d="M4 9V4h5m6 0h5v5M4 15v5h5m6 0h5v-5"/>',
+  shrink: '<path d="M9 4v5H4m11-5v5h5M9 20v-5H4m11 5v-5h5"/>',
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
 };
 export const icon = (name) =>
   `<svg class="console-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] ?? ''}</svg>`;
@@ -73,8 +79,35 @@ export function consoleHeader({ preview = false } = {}) {
     <div class="console-tools"><span class="console-preview" ${preview ? '' : 'hidden'} title="Games shown here are not published releases.">PUBLIC PREVIEW</span><button type="button" class="console-tool" data-search aria-label="Search games" title="Search games (Y)">${icon('search')}</button><button type="button" class="console-tool" data-theme-toggle aria-label="Switch to dark mode" title="Switch to dark mode"><span class="console-theme-icon" data-mode="light">${icon('moon')}</span><span class="console-theme-icon" data-mode="dark">${icon('sun')}</span></button><a class="console-tool" href="/settings" aria-label="Settings" title="Settings">${icon('settings')}</a><span class="console-tools-divider" aria-hidden="true"></span><button type="button" class="console-guest" data-profile aria-haspopup="dialog" aria-label="Guest profile"><span class="console-avatar" aria-hidden="true"></span><span class="console-guest-name">Guest</span><span class="console-online" aria-hidden="true"></span></button></div>
   </header>`;
 }
+/** Web player chrome. Ids and accessible names match the previous toolbar. */
+export function runtimeMarkup() {
+  return `<div class="runtime-wrap console-runtime" data-state="loading"><div class="runtime-bar"><div class="runtime-brand"><button type="button" class="runtime-home" id="runtime-guide" aria-label="Open game menu" title="Game menu (Start)"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></button><div class="runtime-heading"><h1 id="runtime-title"></h1><p class="runtime-status"><span class="runtime-dot" aria-hidden="true"></span><span data-runtime-state>Loading</span><span class="runtime-session" data-runtime-session></span></p></div></div><div class="runtime-tools" role="group" aria-label="Game tools"><button type="button" id="runtime-controls" class="runtime-tool" aria-label="Controls" title="Controller layout">${icon('controller')}</button><button type="button" id="runtime-pause" class="runtime-tool runtime-tool-wide" aria-label="Pause" title="Pause (Start)">${icon('pause')}<span>Pause</span></button><button type="button" id="runtime-exit" class="runtime-tool runtime-tool-wide" aria-label="Exit" title="Exit game">${icon('exit')}<span>Exit</span></button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay launch-screen" role="status"><div class="launch-brand" aria-label="Backbone / Akeru"><span class="launch-backbone"><svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>BACKBONE</span><span class="launch-reveal"><span class="launch-akeru"><i>/</i> AKERU</span></span></div><h2>Opening game…</h2><p></p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>`;
+}
+export function runtimeTool(iconName, label, { id, wide = false } = {}) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `runtime-tool${wide ? ' runtime-tool-wide' : ''}`;
+  if (id) button.id = id;
+  setRuntimeTool(button, iconName, label);
+  return button;
+}
+export function setRuntimeTool(button, iconName, label, title = label) {
+  button.setAttribute('aria-label', label);
+  button.title = title;
+  button.innerHTML = `${icon(iconName)}${button.classList.contains('runtime-tool-wide') ? `<span>${label}</span>` : ''}`;
+}
+export function sessionClock(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const hours = Math.floor(total / 3600),
+    minutes = Math.floor((total % 3600) / 60),
+    seconds = total % 60;
+  const pad = (n) => String(n).padStart(2, '0');
+  return hours
+    ? `${hours}:${pad(minutes)}:${pad(seconds)}`
+    : `${minutes}:${pad(seconds)}`;
+}
 export function consoleFooter({ back = 'Back' } = {}) {
-  return `<footer class="console-footer"><div class="console-shortcuts" aria-label="Controller shortcuts"><button type="button" data-shortcut="play" data-nav-skip><kbd class="glyph-a">A</kbd>Play</button><button type="button" data-shortcut="back" data-nav-skip><kbd class="glyph-b">B</kbd>${back}</button><button type="button" data-shortcut="details" data-nav-skip><kbd class="glyph-x">X</kbd>Details</button><button type="button" data-search data-nav-skip><kbd class="glyph-y">Y</kbd>Search</button></div><span class="console-controller-status" aria-live="polite">${icon('controller')}<span data-controller-label>Controller, keyboard or touch</span></span></footer>`;
+  return `<footer class="console-footer"><div class="console-shortcuts" aria-label="Controller shortcuts"><button type="button" data-shortcut="play" data-nav-skip><kbd class="glyph-a">A</kbd>Select</button><button type="button" data-shortcut="back" data-nav-skip><kbd class="glyph-b">B</kbd>${back}</button><button type="button" data-shortcut="details" data-nav-skip><kbd class="glyph-x">X</kbd>Details</button><button type="button" data-search data-nav-skip><kbd class="glyph-y">Y</kbd>Search</button></div><span class="console-controller-status" aria-live="polite">${icon('controller')}<span data-controller-label>Controller, keyboard or touch</span></span></footer>`;
 }
 export function animateIn(element, distance = 10, delay = 0) {
   if (!element || reducedMotion()) return;
