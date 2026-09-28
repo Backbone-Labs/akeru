@@ -39,7 +39,8 @@ test('kart launches at phone width, drives, and pauses without stuck throttle', 
   await setGamepadButton(page, 0, 1);
   const game = page.frames().find((f) => f !== page.mainFrame());
   await expect
-    .poll(() => game.evaluate(() => window.__game.state))
+    // Building the eight-kart field can exceed five seconds in software WebGL.
+    .poll(() => game.evaluate(() => window.__game.state), { timeout: 25000 })
     .toBe('race');
   // Skip only the cinematic countdown in software-rendered CI.
   await game.evaluate(() => {

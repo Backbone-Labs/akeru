@@ -120,7 +120,12 @@ export function validateCatalog(
     const localDemo =
       mode === 'demo' &&
       u.protocol === 'http:' &&
-      ['127.0.0.1', 'localhost', '[::1]'].includes(u.hostname);
+      (['127.0.0.1', 'localhost', '[::1]'].includes(u.hostname) ||
+        (u.hostname.split('.').length === 4 &&
+          u.hostname
+            .split('.')
+            .every((v) => /^\d{1,3}$/.test(v) && Number(v) <= 255) &&
+          /^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(u.hostname)));
     if (
       (u.protocol !== 'https:' && !localDemo) ||
       u.origin !== entry.release.origin ||

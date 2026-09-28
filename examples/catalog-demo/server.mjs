@@ -23,8 +23,10 @@ export async function startCatalogDemo(options = {}) {
   const serve = async (handler) => {
     const server = createServer(handler);
     servers.push(server);
-    await new Promise((r) => server.listen(0, '127.0.0.1', r));
-    return `http://127.0.0.1:${server.address().port}`;
+    await new Promise((r) =>
+      server.listen(0, options.bindHost ?? '127.0.0.1', r),
+    );
+    return `http://${options.publicHost ?? '127.0.0.1'}:${server.address().port}`;
   };
   const entries = [];
   const previewImages = {};
@@ -189,6 +191,7 @@ export async function startCatalogDemo(options = {}) {
     entries.push(entry);
   }
   shellOrigin = await serve((req, res) => {
+    req.url = new URL(req.url, 'http://localhost').pathname;
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'no-referrer');
@@ -250,11 +253,23 @@ export async function startCatalogDemo(options = {}) {
           ),
       );
     }
+    if (req.url === '/multiplayer.js' && options.multiplayerEndpoint) {
+      res.setHeader('Content-Type', 'text/javascript');
+      return res.end(read('dist/multiplayer/browser.js'));
+    }
     if (req.url === '/bootstrap.js') {
       res.setHeader('Content-Type', 'text/javascript');
       return res.end(
-        "import {mountCatalog} from '/app.js';import {createBrowserInputProvider} from '/input/browser.js';window.catalogPreview=mountCatalog({mode:'demo',inputProviderFactory:createBrowserInputProvider,controllerModelUrl:" +
+        (options.multiplayerEndpoint
+          ? "import {createKartMultiplayerFactory} from '/multiplayer.js';"
+          : '') +
+          "import {mountCatalog} from '/app.js';import {createBrowserInputProvider} from '/input/browser.js';window.catalogPreview=mountCatalog({mode:'demo',inputProviderFactory:createBrowserInputProvider,controllerModelUrl:" +
           JSON.stringify(controllerModelPath ? '/local-controller.glb' : null) +
+          (options.multiplayerEndpoint
+            ? ',multiplayerServiceFactory:createKartMultiplayerFactory({endpoint:' +
+              JSON.stringify(options.multiplayerEndpoint) +
+              '})'
+            : '') +
           '});',
       );
     }
