@@ -1,6 +1,7 @@
 import { createMatch, MAP } from '../../../dist/blackline-server/match.js';
 import { createPlayer } from '../../../dist/blackline-server/player.js';
 import { neutral } from './protocol.js';
+import { advanceMovement, movementState } from '../src/motion.js';
 export const STEP = 1 / 60;
 const ARMORY = [
   { rpm: 720, mag: 30, reserve: 120, reload: 2.1 },
@@ -57,8 +58,15 @@ export class BlacklineSimulation {
     c.actor.pitch = e.pitch;
     c.actor.alive = true;
     c.actor.grounded = true;
+    c.actor.crouching = false;
+    c.actor.sprinting = false;
+    c.actor._height = 1.78;
+    c.actor._wasSprint = false;
     c.actor._jumpBuf = 0;
     c.lastSpawn = e.protUntil;
+    c.spawn = (c.spawn ?? 0) + 1;
+    c.inputTicks = 0;
+    c.wasJump = false;
     c.mag = ARMORY.map((w) => w.mag);
     c.reserve = ARMORY.map((w) => w.reserve);
     c.reloadUntil = 0;
@@ -84,25 +92,17 @@ export class BlacklineSimulation {
       if (e.alive && !a.alive) this.resetOperator(c);
       a.alive = e.alive;
       const input = inputs.get(id) ?? neutral(e.yaw, e.pitch, e.w);
-      if (Number.isSafeInteger(input.seq)) c.seq = input.seq;
+      if (Number.isSafeInteger(input.seq)) {
+        if (input.seq !== c.seq) c.inputTicks = 0;
+        c.seq = input.seq;
+        c.inputTicks++;
+      }
       if (!e.alive) {
         c.wasJump = false;
         c.wasFire = false;
         continue;
       }
-      a.yaw = input.yaw;
-      a.pitch = input.pitch;
-      a._keys = {
-        KeyW: input.moveY < -0.15,
-        KeyS: input.moveY > 0.15,
-        KeyA: input.moveX < -0.15,
-        KeyD: input.moveX > 0.15,
-        ShiftLeft: input.sprint,
-        ControlLeft: input.crouch,
-      };
-      if (input.jump && !c.wasJump) a._jumpBuf = 0.12;
-      c.wasJump = input.jump;
-      a._physics(STEP);
+      c.wasJump = advanceMovement(a, input, c.wasJump);
       e.p = [a.pos.x, a.pos.y, a.pos.z];
       e.yaw = a.yaw;
       e.pitch = a.pitch;
@@ -199,6 +199,9 @@ export class BlacklineSimulation {
             yaw: e.yaw,
             pitch: e.pitch,
             ackSeq: c.seq,
+            inputTicks: c.inputTicks,
+            spawn: c.spawn,
+            motion: movementState(c.actor, c.wasJump),
             respawnIn: e.alive ? 0 : Math.max(0, e.respawnAt - this.match.now),
             kills: e.kills,
             deaths: e.deaths,

@@ -61,6 +61,13 @@ test(
     });
     const a = sim.controllers.get('a'),
       b = sim.controllers.get('b');
+    sim.step(new Map([['a', input(7)]]));
+    sim.step(new Map([['a', input(7)]]));
+    assert.equal(sim.snapshot('a').you.inputTicks, 2);
+    sim.step(new Map([['a', input(8)]]));
+    assert.equal(sim.snapshot('a').you.inputTicks, 1);
+    assert.equal(sim.snapshot('a').you.ackSeq, 8);
+    assert.equal(sim.snapshot('a').you.spawn, 1);
     const place = (c, x, z) => {
       c.entity.p = [x, 0, z];
       c.actor.pos.set(x, 0, z);
@@ -81,6 +88,7 @@ test(
     for (let i = 0; i < 310; i++) sim.step();
     assert.equal(b.entity.alive, true);
     assert.equal(b.entity.hp, 100);
+    assert.equal(sim.snapshot('b').you.spawn, 2);
     assert.ok(sim.events.some((e) => e.k === 'spawn' && e.i === b.entity.id));
     // Boundaries and map collision run in the server's pinned Player physics.
     place(a, 56, 52);

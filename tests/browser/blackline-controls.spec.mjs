@@ -141,7 +141,7 @@ test('controller reaches room and settings, then sends complete FPS intent', asy
   expect(await page.evaluate(() => window.Game.weapons._trigger)).toBe(false);
 });
 
-test('pause, stale host frames, lobby and disconnect neutralize all intent', async ({
+test('unchanged host holds persist; neutral frames, pause, lobby and disconnect release all intent', async ({
   page,
 }) => {
   await fixture(page);
@@ -158,14 +158,21 @@ test('pause, stale host frames, lobby and disconnect neutralize all intent', asy
     window.controls.controllerChanged(true);
   });
   await hold();
-  await expect
-    .poll(async () =>
-      page.evaluate(() => {
-        window.tick();
-        return window.Game.akeruControlState.fire;
-      }),
-    )
-    .toBe(false);
+  // Host snapshots are change-driven. A steady stick is still held after 300 ms.
+  await page.waitForTimeout(400);
+  expect(
+    await page.evaluate(() => {
+      window.tick();
+      return window.Game.akeruControlState.fire;
+    }),
+  ).toBe(true);
+  await page.evaluate(() => {
+    window.controls.input({ buttons: {}, axes: {} });
+    window.tick();
+  });
+  expect(await page.evaluate(() => window.Game.akeruControlState.fire)).toBe(
+    false,
+  );
   await hold();
   await page.evaluate(() => {
     window.controls.pause(true);

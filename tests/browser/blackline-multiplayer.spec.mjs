@@ -42,7 +42,16 @@ test('Blackline guests join, ready by mouse/touch, play using host controller in
     const af = a.frames().find((f) => f !== a.mainFrame());
     // Boot and render the real scene, then avoid software GPU stalls during socket assertions.
     await af.evaluate(() => {
-      window.Game.engine.renderer.render = () => {};
+      const game = window.Game,
+        applyCamera = game.player._applyCamera.bind(game.player);
+      game.__cameraTick = 0;
+      game.player._applyCamera = () => {
+        applyCamera();
+        game.__cameraTick++;
+      };
+      game.engine.renderer.render = () => {
+        game.__renderedCameraTick = game.__cameraTick;
+      };
     });
     await fa.locator('#create-room').click();
     await expect(fa.locator('#code-label')).toHaveText(/^[a-f0-9]{20}$/);
@@ -74,6 +83,69 @@ test('Blackline guests join, ready by mouse/touch, play using host controller in
         timeout: 10000,
       })
       .toBeGreaterThan(-1);
+    await expect
+      .poll(() =>
+        af.evaluate(
+          () =>
+            window.Game.__cameraTick > 0 &&
+            window.Game.__renderedCameraTick === window.Game.__cameraTick,
+        ),
+      )
+      .toBe(true);
+    // Delay/reorder authoritative checkpoints while holding one movement direction.
+    // The old pos.set(snapshot.p) implementation jumped backwards every 50 ms.
+    await af.evaluate(() => {
+      const prediction = window.Game.akeruPrediction;
+      const reconcile = prediction.reconcile.bind(prediction);
+      const timers = new Set();
+      let n = 0;
+      prediction.reconcile = (...args) => {
+        const timer = setTimeout(
+          () => {
+            timers.delete(timer);
+            reconcile(...args);
+          },
+          [105, 70, 130, 85][n++ % 4],
+        );
+        timers.add(timer);
+      };
+      window.__restoreBlacklineReconciliation = () => {
+        prediction.reconcile = reconcile;
+        for (const timer of timers) clearTimeout(timer);
+      };
+    });
+    await a.bringToFront();
+    await a.evaluate(() => window.__akeruTestGamepad.axis(0, 0.8));
+    const movement = await af.evaluate(
+      () =>
+        new Promise((resolve) => {
+          const samples = [],
+            start = performance.now(),
+            game = window.Game;
+          const yaw = game.player.yaw;
+          const sample = () => {
+            const now = performance.now();
+            if (now - start > 350)
+              samples.push({
+                time: now,
+                x:
+                  game.engine.camera.position.x * Math.cos(yaw) -
+                  game.engine.camera.position.z * Math.sin(yaw),
+              });
+            if (now - start < 1800) requestAnimationFrame(sample);
+            else resolve(samples);
+          };
+          requestAnimationFrame(sample);
+        }),
+    );
+    await a.evaluate(() => window.__akeruTestGamepad.axis(0, 0));
+    await af.evaluate(() => window.__restoreBlacklineReconciliation());
+    expect(movement.length).toBeGreaterThan(30);
+    expect(movement.at(-1).x - movement[0].x).toBeGreaterThan(2);
+    const backwardJumps = movement
+      .slice(1)
+      .map((sample, index) => sample.x - movement[index].x);
+    expect(Math.min(...backwardJumps)).toBeGreaterThan(-0.045);
     const before = await af.evaluate(() => window.Game.net.snaps.at(-1).you.p);
     await a.evaluate(() => {
       window.__akeruTestGamepad.axis(0, 0.8);

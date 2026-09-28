@@ -18,7 +18,6 @@ export function installControls(game, getHost) {
   const keyboard = new Set();
   const ownedKeys = new Set();
   let frame = { buttons: {}, axes: {} };
-  let lastInput = -Infinity;
   let paused = false;
   let disposed = false;
   let connected = false;
@@ -257,7 +256,6 @@ export function installControls(game, getHost) {
   });
   const tick = (delta) => {
     if (disposed) return;
-    if (performance.now() - lastInput > 300) frame = { buttons: {}, axes: {} };
     root.hidden = !playing() || inputMode !== 'touch';
     const controlling = playing() && inputMode !== 'mouse';
     game.akeruInputActive = active() && inputMode !== 'mouse';
@@ -337,8 +335,9 @@ export function installControls(game, getHost) {
   return {
     input(next) {
       if (!active()) return release();
+      // The host sends changes, not heartbeats. Keep a steady hold until its
+      // explicit neutral frame, blur, pause or controller-disconnect notification.
       frame = { buttons: next.buttons || {}, axes: next.axes || {} };
-      lastInput = performance.now();
       if (
         Object.values(frame.buttons).some((n) => n > 0.5) ||
         Object.values(frame.axes).some((n) => Math.abs(n) > 0.16)

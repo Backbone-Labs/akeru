@@ -75,7 +75,25 @@ for (const entry of b.inventory.files.filter((f) =>
       'const src = (rowB || rowA);',
     );
   }
+  if (name === 'engine.js') {
+    // The upstream renderer ran before player/camera/model updates, displaying
+    // the previous frame. Present only after this frame's simulation and camera.
+    code = replaceRequired(code, '    }, -1000);', '    }, 1000);');
+  }
   if (name === 'player.js') {
+    code = replaceRequired(
+      code,
+      '  update(dt) {',
+      '  update(dt) {\n    if (Game.akeruPredictionUpdate) return Game.akeruPredictionUpdate(dt);',
+    );
+    code = code.replaceAll(
+      "Game.bus.emit('footstep',",
+      "if (!Game.akeruReplaying) Game.bus.emit('footstep',",
+    );
+    code = code.replaceAll(
+      "Game.bus.emit('wpn:ads',",
+      "if (!Game.akeruReplaying) Game.bus.emit('wpn:ads',",
+    );
     code = replaceRequired(
       code,
       '    if (!locked) {',

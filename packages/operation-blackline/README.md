@@ -36,9 +36,13 @@ cross-worker room discovery and routing. Never use production Redis for tests.
   bots, score, ammunition, respawns and results. Inputs carry intent and a monotonic
   sequence; client position, damage, identity and shot origins are rejected.
 - The server runs pinned upstream player collision/physics at 60 Hz and sends
-  per-player snapshots at 20 Hz. The client predicts movement between snapshots,
-  reconciles to authority, and interpolates remote players. Production latency
-  compensation and load profiling remain future work.
+  per-player snapshots at 20 Hz. The client predicts the same fixed 60 Hz movement,
+  sends control changes at 30 Hz, and replays only ticks not yet acknowledged by
+  the server (including partially consumed held inputs). Reconciliation corrects
+  physics immediately while a short camera offset removes visible rewinds.
+  Remote players use a buffered server-time timeline rather than arrival-time
+  interpolation. Respawns, reconnects and stale snapshots reset or discard history.
+  Server-side shot rewind and production load profiling remain future work.
 - Private rooms accept 10 clients, validate build compatibility and exact messages,
   rate-limit traffic, reject unapproved origins, expire after 30 minutes, and allow
   a 30-second reconnect window. Hosts can leave without deleting other guests;

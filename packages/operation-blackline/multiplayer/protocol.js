@@ -2,7 +2,7 @@ import {
   exact,
   validRequest as roomRequest,
 } from '../../multiplayer/src/protocol.js';
-export const BLACKLINE_BUILD = 'blackline-8533717e-v1';
+export const BLACKLINE_BUILD = 'blackline-8533717e-v2';
 export const ROOM_NAME = 'operation-blackline-v1';
 export const neutral = (yaw = 0, pitch = 0, weapon = 0) => ({
   moveX: 0,

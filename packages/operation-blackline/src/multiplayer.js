@@ -1,3 +1,9 @@
+import {
+  MOTION_STEP,
+  OperatorPrediction,
+  RemoteTimeline,
+  advanceMovement,
+} from './motion.js';
 /** Presentation and intent only. Room credentials and sockets remain in the host. */
 export function installMultiplayer(game, getHost) {
   const panel = document.querySelector('#akeru-room-panel');
@@ -16,9 +22,36 @@ export function installMultiplayer(game, getHost) {
     lastEvent = -1,
     seq = 0,
     firePulse = false,
-    reloadPulse = false,
-    elapsed = 0;
+    reloadPulse = false;
   let pendingReady = null;
+  let acceptedSnapshot = null;
+  const prediction = new OperatorPrediction(
+    game.player,
+    (actor, input, jump, replay) => {
+      game.akeruReplaying = replay;
+      try {
+        return advanceMovement(actor, input, jump);
+      } finally {
+        game.akeruReplaying = false;
+      }
+    },
+  );
+  const remote = new RemoteTimeline();
+  game.net.getTransform = (id, out) =>
+    remote.getTransform(id, out, performance.now());
+  game.akeruPrediction = prediction;
+  let accumulator = 0,
+    heldInput = null,
+    heldTicks = 0,
+    wasActive = false;
+  function resetMotion() {
+    prediction.clear();
+    remote.reset();
+    accumulator = 0;
+    heldInput = null;
+    heldTicks = 0;
+  }
+
   const send = (request) => getHost().multiplayer(request);
   const status = (text) => {
     el('room-status').textContent = text;
@@ -78,6 +111,8 @@ export function installMultiplayer(game, getHost) {
   function leave() {
     send({ action: 'leave' });
     snapshot = null;
+    acceptedSnapshot = null;
+    resetMotion();
     round = -1;
     lastEvent = -1;
     game.state.players.clear();
@@ -122,8 +157,30 @@ export function installMultiplayer(game, getHost) {
     el('rematch-room').disabled = snapshot.owner !== event.sessionId;
   }
   function receive(next) {
+    // Validate the outer room clock before events, UI, health/ammo or _onSnap.
+    // Prediction's tick guard alone cannot protect those independently applied states.
+    if (next.snapshot) {
+      const candidate = next.snapshot;
+      if (
+        acceptedSnapshot &&
+        (candidate.code !== acceptedSnapshot.code ||
+          candidate.round < acceptedSnapshot.round ||
+          candidate.tick < acceptedSnapshot.tick ||
+          (Number.isSafeInteger(candidate.revision) &&
+            Number.isSafeInteger(acceptedSnapshot.revision) &&
+            candidate.revision <= acceptedSnapshot.revision))
+      )
+        return;
+      acceptedSnapshot = {
+        code: candidate.code,
+        round: candidate.round,
+        tick: candidate.tick,
+        revision: candidate.revision,
+      };
+    }
     event = { ...event, ...next };
     if (next.status === 'available') {
+      acceptedSnapshot = null;
       el('resume-room').hidden = !next.resumable;
       status('Create a private room or join a friend.');
       if (next.invite && !next.resumable)
@@ -133,9 +190,12 @@ export function installMultiplayer(game, getHost) {
     else if (next.status === 'connecting') status('Joining room…');
     else if (next.status === 'reconnecting') {
       status('Reconnecting…');
+      resetMotion();
       game.bus.emit('net:down');
     } else if (next.status === 'disconnected') {
       snapshot = null;
+      acceptedSnapshot = null;
+      resetMotion();
       round = -1;
       lastEvent = -1;
       pendingReady = null;
@@ -150,6 +210,7 @@ export function installMultiplayer(game, getHost) {
     const you = snapshot.players.find((p) => p.id === event.sessionId);
     if (snapshot.round !== round) {
       round = snapshot.round;
+      resetMotion();
       lastEvent = -1;
       pendingReady = null;
       game.net.snaps.length = 0;
@@ -185,12 +246,11 @@ export function installMultiplayer(game, getHost) {
       }
       // Apply current authority after events so an old spawn can never revive a dead player.
       game.net._onSnap(packet);
+      remote.push(packet, performance.now());
       const authoritative = packet.you;
       if (authoritative) {
         seq = Math.max(seq, authoritative.ackSeq + 1);
-        // Predict locally between snapshots; reconcile server-owned position and ammo.
-        game.player.pos.set(...authoritative.p);
-        game.player.vel.set(...authoritative.velocity);
+        prediction.reconcile(authoritative, packet.tick, { reset: starting });
         if (starting) {
           if (
             Number.isInteger(authoritative.weapon) &&
@@ -213,39 +273,70 @@ export function installMultiplayer(game, getHost) {
     }
     render();
   }
-  game.onLoop((dt) => {
-    elapsed += dt;
-    if (elapsed < 0.05) return;
-    elapsed = 0;
-    if (
-      !getHost().active ||
-      game.akeruLobbyOpen ||
-      game.state.phase !== 'playing' ||
-      snapshot?.phase !== 'playing'
-    ) {
-      firePulse = reloadPulse = false;
-      return;
-    }
+  function sampleInput() {
     const k = game.player._keys,
       c = game.akeruControlState;
     const custom = game.akeruInputActive;
-    send({
-      action: 'input',
-      input: {
-        seq: seq++,
-        moveX: custom ? c.moveX : Number(!!k.KeyD) - Number(!!k.KeyA),
-        moveY: custom ? c.moveY : Number(!!k.KeyS) - Number(!!k.KeyW),
-        yaw: Math.atan2(Math.sin(game.player.yaw), Math.cos(game.player.yaw)),
-        pitch: Math.max(-1.51, Math.min(1.51, game.player.pitch)),
-        weapon: game.weapons.idx,
-        jump: custom ? c.jump : !!k.Space,
-        crouch: custom ? c.crouch : !!k.ControlLeft,
-        sprint: custom ? c.sprint : !!k.ShiftLeft,
-        fire: firePulse || (custom ? c.fire : !!game.weapons._trigger),
-        reload: reloadPulse || (custom && c.reload),
-      },
-    });
-    firePulse = reloadPulse = false;
-  }, 30);
+    return {
+      seq: seq++,
+      moveX: custom ? c.moveX : Number(!!k.KeyD) - Number(!!k.KeyA),
+      moveY: custom ? c.moveY : Number(!!k.KeyS) - Number(!!k.KeyW),
+      yaw: Math.atan2(Math.sin(game.player.yaw), Math.cos(game.player.yaw)),
+      pitch: Math.max(-1.51, Math.min(1.51, game.player.pitch)),
+      weapon: game.weapons.idx,
+      jump: (custom ? c.jump : !!k.Space) || game.player._jumpBuf > 0,
+      crouch: custom ? c.crouch : !!(k.ControlLeft || k.ControlRight || k.KeyC),
+      sprint: custom ? c.sprint : !!(k.ShiftLeft || k.ShiftRight),
+      fire: firePulse || (custom ? c.fire : !!game.weapons._trigger),
+      reload: reloadPulse || !!(custom && c.reload),
+    };
+  }
+  // Replaces the upstream variable-frame physics at its normal update order (10).
+  game.akeruPredictionUpdate = (dt) => {
+    const active =
+      getHost().active &&
+      !game.akeruLobbyOpen &&
+      game.state.phase === 'playing' &&
+      snapshot?.phase === 'playing';
+    if (!active) {
+      if (wasActive) prediction.history.length = 0;
+      accumulator = 0;
+      heldInput = null;
+      heldTicks = 0;
+      firePulse = reloadPulse = false;
+    } else if (game.player.alive) {
+      accumulator = Math.min(accumulator + Math.max(0, dt), 0.1);
+      while (accumulator >= MOTION_STEP) {
+        if (!heldInput || heldTicks >= 2) {
+          heldInput = sampleInput();
+          heldTicks = 0;
+          send({ action: 'input', input: heldInput });
+          firePulse = reloadPulse = false;
+        }
+        const yaw = game.player.yaw,
+          pitch = game.player.pitch;
+        prediction.predict(heldInput);
+        game.player.yaw = yaw;
+        game.player.pitch = pitch;
+        heldTicks++;
+        accumulator -= MOTION_STEP;
+      }
+    } else game.player._deadT += dt;
+    wasActive = active;
+    if (!game.engine.menuCam) {
+      const offset = prediction.cameraOffset(
+        dt,
+        active ? accumulator / MOTION_STEP : 1,
+      );
+      const p = game.player.pos;
+      p.x += offset[0];
+      p.y += offset[1];
+      p.z += offset[2];
+      game.player._applyCamera();
+      p.x -= offset[0];
+      p.y -= offset[1];
+      p.z -= offset[2];
+    }
+  };
   return { receive, leave };
 }

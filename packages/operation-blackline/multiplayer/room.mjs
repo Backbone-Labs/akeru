@@ -19,6 +19,7 @@ export class BlacklineRoom extends Room {
     this.owner = null;
     this.round = 0;
     this.tick = 0;
+    this.snapshotRevision = 0;
     this.elapsed = 0;
     this.accumulator = 0;
     this.onMessage('command', (client, command) =>
@@ -129,6 +130,7 @@ export class BlacklineRoom extends Room {
       phase: this.phase,
       round: this.round,
       tick: this.tick,
+      revision: ++this.snapshotRevision,
       time: this.simulation?.time ?? 0,
       countdown: this.simulation?.countdown ?? 0,
       players: [...this.players.values()].map(
