@@ -1,4 +1,10 @@
-import { createPromotions } from './promotions.js';
+import {
+  createConsoleSound,
+  directionalTarget,
+  wrapConsolePage,
+  openConsoleKeyboard,
+  cover,
+} from './console-ui.js';
 import { createRumble } from './rumble.js';
 import { renderGameHome, readRecent, recordPlayed } from './home.js';
 import { mountOnboarding, needsOnboarding } from './onboarding.js';
@@ -122,8 +128,8 @@ export function mountCatalog({
   controllerModelUrl = null,
   inputProviderFactory,
   telemetrySink,
-  acquisitionSink,
-  acquisitionConsent = () => false,
+  acquisitionSink: _acquisitionSink,
+  acquisitionConsent: _acquisitionConsent = () => false,
   loadCatalog = fetchRegistry,
   saveStore = createSaveStore(),
 } = {}) {
@@ -138,10 +144,38 @@ export function mountCatalog({
     loadVersion = 0;
   let onboardingUi = null;
   let disposeHome = null;
-  const promotions = createPromotions({
-    storage: browserStorage(),
-    sink: acquisitionSink,
-    consent: acquisitionConsent,
+  let consoleView = 'play';
+  const uiSound = createConsoleSound(browserStorage());
+  const unlockSound = () => {
+    document.body.dataset.input = 'pointer';
+    uiSound.unlock();
+  };
+  const clickSound = (event) => {
+    if (
+      document.body.classList.contains('console-home-active') &&
+      event.target.closest('button,a,summary')
+    )
+      uiSound.play('activate');
+  };
+  document.addEventListener('pointerdown', unlockSound);
+  document.addEventListener('keydown', uiSound.unlock);
+  document.addEventListener('click', clickSound);
+  function switchConsoleTab(view) {
+    consoleView = view;
+    navigate('/games');
+  }
+  const consolePageOptions = (entry) => ({
+    preview: mode === 'demo',
+    sound: uiSound,
+    entry,
+    onTab: switchConsoleTab,
+    onSearch: () => {
+      switchConsoleTab('discover');
+      const search = main.querySelector('input[type=search]');
+      search?.focus();
+      if (search && document.body.dataset.input === 'controller')
+        openConsoleKeyboard(search);
+    },
   });
   const isPlayer = () => location.pathname.startsWith('/play/');
   document.body.classList.toggle('direct-player', isPlayer());
@@ -157,15 +191,13 @@ export function mountCatalog({
   try {
     savedTheme = localStorage.getItem('akeru.theme');
   } catch {
-    /* Use device preference. */
+    /* Use the default console appearance. */
   }
   document.documentElement.dataset.theme = ['light', 'dark'].includes(
     savedTheme,
   )
     ? savedTheme
-    : matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
+    : 'dark';
   const onThemeClick = (event) => {
     if (event.target.closest('[data-theme-toggle]'))
       setTheme(
@@ -304,12 +336,54 @@ export function mountCatalog({
     input = null;
   }
   function nav(event) {
-    if (document.querySelector('.akeru-control-settings:not([hidden])')) return;
+    const controlPanel = document.querySelector(
+      '.akeru-control-settings:not([hidden])',
+    );
+    if (
+      controlPanel?.querySelector('[data-capturing="true"]') ||
+      controlPanel?.getAttribute('data-capture-settling') === 'true'
+    )
+      return;
+    if (document.body.classList.contains('console-home-active')) {
+      document.body.dataset.input = 'controller';
+      if (event.type === 'move') uiSound.play();
+    }
+    if (controlPanel && ['back', 'menu'].includes(event.type)) {
+      controlPanel.querySelector('.control-close')?.click();
+      return;
+    }
     const modal = document.querySelector('dialog[open]');
     if (modal && ['back', 'menu'].includes(event.type)) {
       if (onboardingUi) onboardingUi.back();
       else modal.close();
       return;
+    }
+    if (
+      !active &&
+      !modal &&
+      !controlPanel &&
+      document.body.classList.contains('console-home-active')
+    ) {
+      const request = new CustomEvent('console-navigation', {
+        detail: event,
+        cancelable: true,
+      });
+      main.dispatchEvent(request);
+      if (request.defaultPrevented) {
+        uiSound.play();
+        return;
+      }
+      if (event.type === 'nextTab' || event.type === 'previousTab') {
+        switchConsoleTab(event.type === 'nextTab' ? 'discover' : 'play');
+        uiSound.play();
+        return;
+      }
+      if (event.type === 'search') {
+        switchConsoleTab('discover');
+        const search = main.querySelector('input[type=search]');
+        if (search) openConsoleKeyboard(search);
+        return;
+      }
     }
     const playerPanel = isPlayer()
       ? document.querySelector(
@@ -339,6 +413,7 @@ export function mountCatalog({
       return;
     }
     const scope =
+      controlPanel ??
       playerPanel ??
       modal ??
       (active ? document.querySelector('.runtime-wrap') : main);
@@ -358,6 +433,25 @@ export function mountCatalog({
       select.dispatchEvent(new Event('change', { bubbles: true }));
       return;
     }
+    if (
+      event.type === 'move' &&
+      document.activeElement?.matches('input[type=range]') &&
+      ['left', 'right'].includes(event.direction)
+    ) {
+      const range = document.activeElement;
+      const step = Number(range.step) || 1;
+      range.value = String(
+        Math.max(
+          Number(range.min),
+          Math.min(
+            Number(range.max),
+            Number(range.value) + (event.direction === 'left' ? -step : step),
+          ),
+        ),
+      );
+      range.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
     const targets = [
       ...scope.querySelectorAll(
         'a[href],button:not([disabled]),input,select,summary',
@@ -369,10 +463,28 @@ export function mountCatalog({
     if (event.type === 'activate') {
       if (targets.includes(document.activeElement))
         document.activeElement.click();
-      else targets[0].focus();
+      else
+        (
+          targets.find((e) => e.matches('[data-console-primary]')) ?? targets[0]
+        ).focus();
       return;
     }
     if (event.type === 'move') {
+      if (!active && document.body.classList.contains('console-home-active')) {
+        const next = directionalTarget(
+          targets,
+          document.activeElement,
+          event.direction,
+        );
+        next?.focus({ preventScroll: true });
+        next?.scrollIntoView({
+          block: 'nearest',
+          behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 'instant'
+            : 'smooth',
+        });
+        return;
+      }
       const i = targets.indexOf(document.activeElement),
         delta = ['left', 'up'].includes(event.direction) ? -1 : 1;
       targets[(i + delta + targets.length) % targets.length].focus();
@@ -587,6 +699,7 @@ export function mountCatalog({
       option.value = entry.manifest.id;
       $('#settings-title').append(option);
     }
+    disposeHome = wrapConsolePage(main, consolePageOptions());
   }
   function mountSettingsControls() {
     const select = $('#settings-title');
@@ -610,6 +723,11 @@ export function mountCatalog({
     };
     select.onchange = configure;
     configure();
+    if (inputProviderFactory) {
+      navInput = inputProviderFactory({ titleId: 'catalog' });
+      navInput.subscribeNavigation(nav);
+      navInput.start();
+    }
   }
   function browserStorage() {
     try {
@@ -624,7 +742,17 @@ export function mountCatalog({
     disposeHome = renderGameHome(main, catalog.entries, {
       filters,
       recent: readRecent(browserStorage()),
-      onPromotion: (kind) => promotions.click(kind),
+      preview: mode === 'demo',
+      sound: uiSound,
+      initialView: consoleView,
+      onView: (view) => {
+        consoleView = view;
+      },
+      onLaunch: (entry) => {
+        disposeHome?.();
+        disposeHome = null;
+        void launch(entry);
+      },
       onFilters: (next) => {
         filters = next;
       },
@@ -636,7 +764,7 @@ export function mountCatalog({
     document.title = `${m.title} — Akeru`;
     telemetry({ type: 'detailView', titleId: m.id });
     main.innerHTML =
-      '<div class="wrap"><a class="back" href="/games">← All games</a><section class="detail-top"><div id="detail-art" class="card-art detail-art" aria-hidden="true"></div><div class="detail-copy"><p id="category" class="eyebrow"></p><h1 id="title"></h1><p id="description" class="description"></p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span></div><button id="play-button" class="primary">Play now <span aria-hidden="true">↗</span></button><p id="play-note" class="fine">No account or membership needed.</p></div></section><dl class="facts" id="facts"></dl><section class="detail-info" id="game-details" tabindex="-1"><div><div class="info-block"><h2>Make yourself comfortable.</h2><h3>Controller</h3><div id="controller-help"></div><h3>Touch</h3><div id="touch-help"></div></div><div class="info-block"><h2>Your progress.</h2><p id="save-info"></p></div></div><div><div class="info-block"><h2>A few things to know.</h2><div id="privacy-info"></div></div><div class="info-block"><h2>Open by design.</h2><p id="source-license"></p><div id="source-links" class="source-links"></div><p class="fine">Source revision</p><p id="source-revision" class="revision"></p></div></div></section></div>';
+      '<div class="wrap"><a class="back" href="/games">← All games</a><section class="detail-top"><div id="detail-art" class="detail-art" aria-hidden="true"></div><div class="detail-copy"><p id="category" class="eyebrow"></p><h1 id="title"></h1><p id="description" class="description"></p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span></div><button id="play-button" class="primary">Play now <span aria-hidden="true">↗</span></button><p id="play-note" class="fine">No account or membership needed.</p></div></section><dl class="facts" id="facts"></dl><section class="detail-info" id="game-details" tabindex="-1"><div><div class="info-block"><h2>Your controls</h2><h3>Controller</h3><div id="controller-help"></div><h3>Touch</h3><div id="touch-help"></div></div><div class="info-block"><h2>Local saves</h2><p id="save-info"></p></div></div><div><div class="info-block"><h2>Privacy</h2><div id="privacy-info"></div></div><div class="info-block"><h2>Credits &amp; source</h2><p id="source-license"></p><div id="source-links" class="source-links"></div><p class="fine">Source revision</p><p id="source-revision" class="revision"></p></div></div></section></div>';
     const more = node('button', 'scroll-cue', 'Controls, credits & more ↓');
     more.onclick = () => {
       $('#game-details').scrollIntoView({
@@ -647,14 +775,7 @@ export function mountCatalog({
       $('#game-details').focus({ preventScroll: true });
     };
     main.querySelector('.detail-top').after(more);
-    $('#detail-art').classList.add(meta.category);
-    if (meta.cover) {
-      const image = node('img', 'game-cover');
-      image.src = meta.cover;
-      image.alt = '';
-      $('#detail-art').classList.add('has-cover');
-      $('#detail-art').append(image);
-    }
+    $('#detail-art').append(cover(entry));
     $('#category').textContent = `${cap(meta.category)} / ${meta.creator}`;
     $('#title').textContent = m.title;
     $('#description').textContent = meta.description;
@@ -672,14 +793,6 @@ export function mountCatalog({
     $('#touch-help').append(list(meta.controls.touch));
     $('#privacy-info').append(list(meta.privacy));
     renderSaveControls(entry, $('#save-info'));
-    const promotion = promotions.mount($('#game-details'), {
-      path: location.pathname,
-      embedded: window.self !== window.top,
-    });
-    if (promotion) {
-      promotion.id = 'more-ways-to-play';
-      main.querySelector('.detail-top').after(promotion);
-    }
     $('#source-license').textContent =
       `Source license: ${m.provenance.source.license}`;
     $('#source-revision').textContent = m.provenance.source.revision;
@@ -693,6 +806,9 @@ export function mountCatalog({
       $('#play-note').textContent =
         'This game is taking a break. Please check back later.';
     } else play.onclick = () => launch(entry);
+    play.setAttribute('data-console-primary', '');
+    main.querySelector('.wrap').classList.add('console-detail');
+    disposeHome = wrapConsolePage(main, consolePageOptions(entry));
   }
   function savesFor(entry) {
     return saveStore.forTitle({
@@ -815,6 +931,8 @@ export function mountCatalog({
     }
   }
   function renderRuntime(entry) {
+    disposeHome?.();
+    disposeHome = null;
     clearSession();
     main.innerHTML =
       '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><a class="runtime-home" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></a><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay launch-screen" role="status"><div class="launch-brand" aria-label="Backbone / Akeru"><span class="launch-backbone"><svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>BACKBONE</span><span class="launch-reveal"><span class="launch-akeru"><i>/</i> AKERU</span></span></div><h2>Opening game…</h2><p></p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
@@ -1374,6 +1492,10 @@ export function mountCatalog({
     refresh: initialize,
     dispose() {
       disposed = true;
+      uiSound.dispose();
+      document.removeEventListener('pointerdown', unlockSound);
+      document.removeEventListener('keydown', uiSound.unlock);
+      document.removeEventListener('click', clickSound);
       disposeHome?.();
       onboardingUi?.dispose();
       loadVersion++;

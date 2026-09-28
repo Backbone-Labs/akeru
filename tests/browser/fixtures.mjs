@@ -96,6 +96,7 @@ export async function neutralGamepad(page) {
 
 export async function launchDemo(page, url) {
   await page.goto(url + '/games');
+  await page.getByRole('button', { name: 'Library', exact: true }).click();
   await page
     .locator('#game-grid')
     .getByRole('link', { name: /Orbit study/ })

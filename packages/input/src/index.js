@@ -290,7 +290,7 @@ export function createBrowserInputProvider(options = {}) {
       ui?.update(preferences, connectedControllers);
     }
   };
-  const gamepadNavigation = (controls, at) => {
+  const gamepadNavigation = (controls, at, raw) => {
     const pressed = {
       up: (controls.buttons.up ?? 0) > 0.5 || (controls.axes.moveY ?? 0) < -0.6,
       down:
@@ -302,6 +302,10 @@ export function createBrowserInputProvider(options = {}) {
       activate: (controls.buttons.confirm ?? 0) > 0.5,
       back: (controls.buttons.cancel ?? 0) > 0.5,
       menu: (controls.buttons.menu ?? 0) > 0.5,
+      previousTab: (raw.buttons.leftTrigger ?? 0) > 0.55,
+      nextTab: (raw.buttons.rightTrigger ?? 0) > 0.55,
+      details: (raw.buttons.west ?? 0) > 0.5,
+      search: (raw.buttons.north ?? 0) > 0.5,
     };
     for (const [action, down] of Object.entries(pressed)) {
       const held = navHeld.get(action);
@@ -374,7 +378,7 @@ export function createBrowserInputProvider(options = {}) {
           if (ui) {
             if (activeProvider === 'gamepad' || !gamepadNeutral(raw))
               emitSnapshot('gamepad', true, controls);
-          } else gamepadNavigation(controls, time());
+          } else gamepadNavigation(controls, time(), raw);
         }
       }
     }

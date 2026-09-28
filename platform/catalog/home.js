@@ -1,5 +1,13 @@
-import { promotionUrl } from './promotions.js';
 import { CATEGORIES, filterEntries } from './model.js';
+import {
+  icon,
+  cover,
+  consoleHeader,
+  bindConsoleChrome,
+  setHeaderArt,
+  animateIn,
+  openConsoleKeyboard,
+} from './console-ui.js';
 const KEY = 'akeru.recent.v1';
 const idPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export function readRecent(storage) {
@@ -51,248 +59,244 @@ export function recordPlayed(storage, id, at = Date.now()) {
     /* History is optional; play is not. */
   }
 }
+// The console uses native controls; title launches still go through the host.
 const el = (tag, cls, text) => {
-  const n = document.createElement(tag);
-  if (cls) n.className = cls;
-  if (text !== undefined) n.textContent = text;
-  return n;
+  const element = document.createElement(tag);
+  if (cls) element.className = cls;
+  if (text !== undefined) element.textContent = text;
+  return element;
 };
 const cap = (text) => text[0].toUpperCase() + text.slice(1);
-function cover(entry, cls = '') {
-  const art = el('div', `console-art ${entry.metadata.category} ${cls}`);
-  if (entry.metadata.cover) {
-    const image = el('img');
-    image.src = entry.metadata.cover;
-    image.alt = '';
-    image.loading = 'lazy';
-    art.append(image);
-  } else {
-    art.append(
-      el(
-        'span',
-        'cover-monogram',
-        entry.manifest.title.slice(0, 2).toUpperCase(),
-      ),
-    );
-  }
-  return art;
-}
-function card(entry, compact = false) {
-  const a = el('a', compact ? 'recent-card' : 'game-card console-card');
-  a.href = `/g/${entry.manifest.id}`;
-  const art = cover(entry);
-  art.append(el('span', 'card-tag', cap(entry.metadata.category)));
-  const text = el('div', 'card-copy');
-  text.append(el('h3', '', entry.manifest.title));
-  if (!compact) text.append(el('p', '', entry.metadata.summary));
-  text.append(
-    el(
-      'span',
-      'console-card-action',
-      entry.availability === 'paused'
-        ? 'Temporarily unavailable'
-        : 'Play now ↗',
-    ),
+const preferred = [
+  'old-san-juan-kart',
+  'freedoom1',
+  'open-golf',
+  'hextris',
+  'anarch',
+  'server-survival',
+];
+function gameCard(entry, compact = false) {
+  const link = el(
+    'a',
+    compact
+      ? 'console-shelf-card recent-card'
+      : 'game-card console-library-card',
   );
-  a.append(art, text);
-  return a;
+  link.href = `/g/${entry.manifest.id}`;
+  link.append(
+    cover(entry, { label: false }),
+    el('span', 'console-game-name', entry.manifest.title),
+  );
+  if (entry.availability === 'paused')
+    link.append(el('span', 'console-unavailable', 'Temporarily unavailable'));
+  return link;
 }
+
 export function renderGameHome(
   main,
   entries,
-  { filters, recent, onFilters, onPromotion = () => {} },
+  {
+    filters,
+    recent,
+    onFilters,
+    onLaunch,
+    preview = false,
+    sound,
+    initialView = 'play',
+    onView = () => {},
+  },
 ) {
   main.innerHTML = `
-    <div class="wrap console-home discover-studio">
-      <header class="library-heading"><div><p class="eyebrow">BACKBONE AKERU</p><h1>Discover</h1></div><div class="library-heading-tools"><span>Open games. Ready to play.</span><a class="studio-link" href="/settings">Your setup ↗</a></div></header>
-      <section class="feature-stage" aria-label="Featured games" aria-roledescription="carousel">
-        <div id="feature-scene" class="feature-scene"></div>
-        <div class="feature-stage-content"><p class="feature-kicker"><span></span> THE OPEN COLLECTION</p><div id="featured-copy" aria-live="polite"></div><div class="feature-stage-actions"><a id="featured-launch" class="studio-play">▶ <span>Explore game</span></a><a class="studio-browse" href="#all-games">Browse all games ↓</a></div><p class="feature-footnote">No download. No account. Just play.</p></div>
-        <div class="feature-stage-index"><span id="spotlight-position"></span><button type="button" id="spotlight-prev" aria-label="Previous featured game">←</button><button type="button" id="spotlight-next" aria-label="Next featured game">→</button></div>
-      </section>
-      <div id="spotlight-track" class="selection-rail" role="group" aria-label="Choose a featured game"></div>
-      <section class="hardware-band" aria-label="Play with Backbone"><div class="hardware-copy"><p class="eyebrow">MADE FOR YOUR HANDS</p><h2>Meet your player two.</h2><p>Bring a Backbone to the game.<br>Or jump in with the controls you already have.</p><div id="controller-actions" class="hardware-actions"><a class="studio-button" href="/settings">Connect a controller ↗</a></div><details class="pairing-help"><summary>Pairing a Backbone Pro?</summary><p>Put your Backbone Pro in pairing mode and connect in your device’s Bluetooth settings. Return here and press a button. For wired play, connect your Backbone directly to your phone.</p></details></div><div class="hardware-image"><img src="/backbone-pro.png" alt="Backbone Pro wireless controller" loading="lazy" referrerpolicy="no-referrer" width="1200" height="675"><span>BACKBONE PRO <span>HANDHELD + WIRELESS</span></span></div></section>
-      <section class="app-invitation" aria-label="Backbone on your phone"><div class="app-emblem" aria-hidden="true"><svg viewBox="0 0 111 104"><use href="#backbone-mark"/></svg></div><div><p class="eyebrow">YOUR PHONE IS A PLACE TO PLAY</p><h2>Take your next session with you.</h2><p>Play Akeru in your phone’s browser. Explore the Backbone app to bring your games and platforms together.</p><span class="fine">iPhone & Android · Browser progress stays on this device</span></div><div id="app-actions"></div></section>
-      <section id="recent-section" hidden><div class="section-head"><div><p class="eyebrow">RECENTLY PLAYED</p><h2>Jump back in</h2></div><span class="fine">On this browser</span></div><div class="recent-rail" id="recent-rail"></div></section>
-      <section id="collection-section"><div class="section-head"><h2>Pick your pace</h2><span class="fine">Something for every kind of player</span></div><div class="collection-rail" id="collection-rail"></div></section>
-      <section id="all-games"><div class="section-head"><div><p class="eyebrow">YOUR NEXT GOOD GAME</p><h2>The library</h2></div><span id="game-count" class="count" aria-live="polite"></span></div><div class="filters" id="filters" role="group" aria-label="Filter games"></div><div id="game-grid"></div></section>
-
+    <div class="console-shell console-hub" data-home-view="play">
+      <div class="console-backdrop" id="feature-scene" aria-hidden="true"></div>
+      <div class="console-body">
+        ${consoleHeader({ preview, brand: 'akeru' })}
+        <div class="console-content">
+          <section class="console-play-view" aria-label="Play home">
+            <div class="console-stage">
+              <div class="console-info"><p class="console-eyebrow">READY WHEN YOU ARE</p><div id="featured-copy" aria-live="polite"></div><div class="console-launch-actions"><button class="console-launch" id="featured-launch" data-console-primary>${icon('play')}<span>Play now</span></button><a class="console-details" id="featured-details">${icon('library')}Game details</a></div></div>
+            </div>
+            <section class="console-shelf console-picker" aria-labelledby="console-shelf-title"><div class="console-shelf-heading"><h2 id="console-shelf-title">Your next game</h2><button id="console-browse-all"></button></div><div id="console-shelf-cards" aria-label="Choose your next game"></div></section>
+            <footer class="console-footer console-home-controls"><div class="console-shortcuts" aria-label="Controller and keyboard shortcuts"><button data-shortcut="play"><kbd>A</kbd>Play</button><button data-shortcut="details"><kbd>X</kbd>Details</button><button data-search><kbd>Y</kbd>Search</button></div><span class="console-play-note">${icon('controller')}Guest play · Controller, keyboard or touch</span></footer>
+            <div class="console-collections"></div>
+            <div class="console-empty" hidden><h1>The library is being prepared.</h1><p>Games will appear after review. No titles are published yet.</p></div>
+          </section>
+          <section class="console-library-view" hidden aria-labelledby="console-library-title"><div class="console-library-heading"><div><p class="console-eyebrow">THE OPEN COLLECTION</p><h1 id="console-library-title">Discover</h1></div><span id="game-count" aria-live="polite"></span></div><div class="filters" id="filters" role="group" aria-label="Filter games"></div><section id="recent-section" hidden><h2>Recently played</h2><div class="console-recent-grid" id="recent-rail"></div></section><div id="game-grid"></div></section>
+        </div>
+      </div>
     </div>`;
+  document.body.classList.add('console-home-active');
   const find = (selector) => main.querySelector(selector);
-  find('.studio-browse').onclick = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const library = find('#all-games');
-    library.tabIndex = -1;
-    library.focus({ preventScroll: true });
-    library.scrollIntoView({
-      behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'instant'
-        : 'smooth',
-    });
-  };
-  const preferred = [
-    'freedoom1',
-    'open-golf',
-    'old-san-juan-kart',
-    'hextris',
-    'anarch',
-    'server-survival',
-  ];
-  const picks = entries
-    .filter((e) => e.availability !== 'paused')
-    .sort((a, b) => {
-      const rank = (e) =>
-        preferred.includes(e.manifest.id)
-          ? preferred.indexOf(e.manifest.id)
-          : preferred.length;
-      return rank(a) - rank(b);
-    })
-    .slice(0, 6);
-  const rail = find('#spotlight-track');
-  let selected = 0;
-  const buttons = [];
-  let sceneAnimation;
-  function select(index, reveal = false) {
-    if (!picks.length) return;
-    selected = Math.max(0, Math.min(index, picks.length - 1));
-    const entry = picks[selected];
-    const scene = find('#feature-scene');
-    const art = cover(entry, 'stage-art');
-    const image = art.querySelector('img');
-    if (image) image.loading = 'eager';
-    sceneAnimation?.cancel();
-    scene.replaceChildren(art);
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches)
-      sceneAnimation = scene.animate(
-        [
-          { opacity: 0.65, transform: 'scale(1.015)' },
-          { opacity: 1, transform: 'scale(1)' },
-        ],
-        { duration: 280, easing: 'cubic-bezier(.23,1,.32,1)' },
-      );
-    const copy = find('#featured-copy');
-    copy.replaceChildren(
-      el(
-        'p',
-        'feature-category',
-        cap(entry.metadata.category) + ' / Open-source',
-      ),
-      el('h2', '', entry.manifest.title),
-      el('p', 'feature-description', entry.metadata.summary),
-    );
-    find('#featured-launch').href = '/g/' + entry.manifest.id;
-    find('#spotlight-position').textContent =
-      String(selected + 1).padStart(2, '0') +
-      ' / ' +
-      String(picks.length).padStart(2, '0');
-    find('#spotlight-prev').disabled = selected === 0;
-    find('#spotlight-next').disabled = selected === picks.length - 1;
-    buttons.forEach((button, i) =>
-      button.setAttribute('aria-pressed', String(i === selected)),
-    );
-    if (reveal) {
-      const button = buttons[selected];
-      const target =
-        button.offsetLeft -
-        rail.offsetLeft -
-        (rail.clientWidth - button.clientWidth) / 2;
-      rail.scrollTo({
-        left: target,
-        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
-          ? 'instant'
-          : 'smooth',
-      });
-    }
-  }
-  picks.forEach((entry, index) => {
-    const button = el('button', 'selection-item');
-    button.type = 'button';
-    button.setAttribute('aria-label', 'Feature ' + entry.manifest.title);
-    const text = el('span', 'selection-text');
-    text.append(
-      el('strong', '', entry.manifest.title),
-      el('span', '', cap(entry.metadata.category)),
-    );
-    button.append(cover(entry, 'selection-art'), text);
-    button.onclick = () => select(index, true);
-    button.onkeydown = (e) => {
-      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
-      e.preventDefault();
-      select(
-        e.key === 'Home'
-          ? 0
-          : e.key === 'End'
-            ? picks.length - 1
-            : selected + (e.key === 'ArrowLeft' ? -1 : 1),
-        true,
-      );
-      buttons[selected].focus({ preventScroll: true });
-    };
-    buttons.push(button);
-    rail.append(button);
-  });
-  find('#spotlight-prev').onclick = () => select(selected - 1, true);
-  find('#spotlight-next').onclick = () => select(selected + 1, true);
-  if (picks.length) select(0);
-  else {
-    find('.feature-stage').hidden = true;
-    rail.hidden = true;
-  }
-  for (const [kind, root, label] of [
-    ['controller', '#controller-actions', 'Shop Backbone ↗'],
-    ['app', '#app-actions', 'Get the Backbone app ↗'],
-  ]) {
-    const link = el(
-      'a',
-      kind === 'app' ? 'studio-button' : 'studio-link',
-      label,
-    );
-    link.href = promotionUrl(kind);
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.onclick = () => onPromotion(kind);
-    find(root).append(link);
-  }
+  const available = entries.filter((e) => e.availability !== 'paused');
+  const rank = (entry) =>
+    preferred.includes(entry.manifest.id)
+      ? preferred.indexOf(entry.manifest.id)
+      : preferred.length;
+  const picks = available.slice().sort((a, b) => rank(a) - rank(b));
+  let selected = picks[0];
+  let view = 'play';
   const recentEntries = recent
     .map((row) => entries.find((e) => e.manifest.id === row.id))
-    .filter(Boolean)
-    .slice(0, 8);
-  if (recentEntries.length) {
-    find('#recent-section').hidden = false;
-    for (const e of recentEntries) find('#recent-rail').append(card(e, true));
-  }
-  const moods = [
-    ['action', 'Action', 'Fast hands. Faster decisions.'],
-    ['puzzle', 'Puzzle', 'Find a little flow.'],
-    ['sandbox', 'Sandbox', 'Make it your own.'],
-    ['sports', 'Sports', 'One more round.'],
-    ['strategy', 'Strategy', 'Stay one move ahead.'],
-  ];
-  for (const [category, title, description] of moods) {
-    const count = entries.filter(
-      (e) => e.metadata.category === category,
-    ).length;
-    if (!count) continue;
-    const tile = el('button', `collection-tile collection-${category}`);
-    tile.type = 'button';
-    tile.append(
-      el('span', 'eyebrow', `${count} ${count === 1 ? 'GAME' : 'GAMES'}`),
-      el('strong', '', title),
-      el('span', '', description),
-      el('span', 'collection-arrow', '↗'),
+    .filter(Boolean);
+
+  function showView(next, focus = false) {
+    view = next;
+    find('.console-hub').dataset.homeView = next;
+    onView(next);
+    animateIn(
+      find(next === 'play' ? '.console-play-view' : '.console-library-view'),
     );
-    tile.onclick = () => {
-      filters.category = category;
-      update();
-      find('#all-games').scrollIntoView({
-        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
-          ? 'instant'
-          : 'smooth',
-      });
-    };
-    find('#collection-rail').append(tile);
+    find('.console-play-view').hidden = next !== 'play';
+    find('.console-library-view').hidden = next === 'play';
+    find('#console-library-title').textContent =
+      next === 'library' ? 'Your library' : 'Discover';
+    document.title = `${next === 'play' ? 'Play' : next === 'library' ? 'Library' : 'Discover'} — Akeru`;
+    for (const button of main.querySelectorAll('[data-view]')) {
+      const active = button.dataset.view === next;
+      button.classList.toggle('is-active', active);
+      if (active) button.setAttribute('aria-current', 'page');
+      else button.removeAttribute('aria-current');
+    }
+    find('#recent-section').hidden =
+      next !== 'library' || !recentEntries.length;
+    if (focus) {
+      const target = find(
+        next === 'play' ? '#featured-launch' : '#console-library-title',
+      );
+      target.tabIndex = next === 'play' ? 0 : -1;
+      target.focus();
+    }
   }
+  function select(entry) {
+    selected = entry;
+    setHeaderArt(main, entry);
+    const copy = find('#featured-copy');
+    const description = el(
+      'p',
+      'console-description',
+      entry.manifest.id === 'open-golf'
+        ? 'A little fresh air. One more round.'
+        : entry.metadata.summary,
+    );
+    copy.replaceChildren(
+      el('h1', '', entry.manifest.title),
+      el(
+        'p',
+        'console-category',
+        `${cap(entry.metadata.category)} · ${entry.manifest.id === 'open-golf' ? 'Single player' : 'Pick up & play'}`,
+      ),
+      description,
+    );
+    find('#featured-details').href = `/g/${entry.manifest.id}`;
+    const backdrop = cover(entry, { label: false });
+    find('#feature-scene').replaceChildren(backdrop);
+    animateIn(backdrop, 0);
+    animateIn(copy, 6);
+    for (const button of main.querySelectorAll('.console-game-picker')) {
+      const active = button.dataset.game === entry.manifest.id;
+      button.setAttribute('aria-pressed', String(active));
+    }
+  }
+  let launching = false;
+  const launch = () => {
+    if (!selected || launching || !onLaunch) return;
+    launching = true;
+    find('#featured-launch').disabled = true;
+    find('#featured-launch span').textContent = 'Opening…';
+    onLaunch(selected);
+  };
+  find('#featured-launch').onclick = launch;
+  if (selected) select(selected);
+  else {
+    find('.console-stage').hidden = true;
+    find('.console-shelf').hidden = true;
+    find('.console-empty').hidden = false;
+    find('[data-shortcut="play"]').disabled = true;
+    find('[data-shortcut="details"]').disabled = true;
+  }
+  const shelf = picks.slice(0, 6);
+  for (const entry of shelf) {
+    const button = el('button', 'console-game-picker');
+    button.type = 'button';
+    button.dataset.game = entry.manifest.id;
+    button.setAttribute('aria-label', `Feature ${entry.manifest.title}`);
+    button.setAttribute('aria-pressed', String(entry === selected));
+    button.append(
+      cover(entry, { label: false }),
+      el('span', 'console-game-name', entry.manifest.title),
+    );
+    button.onfocus = () => {
+      if (entry !== selected) select(entry);
+    };
+    button.onclick = () => {
+      if (entry !== selected) select(entry);
+    };
+    find('#console-shelf-cards').append(button);
+  }
+  const remaining = entries.filter((entry) => !shelf.includes(entry));
+  const collections = [
+    [
+      'Action, racing & more',
+      ['action', 'racing', 'sports', 'strategy', 'sandbox'],
+    ],
+    ['Puzzle breaks', ['puzzle']],
+  ];
+  for (const [title, categories] of collections) {
+    const games = remaining.filter((entry) =>
+      categories.includes(entry.metadata.category),
+    );
+    if (!games.length) continue;
+    const section = el('section', 'console-collection');
+    section.setAttribute('aria-label', title);
+    const heading = el('div', 'console-collection-heading');
+    heading.append(
+      el('h2', '', title),
+      el(
+        'span',
+        '',
+        `${games.length} ${games.length === 1 ? 'game' : 'games'}`,
+      ),
+    );
+    const grid = el('div', 'console-collection-grid');
+    for (const entry of games) grid.append(gameCard(entry));
+    section.append(heading, grid);
+    find('.console-collections').append(section);
+  }
+  for (const entry of recentEntries.slice(0, 6))
+    find('#recent-rail').append(gameCard(entry, true));
+  for (const button of main.querySelectorAll('[data-view]'))
+    button.onclick = () => showView(button.dataset.view);
+  const search = el('input', 'search');
+  search.type = 'search';
+  search.placeholder = 'Search games';
+  search.maxLength = 120;
+  search.setAttribute('aria-label', 'Search games');
+  search.value = filters.query;
+  find('#console-browse-all').textContent =
+    `Browse all ${entries.length} ${entries.length === 1 ? 'game' : 'games'} →`;
+  find('#console-browse-all').onclick = () => {
+    filters.query = '';
+    filters.category = 'all';
+    search.value = '';
+    update();
+    showView('library', true);
+  };
+  const searchGames = (controller = false) => {
+    showView('discover');
+    search.focus();
+    if (controller === true || document.body.dataset.input === 'controller')
+      openConsoleKeyboard(search);
+  };
+  search.onclick = () => {
+    if (document.body.dataset.input === 'controller')
+      openConsoleKeyboard(search);
+  };
+  for (const button of main.querySelectorAll('[data-search]'))
+    button.onclick = searchGames;
+  find('[data-shortcut="play"]').onclick = launch;
+  find('[data-shortcut="details"]').onclick = () => {
+    if (selected) find('#featured-details').click();
+  };
   const categoryButtons = [];
   for (const category of ['all', ...CATEGORIES]) {
     const button = el(
@@ -308,12 +312,6 @@ export function renderGameHome(
     find('#filters').append(button);
     categoryButtons.push([button, category]);
   }
-  const search = el('input', 'search');
-  search.type = 'search';
-  search.placeholder = 'Search your next game';
-  search.maxLength = 120;
-  search.setAttribute('aria-label', 'Search games');
-  search.value = filters.query;
   search.oninput = () => {
     filters.query = search.value;
     update();
@@ -321,12 +319,12 @@ export function renderGameHome(
   find('#filters').append(search);
   const sort = el('select', 'console-sort');
   sort.setAttribute('aria-label', 'Sort games');
-  for (const [value, text] of [
+  for (const [value, label] of [
     ['default', 'Featured order'],
     ['title', 'Title A–Z'],
     ['recent', 'Last played'],
   ]) {
-    const option = el('option', '', text);
+    const option = el('option', '', label);
     option.value = value;
     sort.append(option);
   }
@@ -360,7 +358,7 @@ export function renderGameHome(
       const empty = el('div', 'empty-library');
       empty.append(
         el(
-          'h3',
+          'h2',
           '',
           entries.length
             ? 'Nothing here just yet.'
@@ -375,12 +373,102 @@ export function renderGameHome(
         ),
       );
       grid.append(empty);
-      return;
+    } else {
+      const tiles = el('div', 'console-library-grid');
+      for (const entry of results) tiles.append(gameCard(entry));
+      grid.append(tiles);
     }
-    const tiles = el('div', 'grid console-grid');
-    for (const entry of results) tiles.append(card(entry));
-    grid.append(tiles);
   }
+  const onKey = (event) => {
+    if (
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.target.closest('input, select, textarea, dialog')
+    )
+      return;
+    if (event.key.toLowerCase() === 'y' || event.key === '/') {
+      event.preventDefault();
+      searchGames();
+    }
+    if (event.key.toLowerCase() === 'x' && selected)
+      find('#featured-details').click();
+    if (event.key.toLowerCase() === 'a' && view === 'play') launch();
+    if (
+      event.key === 'Enter' &&
+      view === 'play' &&
+      event.target.closest('.console-game-picker')
+    ) {
+      event.preventDefault();
+      launch();
+    }
+    if (event.key === 'Escape' && view !== 'play') {
+      event.preventDefault();
+      showView('play', true);
+    }
+    if (
+      view === 'play' &&
+      selected &&
+      event.target.closest('.console-game-picker') &&
+      ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)
+    ) {
+      event.preventDefault();
+      const index = shelf.indexOf(selected);
+      const next =
+        event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? shelf.length - 1
+            : (index + (event.key === 'ArrowLeft' ? -1 : 1) + shelf.length) %
+              shelf.length;
+      select(shelf[next]);
+      const target = find(
+        `.console-game-picker[data-game="${shelf[next].manifest.id}"]`,
+      );
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({
+        block: 'nearest',
+        inline: 'nearest',
+        behavior: 'instant',
+      });
+    }
+  };
+  main.addEventListener('keydown', onKey);
+  const disposeChrome = bindConsoleChrome(main, {
+    onTab: showView,
+    onSearch: searchGames,
+    sound,
+  });
+  const onNavigation = (event) => {
+    const type = event.detail.type;
+    const tabs = ['play', 'discover', 'library'];
+    if (
+      type === 'activate' &&
+      view === 'play' &&
+      document.activeElement.matches('.console-game-picker')
+    ) {
+      launch();
+    } else if (type === 'nextTab' || type === 'previousTab') {
+      showView(tabs[(tabs.indexOf(view) + (type === 'nextTab' ? 1 : 2)) % 3]);
+      find(`.console-tabs [data-view="${view}"]`).focus({
+        preventScroll: true,
+      });
+    } else if (type === 'search') searchGames(true);
+    else if (type === 'details' && selected) {
+      const focusedGame = document.activeElement.closest('a[href^="/g/"]');
+      (focusedGame ?? find('#featured-details')).click();
+    } else if (type === 'back') {
+      if (view !== 'play') showView('play', true);
+    } else return;
+    event.preventDefault();
+  };
+  main.addEventListener('console-navigation', onNavigation);
   update();
-  return () => sceneAnimation?.cancel();
+  showView(initialView);
+  return () => {
+    disposeChrome();
+    main.removeEventListener('console-navigation', onNavigation);
+    main.removeEventListener('keydown', onKey);
+    document.body.classList.remove('console-home-active');
+  };
 }
