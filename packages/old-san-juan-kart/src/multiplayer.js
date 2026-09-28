@@ -38,11 +38,57 @@ export function installMultiplayer(bridge, getHost) {
   action('#start-room', () => send({ action: 'start' }));
   action('#rematch-room', () => send({ action: 'rematch' }));
   action('#leave-room', () => send({ action: 'leave' }));
+  const canResume = () =>
+    connected && ['countdown', 'racing'].includes(snapshot?.phase);
+  bridge.driving = () => getHost().active && canResume() && lobby.hidden;
+  function clearDriving() {
+    bridge.controls = {
+      throttle: 0,
+      brake: 0,
+      steer: 0,
+      drift: false,
+      item: false,
+    };
+    const input = globalThis.__game?.input;
+    input?.keys.clear();
+    if (input)
+      input.touch = {
+        throttle: 0,
+        brake: 0,
+        steer: 0,
+        drift: false,
+        item: false,
+      };
+  }
+  function focusTrack() {
+    const canvas = $('#scene');
+    canvas.tabIndex = -1;
+    canvas.focus({ preventScroll: true });
+  }
   function showMenu(open) {
-    if (open && lobby.hidden) lobby.scrollTop = 0;
+    if (!open && !canResume()) return;
+    const changed = lobby.hidden === open;
+    if (changed) clearDriving();
+    if (open && changed) lobby.scrollTop = 0;
     lobby.hidden = !open;
     $('#online-menu').hidden = open || !bridge.online;
+    if (changed) {
+      if (!open) focusTrack();
+      else if (canResume()) $('#resume-race').focus({ preventScroll: true });
+    }
   }
+  addEventListener('keydown', (event) => {
+    if (
+      event.code !== 'Escape' ||
+      event.repeat ||
+      !bridge.online ||
+      !getHost().active ||
+      !canResume()
+    )
+      return;
+    event.preventDefault();
+    showMenu(lobby.hidden);
+  });
   action('#online-menu', () => showMenu(lobby.hidden));
   action('#resume-race', () => showMenu(false));
   action('#copy-invite', async () => {
@@ -108,7 +154,8 @@ export function installMultiplayer(bridge, getHost) {
     $('#race').disabled = true;
     $('#room-entry').hidden = true;
     $('#room-session').hidden = false;
-    $('#invite-link').value = event.inviteUrl;
+    if ($('#invite-link').value !== event.inviteUrl)
+      $('#invite-link').value = event.inviteUrl;
     $('#code-label').textContent = snapshot.code;
     const owner = snapshot.owner === ownId;
     const me = snapshot.players.find((p) => p.id === ownId);
@@ -123,7 +170,10 @@ export function installMultiplayer(bridge, getHost) {
     const readyLabel = me?.ready ? 'Unready' : 'Ready · A';
     if ($('#ready-room').textContent !== readyLabel)
       $('#ready-room').textContent = readyLabel;
-    $('#resume-race').hidden = snapshot.phase === 'lobby';
+    $('#resume-race').hidden = !['countdown', 'racing'].includes(
+      snapshot.phase,
+    );
+    $('#resume-race').disabled = !canResume();
     $('#start-room').hidden = !owner || snapshot.phase !== 'lobby';
     $('#start-room').disabled =
       snapshot.players.length < 2 ||
@@ -214,8 +264,7 @@ export function installMultiplayer(bridge, getHost) {
     accumulated += dt;
     if (!connected || !snapshot || accumulated < 1 / 30) return;
     accumulated = 0;
-    const active =
-      getHost().active && lobby.hidden && snapshot.phase === 'racing';
+    const active = bridge.driving() && snapshot.phase === 'racing';
     send({
       action: 'input',
       input: {
@@ -246,12 +295,18 @@ export function installMultiplayer(bridge, getHost) {
     }
   };
   return {
+    pause(paused) {
+      clearDriving();
+      // The host pause panel is the active menu; don't require a second resume.
+      if (bridge.online && canResume()) {
+        if (paused) showMenu(false);
+        else if (lobby.hidden) focusTrack();
+      }
+    },
     action(value) {
       if (!bridge.online && $('#online-options').hidden) return false;
       if (bridge.online && lobby.hidden) {
-        if (value === 'up') {
-          showMenu(true);
-        }
+        if (value === 'menu') showMenu(true);
         return true;
       }
       const controls = [
@@ -273,11 +328,7 @@ export function installMultiplayer(bridge, getHost) {
           : controls[0];
         el?.focus();
         if (el?.tagName === 'BUTTON') el.click();
-      } else if (
-        value === 'cancel' &&
-        bridge.online &&
-        snapshot?.phase !== 'lobby'
-      )
+      } else if (value === 'cancel' && bridge.online && canResume())
         showMenu(false);
       return true;
     },

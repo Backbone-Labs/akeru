@@ -142,6 +142,33 @@ test('two browser guests join by invite, ready, race and recover a connection', 
       )
       .toBeGreaterThan(2);
     await setGamepadButton(a, 0, 0);
+    // Keyboard directions must drive, never open the lobby or stay focused in its invite field.
+    await expect(fa.locator('#scene')).toBeFocused();
+    await a.keyboard.down('ArrowUp');
+    await expect
+      .poll(() => ga.evaluate(() => window.__game.input.state.throttle))
+      .toBe(1);
+    await expect(fa.locator('#multiplayer-panel')).toBeHidden();
+    await a.keyboard.down('ArrowLeft');
+    await expect
+      .poll(() => ga.evaluate(() => window.__game.input.state.steer))
+      .toBe(-1);
+    await a.keyboard.press('Escape');
+    await expect(fa.locator('#multiplayer-panel')).toBeVisible();
+    await expect(fa.locator('#resume-race')).toBeFocused();
+    await expect
+      .poll(() => ga.evaluate(() => window.__game.input.state.throttle))
+      .toBe(0);
+    await a.keyboard.up('ArrowUp');
+    await a.keyboard.up('ArrowLeft');
+    await a.keyboard.press('Escape');
+    await expect(fa.locator('#multiplayer-panel')).toBeHidden();
+    await expect(fa.locator('#scene')).toBeFocused();
+    await a.keyboard.down('KeyW');
+    await expect
+      .poll(() => ga.evaluate(() => window.__game.input.state.throttle))
+      .toBe(1);
+    await a.keyboard.up('KeyW');
     // Online menus stop only this player's input; the shared race clock keeps advancing.
     const before = await ga.evaluate(() => window.__game.race.raceTime);
     await fa.locator('#online-menu').click();
@@ -149,7 +176,22 @@ test('two browser guests join by invite, ready, race and recover a connection', 
     await expect
       .poll(() => ga.evaluate(() => window.__game.race.raceTime))
       .toBeGreaterThan(before + 0.3);
-    await fa.locator('#resume-race').click();
+    // Opening the host menu from the race menu must need only one Resume.
+    await a.locator('#player-menu').click();
+    await expect(fa.locator('body')).toHaveAttribute('data-paused', 'true');
+    await expect(fa.locator('#multiplayer-panel')).toBeHidden();
+    await a.getByRole('button', { name: 'Resume', exact: true }).click();
+    await expect(fa.locator('body')).toHaveAttribute('data-paused', 'false');
+    await expect(fa.locator('#scene')).toBeFocused();
+    await a.keyboard.down('ArrowUp');
+    await expect
+      .poll(() => ga.evaluate(() => window.__game.input.state.throttle))
+      .toBe(1);
+    await expect
+      .poll(() => ga.evaluate(() => window.__game.player.speed))
+      .toBeGreaterThan(2);
+    await expect(fa.locator('#multiplayer-panel')).toBeHidden();
+    await a.keyboard.up('ArrowUp');
     await contexts[1].setOffline(true);
     await expect(fb.locator('#network-status')).toContainText('Reconnecting', {
       timeout: 18000,

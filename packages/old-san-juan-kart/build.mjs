@@ -87,7 +87,7 @@ for (const entry of b.inventory.files.filter((f) =>
     code = replaceRequired(
       code,
       "addEventListener('keydown', (e) => {",
-      "addEventListener('keydown', (e) => {\n      if (e.target?.matches('input,textarea,select')) return;",
+      "addEventListener('keydown', (e) => {\n      if (e.target?.matches('input,textarea,select')) return;\n      if (globalThis.akeruKart.online && !globalThis.akeruKart.driving()) return;",
     );
   }
   if (entry.path === 'src/main.js') {
