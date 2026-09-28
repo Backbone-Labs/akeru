@@ -137,8 +137,12 @@ test('room bridge is denied without host grant and rejects forged frames, replay
     ),
     false,
   );
+  assert.equal(
+    granted.receive(msg(3, 'multiplayer', { action: 'ready', ready: true })),
+    true,
+  );
   granted.dispose();
-  assert.equal(received, 1);
+  assert.equal(received, 2);
   assert.equal(disposed, 1);
 });
 
@@ -197,6 +201,15 @@ test(
       a.send('command', { action: 'start' });
       await pause(250);
       assert.equal(a.latest.phase, 'lobby');
+      // A rapid change of mind must not leave the UI stuck on the previous state.
+      a.send('command', { action: 'ready', ready: true });
+      await until(
+        () => a.latest.players.find((p) => p.id === a.sessionId)?.ready,
+      );
+      a.send('command', { action: 'ready', ready: false });
+      await until(
+        () => !a.latest.players.find((p) => p.id === a.sessionId)?.ready,
+      );
       for (const r of [a, b, c, d])
         r.send('command', { action: 'ready', ready: true });
       await until(() => a.latest.players.every((p) => p.ready));

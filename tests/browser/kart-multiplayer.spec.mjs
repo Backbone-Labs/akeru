@@ -86,6 +86,25 @@ test('two browser guests join by invite, ready, race and recover a connection', 
         e.resize();
       });
     await expect(fa.locator('#room-players')).toContainText('Racer 2');
+    // Sharing an invite can pause the host. Lobby choices remain usable, while
+    // gameplay input stays suspended (covered by the channel isolation test).
+    await a.locator('#player-menu').click();
+    await expect(fa.locator('body')).toHaveAttribute('data-paused', 'true');
+    await fa.locator('#ready-room').dispatchEvent('click');
+    await expect(fa.locator('#ready-room')).toHaveText('Unready');
+    await fa.locator('#ready-room').dispatchEvent('click');
+    await expect(fa.locator('#ready-room')).toHaveText('Ready · A');
+    await a.locator('#player-menu').click();
+    // Hold through several server snapshots, as a real mouse/touch press does.
+    await a.bringToFront();
+    await fa.locator('#ready-room').click({ delay: 250 });
+    await expect(fa.locator('#ready-room')).toHaveText('Unready');
+    await fa.locator('#ready-room').click({ delay: 250 });
+    await expect(fa.locator('#ready-room')).toHaveText('Ready · A');
+    await fa.locator('#ready-room').tap();
+    await expect(fa.locator('#ready-room')).toHaveText('Unready');
+    await fa.locator('#ready-room').tap();
+    await expect(fa.locator('#ready-room')).toHaveText('Ready · A');
     // A on the focused lobby control uses the same authenticated gamepad path as driving.
     await a.bringToFront();
     await fa.locator('#ready-room').focus();

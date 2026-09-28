@@ -107,7 +107,12 @@ export function createRuntimeChannel({
     if (++budget > 60) return false;
     const p = v.payload;
     if (v.type === 'multiplayer') {
-      if (state !== 'playable' || !multiplayerService?.receive(p)) return false;
+      if (
+        !['playable', 'paused'].includes(state) ||
+        (state === 'paused' && p?.action === 'input') ||
+        !multiplayerService?.receive(p)
+      )
+        return false;
       received = v.sequence;
       return true;
     }

@@ -46,7 +46,6 @@ export class KartRoom extends Room {
       input: neutral(),
       seq: -1,
       lastInput: 0,
-      lastCommand: -Infinity,
     });
     for (const p of this.players.values()) p.ready = false;
     this.owner ??= client.sessionId;
@@ -62,9 +61,8 @@ export class KartRoom extends Room {
       p.lastInput = this.elapsed;
       return;
     }
-    if (p.lastAction === v.action && this.elapsed - p.lastCommand < 0.1) return;
-    p.lastAction = v.action;
-    p.lastCommand = this.elapsed;
+    // Ready is an idempotent set, not a toggle; never discard a newer choice.
+    // Start/rematch are already gated by phase. The per-client rate limit applies.
     if (v.action === 'ready' && this.phase === 'lobby') p.ready = v.ready;
     else if (
       v.action === 'start' &&

@@ -82,6 +82,11 @@ test('kart launches at phone width, drives, and pauses without stuck throttle', 
   await expect(frame.locator('#touch')).toBeVisible();
   await page.evaluate(() => window.__akeruTestGamepad.connect(true));
   await expect(frame.locator('#touch')).toBeHidden();
+  // Stop gameplay through the host before software-GPU screenshot readback.
+  await page.locator('#player-menu').click();
+  await expect
+    .poll(() => game.evaluate(() => window.akeruKart.active()))
+    .toBe(false);
   await page.screenshot({ path: 'dist/previews/old-san-juan-kart.png' });
   expect(errors).toEqual([]);
 });

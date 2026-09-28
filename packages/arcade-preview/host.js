@@ -206,7 +206,9 @@ export function connectGame(game) {
     held,
     action,
     multiplayer(request) {
-      if (ready && !paused) send('multiplayer', request);
+      // A paused race still has a live lobby; only driving input is suspended.
+      if (ready && (!paused || request?.action !== 'input'))
+        send('multiplayer', request);
     },
     rumble(effect) {
       if (ready && !paused && !document.hidden) send('rumble', effect);
