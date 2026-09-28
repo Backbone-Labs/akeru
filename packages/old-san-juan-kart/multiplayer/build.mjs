@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { root } from '../../arcade-preview/build.mjs';
+import { headlessKart } from '../physics-source.mjs';
 import { verifySource } from '../../puzzle-preview/build.mjs';
 const inventory = JSON.parse(
   readFileSync(
@@ -36,17 +37,7 @@ const end = track.indexOf('    this._buildCheckpoints();', start);
 if (start < 0 || end < 0) throw Error('Track build anchor changed');
 track = track.slice(0, start) + track.slice(end);
 put('track.js', track);
-let kart = read('src/kart/kart.js')
-  .replace(/^import .*model.*\n/m, '')
-  .replace(/^import .*device.*\n/m, '');
-const a = kart.indexOf('    const model = buildKart('),
-  b = kart.indexOf('    // --- state ---', a);
-if (a < 0 || b < 0) throw Error('Kart build anchor changed');
-kart =
-  kart.slice(0, a) +
-  '    this.object = new THREE.Object3D();\n' +
-  kart.slice(b);
-put('kart.js', kart);
+put('kart.js', headlessKart(read('src/kart/kart.js')));
 put('courses.js', read('src/world/courses.js'));
 put('race.js', read('src/race/race.js'));
 const model = read('src/kart/model.js');

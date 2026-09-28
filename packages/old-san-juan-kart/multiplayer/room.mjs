@@ -45,6 +45,8 @@ export class KartRoom extends Room {
       connected: true,
       input: neutral(),
       seq: -1,
+      ackSeq: -1,
+      inputTicks: 0,
       lastInput: 0,
     });
     for (const p of this.players.values()) p.ready = false;
@@ -103,6 +105,19 @@ export class KartRoom extends Room {
             : neutral(),
         ]),
       );
+      if (
+        this.simulation &&
+        !this.simulation.done &&
+        this.simulation.countdown <= 0
+      ) {
+        for (const p of this.players.values()) {
+          const input = inputs.get(p.id);
+          if (input.seq !== undefined) {
+            p.inputTicks = p.ackSeq === input.seq ? p.inputTicks + 1 : 1;
+            p.ackSeq = input.seq;
+          }
+        }
+      }
       this.simulation?.step(inputs);
       if (this.simulation)
         this.phase = this.simulation.done
@@ -116,7 +131,7 @@ export class KartRoom extends Room {
       void this.disconnect();
   }
   publish() {
-    this.broadcast('snapshot', {
+    const shared = {
       build: KART_BUILD,
       code: this.roomId,
       owner: this.owner,
@@ -135,7 +150,21 @@ export class KartRoom extends Room {
         }),
       ),
       karts: this.simulation?.snapshot() ?? [],
-    });
+    };
+    for (const client of this.clients) {
+      const player = this.players.get(client.sessionId);
+      client.send('snapshot', {
+        ...shared,
+        you:
+          player && this.simulation
+            ? {
+                ...this.simulation.prediction(player.id),
+                ackSeq: player.ackSeq,
+                inputTicks: player.inputTicks,
+              }
+            : null,
+      });
+    }
   }
   onDrop(client) {
     const p = this.players.get(client.sessionId);
@@ -152,6 +181,8 @@ export class KartRoom extends Room {
       p.connected = true;
       p.input = neutral();
       p.seq = -1;
+      p.ackSeq = -1;
+      p.inputTicks = 0;
     }
     this.publish();
   }

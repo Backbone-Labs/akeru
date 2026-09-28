@@ -1,3 +1,5 @@
+import { SnapshotBuffer, KartPrediction } from './network-motion.js';
+import { STEP } from './network-state.js';
 /** Kart UI and rendering only. Authority and socket credentials remain outside the title. */
 export function installMultiplayer(bridge, getHost) {
   const $ = (s) => document.querySelector(s);
@@ -7,10 +9,13 @@ export function installMultiplayer(bridge, getHost) {
     seq = 0,
     accumulated = 0,
     connected = false,
-    lastCount = null,
-    arrival = 0;
+    lastCount = null;
+  let prediction = null,
+    command = null,
+    commandIndex = 0,
+    predictionTime = 0;
   let preparedRoster = '';
-  const targets = new Map();
+  const buffers = new Map();
   const lobby = $('#multiplayer-panel');
   const status = (text) => {
     if ($('#network-status').textContent !== text)
@@ -107,7 +112,11 @@ export function installMultiplayer(bridge, getHost) {
     connected = false;
     snapshot = null;
     round = -1;
-    targets.clear();
+    buffers.clear();
+    prediction = null;
+    command = null;
+    commandIndex = 0;
+    predictionTime = 0;
     bridge.exitOnline?.();
     bridge.clearOnline?.();
     preparedRoster = '';
@@ -140,10 +149,22 @@ export function installMultiplayer(bridge, getHost) {
     }
     if (event.status === 'error' || event.status === 'reconnecting') {
       connected = false;
+      prediction = null;
+      command = null;
+      commandIndex = 0;
+      accumulated = 0;
       showMenu(true);
       return;
     }
     if (event.status !== 'connected') return;
+    if (
+      snapshot &&
+      snapshot.code === event.snapshot.code &&
+      (event.snapshot.round < snapshot.round ||
+        (event.snapshot.round === snapshot.round &&
+          event.snapshot.tick < snapshot.tick))
+    )
+      return;
     connected = true;
     snapshot = event.snapshot;
     ownId = event.sessionId;
@@ -193,7 +214,11 @@ export function installMultiplayer(bridge, getHost) {
     }
     if (round !== snapshot.round) {
       round = snapshot.round;
-      targets.clear();
+      buffers.clear();
+      prediction = null;
+      command = null;
+      commandIndex = 0;
+      predictionTime = 0;
       bridge.setupOnline(snapshot.players, ownId);
       showMenu(false);
     }
@@ -201,40 +226,25 @@ export function installMultiplayer(bridge, getHost) {
     const game = globalThis.__game;
     game.race.raceTime = snapshot.time;
     game.race.state = snapshot.phase === 'countdown' ? 'countdown' : 'racing';
-    arrival = performance.now();
+    const now = performance.now() / 1000;
     for (const state of snapshot.karts) {
       const k = game.karts.find((k) => k.networkId === state.id);
       if (!k) continue;
-      if (!targets.has(state.id)) k.position.set(state.x, state.y, state.z);
-      targets.set(state.id, {
-        from: {
-          x: k.position.x,
-          y: k.position.y,
-          z: k.position.z,
-          yaw: k.visualYaw,
-        },
-        state,
-      });
-      for (const field of [
-        'speed',
-        'yaw',
-        'roll',
-        'pitch',
-        'steerVisual',
-        'grounded',
-        'drifting',
-        'driftDir',
-        'driftTier',
-        'boostTime',
-        'wheelSpin',
-        'lap',
-        'rank',
-        'progress',
-        'finished',
-        'finishTime',
-      ])
-        k[field] = state[field];
-      k._surfaceNormal.set(state.nx, state.ny, state.nz);
+      if (!buffers.has(state.id)) buffers.set(state.id, new SnapshotBuffer());
+      buffers.get(state.id).push(snapshot.tick * STEP, state, now);
+      // Results, lap counts and standings never come from local prediction.
+      for (const key of ['lap', 'rank', 'progress', 'finished', 'finishTime'])
+        k[key] = state[key];
+    }
+    if (snapshot.you && bridge.predictionActor) {
+      seq = Math.max(seq, snapshot.you.ackSeq + 1);
+      prediction ??= new KartPrediction(
+        bridge.predictionActor,
+        bridge.predictionTrack,
+      );
+      if (!getHost().active || snapshot.phase !== 'racing')
+        prediction.ready = false;
+      prediction.reconcile(snapshot.you, now);
     }
     game.race.standings = [...game.karts].sort((a, b) => a.rank - b.rank);
     const count = Math.ceil(snapshot.countdown);
@@ -261,42 +271,80 @@ export function installMultiplayer(bridge, getHost) {
     }
   };
   bridge.networkTick = (dt, input) => {
+    if (!connected || !snapshot) return;
     accumulated += dt;
-    if (!connected || !snapshot || accumulated < 1 / 30) return;
-    accumulated = 0;
-    const active = bridge.driving() && snapshot.phase === 'racing';
-    send({
-      action: 'input',
-      input: {
-        seq: seq++,
-        throttle: active ? input.throttle : 0,
-        brake: active ? input.brake : 0,
-        steer: active ? input.steer : 0,
-        drift: active && input.drift,
-      },
-    });
+    while (accumulated >= STEP) {
+      accumulated -= STEP;
+      predictionTime = accumulated;
+      if (
+        !getHost().active ||
+        snapshot.phase !== 'racing' ||
+        globalThis.__game.player.finished ||
+        !prediction?.ready ||
+        performance.now() / 1000 - prediction.lastSnapshot > 0.25
+      )
+        continue;
+      if (!command || commandIndex >= 2) {
+        const active = bridge.driving() && !globalThis.__game.player.finished;
+        command = {
+          seq: seq++,
+          throttle: active ? input.throttle : 0,
+          brake: active ? input.brake : 0,
+          steer: active ? input.steer : 0,
+          drift: active && input.drift,
+        };
+        commandIndex = 0;
+        send({ action: 'input', input: command });
+      }
+      prediction.advance(command, command.seq, ++commandIndex);
+    }
+    predictionTime = accumulated;
   };
-  bridge.networkFrame = () => {
-    const t = Math.min(1, (performance.now() - arrival) / 50);
+  bridge.networkFrame = (dt) => {
+    const now = performance.now() / 1000;
     for (const k of globalThis.__game?.karts ?? []) {
-      const target = targets.get(k.networkId);
-      if (!target) continue;
-      const { from, state } = target;
-      k.position.set(
-        from.x + (state.x - from.x) * t,
-        from.y + (state.y - from.y) * t,
-        from.z + (state.z - from.z) * t,
-      );
-      const angle = Math.atan2(
-        Math.sin(state.visualYaw - from.yaw),
-        Math.cos(state.visualYaw - from.yaw),
-      );
-      k.visualYaw = from.yaw + angle * t;
+      const predicted =
+        connected &&
+        k.isPlayer &&
+        !k.finished &&
+        getHost().active &&
+        snapshot?.phase === 'racing' &&
+        prediction?.ready &&
+        now - prediction.lastSnapshot < 0.25;
+      const state = predicted
+        ? prediction.render(predictionTime / STEP, dt)
+        : buffers.get(k.networkId)?.sample(now);
+      if (!state) continue;
+      k.position.set(state.x, state.y, state.z);
+      for (const field of [
+        'speed',
+        'yaw',
+        'visualYaw',
+        'roll',
+        'pitch',
+        'steerVisual',
+        'grounded',
+        'drifting',
+        'driftDir',
+        'driftTier',
+        'boostTime',
+        'wheelSpin',
+      ])
+        k[field] = state[field];
+      k.suspension = [...state.suspension];
+      k._surfaceNormal.set(state.nx, state.ny, state.nz);
     }
   };
   return {
     pause(paused) {
       clearDriving();
+      command = null;
+      commandIndex = 0;
+      accumulated = 0;
+      if (prediction) {
+        prediction.history = [];
+        if (paused) prediction.ready = false;
+      }
       // The host pause panel is the active menu; don't require a second resume.
       if (bridge.online && canResume()) {
         if (paused) showMenu(false);
