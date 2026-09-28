@@ -2,16 +2,24 @@
 
 Game imagery comes from each title’s existing catalog cover; selecting a feature does not change its source, license, approval status or publication eligibility.
 
-The Discover controller section uses `platform/catalog/backbone-pro.png`, supplied by Kishan on September 22, 2026 with an explicit request to use it on the site. The original PNG is served unchanged, locally with the catalog shell.
+The Home feature grid's Backbone card uses `platform/catalog/backbone-pro.png`, supplied by Kishan on September 22, 2026 with an explicit request to use it on the site. The original PNG is served unchanged, locally with the catalog shell. Its app and controller links use the existing shell-owned promotion destinations and never receive title, save or account data.
 
 This Backbone product image is excluded from the repository’s MIT license. The user authorized its use in this site; no broader third-party redistribution license is asserted. It is not included in any game package.
 
 ## Console covers
 
-Home, library, game detail and header artwork use each title's existing catalog
+Home, Discover, Library and the game sheet use each title's existing catalog
 cover. The earlier generated concept illustrations have been removed from the
 site and packaging at the user's request. Covers do not change a title's license,
 review status or publication eligibility.
+
+## Console hub data
+
+Saved games (`akeru.library.v1`) and play history (`akeru.recent.v1`) are
+shell-owned lists of title ids in this browser's storage. Games never receive
+them, and they are not synced. Save management in the game sheet uses the same
+host-owned guest save store that titles write through; the sheet lists, exports,
+deletes or resets only the selected title's local slots.
 
 ## Interface font
 

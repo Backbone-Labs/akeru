@@ -150,6 +150,7 @@ try {
     'style.css',
     'console-home.css',
     'console-ui.js',
+    'game-sheet.js',
     'manrope.ttf',
     'manrope-OFL.txt',
     'app.js',

@@ -3,10 +3,15 @@ import {
   directionalTarget,
   wrapConsolePage,
   openConsoleKeyboard,
-  cover,
+  icon,
 } from './console-ui.js';
 import { createRumble } from './rumble.js';
-import { renderGameHome, readRecent, recordPlayed } from './home.js';
+import {
+  renderGameHome,
+  readRecent,
+  recordPlayed,
+  readLibrary,
+} from './home.js';
 import { mountOnboarding, needsOnboarding } from './onboarding.js';
 import { createSaveStore } from '/saves/index.js';
 import {
@@ -70,14 +75,6 @@ function animatePanel(
       finish();
     })
     .catch(() => {});
-}
-const cap = (s) => s[0].toUpperCase() + s.slice(1);
-function link(label, url) {
-  const e = node('a', '', label);
-  e.href = url;
-  e.target = '_blank';
-  e.rel = 'noopener noreferrer';
-  return e;
 }
 function list(items) {
   const ul = node('ul');
@@ -144,7 +141,16 @@ export function mountCatalog({
     loadVersion = 0;
   let onboardingUi = null;
   let disposeHome = null;
+  // The mounted console hub. Game details open over it at the same /g/:id URL.
+  let hub = null;
+  let sheetFromHub = false;
+  let renderedView = null;
   let consoleView = 'play';
+  const disposeView = () => {
+    disposeHome?.();
+    disposeHome = null;
+    hub = null;
+  };
   const uiSound = createConsoleSound(browserStorage());
   const unlockSound = () => {
     document.body.dataset.input = 'pointer';
@@ -168,6 +174,16 @@ export function mountCatalog({
     preview: mode === 'demo',
     sound: uiSound,
     entry,
+    profile: () => {
+      const storage = browserStorage();
+      const known = (row) =>
+        catalog?.entries.some((e) => e.manifest.id === row.id);
+      return {
+        library: readLibrary(storage).filter(known).length,
+        played: readRecent(storage).filter(known).length,
+        games: catalog?.entries.length ?? 0,
+      };
+    },
     onTab: switchConsoleTab,
     onSearch: () => {
       switchConsoleTab('discover');
@@ -193,11 +209,14 @@ export function mountCatalog({
   } catch {
     /* Use the default console appearance. */
   }
+  // The console hub defaults to light; the embedded app player keeps its dark default.
   document.documentElement.dataset.theme = ['light', 'dark'].includes(
     savedTheme,
   )
     ? savedTheme
-    : 'dark';
+    : isPlayer()
+      ? 'dark'
+      : 'light';
   const onThemeClick = (event) => {
     if (event.target.closest('[data-theme-toggle]'))
       setTheme(
@@ -352,9 +371,11 @@ export function mountCatalog({
       controlPanel.querySelector('.control-close')?.click();
       return;
     }
-    const modal = document.querySelector('dialog[open]');
+    const modal = [...document.querySelectorAll('dialog[open]')].at(-1);
     if (modal && ['back', 'menu'].includes(event.type)) {
       if (onboardingUi) onboardingUi.back();
+      else if (modal.hasAttribute('data-console-close'))
+        modal.dispatchEvent(new CustomEvent('console-close'));
       else modal.close();
       return;
     }
@@ -452,12 +473,23 @@ export function mountCatalog({
       range.dispatchEvent(new Event('input', { bubbles: true }));
       return;
     }
+    // Console screens add readable stops and skip pointer-only helpers; the
+    // runtime and player menus keep their original focus targets.
+    const consoleScope =
+      !active && document.body.classList.contains('console-home-active');
     const targets = [
       ...scope.querySelectorAll(
-        'a[href],button:not([disabled]),input,select,summary',
+        consoleScope
+          ? 'a[href],button:not([disabled]),input,select,summary,[data-nav-stop]'
+          : 'a[href],button:not([disabled]),input,select,summary',
       ),
     ].filter(
-      (e) => !e.closest('[hidden], [inert]') && e.getClientRects().length,
+      (e) =>
+        !e.closest('[hidden], [inert]') &&
+        (!consoleScope ||
+          (!e.closest('[aria-hidden="true"]') &&
+            !e.matches('[data-nav-skip]'))) &&
+        e.getClientRects().length,
     );
     if (!targets.length) return;
     if (event.type === 'activate') {
@@ -478,7 +510,11 @@ export function mountCatalog({
         );
         next?.focus({ preventScroll: true });
         next?.scrollIntoView({
-          block: 'nearest',
+          block:
+            next.closest('[data-nav-block]')?.dataset.navBlock === 'center'
+              ? 'center'
+              : 'nearest',
+          inline: 'nearest',
           behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
             ? 'instant'
             : 'smooth',
@@ -536,10 +572,21 @@ export function mountCatalog({
   }
   function navigate(path) {
     if (disposed) return;
+    const from = routeFor(location.pathname).view;
     history.pushState({}, '', path);
-    renderRoute();
+    sheetFromHub = Boolean(hub) && from === 'catalog';
+    // Opening or closing a game sheet keeps the hub, its scroll and focus.
+    if (renderRoute()) return;
     main.focus();
     window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  function closeGameSheet() {
+    const view = routeFor(location.pathname).view;
+    if (sheetFromHub && view === 'detail') {
+      sheetFromHub = false;
+      history.back();
+    } else if (view !== 'catalog') navigate('/games');
+    else renderedView = 'catalog';
   }
   const onClick = (e) => {
     const a = e.target.closest('a');
@@ -577,6 +624,7 @@ export function mountCatalog({
     return data;
   }
   function status(title, description, { retry = false, back = true } = {}) {
+    disposeView();
     main.replaceChildren();
     const wrap = node('div', 'wrap'),
       section = node('section', 'status-card');
@@ -618,12 +666,30 @@ export function mountCatalog({
     }
   }
   function renderRoute() {
-    if (disposed) return;
-    disposeHome?.();
-    disposeHome = null;
-    clearSession();
-    if (!catalog) return;
+    if (disposed) return false;
     const route = routeFor(location.pathname);
+    if (catalog && hub && !active) {
+      const entry =
+        route.view === 'detail' &&
+        catalog.entries.find((e) => e.manifest.id === route.id);
+      if (entry) {
+        renderDetail(entry);
+        return true;
+      }
+      if (
+        route.view === 'catalog' &&
+        (hub.gameOpen || renderedView === 'detail')
+      ) {
+        renderedView = 'catalog';
+        telemetry({ type: 'catalogView' });
+        hub.closeGame();
+        return true;
+      }
+    }
+    renderedView = route.view;
+    disposeView();
+    clearSession();
+    if (!catalog) return false;
     document.body.classList.toggle('direct-player', isPlayer());
     if (route.view === 'player') {
       const entry = catalog.entries.find((e) => e.manifest.id === route.id);
@@ -684,8 +750,7 @@ export function mountCatalog({
   }
   function renderSettings() {
     document.title = 'Settings — Akeru';
-    main.innerHTML =
-      '<div class="wrap settings-page"><a class="back" href="/games">← All games</a><p class="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your setup.</h1><div class="settings-grid"><section class="settings-card"><h2>Appearance</h2><p>Choose the look that feels right. Your choice stays on this browser.</p><button class="secondary" data-theme-toggle>Switch light / dark</button></section><section class="settings-card"><h2>Controller</h2><p>Pair in your device’s Bluetooth settings, then press a controller button. Customize the layout for each game.</p><label for="settings-title">Game</label><select id="settings-title"></select><button id="settings-controls" class="secondary">Remap controller</button><div id="control-settings"></div><div id="settings-touch" hidden></div></section><section class="settings-card"><h2>Backbone account</h2><span class="pill">Playing as a guest</span><p>Account connection is not available in this preview yet. No account is needed to play, and your saves stay in this browser.</p><button id="settings-sign-out" class="secondary">Sign out &amp; restart</button><p class="fine">Return to the welcome page and restart setup. Saved games, appearance and controller mappings stay on this device.</p></section><section class="settings-card"><h2>Your progress</h2><p>Open a game’s details to manage its local saves. Cloud sync and Backbone account activity will become available when account connection is ready.</p><a href="/games">Browse games ↗</a></section></div></div>';
+    main.innerHTML = `<div class="settings-page"><div class="view-head"><div><p class="console-eyebrow">MAKE YOURSELF AT HOME</p><h1>Settings</h1><p class="view-sub">Appearance, controls and data on this device.</p></div></div><div class="settings-grid"><section class="settings-card settings-appearance" aria-labelledby="settings-appearance-title"><h2 id="settings-appearance-title">${icon('sun')}Appearance</h2><p>Choose the look that feels right. Your choice stays on this browser.</p><div class="settings-theme" role="group" aria-label="Theme"><button type="button" data-theme-choice="light"><span class="theme-swatch" data-swatch="light" aria-hidden="true"></span>Light</button><button type="button" data-theme-choice="dark"><span class="theme-swatch" data-swatch="dark" aria-hidden="true"></span>Dark</button></div></section><section class="settings-card settings-sound" aria-labelledby="settings-sound-title"><h2 id="settings-sound-title">${icon('sound')}Sounds</h2><p>Soft clicks when you move around with a controller or keyboard.</p><button type="button" class="settings-switch" data-settings-sound aria-pressed="true"><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span><span>Navigation sounds</span></button></section><section class="settings-card settings-controller" aria-labelledby="settings-controller-title"><h2 id="settings-controller-title">${icon('controller')}Controller</h2><p>Pair in your device’s Bluetooth settings, then press a controller button. Customize the layout for each game.</p><label for="settings-title">Game</label><select id="settings-title"></select><button id="settings-controls" class="secondary">Remap controller</button><div id="control-settings"></div><div id="settings-touch" hidden></div></section><section class="settings-card settings-profile" aria-labelledby="settings-profile-title"><h2 id="settings-profile-title">${icon('guest')}Profile</h2><div class="settings-guest"><span class="console-avatar" aria-hidden="true"></span><div><strong>Guest</strong><span>Playing as a guest</span></div></div><p>Account connection is not available in this preview yet. No account is needed to play, and your saves stay in this browser.</p><button id="settings-sign-out" class="secondary">Sign out &amp; restart</button><p class="fine">Return to the welcome page and restart setup. Saved games, appearance and controller mappings stay on this device.</p></section><section class="settings-card settings-data" aria-labelledby="settings-data-title"><h2 id="settings-data-title">${icon('save')}Your data</h2><p>Your library and play history stay in this browser. Manage a game’s saves from its details.</p><div class="settings-actions"><button type="button" class="secondary" data-clear="library">Clear library</button><button type="button" class="secondary" data-clear="recent">Clear play history</button></div><p class="fine" data-clear-status aria-live="polite"></p></section><section class="settings-card settings-about" aria-labelledby="settings-about-title"><h2 id="settings-about-title">${icon('info')}About Akeru</h2><p>Akeru brings games to your browser, with controller and touch support. Guest play is free. No account or membership is required.</p><p>Every published game goes through the same package and review process, whether it comes from Backbone, an independent developer or the community.</p><a class="settings-link" href="/games">Browse games ${icon('right')}</a></section></div></div>`;
     $('#settings-sign-out').onclick = () => {
       try {
         browserStorage()?.removeItem('akeru.onboarding.v1');
@@ -699,7 +764,61 @@ export function mountCatalog({
       option.value = entry.manifest.id;
       $('#settings-title').append(option);
     }
-    disposeHome = wrapConsolePage(main, consolePageOptions());
+    const syncChoices = () => {
+      for (const button of main.querySelectorAll('[data-theme-choice]'))
+        button.setAttribute(
+          'aria-pressed',
+          String(
+            button.dataset.themeChoice ===
+              document.documentElement.dataset.theme,
+          ),
+        );
+      const sound = $('[data-settings-sound]');
+      sound.setAttribute('aria-pressed', String(uiSound.enabled));
+    };
+    for (const button of main.querySelectorAll('[data-theme-choice]'))
+      button.onclick = () => setTheme(button.dataset.themeChoice);
+    $('[data-settings-sound]').onclick = () => {
+      uiSound.toggle();
+      syncChoices();
+    };
+    const themeWatch = new MutationObserver(syncChoices);
+    themeWatch.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+    syncChoices();
+    const clearKeys = {
+      library: ['akeru.library.v1', 'Library cleared.'],
+      recent: ['akeru.recent.v1', 'Play history cleared.'],
+    };
+    for (const button of main.querySelectorAll('[data-clear]')) {
+      const label = button.textContent;
+      button.onclick = () => {
+        const [key, done] = clearKeys[button.dataset.clear];
+        if (button.dataset.confirm !== 'true') {
+          button.dataset.confirm = 'true';
+          button.textContent = `Confirm ${label.toLowerCase()}`;
+          $('[data-clear-status]').textContent =
+            'This only affects this browser. Game saves are not changed.';
+          return;
+        }
+        delete button.dataset.confirm;
+        button.textContent = label;
+        try {
+          browserStorage()?.removeItem(key);
+          $('[data-clear-status]').textContent = done;
+        } catch {
+          $('[data-clear-status]').textContent =
+            'Browser storage is unavailable. Nothing was changed.';
+        }
+      };
+    }
+    const disposePage = wrapConsolePage(main, consolePageOptions());
+    disposeHome = () => {
+      themeWatch.disconnect();
+      disposePage();
+    };
   }
   function mountSettingsControls() {
     const select = $('#settings-title');
@@ -736,154 +855,49 @@ export function mountCatalog({
       return null;
     }
   }
-  function renderCatalog() {
-    document.title = 'Discover — Backbone Akeru';
-    telemetry({ type: 'catalogView' });
-    disposeHome = renderGameHome(main, catalog.entries, {
+  function mountHub() {
+    const home = renderGameHome(main, catalog.entries, {
       filters,
       recent: readRecent(browserStorage()),
+      storage: browserStorage(),
+      savesFor,
       preview: mode === 'demo',
       sound: uiSound,
       initialView: consoleView,
       onView: (view) => {
         consoleView = view;
       },
-      onLaunch: (entry) => {
-        disposeHome?.();
-        disposeHome = null;
-        void launch(entry);
-      },
+      // Launches keep the existing host path; the sheet stays up while it opens.
+      onLaunch: (entry) => void launch(entry),
+      onCloseGame: closeGameSheet,
       onFilters: (next) => {
         filters = next;
       },
     });
+    hub = home;
+    disposeHome = home.dispose;
+  }
+  function renderCatalog() {
+    document.title = 'Discover — Backbone Akeru';
+    telemetry({ type: 'catalogView' });
+    mountHub();
   }
   function renderDetail(entry) {
-    const m = entry.manifest,
-      meta = entry.metadata;
-    document.title = `${m.title} — Akeru`;
-    telemetry({ type: 'detailView', titleId: m.id });
-    main.innerHTML =
-      '<div class="wrap"><a class="back" href="/games">← All games</a><section class="detail-top"><div id="detail-art" class="detail-art" aria-hidden="true"></div><div class="detail-copy"><p id="category" class="eyebrow"></p><h1 id="title"></h1><p id="description" class="description"></p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span></div><button id="play-button" class="primary">Play now <span aria-hidden="true">↗</span></button><p id="play-note" class="fine">No account or membership needed.</p></div></section><dl class="facts" id="facts"></dl><section class="detail-info" id="game-details" tabindex="-1"><div><div class="info-block"><h2>Your controls</h2><h3>Controller</h3><div id="controller-help"></div><h3>Touch</h3><div id="touch-help"></div></div><div class="info-block"><h2>Local saves</h2><p id="save-info"></p></div></div><div><div class="info-block"><h2>Privacy</h2><div id="privacy-info"></div></div><div class="info-block"><h2>Credits &amp; source</h2><p id="source-license"></p><div id="source-links" class="source-links"></div><p class="fine">Source revision</p><p id="source-revision" class="revision"></p></div></div></section></div>';
-    const more = node('button', 'scroll-cue', 'Controls, credits & more ↓');
-    more.onclick = () => {
-      $('#game-details').scrollIntoView({
-        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
-          ? 'instant'
-          : 'smooth',
-      });
-      $('#game-details').focus({ preventScroll: true });
-    };
-    main.querySelector('.detail-top').after(more);
-    $('#detail-art').append(cover(entry));
-    $('#category').textContent = `${cap(meta.category)} / ${meta.creator}`;
-    $('#title').textContent = m.title;
-    $('#description').textContent = meta.description;
-    for (const [label, value] of [
-      ['Created by', meta.creator],
-      ['Content', meta.ageLabel],
-      ['Version', m.version],
-      ['Access', 'Free · no membership'],
-    ]) {
-      const item = node('div');
-      item.append(node('dt', '', label), node('dd', '', value));
-      $('#facts').append(item);
+    telemetry({ type: 'detailView', titleId: entry.manifest.id });
+    if (!hub) {
+      sheetFromHub = false;
+      mountHub();
+      bindInput('catalog');
     }
-    $('#controller-help').append(list(meta.controls.controller));
-    $('#touch-help').append(list(meta.controls.touch));
-    $('#privacy-info').append(list(meta.privacy));
-    renderSaveControls(entry, $('#save-info'));
-    $('#source-license').textContent =
-      `Source license: ${m.provenance.source.license}`;
-    $('#source-revision').textContent = m.provenance.source.revision;
-    $('#source-links').append(link('View source ↗', m.provenance.source.url));
-    for (const n of meta.notices)
-      $('#source-links').append(link(n.label, n.url));
-    const play = $('#play-button');
-    if (entry.availability === 'paused') {
-      play.disabled = true;
-      play.textContent = 'Temporarily unavailable';
-      $('#play-note').textContent =
-        'This game is taking a break. Please check back later.';
-    } else play.onclick = () => launch(entry);
-    play.setAttribute('data-console-primary', '');
-    main.querySelector('.wrap').classList.add('console-detail');
-    disposeHome = wrapConsolePage(main, consolePageOptions(entry));
+    renderedView = 'detail';
+    hub.openGame(entry);
+    document.title = `${entry.manifest.title} — Akeru`;
   }
   function savesFor(entry) {
     return saveStore.forTitle({
       titleId: entry.manifest.id,
       schemaVersion: entry.manifest.saves.schemaVersion,
     });
-  }
-  function renderSaveControls(entry, description) {
-    const saves = savesFor(entry);
-    description.textContent =
-      'Progress stays in this browser. Clearing browser data can remove it. Account sync is not connected.';
-    const actions = node('div', 'status-actions');
-    const exportButton = node('button', 'secondary', 'Export saves');
-    const resetButton = node('button', 'secondary', 'Reset saves');
-    const feedback = node('p', 'fine');
-    feedback.setAttribute('role', 'status');
-    actions.append(exportButton, resetButton);
-    description.after(actions, feedback);
-    const showError = () => {
-      feedback.textContent =
-        'Couldn’t access saves. Existing data has not been intentionally replaced. Try again or export before resetting.';
-    };
-    saves
-      .status()
-      .then((result) => {
-        if (!description.isConnected) return;
-        if (result.local !== 'available') {
-          description.textContent =
-            'Saving is unavailable in this browser. You can still play, but progress may be lost.';
-          exportButton.disabled = true;
-          resetButton.disabled = true;
-        }
-      })
-      .catch(showError);
-    exportButton.onclick = async () => {
-      exportButton.disabled = true;
-      try {
-        const data = await saves.exportData();
-        const url = URL.createObjectURL(
-          new Blob([JSON.stringify(data)], { type: 'application/json' }),
-        );
-        const a = node('a');
-        a.href = url;
-        a.download = `${entry.manifest.id}-saves.json`;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-        feedback.textContent =
-          'Save export downloaded. Keep it private; it contains your game progress.';
-      } catch {
-        showError();
-      } finally {
-        exportButton.disabled = false;
-      }
-    };
-    let confirmReset = false;
-    resetButton.onclick = async () => {
-      if (!confirmReset) {
-        confirmReset = true;
-        resetButton.textContent = 'Confirm reset';
-        feedback.textContent =
-          'This removes only this game’s local saves. Export first if you want to keep them.';
-        return;
-      }
-      resetButton.disabled = true;
-      try {
-        await saves.reset();
-        feedback.textContent = 'Local saves for this game have been reset.';
-      } catch {
-        showError();
-      } finally {
-        confirmReset = false;
-        resetButton.textContent = 'Reset saves';
-        resetButton.disabled = false;
-      }
-    };
   }
   async function launch(original) {
     const currentPath = location.pathname;
@@ -931,8 +945,7 @@ export function mountCatalog({
     }
   }
   function renderRuntime(entry) {
-    disposeHome?.();
-    disposeHome = null;
+    disposeView();
     clearSession();
     main.innerHTML =
       '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><a class="runtime-home" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></a><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay launch-screen" role="status"><div class="launch-brand" aria-label="Backbone / Akeru"><span class="launch-backbone"><svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>BACKBONE</span><span class="launch-reveal"><span class="launch-akeru"><i>/</i> AKERU</span></span></div><h2>Opening game…</h2><p></p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';

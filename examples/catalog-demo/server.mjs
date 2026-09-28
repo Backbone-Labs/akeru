@@ -272,7 +272,7 @@ export async function startCatalogDemo(options = {}) {
       ['/', '/games', '/settings'].includes(req.url) ||
       /^\/(?:g|play)\/[a-z0-9-]+\/?$/.test(req.url)
         ? 'platform/catalog/index.html'
-        : /^\/(?:favicon\.svg|style\.css|console-home\.css|console-ui\.js|app\.js|home\.js|onboarding\.js|promotions\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js|rumble\.js)$/.test(
+        : /^\/(?:favicon\.svg|style\.css|console-home\.css|console-ui\.js|game-sheet\.js|app\.js|home\.js|onboarding\.js|promotions\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js|rumble\.js)$/.test(
               req.url,
             )
           ? `platform/catalog${req.url}`

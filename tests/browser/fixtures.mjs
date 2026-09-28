@@ -96,12 +96,13 @@ export async function neutralGamepad(page) {
 
 export async function launchDemo(page, url) {
   await page.goto(url + '/games');
-  await page.getByRole('button', { name: 'Library', exact: true }).click();
+  await page.getByRole('button', { name: 'Discover', exact: true }).click();
   await page
     .locator('#game-grid')
     .getByRole('link', { name: /Orbit study/ })
     .click();
   await expect(page).toHaveURL(/\/g\/orbit-study$/);
+  await expect(page.getByRole('dialog', { name: 'Orbit study' })).toBeVisible();
   await page.getByRole('button', { name: /Play now/ }).click();
   const runtime = page.frameLocator(
     'iframe[title="Orbit study isolated runtime"]',
@@ -128,7 +129,44 @@ export async function orbPosition(runtime) {
   });
 }
 
+/** Serve the demo catalog with extra cloned entries so console layouts have real depth. */
+export async function withCatalogCopies(page, count, category = 'puzzle') {
+  await page.route('**/catalog.json', async (route) => {
+    const response = await route.fetch();
+    const catalog = await response.json();
+    const [base] = catalog.entries;
+    if (base)
+      for (let i = 1; i <= count; i++)
+        catalog.entries.push({
+          ...base,
+          manifest: {
+            ...base.manifest,
+            id: `orbit-copy-${i}`,
+            title: `Orbit copy ${i}`,
+          },
+          release: {
+            digest: base.release.digest,
+            origin: `http://127.0.0.1:${41000 + i}`,
+          },
+          metadata: {
+            ...base.metadata,
+            category: i % 2 ? category : base.metadata.category,
+          },
+        });
+    await route.fulfill({ response, json: catalog });
+  });
+}
+
+export async function settleAnimations(page) {
+  await page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .every((animation) => animation.playState !== 'running'),
+  );
+}
+
 export async function expectNoHorizontalOverflow(page) {
+  await settleAnimations(page);
   const result = await page.evaluate(() => ({
     viewportWidth: document.documentElement.clientWidth,
     contentWidth: document.documentElement.scrollWidth,
