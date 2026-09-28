@@ -93,6 +93,10 @@ export function connectGame(game) {
       game.controllerChanged?.(m.payload.connected);
       return;
     }
+    if (m.type === 'multiplayer') {
+      game.multiplayer?.(m.payload);
+      return;
+    }
     if (m.type === 'save-result') {
       saves.receive(m.payload);
       return;
@@ -160,6 +164,7 @@ export function connectGame(game) {
     KeyR: 'restart',
   };
   addEventListener('keydown', (e) => {
+    if (e.target?.matches('input,textarea,select,[contenteditable]')) return;
     const a = bindings[e.code];
     if (a) {
       e.preventDefault();
@@ -200,6 +205,11 @@ export function connectGame(game) {
   return {
     held,
     action,
+    multiplayer(request) {
+      // A paused race still has a live lobby; only driving input is suspended.
+      if (ready && (!paused || request?.action !== 'input'))
+        send('multiplayer', request);
+    },
     rumble(effect) {
       if (ready && !paused && !document.hidden) send('rumble', effect);
     },

@@ -23,15 +23,64 @@
       </div>
     </div>
     <section id="akeru-start">
-      <h1>Old San Juan Kart</h1>
-      <p>Eight racers. Three laps. Let's go.</p>
-      <button id="race" type="button">Race · A</button>
-      <p>
+      <h1 class="solo-only">Old San Juan Kart</h1>
+      <p class="solo-only">Eight racers. Three laps. Let's go.</p>
+      <button class="solo-only" id="race" type="button">Race · A</button>
+      <p class="solo-only">
         Left stick: steer · A: gas · B: brake<br />D-pad ↓: drift · D-pad ↑:
         item
       </p>
       <p id="status" role="status"></p>
+      <div id="online-options" hidden>
+        <section id="multiplayer-panel" aria-label="Private race">
+          <div class="room-heading">
+            <span>OLD SAN JUAN KART</span>
+            <h2>Race together.</h2>
+          </div>
+          <p id="network-status" role="status" aria-live="polite">
+            Private races · 2–4 players
+          </p>
+          <div id="room-entry">
+            <button id="create-room">Create private race</button>
+            <div class="join-row">
+              <label for="room-code">Room code</label
+              ><input
+                id="room-code"
+                maxlength="20"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+                placeholder="Paste a room code"
+              /><button id="join-room">Join race</button>
+            </div>
+            <button id="resume-room" hidden>Reconnect to race</button>
+          </div>
+          <div id="room-session" hidden>
+            <p>Room <strong id="code-label"></strong></p>
+            <label for="invite-link">Invite a friend</label>
+            <input id="invite-link" readonly /><button id="copy-invite">
+              Copy invite
+            </button>
+            <p id="room-players"></p>
+            <p id="race-results"></p>
+            <div class="room-actions">
+              <button id="ready-room">Ready · A</button
+              ><button id="start-room">Start race</button
+              ><button id="rematch-room" hidden>Race again</button
+              ><button id="resume-race" hidden>Resume race</button>
+              <button id="leave-room">Leave room</button>
+            </div>
+          </div>
+          <p class="room-note">
+            Three laps. No items or kart collisions. Races continue while a menu
+            is open.<br />Keyboard: arrows / WASD to drive · Escape: race
+            menu.<br />Controller: left stick to steer · A: gas · B: brake ·
+            Menu: pause.
+          </p>
+        </section>
+      </div>
     </section>
+    <button id="online-menu" hidden>Race menu</button>
     <span id="save-status" hidden></span>
     <script type="module" src="title.js"></script>
   </body>

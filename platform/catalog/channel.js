@@ -22,6 +22,7 @@ export function createRuntimeChannel({
   frame,
   presentation = 'web',
   saveService,
+  multiplayerService,
   origin,
   nonce,
   onEvent = () => {},
@@ -77,6 +78,7 @@ export function createRuntimeChannel({
     if (closed) return;
     clearTimeout(timeout);
     saves.dispose();
+    multiplayerService?.dispose();
     for (const { reject, timer } of pending.values()) {
       clearTimeout(timer);
       reject(new Error('Game closed'));
@@ -104,6 +106,16 @@ export function createRuntimeChannel({
     }
     if (++budget > 60) return false;
     const p = v.payload;
+    if (v.type === 'multiplayer') {
+      if (
+        !['playable', 'paused'].includes(state) ||
+        (state === 'paused' && p?.action === 'input') ||
+        !multiplayerService?.receive(p)
+      )
+        return false;
+      received = v.sequence;
+      return true;
+    }
     if (v.type === 'actions') {
       if (
         !['playable', 'paused'].includes(state) ||
@@ -197,6 +209,7 @@ export function createRuntimeChannel({
         return false;
       state = 'playable';
       clearTimeout(timeout);
+      multiplayerService?.connect((payload) => send('multiplayer', payload));
     } else if (v.type === 'error') {
       if (
         !['loading', 'playable', 'paused'].includes(state) ||
@@ -348,4 +361,11 @@ function validActionState(state) {
   )
     return false;
   return true;
+}
+
+/** Secure entropy is available on LAN HTTP previews even without randomUUID. */
+export function createRuntimeNonce(provider = globalThis.crypto) {
+  return Array.from(provider.getRandomValues(new Uint8Array(16)), (b) =>
+    b.toString(16).padStart(2, '0'),
+  ).join('');
 }

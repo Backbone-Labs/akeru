@@ -1,6 +1,6 @@
 import { titleOptions } from '../arcade-preview/catalog.mjs';
-export const options = () =>
-  titleOptions(
+export const options = ({ multiplayer = false } = {}) => {
+  const result = titleOptions(
     'old-san-juan-kart',
     {
       title: 'Old San Juan Kart',
@@ -22,3 +22,13 @@ export const options = () =>
     },
     { graphics: 'webgl2', assetRequests: true, license: 'MIT' },
   );
+
+  if (multiplayer) {
+    result.manifest.capabilities.push('multiplayer.rooms.v1');
+    result.metadata.privacy = [
+      'Private races connect through the Akeru host to its configured game server. Guest room sessions expire; no account is required.',
+      'Audio preferences stay in host-owned local storage. Live races are not save states.',
+    ];
+  }
+  return result;
+};
