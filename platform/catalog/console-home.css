@@ -1221,12 +1221,16 @@ body[data-input='controller'] .console-shell .game-card:focus {
 }
 .console-sort {
   height: 2.9em;
-  padding: 0 2.4em 0 1.1em;
+  padding: 0 2.6em 0 1.1em;
   border-radius: 999px;
   border: 1.5px solid var(--ak-line);
-  background: var(--ak-surface)
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2380858f' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
-    no-repeat right 0.9em center / 1em;
+  /* CSS-only chevron: the production policy blocks data: images. */
+  background:
+    linear-gradient(45deg, transparent 50%, var(--ak-muted) 50%) right 1.35em
+      center / 0.4em 0.4em no-repeat,
+    linear-gradient(135deg, var(--ak-muted) 50%, transparent 50%) right 1em
+      center / 0.4em 0.4em no-repeat,
+    var(--ak-surface);
   font-weight: 700;
   color: var(--ak-ink);
   appearance: none;
@@ -1398,6 +1402,39 @@ dialog.game-sheet.is-closing::backdrop {
 }
 .sheet-close:hover {
   transform: scale(1.04);
+}
+.sheet-legend {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 1.8em;
+  align-items: center;
+  padding: 0.85em 2.6em;
+  border-top: 1px solid var(--ak-line);
+  background: color-mix(in srgb, var(--ak-surface) 92%, transparent);
+  font-size: 0.86em;
+  font-weight: 650;
+  color: var(--ak-ink-2);
+}
+.sheet-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+}
+.glyph-dpad {
+  display: inline-grid;
+  place-items: center;
+  width: 1.85em;
+  height: 1.85em;
+  border-radius: 8px;
+  background: var(--ak-surface-3);
+  color: var(--ak-ink);
+  font-size: 0.9em;
+}
+@media (pointer: coarse) {
+  body:not([data-input='controller']) .sheet-legend {
+    display: none;
+  }
 }
 .sheet-scroll {
   position: relative;

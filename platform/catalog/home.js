@@ -266,6 +266,8 @@ export function renderGameHome(
       onCloseGame?.(entry);
     },
     savesFor,
+    lastPlayed: (id) =>
+      recentAt.has(id) ? lastPlayedLabel(recentAt.get(id)) : null,
     // Deep links have no card to return to: land on the game if it is on
     // screen, otherwise on the view's primary target.
     restoreFocus: (entry) => {

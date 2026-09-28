@@ -97,12 +97,13 @@ const TEMPLATE = `<div class="sheet-frame">
       </div>
     </div>
   </div>
+  <div class="sheet-legend" aria-hidden="true"><span><kbd class="glyph-a">A</kbd>Select</span><span><kbd class="glyph-b">B</kbd>Back</span><span><kbd class="glyph-dpad">✥</kbd>Move</span></div>
 </div>`;
 
 /** The detail sheet shares /g/:id with the old page. Launches still go through the host. */
 export function createGameSheet(
   host,
-  { onPlay, onClose, savesFor, library, restoreFocus } = {},
+  { onPlay, onClose, savesFor, library, restoreFocus, lastPlayed } = {},
 ) {
   let dialog = null,
     entry = null,
@@ -142,9 +143,12 @@ export function createGameSheet(
     play.disabled = paused;
     play.innerHTML = `<kbd class="glyph-a" aria-hidden="true">A</kbd><span>${paused ? 'Temporarily unavailable' : 'Play now'}</span>`;
     play.onclick = paused ? null : () => onPlay?.(entry);
+    const played = paused ? null : lastPlayed?.(entry.manifest.id);
     q('#play-note').textContent = paused
       ? 'This game is taking a break. Please check back later.'
-      : 'Free guest play · No account or membership needed';
+      : played
+        ? `${played} · Free guest play`
+        : 'Free guest play · No account or membership needed';
   }
   function renderLibraryButton() {
     const button = q('.sheet-library');

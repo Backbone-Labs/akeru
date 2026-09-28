@@ -371,7 +371,7 @@ export function mountCatalog({
       controlPanel.querySelector('.control-close')?.click();
       return;
     }
-    const modal = [...document.querySelectorAll('dialog[open]')].at(-1);
+    const modal = document.querySelector('dialog[open]');
     if (modal && ['back', 'menu'].includes(event.type)) {
       if (onboardingUi) onboardingUi.back();
       else if (modal.hasAttribute('data-console-close'))
