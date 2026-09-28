@@ -1,10 +1,7 @@
 import { build } from 'esbuild';
 import { readFile } from 'node:fs/promises';
 await build({
-  entryPoints: [
-    new URL('../old-san-juan-kart/multiplayer/browser.js', import.meta.url)
-      .pathname,
-  ],
+  entryPoints: [new URL('./src/catalog-browser.js', import.meta.url).pathname],
   bundle: true,
   format: 'esm',
   platform: 'browser',

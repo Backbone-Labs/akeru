@@ -121,6 +121,7 @@ export function mountCatalog({
   onboarding = true,
   controllerModelUrl = null,
   inputProviderFactory,
+  inputMappingFactory,
   multiplayerServiceFactory,
   telemetrySink,
   acquisitionSink,
@@ -384,7 +385,10 @@ export function mountCatalog({
     input = null;
     if (!inputProviderFactory) return;
     try {
-      input = inputProviderFactory({ titleId: id });
+      input = inputProviderFactory({
+        titleId: id,
+        ...(inputMappingFactory ? { mapping: inputMappingFactory(id) } : {}),
+      });
       if (gameplay) {
         input.mount({
           touchRoot: $('#touch-controls'),

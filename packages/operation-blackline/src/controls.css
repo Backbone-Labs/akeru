@@ -1,0 +1,145 @@
+/* Thumb controls stay at the edges; the sight line and team HUD stay clear. */
+#akeru-fps-controls {
+  --fps-glass: rgb(15 19 23 / 76%);
+  --fps-line: rgb(255 255 255 / 22%);
+  --fps-text: #faf8f4;
+  --fps-accent: #ff6b26;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  color: var(--fps-text);
+  font:
+    600 12px/1.2 'Segoe UI',
+    sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#akeru-fps-controls[hidden] {
+  display: none;
+}
+#akeru-fps-controls button,
+#akeru-fps-controls .fps-stick {
+  touch-action: none;
+  pointer-events: auto;
+  color: inherit;
+  background: var(--fps-glass);
+  border: 1px solid var(--fps-line);
+}
+#akeru-fps-controls button {
+  min-width: 52px;
+  min-height: 44px;
+  border-radius: 12px;
+  padding: 8px;
+  font: inherit;
+}
+#akeru-fps-controls button:active,
+#akeru-fps-controls button[data-held] {
+  border-color: var(--fps-accent);
+  background: rgb(153 57 17 / 90%);
+}
+#akeru-fps-controls button:focus-visible,
+body[data-fps-input='controller'] :is(button, input, a):focus {
+  outline: 3px solid #ff6b26;
+  outline-offset: 3px;
+}
+.fps-utility {
+  position: absolute;
+  display: flex;
+  gap: 8px;
+  right: max(12px, env(safe-area-inset-right));
+  top: max(12px, env(safe-area-inset-top));
+}
+.fps-stick {
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  display: grid;
+  place-items: center;
+}
+.fps-stick span {
+  opacity: 0.7;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.fps-stick i {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--fps-line);
+  background: rgb(250 248 244 / 12%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.fps-move {
+  left: max(24px, env(safe-area-inset-left));
+}
+.fps-look {
+  right: max(148px, calc(env(safe-area-inset-right) + 124px));
+}
+.fps-left-actions {
+  position: absolute;
+  display: flex;
+  gap: 8px;
+  left: max(24px, env(safe-area-inset-left));
+  bottom: max(148px, calc(env(safe-area-inset-bottom) + 124px));
+}
+.fps-right-actions {
+  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(2, 52px);
+  gap: 8px;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+}
+#akeru-fps-controls [data-fps='fire'] {
+  grid-column: span 2;
+  min-height: 52px;
+  background: rgb(213 76 16 / 90%);
+  border-color: var(--fps-accent);
+  font-size: 14px;
+}
+body[data-fps-input='touch'] #bottom-left {
+  left: 24px;
+  bottom: 212px;
+}
+body[data-fps-input='touch'] #bottom-right {
+  right: 16px;
+  bottom: 212px;
+}
+@media (max-height: 480px) {
+  body[data-fps-input='touch'] #minimap-canvas {
+    width: 88px;
+    height: 88px;
+    top: 12px;
+    left: 16px;
+  }
+  body[data-fps-input='touch'] #bottom-left {
+    bottom: 208px;
+  }
+  body[data-fps-input='touch'] #bottom-right {
+    bottom: 208px;
+  }
+  body[data-fps-input='touch'] #compass-wrap {
+    display: none;
+  }
+}
+@media (max-width: 540px) {
+  .fps-stick {
+    width: 88px;
+    height: 88px;
+  }
+  .fps-move {
+    left: max(12px, env(safe-area-inset-left));
+  }
+  .fps-look {
+    right: max(132px, calc(env(safe-area-inset-right) + 116px));
+  }
+  .fps-left-actions {
+    left: max(12px, env(safe-area-inset-left));
+    bottom: 124px;
+    flex-direction: column;
+  }
+}
