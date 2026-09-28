@@ -253,23 +253,32 @@ export async function startCatalogDemo(options = {}) {
           ),
       );
     }
-    if (req.url === '/multiplayer.js' && options.multiplayerEndpoint) {
+    if (
+      req.url === '/multiplayer.js' &&
+      (options.multiplayerEndpoint || options.multiplayerEndpoints)
+    ) {
       res.setHeader('Content-Type', 'text/javascript');
       return res.end(read('dist/multiplayer/browser.js'));
     }
     if (req.url === '/bootstrap.js') {
       res.setHeader('Content-Type', 'text/javascript');
       return res.end(
-        (options.multiplayerEndpoint
-          ? "import {createKartMultiplayerFactory} from '/multiplayer.js';"
-          : '') +
+        (options.multiplayerEndpoints
+          ? "import {createCatalogMultiplayerFactory,catalogInputMapping} from '/multiplayer.js';"
+          : options.multiplayerEndpoint
+            ? "import {createKartMultiplayerFactory} from '/multiplayer.js';"
+            : '') +
           "import {mountCatalog} from '/app.js';import {createBrowserInputProvider} from '/input/browser.js';window.catalogPreview=mountCatalog({mode:'demo',inputProviderFactory:createBrowserInputProvider,controllerModelUrl:" +
           JSON.stringify(controllerModelPath ? '/local-controller.glb' : null) +
-          (options.multiplayerEndpoint
-            ? ',multiplayerServiceFactory:createKartMultiplayerFactory({endpoint:' +
-              JSON.stringify(options.multiplayerEndpoint) +
+          (options.multiplayerEndpoints
+            ? ',inputMappingFactory:catalogInputMapping,multiplayerServiceFactory:createCatalogMultiplayerFactory({endpoints:' +
+              JSON.stringify(options.multiplayerEndpoints) +
               '})'
-            : '') +
+            : options.multiplayerEndpoint
+              ? ',multiplayerServiceFactory:createKartMultiplayerFactory({endpoint:' +
+                JSON.stringify(options.multiplayerEndpoint) +
+                '})'
+              : '') +
           '});',
       );
     }

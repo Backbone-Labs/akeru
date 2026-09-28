@@ -144,7 +144,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
   kart-multiplayer:
-    name: Kart multiplayer and worker routing
+    name: Kart and Blackline multiplayer
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
@@ -158,6 +158,7 @@ jobs:
           --health-retries 10
     env:
       KART_TEST_REDIS_URL: redis://127.0.0.1:6379
+      BLACKLINE_TEST_REDIS_URL: redis://127.0.0.1:6379/1
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -170,6 +171,8 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:kart-multiplayer
+      - run: npm run test:blackline-multiplayer
+      - run: npx playwright test --config playwright.blackline-webkit.config.mjs
       - run: npx playwright test --config playwright.kart-webkit.config.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure()
