@@ -142,6 +142,46 @@ test('two browser guests join by invite, ready, race and recover a connection', 
       )
       .toBeGreaterThan(2);
     await setGamepadButton(a, 0, 0);
+    // Irregular delivery must not turn 20Hz snapshots into stop/start motion.
+    await a.bringToFront();
+    await ga.evaluate(() => {
+      const bridge = window.akeruKart,
+        receive = bridge.receiveMultiplayer,
+        frame = bridge.networkFrame;
+      let count = 0,
+        previous = null;
+      window.__kartMotion = [];
+      bridge.receiveMultiplayer = (event) =>
+        setTimeout(() => receive(event), [70, 140, 85, 120][count++ % 4]);
+      bridge.networkFrame = (dt) => {
+        frame(dt);
+        const k = window.__game.player,
+          p = k.position;
+        if (previous && dt > 0 && dt < 0.06)
+          window.__kartMotion.push({
+            delta:
+              (p.x - previous.x) * Math.sin(k.yaw) +
+              (p.z - previous.z) * Math.cos(k.yaw),
+            speed: k.speed,
+          });
+        previous = { x: p.x, z: p.z };
+      };
+      window.__restoreKartNetwork = () => {
+        bridge.receiveMultiplayer = receive;
+        bridge.networkFrame = frame;
+      };
+    });
+    await setGamepadButton(a, 0, 1);
+    await expect
+      .poll(() => ga.evaluate(() => window.__kartMotion.length), {
+        timeout: 10000,
+      })
+      .toBeGreaterThan(100);
+    const movement = await ga.evaluate(() => window.__kartMotion.slice(20));
+    expect(movement.filter((f) => f.delta < -0.045).length).toBe(0);
+    expect(movement.reduce((sum, f) => sum + f.delta, 0)).toBeGreaterThan(2);
+    await setGamepadButton(a, 0, 0);
+    await ga.evaluate(() => window.__restoreKartNetwork());
     // Keyboard directions must drive, never open the lobby or stay focused in its invite field.
     await expect(fa.locator('#scene')).toBeFocused();
     await a.keyboard.down('ArrowUp');

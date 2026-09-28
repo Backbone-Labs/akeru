@@ -1,3 +1,4 @@
+import { headlessKart } from './physics-source.mjs';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve, relative, posix } from 'node:path';
 import { beginBuild, replaceRequired, root } from '../arcade-preview/build.mjs';
@@ -131,6 +132,8 @@ for (const entry of b.inventory.files.filter((f) =>
       return `${prefix}'./${name}'`;
     },
   );
+  if (entry.path === 'src/kart/kart.js')
+    b.put('prediction-kart.js', headlessKart(code));
   b.put(flat(entry.path), code);
 }
 b.put('game.css', b.read('src/ui/style.css'));

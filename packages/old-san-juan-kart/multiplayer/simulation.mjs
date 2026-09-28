@@ -2,6 +2,7 @@ import { Track } from '../../../dist/kart-server/track.js';
 import { Kart } from '../../../dist/kart-server/kart.js';
 import { Race } from '../../../dist/kart-server/race.js';
 import { CHARACTERS } from '../../../dist/kart-server/characters.js';
+import { capturePhysics } from '../src/network-state.js';
 import { neutral } from './protocol.js';
 export const STEP = 1 / 60;
 // Shared immutable sample table; no canvas, scene construction or WebGL on workers.
@@ -15,6 +16,7 @@ export class KartSimulation {
       k.gates = 0;
       k.dnf = false;
       k.lastDrift = false;
+      k.teleport = 0;
       return k;
     });
     this.race = new Race(track, this.karts, { laps: 3 });
@@ -60,7 +62,10 @@ export class KartSimulation {
         k.nextGate = (k.nextGate + 1) % 32;
       }
       k.progressTotal = k.lap + (k.gates === 0 ? -1 : k.progress);
-      if (k.stuck || k.position.y < -30) this.race.respawn(k);
+      if (k.stuck || k.position.y < -30) {
+        this.race.respawn(k);
+        k.teleport++;
+      }
     }
     if (this.time >= this.finishDeadline) {
       for (const k of this.karts)
@@ -79,6 +84,12 @@ export class KartSimulation {
       k.dnf = true;
     }
   }
+  prediction(id) {
+    const kart = this.karts.find((k) => k.id === id);
+    return kart
+      ? { physics: capturePhysics(kart), teleport: kart.teleport }
+      : null;
+  }
   snapshot() {
     const ranked = [...this.karts].sort(
       (a, b) =>
@@ -90,6 +101,11 @@ export class KartSimulation {
     );
     return this.karts.map((k) => ({
       id: k.id,
+      teleport: k.teleport,
+      vx: k.velocity.x,
+      vy: k.vy,
+      vz: k.velocity.z,
+      suspension: [...k.suspension],
       x: k.position.x,
       y: k.position.y,
       z: k.position.z,

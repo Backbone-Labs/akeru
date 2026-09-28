@@ -1,3 +1,4 @@
+import { Kart as PredictionKart } from '../prediction-kart.js';
 // Prepare models in the lobby so the countdown does not pay their construction cost.
 const onlineModels = new Map();
 globalThis.akeruKart.setupOnline = (players, ownId, prepare = false) => {
@@ -18,6 +19,9 @@ globalThis.akeruKart.setupOnline = (players, ownId, prepare = false) => {
   });
   game.player = game.karts.find(k => k.networkId === ownId);
   if (prepare) return;
+  globalThis.akeruKart.predictionActor = new PredictionKart(null, game.player.character);
+  globalThis.akeruKart.predictionTrack = Object.create(track);
+  globalThis.akeruKart.predictionTrack.clearance = null;
   game.race = new Race(track, game.karts, { laps: 3 });
   game.state = 'race';
   rig._init = false;

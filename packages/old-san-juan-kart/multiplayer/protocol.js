@@ -2,8 +2,8 @@ import {
   exact,
   validRequest as roomRequest,
 } from '../../multiplayer/src/protocol.js';
-export const KART_BUILD = 'kart-f8468fec-v1';
-export const ROOM_NAME = 'old-san-juan-kart-v1';
+export const KART_BUILD = 'kart-f8468fec-v2';
+export const ROOM_NAME = 'old-san-juan-kart-v2';
 export const neutral = () => ({
   throttle: 0,
   brake: 0,
