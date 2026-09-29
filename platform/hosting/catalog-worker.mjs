@@ -15,7 +15,7 @@ export function catalogHeaders(titleOrigins = []) {
   )
     throw new Error('Expected exact HTTPS title origins');
   return {
-    'Content-Security-Policy': `default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; font-src 'self'; frame-src ${titleOrigins.length ? [...new Set(titleOrigins)].join(' ') : "'none'"}; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
+    'Content-Security-Policy': `default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' https://backbone.com; font-src 'self'; frame-src ${titleOrigins.length ? [...new Set(titleOrigins)].join(' ') : "'none'"}; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
     'Permissions-Policy':
       'camera=(), microphone=(), geolocation=(), payment=(), usb=(), gamepad=(self)',
     'X-Content-Type-Options': 'nosniff',
@@ -46,7 +46,11 @@ export function createCatalogWorker(release) {
       file.path.includes('..') ||
       files.has(`/${file.path}`) ||
       (!types.has(file.type) &&
-        !(file.path === 'favicon.svg' && file.type === 'image/svg+xml')) ||
+        !(file.path === 'favicon.svg' && file.type === 'image/svg+xml') &&
+        !(file.path === 'manrope.ttf' && file.type === 'font/ttf') &&
+        !(
+          ['backbone-pro.png'].includes(file.path) && file.type === 'image/png'
+        )) ||
       !Number.isSafeInteger(file.size) ||
       file.size < 0 ||
       !/^[a-f0-9]{64}$/.test(file.sha256)
@@ -85,7 +89,9 @@ export function createCatalogWorker(release) {
           'application/json; charset=utf-8',
         );
       const match = /^\/g\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/.exec(url.pathname);
-      const route = url.pathname === '/' || (match && match[1].length <= 64);
+      const route =
+        ['/', '/games', '/settings'].includes(url.pathname) ||
+        (match && match[1].length <= 64);
       const path = route ? '/index.html' : url.pathname;
       const file = files.get(path);
       if (!file) return respond(404, 'Not found');

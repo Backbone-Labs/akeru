@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>astray</title>
+    <link rel="stylesheet" href="common.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="stage"></div>
+    <header>
+      <div>
+        <strong>Astray</strong>
+        <div id="status">Loading game…</div>
+      </div>
+      <div id="hud"><span id="level"></span></div>
+    </header>
+    <div id="overlay"></div>
+    <div class="controls">
+      <div>
+        <button data-hold="left" aria-label="Steer left">◀</button
+        ><button data-hold="right" aria-label="Steer right">▶</button>
+      </div>
+      <div>
+        <button data-action="restart">Restart</button
+        ><button data-hold="up">↑</button><button data-hold="down">↓</button>
+      </div>
+    </div>
+    <div id="save-status" role="status"></div>
+    <script src="engine.js"></script>
+    <script type="module" src="title.js"></script>
+  </body>
+</html>

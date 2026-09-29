@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{TITLE}}</title>
+    <link rel="stylesheet" href="style.css" />
+    <script id="title-config" type="application/json">
+      {{CONFIG}}
+    </script>
+    <script id="environment" type="application/json">
+      { "PUZZLES_SHOW_CURSOR": true, "PUZZLES_ALLOW_CUSTOM": false }
+    </script>
+    <script defer src="engine.js"></script>
+    <script type="module" src="title.js"></script>
+  </head>
+  <body>
+    <header>
+      <div>
+        <small>SIMON TATHAM’S PUZZLES</small>
+        <h1>{{TITLE}}</h1>
+      </div>
+      <button id="help-toggle" type="button">How to play</button>
+    </header>
+    <p class="objective">{{DESCRIPTION}}</p>
+    <main id="puzzle">
+      <form id="gamemenu">
+        <ul id="gametype" hidden></ul>
+        <button type="button" id="solve" hidden>Solve</button
+        ><button type="button" id="new">New puzzle</button
+        ><button type="button" id="restart">Restart</button
+        ><button type="button" id="undo">Undo</button
+        ><button type="button" id="redo">Redo</button>
+      </form>
+      <div id="puzzlecanvascontain">
+        <canvas
+          id="puzzlecanvas"
+          tabindex="0"
+          aria-label="{{TITLE}} puzzle board"
+        ></canvas>
+      </div>
+      <div id="statusbar" aria-live="polite"></div>
+    </main>
+    <nav class="controls" aria-label="Puzzle controls">
+      <button data-key="ArrowLeft">←</button>
+      <div>
+        <button data-key="ArrowUp">↑</button
+        ><button data-key="ArrowDown">↓</button>
+      </div>
+      <button data-key="ArrowRight">→</button
+      ><button data-action="confirm">Select</button
+      ><button data-action="secondary">Alternate</button
+      ><button id="digit" hidden>Digit: 1</button
+      ><button id="touch-mode">Touch: select</button>
+    </nav>
+    <nav id="diagonals" class="controls" hidden aria-label="Diagonal movement">
+      <button data-key="Home">↖</button><button data-key="PageUp">↗</button
+      ><button data-key="End">↙</button><button data-key="PageDown">↘</button>
+    </nav>
+    <p class="hint">
+      Arrows / stick: move · A: select · B: alternate · Right stick ←/→: change
+      digit · Right stick ↑: undo, ↓: redo
+    </p>
+    <p id="save-status" aria-live="polite">Connecting to guest save service…</p>
+    <dialog id="help">
+      <h2>{{TITLE}}</h2>
+      {{INSTRUCTIONS}}
+      <p>
+        Use touch directly on the board; “Touch: alternate” performs a right
+        click. The on-screen arrows and buttons also work on touch. Number
+        puzzles use the digit button or right stick to choose a digit, A to
+        enter it, B to clear it. Undo with the right stick up.
+      </p>
+      <button id="help-close">Back to puzzle</button>
+      <p><a href="UPSTREAM-LICENSE.txt">Upstream MIT licence and credits</a></p>
+    </dialog>
+    <div id="apology">Loading puzzle engine…</div>
+  </body>
+</html>

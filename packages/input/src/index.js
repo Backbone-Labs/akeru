@@ -182,6 +182,7 @@ export function createBrowserInputProvider(options = {}) {
   const emitNavigation = (event) =>
     navigation.emit(Object.freeze({ ...event }));
   const resetInput = () => {
+    ui?.resetTouch?.();
     if (focused) release(activeProvider, true);
     activeProvider = null;
     lastSnapshotSignature = '';
@@ -210,14 +211,38 @@ export function createBrowserInputProvider(options = {}) {
       buttons: Object.fromEntries(GAMEPAD_BUTTONS.map((name) => [name, 0])),
       axes: {},
     };
-    for (const name of touchPointers.values()) raw.buttons[name] = 1;
+    for (const value of touchPointers.values()) {
+      if (typeof value === 'string') raw.buttons[value] = 1;
+      else {
+        for (const [name, pressed] of Object.entries(value.buttons))
+          raw.buttons[name] = Math.max(raw.buttons[name] || 0, pressed);
+        Object.assign(raw.axes, value.axes);
+      }
+    }
     emitSnapshot(
       'touch',
       true,
       normalizeRawControls(
         raw,
-        preferences.mappings.touch,
-        preferences.deadzone,
+        {
+          buttons: {
+            west: 'west',
+            north: 'north',
+            leftShoulder: 'leftShoulder',
+            rightShoulder: 'rightShoulder',
+            leftTrigger: 'leftTrigger',
+            rightTrigger: 'rightTrigger',
+            select: 'view',
+            ...preferences.mappings.touch.buttons,
+          },
+          axes: {
+            leftX: 'moveX',
+            leftY: 'moveY',
+            rightX: 'lookX',
+            rightY: 'lookY',
+          },
+        },
+        0,
       ),
       true,
     );
@@ -265,7 +290,7 @@ export function createBrowserInputProvider(options = {}) {
       ui?.update(preferences, connectedControllers);
     }
   };
-  const gamepadNavigation = (controls, at) => {
+  const gamepadNavigation = (controls, at, raw) => {
     const pressed = {
       up: (controls.buttons.up ?? 0) > 0.5 || (controls.axes.moveY ?? 0) < -0.6,
       down:
@@ -277,6 +302,10 @@ export function createBrowserInputProvider(options = {}) {
       activate: (controls.buttons.confirm ?? 0) > 0.5,
       back: (controls.buttons.cancel ?? 0) > 0.5,
       menu: (controls.buttons.menu ?? 0) > 0.5,
+      previousTab: (raw.buttons.leftTrigger ?? 0) > 0.55,
+      nextTab: (raw.buttons.rightTrigger ?? 0) > 0.55,
+      details: (raw.buttons.west ?? 0) > 0.5,
+      search: (raw.buttons.north ?? 0) > 0.5,
     };
     for (const [action, down] of Object.entries(pressed)) {
       const held = navHeld.get(action);
@@ -307,6 +336,7 @@ export function createBrowserInputProvider(options = {}) {
     updateControllerList(pads);
     const selected = chooseGamepad(pads);
     if (!selected) {
+      ui?.updateInput?.(null);
       if (activeGamepad !== null) {
         if (activeProvider === 'gamepad') release('gamepad', false);
         activeGamepad = null;
@@ -315,6 +345,7 @@ export function createBrowserInputProvider(options = {}) {
       }
     } else {
       const raw = readStandardGamepad(selected);
+      ui?.updateInput?.(focused ? raw : null, selected.id);
       if (selected.index !== activeGamepad) {
         if (activeProvider === 'gamepad') release('gamepad', false);
         activeGamepad = selected.index;
@@ -347,7 +378,7 @@ export function createBrowserInputProvider(options = {}) {
           if (ui) {
             if (activeProvider === 'gamepad' || !gamepadNeutral(raw))
               emitSnapshot('gamepad', true, controls);
-          } else gamepadNavigation(controls, time());
+          } else gamepadNavigation(controls, time(), raw);
         }
       }
     }
@@ -408,9 +439,19 @@ export function createBrowserInputProvider(options = {}) {
     start() {
       if (disposed) throw new Error('Input provider disposed');
       if (started) return;
+      ui?.resetTouch?.();
       started = true;
       add(window, 'keydown', keydown);
-      add(window, 'blur', () => setFocused(false));
+      add(window, 'blur', (event) => {
+        // Entering an embedded runtime blurs its parent window, but the
+        // document still owns focus. A real tab/window exit does not.
+        const insideFrame =
+          event.isTrusted &&
+          document.activeElement?.tagName === 'IFRAME' &&
+          document.hasFocus?.() &&
+          document.visibilityState !== 'hidden';
+        setFocused(Boolean(insideFrame));
+      });
       add(window, 'focus', () =>
         setFocused(document.visibilityState !== 'hidden'),
       );

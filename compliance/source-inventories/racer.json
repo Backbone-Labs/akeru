@@ -1,0 +1,402 @@
+{
+  "schemaVersion": 1,
+  "upstreamUrl": "https://github.com/jakesgordon/javascript-racer",
+  "revision": "3e8a060b5900755db27f899612a74a77427c853e",
+  "scope": "source-tree",
+  "rightsStatus": "unreviewed",
+  "limitation": "Per-file source identity only; no publication or asset-rights approval.",
+  "files": [
+    {
+      "path": "LICENSE",
+      "gitObjectId": "efec39d9c5072bbe2b0172f275bc0a3430475ba4",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "b765bff5ddb2488c72b58cc26dca8d6473aa03cf",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "Rakefile",
+      "gitObjectId": "c02a1df290d39dce4457f22c7144a4bca1f4c439",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "common.css",
+      "gitObjectId": "5bb2d2b7cc9d741551e29bc3460621ad20d8cebb",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "common.js",
+      "gitObjectId": "a0eb697f4d6afaa8e0525ad72a1e4cc2127d9bfb",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/background.js",
+      "gitObjectId": "cae8fa633352cd5f3eb3164152d7c79c980066f3",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/background.png",
+      "gitObjectId": "6590b026161d9569c8bae34b5da24f0c86fdcafa",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/background/background.svg",
+      "gitObjectId": "0bbcd8d6baed608d8bde4319e1ed52115f27dd0c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/background/hills.png",
+      "gitObjectId": "f1d2be5341bf38e7c965e1b21897e1c6f45dfdcd",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/background/sky.png",
+      "gitObjectId": "26c332df1cffef5ee691fc73bdfd1ee6b597fe69",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/background/trees.png",
+      "gitObjectId": "57fb422e939677624997b231c0c524ce511aabdc",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/mute.png",
+      "gitObjectId": "5ee7f9125b0b1389eae8e03cf8c31d2c9dea7f0c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites.js",
+      "gitObjectId": "2cd9324fafffc788745185a874c4bc8176a81e9e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites.png",
+      "gitObjectId": "0b302ae69ead573eece9704ed1924fe917180b4f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/billboard01.png",
+      "gitObjectId": "9c100cd41ba56111d27a359b6f9b70d1b8d7b086",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/billboard02.png",
+      "gitObjectId": "1db594e2c81ae4ba6f9e54e8231cd555301747f3",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/billboard03.png",
+      "gitObjectId": "9a43480ab2513e55e464518c1fc9d82450ea639c",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/billboard04.png",
+      "gitObjectId": "abfd4b14aea0a33acb1c83b87ad158625501a4b2",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/billboard05.png",
+      "gitObjectId": "c470e0d0954a364407f9398416d4e15e54a0ff6e",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/billboard06.png",
+      "gitObjectId": "0ba9efb4de787d06784b57ddef61608c3943ca1e",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/billboard07.png",
+      "gitObjectId": "646c95b06e177156166cdc56339f0c8cfe128853",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/billboard08.png",
+      "gitObjectId": "50f59eb09cb08901018ce8df3fbe619659cacdde",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/billboard09.png",
+      "gitObjectId": "976f6e5cbc5f75bfc9f3992d77f388ccd19389ce",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/boulder1.png",
+      "gitObjectId": "fe98901cc592a4b5e96dd3105d5de519da09f775",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/boulder2.png",
+      "gitObjectId": "67b62f6bf59040a8ad71c4a9f5ca3a99262e71cc",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/boulder3.png",
+      "gitObjectId": "637d69a6bd1c78ba6f16e831957653a443b680ae",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/bush1.png",
+      "gitObjectId": "b22d74da8446b276837997e438f9a7cbe3384c6e",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/bush2.png",
+      "gitObjectId": "61d4b3c1dbad76dc62fe041d136737db028707f9",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/cactus.png",
+      "gitObjectId": "a52df7e9ed391f9780713237e23ba5ea4ef422e1",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/car01.png",
+      "gitObjectId": "8efdb849b3c9ffb1a9fcd0819f6cab9d3bb0a4c0",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/car02.png",
+      "gitObjectId": "54ab5a160bc0e6adeb102dc6256add2cccffb9d4",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/car03.png",
+      "gitObjectId": "dbc629ed8691fb596015a8cb7d3511e9fa43d46d",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/car04.png",
+      "gitObjectId": "611b7ab3efb5f149ceb9ae966cc350ebd005b611",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/column.png",
+      "gitObjectId": "6b1e058638ed8ed135094e115476d19e035cef10",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/dead_tree1.png",
+      "gitObjectId": "399c9f6ac659837da56f3a9a5818e9e9dd20332f",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/dead_tree2.png",
+      "gitObjectId": "ad7e52e8a287f2f639dcfd20516246a63f5d332a",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/palm_tree.png",
+      "gitObjectId": "8044b5ce9fb5de5da595766f9fc578571f3cd3ea",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/player_left.png",
+      "gitObjectId": "457d943a27bfad7089d1826c99d30bcd32f7084e",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/player_right.png",
+      "gitObjectId": "ca26b0aa0bced2b2e7a6899c76cb9b03e8d2f0fa",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/player_straight.png",
+      "gitObjectId": "ef1c8cd27bfb8e12d33505251c5695f37b0a5c48",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/player_uphill_left.png",
+      "gitObjectId": "8aaa6cf79fe0a84c8798d297ec4f038462d6f306",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/player_uphill_right.png",
+      "gitObjectId": "3e3dfdb94b1b65ad14537baeb30495f368080cd1",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/player_uphill_straight.png",
+      "gitObjectId": "634d7a073b733c821aadfb5d8a132b6501cb6a28",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/semi.png",
+      "gitObjectId": "f679c1bb94e3d0404a83bc33f173e466c05c1f0a",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/stump.png",
+      "gitObjectId": "6319df26b257e634554d04577b9c27593e3a3d87",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/tree1.png",
+      "gitObjectId": "954409409247f050982666ec0c29249bb5ad0344",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/tree2.png",
+      "gitObjectId": "d3c8a12011d68df36a3cfffc7053c09dfd04344f",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "images/sprites/truck.png",
+      "gitObjectId": "d72b52033d38a3258c6fe19d2c81426f628253b1",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "index.html",
+      "gitObjectId": "e61ae58f020c67985ff47ea5296539a605d602bb",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "music/racer.mp3",
+      "gitObjectId": "15a5c83e3eb40be4eb02e4744fad6f154514a77e",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "music/racer.ogg",
+      "gitObjectId": "d85ddfeb94699107596d6599e38ab7e09735f65d",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "stats.js",
+      "gitObjectId": "e9fa9c6cab342a3633cf2d507731965bf24731b6",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "v1.straight.html",
+      "gitObjectId": "112a7b09355d50d8ab6137edfbb57495bd849558",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "v2.curves.html",
+      "gitObjectId": "0ef0915307f08f0c8c61e751114f5ba5eabb65ed",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "v3.hills.html",
+      "gitObjectId": "188103571ddfa39ff2f32d93be1a9e2c831ef0c5",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "v4.final.html",
+      "gitObjectId": "81d69357fd1715debe200ac4f0aaadea3332fdba",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    }
+  ]
+}

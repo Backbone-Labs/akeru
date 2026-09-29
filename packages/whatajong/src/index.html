@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Whatajong — opening board</title
+  ><link rel="stylesheet" href="style.css" />
+  <main>
+    <header>
+      <div>
+        <p class="eyebrow">A MOMENT OF CLARITY</p>
+        <h1>Whatajong</h1>
+      </div>
+      <div class="score"><strong id="score">0</strong><span>POINTS</span></div>
+    </header>
+    <section class="table">
+      <div class="board-wrap">
+        <div id="board" aria-label="Mahjong tiles"></div>
+      </div>
+      <div class="table-note">
+        <span id="remaining">54 tiles</span><span id="pairs"></span>
+      </div>
+    </section>
+    <p id="status" role="status">
+      Match two free tiles of the same suit and number.
+    </p>
+    <nav aria-label="Game controls">
+      <button data-action="hint">Hint <kbd>B</kbd></button
+      ><button data-action="confirm">Select <kbd>A / Enter</kbd></button
+      ><button data-action="restart">New board <kbd>R</kbd></button>
+    </nav>
+    <p class="instructions">
+      Tap matching tiles · Arrows / D-pad to move · A to select
+    </p>
+    <footer>Original Whatajong opening board · Akeru visual adaptation</footer>
+    <small id="save-status" role="status"></small>
+  </main>
+  <script type="module" src="title.js"></script>
+</html>

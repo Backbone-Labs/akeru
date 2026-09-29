@@ -1,10 +1,28 @@
+import {
+  createConsoleSound,
+  directionalTarget,
+  wrapConsolePage,
+  openConsoleKeyboard,
+  icon,
+  cover,
+  runtimeMarkup,
+  runtimeTool,
+  setRuntimeTool,
+  sessionClock,
+} from './console-ui.js';
+import { createRumble } from './rumble.js';
+import {
+  renderGameHome,
+  readRecent,
+  recordPlayed,
+  readLibrary,
+} from './home.js';
+import { mountOnboarding, needsOnboarding } from './onboarding.js';
 import { createSaveStore } from '/saves/index.js';
 import {
-  CATEGORIES,
   validateCatalog,
   routeFor,
   titleUrl,
-  filterEntries,
   createShellTelemetry,
 } from './model.js';
 import { createRuntimeChannel } from './channel.js';
@@ -15,13 +33,53 @@ const node = (tag, className, text) => {
   if (text !== undefined) e.textContent = text;
   return e;
 };
-const cap = (s) => s[0].toUpperCase() + s.slice(1);
-function link(label, url) {
-  const e = node('a', '', label);
-  e.href = url;
-  e.target = '_blank';
-  e.rel = 'noopener noreferrer';
-  return e;
+// Cancel superseded transitions so rapid controller input cannot hide a reopened panel.
+const panelAnimations = new WeakMap();
+function animatePanel(
+  element,
+  open,
+  finish = () => {},
+  resize = false,
+  fromHeight,
+) {
+  panelAnimations.get(element)?.cancel();
+  element.inert = !open;
+  if (open) element.hidden = false;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const height = element.getBoundingClientRect().height;
+  const frames = resize
+    ? [
+        {
+          height: `${open ? (fromHeight ?? 0) : height}px`,
+          opacity: open ? 0 : 1,
+        },
+        { height: `${open ? height : 0}px`, opacity: open ? 1 : 0 },
+      ]
+    : [
+        {
+          clipPath: open
+            ? 'inset(0 0 calc(100% - 44px) calc(100% - 44px) round 22px)'
+            : 'inset(0 0 0 0 round 22px)',
+        },
+        {
+          clipPath: open
+            ? 'inset(0 0 0 0 round 22px)'
+            : 'inset(0 0 calc(100% - 44px) calc(100% - 44px) round 22px)',
+        },
+      ];
+  const animation = element.animate(frames, {
+    duration: reduced ? 0 : resize ? 300 : open ? 460 : 360,
+    easing: 'cubic-bezier(.22,.68,.18,1)',
+  });
+  panelAnimations.set(element, animation);
+  void animation.finished
+    .then(() => {
+      if (panelAnimations.get(element) !== animation) return;
+      panelAnimations.delete(element);
+      if (!open) element.hidden = true;
+      finish();
+    })
+    .catch(() => {});
 }
 function list(items) {
   const ul = node('ul');
@@ -68,8 +126,12 @@ async function fetchRegistry() {
 /** Services are trusted shell integrations, never package-defined capabilities. */
 export function mountCatalog({
   mode = 'production',
+  onboarding = true,
+  controllerModelUrl = null,
   inputProviderFactory,
   telemetrySink,
+  acquisitionSink: _acquisitionSink,
+  acquisitionConsent: _acquisitionConsent = () => false,
   loadCatalog = fetchRegistry,
   saveStore = createSaveStore(),
 } = {}) {
@@ -79,8 +141,94 @@ export function mountCatalog({
     active = null,
     input = null,
     navInput = null,
+    controllerMonitor = null,
     disposed = false,
     loadVersion = 0;
+  let onboardingUi = null;
+  let disposeHome = null;
+  // The mounted console hub. Game details open over it at the same /g/:id URL.
+  let hub = null;
+  let sheetFromHub = false;
+  let renderedView = null;
+  let consoleView = 'play';
+  const disposeView = () => {
+    disposeHome?.();
+    disposeHome = null;
+    hub = null;
+  };
+  const uiSound = createConsoleSound(browserStorage());
+  const unlockSound = () => {
+    document.body.dataset.input = 'pointer';
+    uiSound.unlock();
+  };
+  const clickSound = (event) => {
+    if (
+      document.body.classList.contains('console-home-active') &&
+      event.target.closest('button,a,summary')
+    )
+      uiSound.play('activate');
+  };
+  document.addEventListener('pointerdown', unlockSound);
+  document.addEventListener('keydown', uiSound.unlock);
+  document.addEventListener('click', clickSound);
+  function switchConsoleTab(view) {
+    consoleView = view;
+    navigate('/games');
+  }
+  const consolePageOptions = (entry) => ({
+    preview: mode === 'demo',
+    sound: uiSound,
+    entry,
+    profile: () => {
+      const storage = browserStorage();
+      const known = (row) =>
+        catalog?.entries.some((e) => e.manifest.id === row.id);
+      return {
+        library: readLibrary(storage).filter(known).length,
+        played: readRecent(storage).filter(known).length,
+        games: catalog?.entries.length ?? 0,
+      };
+    },
+    onTab: switchConsoleTab,
+    onSearch: () => {
+      switchConsoleTab('discover');
+      const search = main.querySelector('input[type=search]');
+      search?.focus();
+      if (search && document.body.dataset.input === 'controller')
+        openConsoleKeyboard(search);
+    },
+  });
+  const isPlayer = () => location.pathname.startsWith('/play/');
+  document.body.classList.toggle('direct-player', isPlayer());
+  const setTheme = (theme) => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem('akeru.theme', theme);
+    } catch {
+      /* Theme works without storage. */
+    }
+  };
+  let savedTheme;
+  try {
+    savedTheme = localStorage.getItem('akeru.theme');
+  } catch {
+    /* Use the default console appearance. */
+  }
+  // The console hub defaults to light; the embedded app player keeps its dark default.
+  document.documentElement.dataset.theme = ['light', 'dark'].includes(
+    savedTheme,
+  )
+    ? savedTheme
+    : isPlayer()
+      ? 'dark'
+      : 'light';
+  const onThemeClick = (event) => {
+    if (event.target.closest('[data-theme-toggle]'))
+      setTheme(
+        document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark',
+      );
+  };
+  document.addEventListener('click', onThemeClick);
   let filters = { category: 'all', controller: false, query: '' };
   let controlsTimer = null;
   function stopControlsMonitor() {
@@ -91,9 +239,37 @@ export function mountCatalog({
   const onMessage = (e) => active?.channel?.receive(e);
   window.addEventListener('message', onMessage);
   const onVisibility = () => {
+    if (document.hidden) active?.rumble?.stop();
     if (document.hidden && active?.channel?.state === 'playable') pause();
   };
   document.addEventListener('visibilitychange', onVisibility);
+  const onFullscreen = () => {
+    const button = $('#runtime-fullscreen');
+    if (button?.classList.contains('runtime-tool')) syncConsoleFullscreen();
+    else if (button)
+      button.textContent = document.fullscreenElement
+        ? 'Exit fullscreen'
+        : 'Fullscreen';
+  };
+  function syncConsoleFullscreen(unavailable = false) {
+    const button = $('#runtime-fullscreen');
+    if (!button) return;
+    const on = Boolean(
+      document.fullscreenElement || document.querySelector('.expanded-player'),
+    );
+    setRuntimeTool(
+      button,
+      on ? 'shrink' : 'expand',
+      unavailable
+        ? 'Fullscreen unavailable'
+        : on
+          ? 'Exit fullscreen'
+          : 'Fullscreen',
+    );
+    const row = document.querySelector('[data-guide-fullscreen] em');
+    if (row) row.textContent = on ? 'On' : 'Off';
+  }
+  document.addEventListener('fullscreenchange', onFullscreen);
   function telemetry(event) {
     try {
       emit(event);
@@ -101,12 +277,99 @@ export function mountCatalog({
       /* An unavailable metrics sink must not block play. */
     }
   }
+  let nativeMenu = false;
+  let nativeSequence = 0;
+  globalThis.akeruNative = Object.freeze({
+    async command(action, payload = {}, version = 1) {
+      const reply = (message) =>
+        version === 2 ? { ok: true, message, state: {} } : message;
+      if (!nativeMenu || !active) throw new Error('Native menu unavailable');
+      if (action === 'pause') {
+        input?.stop();
+        active.channel.pause();
+        return reply('Paused');
+      }
+      if (action === 'resume') {
+        active.channel.resume();
+        input?.start();
+        return reply('Playing');
+      }
+      if (action === 'input') {
+        const bits = Number(payload.buttons) || 0;
+        const down = (bit) => (bits & bit ? 1 : 0);
+        const axis = (value) =>
+          Math.max(-1, Math.min(1, (Number(value) || 0) / 32767));
+        active.channel.sendInput({
+          sequence: ++nativeSequence,
+          timeMs: performance.now(),
+          provider: 'touch',
+          connected: true,
+          buttons: {
+            confirm: down(1),
+            cancel: down(2),
+            west: down(4),
+            north: down(8),
+            up: down(16),
+            down: down(32),
+            left: down(64),
+            right: down(128),
+            menu: down(256),
+            view: down(512),
+            leftShoulder: down(4096),
+            rightShoulder: down(8192),
+            rightTrigger: (Number(payload.rightTrigger) || 0) / 255,
+          },
+          axes: {
+            moveX: axis(payload.leftX),
+            moveY: -axis(payload.leftY),
+            lookX: axis(payload.rightX),
+            lookY: -axis(payload.rightY),
+          },
+        });
+        return reply('Input');
+      }
+      if (
+        ![
+          'save',
+          'restore',
+          'audio',
+          'save-status',
+          'restart',
+          'audio-status',
+        ].includes(action)
+      )
+        throw new Error('Unknown action');
+      const result = await active.channel.requestAction(action);
+      return version === 2
+        ? { ...result, state: result.state ?? {} }
+        : result.message;
+    },
+  });
+  async function attachNativeMenu(session) {
+    if (!isPlayer() || !globalThis.webkit?.messageHandlers?.akeruPlayer) return;
+    try {
+      const accepted =
+        await globalThis.webkit.messageHandlers.akeruPlayer.postMessage({
+          action: 'menu',
+        });
+      if (accepted !== true || active !== session) return;
+      nativeMenu = true;
+      if ($('#player-menu')) $('#player-menu').hidden = true;
+      $('#touch-controls').hidden = true;
+    } catch {
+      /* Older app versions keep the web menu. */
+    }
+  }
   function clearSession() {
+    nativeMenu = false;
+    clearInterval(controllerMonitor);
+    controllerMonitor = null;
     stopControlsMonitor();
     loadVersion++;
     navInput?.dispose();
     navInput = null;
     if (active) {
+      active.rumble?.dispose();
       active.channel?.dispose();
       active.frame?.remove();
       telemetry({ type: 'sessionExit', titleId: active.entry.manifest.id });
@@ -116,25 +379,100 @@ export function mountCatalog({
     input = null;
   }
   function nav(event) {
+    const controlPanel = document.querySelector(
+      '.akeru-control-settings:not([hidden])',
+    );
+    if (
+      controlPanel?.querySelector('[data-capturing="true"]') ||
+      controlPanel?.getAttribute('data-capture-settling') === 'true'
+    )
+      return;
+    if (document.body.classList.contains('console-home-active')) {
+      document.body.dataset.input = 'controller';
+      if (event.type === 'move') uiSound.play();
+    }
+    if (controlPanel && ['back', 'menu'].includes(event.type)) {
+      controlPanel.querySelector('.control-close')?.click();
+      return;
+    }
     const modal = document.querySelector('dialog[open]');
     if (modal && ['back', 'menu'].includes(event.type)) {
-      modal.close();
+      if (onboardingUi) onboardingUi.back();
+      else if (modal.hasAttribute('data-console-close'))
+        modal.dispatchEvent(new CustomEvent('console-close'));
+      else modal.close();
+      return;
+    }
+    if (
+      !active &&
+      !modal &&
+      !controlPanel &&
+      document.body.classList.contains('console-home-active')
+    ) {
+      const request = new CustomEvent('console-navigation', {
+        detail: event,
+        cancelable: true,
+      });
+      main.dispatchEvent(request);
+      if (request.defaultPrevented) {
+        uiSound.play();
+        return;
+      }
+      if (event.type === 'nextTab' || event.type === 'previousTab') {
+        switchConsoleTab(event.type === 'nextTab' ? 'discover' : 'play');
+        uiSound.play();
+        return;
+      }
+      if (event.type === 'search') {
+        switchConsoleTab('discover');
+        const search = main.querySelector('input[type=search]');
+        if (search) openConsoleKeyboard(search);
+        return;
+      }
+    }
+    const playerPanel = isPlayer()
+      ? document.querySelector(
+          '.player-action-detail:not([hidden]):not([inert])',
+        )
+      : null;
+    if (event.type === 'back' && playerPanel) {
+      playerPanel.querySelector('[data-panel-back]')?.click();
       return;
     }
     if (event.type === 'back') {
-      if (active) navigate(`/g/${active.entry.manifest.id}`);
-      else if (routeFor(location.pathname).view !== 'catalog') navigate('/');
+      if (active) {
+        if (isPlayer()) pause();
+        // Console web player: B opens the guide and closes it again.
+        else if (introPending()) return;
+        else if (active.channel.state === 'paused') resume();
+        else pause();
+      } else if (
+        ['detail', 'settings'].includes(routeFor(location.pathname).view)
+      )
+        navigate('/games');
+      else if (routeFor(location.pathname).view === 'catalog') navigate('/');
       return;
     }
     if (event.type === 'menu') {
       if (active) {
+        if (introPending()) return;
         if (active.channel.state === 'paused') resume();
         else pause();
       } else $('#about-dialog').showModal();
       return;
     }
+    const guidePanel =
+      active && !isPlayer()
+        ? document.querySelector(
+            '#runtime-overlay.runtime-guide:not([hidden]) .guide-panel',
+          )
+        : null;
     const scope =
-      modal ?? (active ? document.querySelector('.runtime-wrap') : main);
+      controlPanel ??
+      playerPanel ??
+      guidePanel ??
+      modal ??
+      (active ? document.querySelector('.runtime-wrap') : main);
     if (
       event.type === 'move' &&
       document.activeElement?.tagName === 'SELECT' &&
@@ -151,17 +489,73 @@ export function mountCatalog({
       select.dispatchEvent(new Event('change', { bubbles: true }));
       return;
     }
+    if (
+      event.type === 'move' &&
+      document.activeElement?.matches('input[type=range]') &&
+      ['left', 'right'].includes(event.direction)
+    ) {
+      const range = document.activeElement;
+      const step = Number(range.step) || 1;
+      range.value = String(
+        Math.max(
+          Number(range.min),
+          Math.min(
+            Number(range.max),
+            Number(range.value) + (event.direction === 'left' ? -step : step),
+          ),
+        ),
+      );
+      range.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
+    // Console screens add readable stops and skip pointer-only helpers; the
+    // runtime and player menus keep their original focus targets.
+    const consoleScope =
+      !active && document.body.classList.contains('console-home-active');
     const targets = [
-      ...scope.querySelectorAll('a[href],button:not([disabled]),input,select'),
-    ].filter((e) => !e.closest('[hidden]') && e.getClientRects().length);
+      ...scope.querySelectorAll(
+        consoleScope
+          ? 'a[href],button:not([disabled]),input,select,summary,[data-nav-stop]'
+          : 'a[href],button:not([disabled]),input,select,summary',
+      ),
+    ].filter(
+      (e) =>
+        !e.closest('[hidden], [inert]') &&
+        (!consoleScope ||
+          (!e.closest('[aria-hidden="true"]') &&
+            !e.matches('[data-nav-skip]'))) &&
+        e.getClientRects().length,
+    );
     if (!targets.length) return;
     if (event.type === 'activate') {
       if (targets.includes(document.activeElement))
         document.activeElement.click();
-      else targets[0].focus();
+      else
+        (
+          targets.find((e) => e.matches('[data-console-primary]')) ?? targets[0]
+        ).focus();
       return;
     }
     if (event.type === 'move') {
+      if (!active && document.body.classList.contains('console-home-active')) {
+        const next = directionalTarget(
+          targets,
+          document.activeElement,
+          event.direction,
+        );
+        next?.focus({ preventScroll: true });
+        next?.scrollIntoView({
+          block:
+            next.closest('[data-nav-block]')?.dataset.navBlock === 'center'
+              ? 'center'
+              : 'nearest',
+          inline: 'nearest',
+          behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 'instant'
+            : 'smooth',
+        });
+        return;
+      }
       const i = targets.indexOf(document.activeElement),
         delta = ['left', 'up'].includes(event.direction) ? -1 : 1;
       targets[(i + delta + targets.length) % targets.length].focus();
@@ -181,13 +575,22 @@ export function mountCatalog({
         let menuHeld = false;
         input.subscribe((snapshot) => {
           const pressed = (snapshot.buttons.menu ?? 0) > 0.5;
-          if (pressed && !menuHeld && active?.channel?.state === 'playable') {
+          if (
+            !nativeMenu &&
+            pressed &&
+            !menuHeld &&
+            active?.channel?.state === 'playable'
+          ) {
             menuHeld = true;
             pause();
             return;
           }
           menuHeld = pressed;
-          active?.channel?.sendInput(snapshot);
+          active?.channel?.sendInput({
+            ...snapshot,
+            sequence: ++nativeSequence,
+            timeMs: performance.now(),
+          });
         });
       }
       input.subscribeNavigation(nav);
@@ -204,10 +607,21 @@ export function mountCatalog({
   }
   function navigate(path) {
     if (disposed) return;
+    const from = routeFor(location.pathname).view;
     history.pushState({}, '', path);
-    renderRoute();
+    sheetFromHub = Boolean(hub) && from === 'catalog';
+    // Opening or closing a game sheet keeps the hub, its scroll and focus.
+    if (renderRoute()) return;
     main.focus();
     window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  function closeGameSheet() {
+    const view = routeFor(location.pathname).view;
+    if (sheetFromHub && view === 'detail') {
+      sheetFromHub = false;
+      history.back();
+    } else if (view !== 'catalog') navigate('/games');
+    else renderedView = 'catalog';
   }
   const onClick = (e) => {
     const a = e.target.closest('a');
@@ -245,6 +659,7 @@ export function mountCatalog({
     return data;
   }
   function status(title, description, { retry = false, back = true } = {}) {
+    disposeView();
     main.replaceChildren();
     const wrap = node('div', 'wrap'),
       section = node('section', 'status-card');
@@ -260,7 +675,7 @@ export function mountCatalog({
       b.onclick = initialize;
       actions.append(b);
     }
-    if (back) {
+    if (back && !isPlayer()) {
       const a = node('a', 'secondary', 'Back to discover');
       a.href = '/';
       actions.append(a);
@@ -276,19 +691,57 @@ export function mountCatalog({
       if (data) renderRoute();
     } catch {
       status(
-        'Couldn’t open the library.',
-        'The catalog is temporarily unavailable. Your next game can wait a moment.',
+        isPlayer() ? 'Couldn’t open the game.' : 'Couldn’t open the library.',
+        isPlayer()
+          ? 'Check your connection and try again.'
+          : 'The catalog is temporarily unavailable. Your next game can wait a moment.',
         { retry: true },
       );
       bindInput('catalog');
     }
   }
   function renderRoute() {
-    if (disposed) return;
-    clearSession();
-    if (!catalog) return;
+    if (disposed) return false;
     const route = routeFor(location.pathname);
-    if (route.view === 'catalog') renderCatalog();
+    if (catalog && hub && !active) {
+      const entry =
+        route.view === 'detail' &&
+        catalog.entries.find((e) => e.manifest.id === route.id);
+      if (entry) {
+        renderDetail(entry);
+        return true;
+      }
+      if (
+        route.view === 'catalog' &&
+        (hub.gameOpen || renderedView === 'detail')
+      ) {
+        renderedView = 'catalog';
+        telemetry({ type: 'catalogView' });
+        hub.closeGame();
+        return true;
+      }
+    }
+    renderedView = route.view;
+    disposeView();
+    clearSession();
+    if (!catalog) return false;
+    document.body.classList.toggle('direct-player', isPlayer());
+    if (route.view === 'player') {
+      const entry = catalog.entries.find((e) => e.manifest.id === route.id);
+      if (entry) {
+        main.innerHTML =
+          '<div class="runtime-overlay prelaunch" role="status" aria-label="Opening game"><span class="launch-backbone">BACKBONE</span></div>';
+        void launch(entry);
+      } else
+        status(
+          'Game unavailable',
+          'This game is no longer available. Return to the Backbone app to choose another.',
+        );
+      return;
+    }
+    if (route.view === 'landing') renderLanding();
+    else if (route.view === 'settings') renderSettings();
+    else if (route.view === 'catalog') renderCatalog();
     else if (route.view === 'detail') {
       const entry = catalog.entries.find((e) => e.manifest.id === route.id);
       if (entry) renderDetail(entry);
@@ -303,229 +756,183 @@ export function mountCatalog({
         'There isn’t a page at this address. Let’s take you back to discover.',
       );
     bindInput('catalog');
+    if (route.view === 'settings') mountSettingsControls();
+  }
+  function startOnboarding() {
+    let storage;
+    try {
+      storage = localStorage;
+    } catch {
+      /* Optional storage. */
+    }
+    if (!onboarding || !needsOnboarding(storage)) return navigate('/games');
+    onboardingUi = mountOnboarding({
+      input,
+      modelUrl: controllerModelUrl,
+      onComplete: () => {
+        onboardingUi = null;
+        navigate('/games');
+      },
+    });
+  }
+  function renderLanding() {
+    main.innerHTML =
+      '<div class="wrap"><section class="hero" aria-labelledby="hero-title"><div><p class="eyebrow">A LITTLE LESS WAIT. A LITTLE MORE PLAY.</p><h1 id="hero-title">Good games.<br>Wide open.</h1><p class="intro">Pick something good. Play in your browser. A controller or a fingertip is all you need.</p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span><span class="pill">No download</span></div></div><div class="hero-art" aria-hidden="true"><span class="art-corner">開ける / OPEN</span><span class="portal"><svg class="portal-brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></span><span class="orbit-dot"></span><span class="art-label">MAKE ROOM FOR PLAY ↗</span></div></section><section class="values" aria-label="The Akeru way"><article><p class="value-number">01 /</p><h3>Just press play.</h3><p>No membership. No account required. A little window for a little escape.</p></article><article><p class="value-number">02 /</p><h3>Play your way.</h3><p>Every published game supports controller and touch. Settle in however you like.</p></article><article><p class="value-number">03 /</p><h3>Know what you play.</h3><p>Source, credits, controls and privacy details live on every game page.</p></article></section></div>';
+    document.title = 'Akeru — Good games. Wide open.';
+    const button = node('button', 'primary landing-start', 'Start playing ↗');
+    button.onclick = startOnboarding;
+    main.querySelector('.hero > div').append(button);
+  }
+  function renderSettings() {
+    document.title = 'Settings — Akeru';
+    main.innerHTML = `<div class="settings-page"><div class="view-head"><div><p class="console-eyebrow">MAKE YOURSELF AT HOME</p><h1>Settings</h1><p class="view-sub">Appearance, controls and data on this device.</p></div></div><div class="settings-grid"><section class="settings-card settings-appearance" aria-labelledby="settings-appearance-title"><h2 id="settings-appearance-title">${icon('sun')}Appearance</h2><p>Choose the look that feels right. Your choice stays on this browser.</p><div class="settings-theme" role="group" aria-label="Theme"><button type="button" data-theme-choice="light"><span class="theme-swatch" data-swatch="light" aria-hidden="true"></span>Light</button><button type="button" data-theme-choice="dark"><span class="theme-swatch" data-swatch="dark" aria-hidden="true"></span>Dark</button></div></section><section class="settings-card settings-sound" aria-labelledby="settings-sound-title"><h2 id="settings-sound-title">${icon('sound')}Sounds</h2><p>Soft clicks when you move around with a controller or keyboard.</p><button type="button" class="settings-switch" data-settings-sound aria-pressed="true"><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span><span>Navigation sounds</span></button></section><section class="settings-card settings-controller" aria-labelledby="settings-controller-title"><h2 id="settings-controller-title">${icon('controller')}Controller</h2><p>Pair in your device’s Bluetooth settings, then press a controller button. Customize the layout for each game.</p><label for="settings-title">Game</label><select id="settings-title"></select><button id="settings-controls" class="secondary">Remap controller</button><div id="control-settings"></div><div id="settings-touch" hidden></div></section><section class="settings-card settings-profile" aria-labelledby="settings-profile-title"><h2 id="settings-profile-title">${icon('guest')}Profile</h2><div class="settings-guest"><span class="console-avatar" aria-hidden="true"></span><div><strong>Guest</strong><span>Playing as a guest</span></div></div><p>Account connection is not available in this preview yet. No account is needed to play, and your saves stay in this browser.</p><button id="settings-sign-out" class="secondary">Sign out &amp; restart</button><p class="fine">Return to the welcome page and restart setup. Saved games, appearance and controller mappings stay on this device.</p></section><section class="settings-card settings-data" aria-labelledby="settings-data-title"><h2 id="settings-data-title">${icon('save')}Your data</h2><p>Your library and play history stay in this browser. Manage a game’s saves from its details.</p><div class="settings-actions"><button type="button" class="secondary" data-clear="library">Clear library</button><button type="button" class="secondary" data-clear="recent">Clear play history</button></div><p class="fine" data-clear-status aria-live="polite"></p></section><section class="settings-card settings-about" aria-labelledby="settings-about-title"><h2 id="settings-about-title">${icon('info')}About Akeru</h2><p>Akeru brings games to your browser, with controller and touch support. Guest play is free. No account or membership is required.</p><p>Every published game goes through the same package and review process, whether it comes from Backbone, an independent developer or the community.</p><a class="settings-link" href="/games">Browse games ${icon('right')}</a></section></div></div>`;
+    $('#settings-sign-out').onclick = () => {
+      try {
+        browserStorage()?.removeItem('akeru.onboarding.v1');
+      } catch {
+        /* Storage may be unavailable; returning home still works. */
+      }
+      navigate('/');
+    };
+    for (const entry of catalog.entries) {
+      const option = node('option', '', entry.manifest.title);
+      option.value = entry.manifest.id;
+      $('#settings-title').append(option);
+    }
+    const syncChoices = () => {
+      for (const button of main.querySelectorAll('[data-theme-choice]'))
+        button.setAttribute(
+          'aria-pressed',
+          String(
+            button.dataset.themeChoice ===
+              document.documentElement.dataset.theme,
+          ),
+        );
+      const sound = $('[data-settings-sound]');
+      sound.setAttribute('aria-pressed', String(uiSound.enabled));
+    };
+    for (const button of main.querySelectorAll('[data-theme-choice]'))
+      button.onclick = () => setTheme(button.dataset.themeChoice);
+    $('[data-settings-sound]').onclick = () => {
+      uiSound.toggle();
+      syncChoices();
+    };
+    const themeWatch = new MutationObserver(syncChoices);
+    themeWatch.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+    syncChoices();
+    const clearKeys = {
+      library: ['akeru.library.v1', 'Library cleared.'],
+      recent: ['akeru.recent.v1', 'Play history cleared.'],
+    };
+    for (const button of main.querySelectorAll('[data-clear]')) {
+      const label = button.textContent;
+      button.onclick = () => {
+        const [key, done] = clearKeys[button.dataset.clear];
+        if (button.dataset.confirm !== 'true') {
+          button.dataset.confirm = 'true';
+          button.textContent = `Confirm ${label.toLowerCase()}`;
+          $('[data-clear-status]').textContent =
+            'This only affects this browser. Game saves are not changed.';
+          return;
+        }
+        delete button.dataset.confirm;
+        button.textContent = label;
+        try {
+          browserStorage()?.removeItem(key);
+          $('[data-clear-status]').textContent = done;
+        } catch {
+          $('[data-clear-status]').textContent =
+            'Browser storage is unavailable. Nothing was changed.';
+        }
+      };
+    }
+    const disposePage = wrapConsolePage(main, consolePageOptions());
+    disposeHome = () => {
+      themeWatch.disconnect();
+      disposePage();
+    };
+  }
+  function mountSettingsControls() {
+    const select = $('#settings-title');
+    const configure = () => {
+      stopControlsMonitor();
+      bindInput(select.value || 'catalog');
+      if (!input || !select.value) {
+        $('#settings-controls').disabled = true;
+        return;
+      }
+      input.mount({
+        touchRoot: $('#settings-touch'),
+        controlsRoot: $('#control-settings'),
+      });
+      $('#settings-controls').onclick = () => {
+        input.showControls();
+        input.refreshControllers?.();
+        stopControlsMonitor();
+        controlsTimer = setInterval(() => input?.refreshControllers?.(), 250);
+      };
+    };
+    select.onchange = configure;
+    configure();
+    if (inputProviderFactory) {
+      navInput = inputProviderFactory({ titleId: 'catalog' });
+      navInput.subscribeNavigation(nav);
+      navInput.start();
+    }
+  }
+  function browserStorage() {
+    try {
+      return localStorage;
+    } catch {
+      return null;
+    }
+  }
+  function mountHub() {
+    const home = renderGameHome(main, catalog.entries, {
+      filters,
+      recent: readRecent(browserStorage()),
+      storage: browserStorage(),
+      savesFor,
+      preview: mode === 'demo',
+      sound: uiSound,
+      initialView: consoleView,
+      onView: (view) => {
+        consoleView = view;
+      },
+      // Launches keep the existing host path; the sheet stays up while it opens.
+      onLaunch: (entry) => void launch(entry),
+      onCloseGame: closeGameSheet,
+      onFilters: (next) => {
+        filters = next;
+      },
+    });
+    hub = home;
+    disposeHome = home.dispose;
   }
   function renderCatalog() {
-    document.title = 'Akeru — Good games. Wide open.';
+    document.title = 'Discover — Backbone Akeru';
     telemetry({ type: 'catalogView' });
-    main.innerHTML =
-      '<div class="wrap"><section class="hero" aria-labelledby="hero-title"><div><p class="eyebrow">A LITTLE LESS WAIT. A LITTLE MORE PLAY.</p><h1 id="hero-title">Good games.<br>Wide open.</h1><p class="intro">Pick something good. Play in your browser. A controller or a fingertip is all you need.</p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span><span class="pill">No download</span></div></div><div class="hero-art" aria-hidden="true"><span class="art-corner">開ける / OPEN</span><span class="portal"><svg class="portal-brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></span><span class="orbit-dot"></span><span class="art-label">MAKE ROOM FOR PLAY ↗</span></div></section><section aria-labelledby="library-title"><div class="section-head"><h2 id="library-title">Find your next.</h2><span id="game-count" class="count" aria-live="polite"></span></div><div class="filters" id="filters" role="group" aria-label="Filter games"></div><div id="game-grid"></div></section><section class="values" aria-label="The Akeru way"><article><p class="value-number">01 /</p><h3>Just press play.</h3><p>No membership. No account required. A little window for a little escape.</p></article><article><p class="value-number">02 /</p><h3>Play your way.</h3><p>Every published game supports controller and touch. Settle in however you like.</p></article><article><p class="value-number">03 /</p><h3>Know what you play.</h3><p>Source, credits, controls and privacy details live on every game page.</p></article></section></div>';
-    for (const category of ['all', ...CATEGORIES]) {
-      const b = node(
-        'button',
-        'filter',
-        category === 'all' ? 'All games' : cap(category),
-      );
-      b.setAttribute('aria-pressed', String(filters.category === category));
-      b.onclick = () => {
-        filters.category = category;
-        renderCatalog();
-        $('#filters button').focus();
-      };
-      $('#filters').append(b);
-    }
-    const controller = node(
-      'button',
-      'filter controller-filter',
-      '⌘ Controller ready',
-    );
-    controller.setAttribute('aria-pressed', String(filters.controller));
-    controller.onclick = () => {
-      filters.controller = !filters.controller;
-      controller.setAttribute('aria-pressed', String(filters.controller));
-      renderCards();
-    };
-    $('#filters').append(controller);
-    const search = node('input', 'search');
-    search.type = 'search';
-    search.placeholder = 'Find a game';
-    search.setAttribute('aria-label', 'Search games');
-    search.maxLength = 120;
-    search.value = filters.query;
-    search.oninput = () => {
-      filters.query = search.value;
-      renderCards();
-    };
-    $('#filters').append(search);
-    renderCards();
-  }
-  function renderCards() {
-    const entries = filterEntries(catalog.entries, filters);
-    $('#game-count').textContent =
-      `${entries.length} ${entries.length === 1 ? 'game' : 'games'}`;
-    const target = $('#game-grid');
-    target.replaceChildren();
-    if (!entries.length) {
-      const section = node('div', 'empty-library');
-      section.append(node('span', 'empty-icon', '↗'));
-      const copy = node('div');
-      copy.append(
-        node(
-          'h3',
-          '',
-          catalog.entries.length
-            ? 'Nothing here just yet.'
-            : 'Something good takes a little care.',
-        ),
-        node(
-          'p',
-          '',
-          catalog.entries.length
-            ? 'Try another category or a different search. Your next game might be one click away.'
-            : 'The library is being prepared. Games will appear here once they have passed review and are ready to play. No titles are published yet.',
-        ),
-      );
-      section.append(copy);
-      target.append(section);
-      return;
-    }
-    const grid = node('div', 'grid');
-    for (const e of entries) {
-      const a = node('a', 'game-card');
-      a.href = `/g/${e.manifest.id}`;
-      const art = node('div', `card-art ${e.metadata.category}`);
-      art.setAttribute('aria-hidden', 'true');
-      art.append(
-        node(
-          'span',
-          'card-tag',
-          mode === 'demo' ? 'ORIGINAL TEST FIXTURE' : cap(e.metadata.category),
-        ),
-      );
-      const copy = node('div', 'card-copy');
-      copy.append(
-        node('h3', '', e.manifest.title),
-        node('p', '', e.metadata.summary),
-      );
-      const bottom = node('div', 'card-bottom');
-      bottom.append(
-        node(
-          'span',
-          '',
-          e.availability === 'paused'
-            ? 'Temporarily unavailable'
-            : 'Controller + touch',
-        ),
-        node('span', 'arrow-button', '↗'),
-      );
-      copy.append(bottom);
-      a.append(art, copy);
-      grid.append(a);
-    }
-    target.append(grid);
+    mountHub();
   }
   function renderDetail(entry) {
-    const m = entry.manifest,
-      meta = entry.metadata;
-    document.title = `${m.title} — Akeru`;
-    telemetry({ type: 'detailView', titleId: m.id });
-    main.innerHTML =
-      '<div class="wrap"><a class="back" href="/">← All games</a><section class="detail-top"><div id="detail-art" class="card-art detail-art" aria-hidden="true"></div><div class="detail-copy"><p id="category" class="eyebrow"></p><h1 id="title"></h1><p id="description" class="description"></p><div class="pill-row"><span class="pill">Free guest play</span><span class="pill">Controller + touch</span></div><button id="play-button" class="primary">Play now <span aria-hidden="true">↗</span></button><p id="play-note" class="fine">No account or membership needed.</p></div></section><dl class="facts" id="facts"></dl><section class="detail-info"><div><div class="info-block"><h2>Make yourself comfortable.</h2><h3>Controller</h3><div id="controller-help"></div><h3>Touch</h3><div id="touch-help"></div></div><div class="info-block"><h2>Your progress.</h2><p id="save-info"></p></div></div><div><div class="info-block"><h2>A few things to know.</h2><div id="privacy-info"></div></div><div class="info-block"><h2>Open by design.</h2><p id="source-license"></p><div id="source-links" class="source-links"></div><p class="fine">Source revision</p><p id="source-revision" class="revision"></p></div></div></section></div>';
-    $('#detail-art').classList.add(meta.category);
-    $('#category').textContent = `${cap(meta.category)} / ${meta.creator}`;
-    $('#title').textContent = m.title;
-    $('#description').textContent = meta.description;
-    for (const [label, value] of [
-      ['Created by', meta.creator],
-      ['Content', meta.ageLabel],
-      ['Version', m.version],
-      ['Access', 'Free · no membership'],
-    ]) {
-      const item = node('div');
-      item.append(node('dt', '', label), node('dd', '', value));
-      $('#facts').append(item);
+    telemetry({ type: 'detailView', titleId: entry.manifest.id });
+    if (!hub) {
+      sheetFromHub = false;
+      mountHub();
+      bindInput('catalog');
     }
-    $('#controller-help').append(list(meta.controls.controller));
-    $('#touch-help').append(list(meta.controls.touch));
-    $('#privacy-info').append(list(meta.privacy));
-    renderSaveControls(entry, $('#save-info'));
-    $('#source-license').textContent =
-      `Source license: ${m.provenance.source.license}`;
-    $('#source-revision').textContent = m.provenance.source.revision;
-    $('#source-links').append(link('View source ↗', m.provenance.source.url));
-    for (const n of meta.notices)
-      $('#source-links').append(link(n.label, n.url));
-    const play = $('#play-button');
-    if (entry.availability === 'paused') {
-      play.disabled = true;
-      play.textContent = 'Temporarily unavailable';
-      $('#play-note').textContent =
-        'This game is taking a break. Please check back later.';
-    } else play.onclick = () => launch(entry);
+    renderedView = 'detail';
+    hub.openGame(entry);
+    document.title = `${entry.manifest.title} — Akeru`;
   }
   function savesFor(entry) {
     return saveStore.forTitle({
       titleId: entry.manifest.id,
       schemaVersion: entry.manifest.saves.schemaVersion,
     });
-  }
-  function renderSaveControls(entry, description) {
-    const saves = savesFor(entry);
-    description.textContent =
-      'Progress stays in this browser. Clearing browser data can remove it. Account sync is not connected.';
-    const actions = node('div', 'status-actions');
-    const exportButton = node('button', 'secondary', 'Export saves');
-    const resetButton = node('button', 'secondary', 'Reset saves');
-    const feedback = node('p', 'fine');
-    feedback.setAttribute('role', 'status');
-    actions.append(exportButton, resetButton);
-    description.after(actions, feedback);
-    const showError = () => {
-      feedback.textContent =
-        'Couldn’t access saves. Existing data has not been intentionally replaced. Try again or export before resetting.';
-    };
-    saves
-      .status()
-      .then((result) => {
-        if (!description.isConnected) return;
-        if (result.local !== 'available') {
-          description.textContent =
-            'Saving is unavailable in this browser. You can still play, but progress may be lost.';
-          exportButton.disabled = true;
-          resetButton.disabled = true;
-        }
-      })
-      .catch(showError);
-    exportButton.onclick = async () => {
-      exportButton.disabled = true;
-      try {
-        const data = await saves.exportData();
-        const url = URL.createObjectURL(
-          new Blob([JSON.stringify(data)], { type: 'application/json' }),
-        );
-        const a = node('a');
-        a.href = url;
-        a.download = `${entry.manifest.id}-saves.json`;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-        feedback.textContent =
-          'Save export downloaded. Keep it private; it contains your game progress.';
-      } catch {
-        showError();
-      } finally {
-        exportButton.disabled = false;
-      }
-    };
-    let confirmReset = false;
-    resetButton.onclick = async () => {
-      if (!confirmReset) {
-        confirmReset = true;
-        resetButton.textContent = 'Confirm reset';
-        feedback.textContent =
-          'This removes only this game’s local saves. Export first if you want to keep them.';
-        return;
-      }
-      resetButton.disabled = true;
-      try {
-        await saves.reset();
-        feedback.textContent = 'Local saves for this game have been reset.';
-      } catch {
-        showError();
-      } finally {
-        confirmReset = false;
-        resetButton.textContent = 'Reset saves';
-        resetButton.disabled = false;
-      }
-    };
   }
   async function launch(original) {
     const currentPath = location.pathname;
@@ -546,7 +953,13 @@ export function mountCatalog({
         return;
       }
       if (entry.availability !== 'available') {
-        renderDetail(entry);
+        if (isPlayer())
+          status(
+            'Game unavailable',
+            'This game is temporarily unavailable. Please try again later.',
+            { retry: true },
+          );
+        else renderDetail(entry);
         return;
       }
       if (mode === 'production') {
@@ -567,57 +980,217 @@ export function mountCatalog({
     }
   }
   function renderRuntime(entry) {
+    disposeView();
     clearSession();
-    main.innerHTML =
-      '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay" role="status"><span class="spinner" aria-hidden="true"></span><h2>Finding your orbit…</h2><p>Opening the isolated test fixture.</p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
+    const consoleRuntime = !isPlayer();
+    main.innerHTML = consoleRuntime
+      ? runtimeMarkup()
+      : '<div class="runtime-wrap"><div class="runtime-bar"><div class="runtime-brand"><a class="runtime-home" href="/" aria-label="Backbone Akeru home"><svg class="brand-mark" viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg></a><h1 id="runtime-title"></h1></div><div class="runtime-tools"><button id="runtime-controls" class="secondary">Controls</button><button id="runtime-pause" class="secondary">Pause</button><button id="runtime-exit" class="secondary">Exit</button></div></div><div class="runtime-stage" id="runtime-stage"><div id="runtime-overlay" class="runtime-overlay launch-screen" role="status"><div class="launch-brand" aria-label="Backbone / Akeru"><span class="launch-backbone"><svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>BACKBONE</span><span class="launch-reveal"><span class="launch-akeru"><i>/</i> AKERU</span></span></div><h2>Opening game…</h2><p></p></div></div><div class="controls-row"><p class="runtime-note" id="runtime-note">Saves stay on this browser · account sync is not connected</p></div><div id="touch-controls"></div><div id="control-settings"></div></div>';
     $('#runtime-title').textContent = entry.manifest.title;
+    $('#runtime-overlay h2').textContent =
+      'Opening ' + entry.manifest.title + '…';
+    if (isPlayer()) {
+      document.title = entry.manifest.title + ' · Backbone';
+      $('#runtime-overlay h2').textContent =
+        'Opening ' + entry.manifest.title + '…';
+      $('#runtime-overlay p').textContent = '';
+      const menu = node('button', 'player-menu');
+      menu.innerHTML =
+        '<svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>';
+      menu.id = 'player-menu';
+      menu.setAttribute('aria-label', 'Game menu');
+      menu.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-controls', 'runtime-overlay');
+      menu.disabled = true;
+      menu.onclick = () =>
+        active?.channel?.state === 'paused' ? resume() : pause();
+      document.querySelector('.runtime-wrap').append(menu);
+    }
     const frame = node('iframe');
     frame.title = `${entry.manifest.title} isolated runtime`;
-    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+    frame.setAttribute(
+      'sandbox',
+      'allow-scripts allow-same-origin allow-pointer-lock',
+    );
     frame.setAttribute('referrerpolicy', 'no-referrer');
-    frame.setAttribute('allow', 'gamepad');
+    frame.setAttribute('allow', 'gamepad; autoplay');
     const nonce = crypto.randomUUID(),
       start = performance.now();
     frame.src = `${titleUrl(entry)}#${new URLSearchParams({ nonce, shell: location.origin })}`;
     $('#runtime-stage').prepend(frame);
-    active = { entry, frame, channel: null };
+    active = { entry, frame, channel: null, rumble: createRumble() };
     const session = active;
+    const introStarted = performance.now();
     active.channel = createRuntimeChannel({
       frame: frame.contentWindow,
+      presentation: isPlayer() ? 'embedded' : 'web',
+      timeoutMs: entry.manifest.runtime.requiredFeatures.includes('wasm')
+        ? 60000
+        : 15000,
       origin: entry.release.origin,
       nonce,
       saveService: savesFor(entry).service,
-      onEvent: (event) => {
+      onRumble: (effect) => {
+        void session.rumble.play(effect);
+      },
+      onEvent: async (event) => {
         if (active !== session) return;
         if (event.type === 'playable') {
+          session.channel.pause();
+          // Finish the reveal and hold the full wordmark for one second, even on a warm cache.
+          const minimum = matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 500
+            : 3500;
+          await new Promise((resolve) =>
+            setTimeout(
+              resolve,
+              Math.max(0, minimum - (performance.now() - introStarted)),
+            ),
+          );
+          if (active !== session || session.channel.state !== 'paused') return;
+          session.channel.resume();
+          recordPlayed(browserStorage(), entry.manifest.id);
           $('#runtime-overlay').hidden = true;
+          $('#runtime-overlay').classList.remove('launch-screen');
+          if ($('#player-menu')) $('#player-menu').disabled = false;
           telemetry({
             type: 'playable',
             titleId: entry.manifest.id,
             durationMs: Math.min(600000, performance.now() - start),
           });
           bindInput(entry.manifest.id, true);
+          void attachNativeMenu(session);
+          let lastConnected = null;
+          const syncController = () => {
+            const connected = (input?.refreshControllers?.().length ?? 0) > 0;
+            if (connected !== lastConnected) {
+              $('#touch-controls').hidden =
+                nativeMenu ||
+                connected ||
+                !matchMedia('(pointer: coarse)').matches;
+            }
+            if (
+              connected !== lastConnected &&
+              session.channel.sendControllerStatus(connected)
+            )
+              lastConnected = connected;
+          };
+          syncController();
+          controllerMonitor = setInterval(syncController, 250);
+          frame.contentWindow.focus();
         } else if (event.type === 'error') failRuntime(event.code);
-        else if (event.type === 'exit') navigate(`/g/${entry.manifest.id}`);
+        else if (event.type === 'exit') {
+          if (isPlayer()) {
+            clearSession();
+            status(
+              'Game closed',
+              'Return to the Backbone app, or play again.',
+              { retry: true },
+            );
+          } else navigate(`/g/${entry.manifest.id}`);
+        }
       },
     });
     frame.addEventListener('load', () => {
       if (active === session) active.channel.connect();
     });
     $('#runtime-exit').onclick = () => navigate(`/g/${entry.manifest.id}`);
-    $('#runtime-pause').onclick = () =>
-      active?.channel.state === 'paused' ? resume() : pause();
+    const tools = document.querySelector('.runtime-tools');
+    if (!consoleRuntime) {
+      const theme = node('button', 'secondary theme-toggle', 'Light / Dark');
+      theme.setAttribute('data-theme-toggle', '');
+      theme.setAttribute('aria-label', 'Switch light or dark theme');
+      tools.append(theme);
+    }
+    const fullscreen = consoleRuntime
+      ? runtimeTool('expand', 'Fullscreen')
+      : node('button', 'secondary', 'Fullscreen');
+    fullscreen.id = 'runtime-fullscreen';
+    fullscreen.onclick = async () => {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else if (document.querySelector('.runtime-wrap').requestFullscreen)
+          await document.querySelector('.runtime-wrap').requestFullscreen();
+        else
+          document
+            .querySelector('.runtime-wrap')
+            .classList.toggle('expanded-player');
+        if (consoleRuntime) syncConsoleFullscreen();
+        else
+          fullscreen.textContent =
+            document.fullscreenElement ||
+            document.querySelector('.expanded-player')
+              ? 'Exit fullscreen'
+              : 'Fullscreen';
+        frame.contentWindow.focus();
+      } catch {
+        if (consoleRuntime) syncConsoleFullscreen(true);
+        else fullscreen.textContent = 'Fullscreen unavailable';
+      }
+    };
+    if (consoleRuntime) tools.insertBefore(fullscreen, $('#runtime-pause'));
+    else tools.prepend(fullscreen);
+    const touch = consoleRuntime
+      ? runtimeTool('touch', 'Touch controls')
+      : node('button', 'secondary', 'Touch controls');
+    if (consoleRuntime) touch.id = 'runtime-touch';
+    const touchVisible = matchMedia('(pointer: coarse)').matches;
+    $('#touch-controls').hidden = !touchVisible;
+    touch.setAttribute('aria-pressed', String(touchVisible));
+    touch.onclick = () => {
+      $('#touch-controls').hidden = !$('#touch-controls').hidden;
+      touch.setAttribute('aria-pressed', String(!$('#touch-controls').hidden));
+    };
+    if (consoleRuntime) tools.insertBefore(touch, fullscreen);
+    else tools.append(touch);
+    $('#runtime-pause').onclick = () => {
+      if (introPending()) return;
+      if (active?.channel.state === 'paused') resume();
+      else pause();
+    };
+    if (consoleRuntime) {
+      $('#runtime-guide').onclick = () => $('#runtime-pause').click();
+      startConsoleHud(session);
+    }
     $('#runtime-controls').onclick = () => {
       pause();
       input?.showControls();
+      const panel = $('#control-settings .akeru-control-settings');
+      if (panel && !panel.querySelector('.title-control-guide')) {
+        const guide = node('section', 'title-control-guide');
+        guide.setAttribute('aria-label', 'Game controls guide');
+        guide.append(node('h3', '', entry.manifest.title + ' controls'));
+        guide.append(
+          node(
+            'p',
+            '',
+            'Default layout · custom mappings below may change these buttons.',
+          ),
+        );
+        guide.append(list(entry.metadata.controls.controller));
+        guide.append(node('h4', '', 'Touch / keyboard'));
+        guide.append(list(entry.metadata.controls.touch));
+        panel.querySelector('.control-panel-header')?.after(guide);
+      }
+      input?.start();
       input?.refreshControllers?.();
       stopControlsMonitor();
       controlsTimer = setInterval(() => input?.refreshControllers?.(), 250);
     };
     main.focus();
   }
+  // The web player's opening reveal holds the channel paused; toggles wait for it.
+  function introPending() {
+    return Boolean(
+      active &&
+      !isPlayer() &&
+      active.channel?.state === 'paused' &&
+      active.consoleHud?.playingSince() === null,
+    );
+  }
   function pause() {
     if (active?.channel.state !== 'playable') return;
+    active.consoleHud?.tick();
     input?.stop();
     active.channel.pause();
     if (inputProviderFactory) {
@@ -626,8 +1199,15 @@ export function mountCatalog({
       navInput.subscribeNavigation(nav);
       navInput.start();
     }
-    $('#runtime-pause').textContent = 'Resume';
+    if (isPlayer()) $('#runtime-pause').textContent = 'Resume';
+    else
+      setRuntimeTool($('#runtime-pause'), 'play', 'Resume', 'Resume (Start)');
     const o = $('#runtime-overlay');
+    o.classList.remove('launch-screen');
+    if (!isPlayer()) {
+      openConsoleGuide(o);
+      return;
+    }
     o.replaceChildren(
       node('p', 'eyebrow', 'TAKE YOUR TIME'),
       node('h2', '', 'A little breather.'),
@@ -636,7 +1216,301 @@ export function mountCatalog({
     const b = node('button', 'primary', 'Keep playing ↗');
     b.onclick = resume;
     o.append(b);
+    if (isPlayer()) {
+      active.rumble.stop();
+      $('#player-menu').setAttribute('aria-expanded', 'true');
+      o.classList.add('player-settings');
+      o.querySelector('.eyebrow').remove();
+      o.querySelector('h2').textContent = 'Paused';
+      o.querySelector('p').textContent = active.entry.manifest.title;
+      b.textContent = 'Resume';
+      const controls = node('button', 'secondary', 'Controller settings');
+      controls.onclick = () => $('#runtime-controls').click();
+      const touch = node('button', 'secondary', 'Touch controls');
+      touch.setAttribute('aria-pressed', String(!$('#touch-controls').hidden));
+      touch.onclick = () => {
+        $('#touch-controls').hidden = !$('#touch-controls').hidden;
+        touch.setAttribute(
+          'aria-pressed',
+          String(!$('#touch-controls').hidden),
+        );
+      };
+      o.append(controls, touch);
+      const session = active;
+      const rumble = node('button', 'secondary player-switch', 'Vibration');
+      rumble.setAttribute('aria-pressed', String(session.rumble.enabled));
+      const feedback = node(
+        'p',
+        'fine',
+        'Available with supported games and controllers.',
+      );
+      feedback.setAttribute('role', 'status');
+      rumble.onclick = () => {
+        session.rumble.setEnabled(!session.rumble.enabled);
+        rumble.setAttribute('aria-pressed', String(session.rumble.enabled));
+        feedback.textContent = session.rumble.enabled
+          ? session.rumble.available
+            ? 'Rumble enabled for this session.'
+            : 'Enabled, but rumble is unavailable on this controller or browser.'
+          : 'Rumble off.';
+      };
+      const testRumble = node('button', 'secondary', 'Test vibration');
+      testRumble.onclick = async () => {
+        testRumble.disabled = true;
+        const ok = await session.rumble.play({
+          duration: 200,
+          strongMagnitude: 0.5,
+          weakMagnitude: 0.5,
+        });
+        feedback.textContent = ok
+          ? 'Test sent to your controller.'
+          : 'No rumble sent. Enable rumble and connect a supported controller.';
+        testRumble.disabled = false;
+      };
+      const saveInfo = node('div', 'player-save-state');
+      saveInfo.setAttribute('role', 'status');
+      const saveHeadline = node('strong', '', 'Checking progress…');
+      const saveCaption = node('p', '', 'Saved on this device');
+      const saveMark = node('span', 'player-save-mark');
+      saveMark.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3h12l4 4v14H3V3Z"/><path d="M7 3v6h10V3M7 21v-7h10v7"/></svg>';
+      const saveCopy = node('div');
+      saveCopy.append(saveHeadline, saveCaption);
+      saveInfo.append(saveMark, saveCopy);
+      const refresh = node(
+        'button',
+        'secondary player-text-action',
+        'Check again',
+      );
+      refresh.setAttribute('aria-label', 'Refresh save status');
+      refresh.onclick = async () => {
+        if (refresh.getAttribute('aria-busy') === 'true') return;
+        refresh.setAttribute('aria-busy', 'true');
+        try {
+          const result = await savesFor(session.entry).status();
+          if (result.local !== 'available') {
+            saveHeadline.textContent = 'Saving unavailable';
+            saveCaption.textContent =
+              'Progress may not be kept on this device.';
+          } else {
+            saveHeadline.textContent = result.quota.usedSlots
+              ? 'Progress saved'
+              : 'No saves yet';
+            saveCaption.textContent = result.quota.usedSlots
+              ? 'Stored on this device'
+              : 'Use the game’s save or checkpoint controls.';
+          }
+        } catch {
+          saveHeadline.textContent = 'Couldn’t check saves';
+          saveCaption.textContent = 'Your existing saves haven’t changed.';
+        }
+        refresh.setAttribute('aria-busy', 'false');
+      };
+      const leave = node('button', 'secondary player-leave', 'Leave game');
+      leave.onclick = async () => {
+        if (leave.dataset.confirm !== 'true') {
+          leave.dataset.confirm = 'true';
+          leave.textContent = 'Confirm leave game';
+          saveInfo.textContent =
+            'Save using the game’s controls before leaving. Unsaved progress may be lost.';
+          return;
+        }
+        const nativePlayer = globalThis.webkit?.messageHandlers?.akeruPlayer;
+        if (nativePlayer) {
+          try {
+            if ((await nativePlayer.postMessage({ action: 'exit' })) === true) {
+              clearSession();
+              return;
+            }
+          } catch {
+            /* Older app: retain the web close fallback. */
+          }
+        }
+        clearSession();
+        status(
+          'Game closed',
+          'Use the Backbone app’s back or close control to return. You can also reopen this game.',
+          { retry: true },
+        );
+      };
+      const icons = {
+        play: '<path d="m9 5 11 7-11 7Z"/>',
+        controller:
+          '<path d="M7 7h10c3 0 5 10 3 11-2 1-4-3-5-3H9c-1 0-3 4-5 3C2 17 4 7 7 7Z"/><path d="M7 9v5m-2-2h5m6-2h.01m2 3h.01"/>',
+        touch:
+          '<path d="M10 12V5a2 2 0 0 1 4 0v6l2-1 4 3-1 6H9l-5-6 2-2 4 3"/>',
+        rumble: '<path d="M8 8h8v8H8zM4 7l-2 5 2 5m16-10 2 5-2 5"/>',
+        save: '<path d="M5 3h12l4 4v14H3V3Z"/><path d="M7 3v6h10V3M7 21v-7h10v7"/>',
+        exit: '<path d="M10 4H4v16h6m4-13 5 5-5 5m-6-5h11"/>',
+      };
+      const iconButton = (button, icon, label, accessible) => {
+        button.className = 'player-action';
+        button.setAttribute('aria-label', accessible);
+        button.title = accessible;
+        button.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[icon]}</svg><span>${label}</span>`;
+        return button;
+      };
+      const bar = node('div', 'player-action-bar');
+      bar.setAttribute('role', 'group');
+      bar.setAttribute('aria-label', 'Game actions');
+      const detail = node('section', 'player-action-detail');
+      detail.hidden = true;
+      const show = (title, ...items) => {
+        const trigger = document.activeElement;
+        const previousHeight = detail.hidden
+          ? 0
+          : detail.getBoundingClientRect().height;
+        const header = node('div', 'player-detail-header');
+        const close = node(
+          'button',
+          'player-menu-row player-panel-back',
+          'Back to game menu',
+        );
+        close.dataset.panelBack = 'true';
+        close.setAttribute('aria-label', 'Close panel');
+        close.onclick = () => {
+          animatePanel(detail, false, () => {}, true);
+          (trigger?.isConnected
+            ? trigger
+            : bar.querySelector('button')
+          ).focus();
+        };
+        header.append(node('h3', '', title));
+        for (const item of items)
+          if (item.tagName === 'BUTTON') {
+            item.classList.add('player-menu-row');
+            if (!item.hasAttribute('aria-label'))
+              item.setAttribute('aria-label', item.textContent);
+          }
+        const hint = node(
+          'p',
+          'player-navigation-hint',
+          '↑ ↓ Move · A Select · B Back',
+        );
+        detail.replaceChildren(header, ...items, close, hint);
+        animatePanel(detail, true, () => {}, true, previousHeight);
+        detail
+          .querySelector('button:not([disabled])')
+          ?.focus({ preventScroll: true });
+      };
+      const rumbleTab = iconButton(
+        node('button'),
+        'rumble',
+        'Sound',
+        'Sound and vibration',
+      );
+      rumbleTab.onclick = () => {
+        const audioStatus = node('p', 'fine');
+        audioStatus.setAttribute('role', 'status');
+        const audioAction = gameAction(
+          'Toggle game sound',
+          'audio',
+          audioStatus,
+        );
+        show(
+          'Sound & vibration',
+          ...(session.channel.actions.includes('audio')
+            ? [audioAction, audioStatus]
+            : []),
+          rumble,
+          testRumble,
+          feedback,
+        );
+        feedback.textContent = session.rumble.available
+          ? 'Vibration is available. On iPhone, feedback comes from the phone. Enable it for fire-button feedback.'
+          : 'Vibration is unavailable on this device. The app may need a native haptics connection.';
+      };
+      const gameAction = (label, action, actionStatus = saveCaption) => {
+        const button = node('button', 'secondary', label);
+        button.onclick = async () => {
+          button.disabled = true;
+          actionStatus.textContent = 'Working…';
+          try {
+            const result = await session.channel.requestAction(action);
+            actionStatus.textContent = result.message;
+            saveHeadline.textContent = result.ok
+              ? 'Ready'
+              : 'Action not completed';
+          } catch {
+            actionStatus.textContent = 'Game did not respond. Try again.';
+          } finally {
+            button.disabled = false;
+          }
+        };
+        return button;
+      };
+      const saveNow = gameAction('Save snapshot', 'save');
+      const restoreNow = gameAction('Restore snapshot', 'restore');
+      const restoreAction = restoreNow.onclick;
+      restoreNow.onclick = () => {
+        if (restoreNow.dataset.confirm !== 'true') {
+          restoreNow.dataset.confirm = 'true';
+          restoreNow.textContent = 'Confirm restore snapshot';
+          restoreNow.setAttribute('aria-label', 'Confirm restore snapshot');
+          saveCaption.textContent =
+            'This replaces your current session with the snapshot.';
+        } else {
+          delete restoreNow.dataset.confirm;
+          restoreNow.textContent = 'Restore snapshot';
+          restoreNow.setAttribute('aria-label', 'Restore snapshot');
+          void restoreAction();
+        }
+      };
+      const savesTab = iconButton(
+        node('button'),
+        'save',
+        'Saves',
+        'Saved progress',
+      );
+      savesTab.onclick = () => {
+        show(
+          'Your progress',
+          saveInfo,
+          node(
+            'p',
+            'player-save-note',
+            session.channel.actions.includes('save')
+              ? 'Auto-resume saves every 15 seconds and on pause. Your manual snapshot stays separate.'
+              : 'Save states aren’t available for this game yet.',
+          ),
+          ...(session.channel.actions.includes('save')
+            ? [saveNow, restoreNow]
+            : []),
+          refresh,
+        );
+        void refresh.onclick();
+      };
+      const exitTab = iconButton(node('button'), 'exit', 'Leave', 'Leave game');
+      exitTab.onclick = () => {
+        leave.dataset.confirm = 'true';
+        leave.textContent = 'Confirm leave game';
+        const cancel = node('button', 'secondary', 'Keep playing');
+        cancel.onclick = resume;
+        show(
+          'Leave game?',
+          node(
+            'p',
+            'fine',
+            'Unsaved progress may be lost. Save using the game’s controls first.',
+          ),
+          leave,
+          cancel,
+        );
+      };
+      const paused = node('h2', 'player-sr-only', 'Paused');
+      bar.append(
+        iconButton(b, 'play', 'Resume', 'Resume'),
+
+        iconButton(touch, 'touch', 'Touch', 'Touch controls'),
+        rumbleTab,
+        savesTab,
+        exitTab,
+      );
+      o.replaceChildren(paused, bar, detail);
+    }
     o.hidden = false;
+    if (isPlayer()) animatePanel(o, true);
+    b.focus({ preventScroll: true });
   }
   function resume() {
     if (!active?.channel.resume()) return;
@@ -645,8 +1519,297 @@ export function mountCatalog({
     navInput = null;
     input?.hideControls();
     input?.start();
-    $('#runtime-overlay').hidden = true;
-    $('#runtime-pause').textContent = 'Pause';
+    const overlay = $('#runtime-overlay');
+    if (isPlayer())
+      animatePanel(overlay, false, () =>
+        overlay.classList.remove('player-settings'),
+      );
+    else closeConsoleGuide(overlay);
+    $('#player-menu')?.setAttribute('aria-expanded', 'false');
+    if (isPlayer()) $('#runtime-pause').textContent = 'Pause';
+    else setRuntimeTool($('#runtime-pause'), 'pause', 'Pause', 'Pause (Start)');
+    active.consoleHud?.tick();
+    active.frame.contentWindow.focus();
+  }
+  function startConsoleHud(session) {
+    const wrap = document.querySelector('.runtime-wrap');
+    const stateLabel = wrap.querySelector('[data-runtime-state]');
+    const sessionLabel = wrap.querySelector('[data-runtime-session]');
+    const labels = {
+      loading: 'Loading',
+      playing: 'Playing',
+      paused: 'Paused',
+      stopped: 'Stopped',
+    };
+    let playingSince = null;
+    const tick = () => {
+      if (!wrap.isConnected || active !== session) {
+        clearInterval(timer);
+        return;
+      }
+      const state = session.channel?.state;
+      if (state === 'playable' && playingSince === null)
+        playingSince = performance.now();
+      const view =
+        state === 'playable'
+          ? 'playing'
+          : state === 'paused'
+            ? playingSince === null
+              ? 'loading'
+              : 'paused'
+            : state === 'loading'
+              ? 'loading'
+              : 'stopped';
+      wrap.dataset.state = view;
+      stateLabel.textContent = labels[view];
+      sessionLabel.textContent =
+        playingSince === null
+          ? ''
+          : sessionClock(performance.now() - playingSince);
+    };
+    const timer = setInterval(tick, 1000);
+    session.consoleHud = { tick, playingSince: () => playingSince };
+    tick();
+  }
+  function openConsoleGuide(o) {
+    const session = active;
+    const entry = session.entry;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    o.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+    o.classList.add('runtime-guide');
+    o.setAttribute('role', 'group');
+    o.setAttribute('aria-label', 'Game menu');
+    const panel = node('aside', 'guide-panel');
+    const top = node('div', 'guide-top');
+    top.innerHTML =
+      '<span class="guide-brand"><svg viewBox="0 0 111 104" aria-hidden="true"><use href="#backbone-mark"/></svg>BACKBONE <i>/</i> AKERU</span>';
+    top.append(
+      node(
+        'time',
+        'guide-clock',
+        new Intl.DateTimeFormat(undefined, {
+          hour: 'numeric',
+          minute: '2-digit',
+        }).format(new Date()),
+      ),
+    );
+    const now = node('div', 'guide-now');
+    const art = node('span', 'guide-art');
+    art.append(cover(entry, { label: false }));
+    const since = session.consoleHud?.playingSince();
+    const nowCopy = node('div', 'guide-now-copy');
+    nowCopy.append(
+      node('p', 'guide-kicker', 'NOW PLAYING · PAUSED'),
+      node('strong', '', entry.manifest.title),
+      node(
+        'span',
+        '',
+        `${typeof since !== 'number' ? '' : `Session ${sessionClock(performance.now() - since)} · `}Saves stay on this browser`,
+      ),
+    );
+    now.append(art, nowCopy);
+    const head = node('div', 'guide-copy');
+    head.append(
+      node('p', 'eyebrow', 'TAKE YOUR TIME'),
+      node('h2', '', 'A little breather.'),
+      node('p', '', 'Your session is paused. Come back when you’re ready.'),
+    );
+    const status = node('p', 'guide-status');
+    status.setAttribute('aria-live', 'polite');
+    const row = (iconName, label, onClick, { hint = '', cls = '' } = {}) => {
+      const button = node('button', `guide-row ${cls}`.trim());
+      button.type = 'button';
+      button.innerHTML = `${icon(iconName)}<span></span><em></em>`;
+      button.querySelector('span').textContent = label;
+      button.querySelector('em').textContent = hint;
+      button.onclick = onClick;
+      return button;
+    };
+    const gameAction = (label, action, iconName, confirmText) => {
+      const button = row(iconName, label, null);
+      button.onclick = async () => {
+        if (confirmText && button.dataset.confirm !== 'true') {
+          button.dataset.confirm = 'true';
+          button.querySelector('span').textContent =
+            `Confirm ${label.toLowerCase()}`;
+          status.textContent = confirmText;
+          return;
+        }
+        delete button.dataset.confirm;
+        button.querySelector('span').textContent = label;
+        button.disabled = true;
+        status.textContent = 'Working…';
+        try {
+          const result = await session.channel.requestAction(action);
+          status.textContent = result.message;
+          const audio = result.state?.audioState;
+          if (audio)
+            button.querySelector('em').textContent =
+              audio === 'off' ? 'Off' : audio === 'blocked' ? 'Blocked' : 'On';
+        } catch {
+          status.textContent = 'Game did not respond. Try again.';
+        } finally {
+          button.disabled = false;
+        }
+      };
+      return button;
+    };
+    const menu = node('div', 'guide-menu');
+    menu.setAttribute('role', 'group');
+    menu.setAttribute('aria-label', 'Game actions');
+    const keep = row('play', 'Keep playing', resume, {
+      hint: 'A',
+      cls: 'is-primary',
+    });
+    menu.append(keep);
+    const actions = session.channel.actions;
+    if (actions.includes('save'))
+      menu.append(gameAction('Save snapshot', 'save', 'save'));
+    if (actions.includes('restore'))
+      menu.append(
+        gameAction(
+          'Restore snapshot',
+          'restore',
+          'undo',
+          'This replaces your current session with the snapshot.',
+        ),
+      );
+    if (actions.includes('audio'))
+      menu.append(gameAction('Game sound', 'audio', 'sound'));
+    menu.append(
+      row('controller', 'Controller layout', () =>
+        $('#runtime-controls').click(),
+      ),
+    );
+    const touchRow = row(
+      'touch',
+      'On-screen controls',
+      () => {
+        $('#runtime-touch')?.click();
+        touchRow.querySelector('em').textContent = $('#touch-controls').hidden
+          ? 'Off'
+          : 'On';
+      },
+      { hint: $('#touch-controls').hidden ? 'Off' : 'On' },
+    );
+    const fullscreenRow = row(
+      'expand',
+      'Full screen',
+      () => $('#runtime-fullscreen')?.click(),
+      {
+        hint:
+          document.fullscreenElement ||
+          document.querySelector('.expanded-player')
+            ? 'On'
+            : 'Off',
+      },
+    );
+    fullscreenRow.dataset.guideFullscreen = '';
+    const dark = document.documentElement.dataset.theme === 'dark';
+    const themeRow = row(dark ? 'sun' : 'moon', 'Appearance', () =>
+      setTimeout(() => {
+        themeRow.querySelector('em').textContent =
+          document.documentElement.dataset.theme === 'dark' ? 'Dark' : 'Light';
+      }),
+    );
+    themeRow.querySelector('em').textContent = dark ? 'Dark' : 'Light';
+    themeRow.setAttribute('data-theme-toggle', '');
+    menu.append(
+      touchRow,
+      fullscreenRow,
+      themeRow,
+      node('hr', 'guide-rule'),
+      row('exit', 'Exit game', () => navigate(`/g/${entry.manifest.id}`), {
+        cls: 'is-danger',
+      }),
+    );
+    panel.append(top, now, head, menu, status);
+    const others = readRecent(browserStorage())
+      .map((r) => catalog.entries.find((e) => e.manifest.id === r.id))
+      .filter(
+        (e) =>
+          e &&
+          e.manifest.id !== entry.manifest.id &&
+          e.availability === 'available',
+      )
+      .slice(0, 4);
+    if (others.length) {
+      const quick = node('div', 'guide-switch');
+      quick.append(node('p', 'guide-kicker', 'QUICK SWITCH'));
+      const list = node('div', 'guide-switch-list');
+      for (const other of others) {
+        const link = node('a', 'guide-switch-item');
+        link.href = `/g/${other.manifest.id}`;
+        link.setAttribute('aria-label', `Switch to ${other.manifest.title}`);
+        link.title = other.manifest.title;
+        link.append(cover(other, { label: false }));
+        list.append(link);
+      }
+      quick.append(list);
+      panel.append(quick);
+    }
+    const legend = node('p', 'guide-legend');
+    legend.setAttribute('aria-hidden', 'true');
+    legend.innerHTML =
+      '<span><kbd class="glyph-a">A</kbd>Select</span><span><kbd class="glyph-b">B</kbd>Keep playing</span><span><kbd class="glyph-trigger">☰</kbd>Close</span>';
+    panel.append(legend);
+    o.replaceChildren(panel);
+    o.hidden = false;
+    session.consoleHud?.tick();
+    if (!reduced) {
+      o.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: 240,
+        easing: 'ease-out',
+      });
+      panel.animate(
+        [{ transform: 'translateX(-104%)' }, { transform: 'translateX(0)' }],
+        { duration: 420, easing: 'cubic-bezier(.2,.86,.24,1)' },
+      );
+      [...panel.children].forEach((child, index) =>
+        child.animate(
+          [
+            { opacity: 0, transform: 'translateX(-18px)' },
+            { opacity: 1, transform: 'translateX(0)' },
+          ],
+          {
+            duration: 320,
+            delay: 90 + Math.min(index, 7) * 35,
+            easing: 'cubic-bezier(.2,.8,.2,1)',
+            fill: 'backwards',
+          },
+        ),
+      );
+    }
+    keep.focus({ preventScroll: true });
+  }
+  function closeConsoleGuide(overlay) {
+    const session = active;
+    const finish = () => {
+      overlay.hidden = true;
+      overlay.classList.remove('player-settings', 'runtime-guide');
+      overlay.setAttribute('role', 'status');
+      overlay.removeAttribute('aria-label');
+      overlay.replaceChildren();
+    };
+    const panel = overlay.querySelector('.guide-panel');
+    if (!panel || matchMedia('(prefers-reduced-motion: reduce)').matches)
+      return finish();
+    overlay.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 220,
+      easing: 'ease-in',
+    });
+    panel
+      .animate(
+        [{ transform: 'translateX(0)' }, { transform: 'translateX(-104%)' }],
+        { duration: 220, easing: 'cubic-bezier(.4,0,.8,.3)' },
+      )
+      .finished.then(
+        () => {
+          if (active === session && session.channel.state === 'playable')
+            finish();
+        },
+        () => {},
+      );
   }
   function failRuntime(code) {
     if (!active) return;
@@ -655,6 +1818,7 @@ export function mountCatalog({
     navInput = null;
     input?.dispose();
     input = null;
+    active.rumble?.dispose();
     active.channel.dispose();
     active.frame.remove();
     telemetry({
@@ -664,18 +1828,22 @@ export function mountCatalog({
     });
     const e = active.entry,
       o = $('#runtime-overlay');
+    o.classList.remove('launch-screen', 'runtime-guide');
+    o.setAttribute('role', 'status');
+    o.removeAttribute('aria-label');
     o.replaceChildren(
       node('p', 'eyebrow', 'LET’S TRY THAT AGAIN'),
       node('h2', '', 'The game couldn’t open.'),
-      node('p', '', 'The runtime did not become ready, or ended unexpectedly.'),
+      node('p', '', 'The game stopped responding. Please try again.'),
     );
     const b = node('button', 'primary', 'Try again ↗');
     b.onclick = () => {
-      navigate(`/g/${e.manifest.id}`);
-      launch(e);
+      if (!isPlayer()) navigate(`/g/${e.manifest.id}`);
+      void launch(e);
     };
     o.append(b);
     o.hidden = false;
+    if ($('#player-menu')) $('#player-menu').disabled = true;
     $('#runtime-pause').disabled = true;
     $('#runtime-controls').disabled = true;
     if (inputProviderFactory) {
@@ -690,12 +1858,20 @@ export function mountCatalog({
     refresh: initialize,
     dispose() {
       disposed = true;
+      uiSound.dispose();
+      document.removeEventListener('pointerdown', unlockSound);
+      document.removeEventListener('keydown', uiSound.unlock);
+      document.removeEventListener('click', clickSound);
+      disposeHome?.();
+      onboardingUi?.dispose();
       loadVersion++;
       clearSession();
       window.removeEventListener('message', onMessage);
       window.removeEventListener('popstate', renderRoute);
       document.removeEventListener('click', onClick);
       document.removeEventListener('visibilitychange', onVisibility);
+      document.removeEventListener('fullscreenchange', onFullscreen);
+      document.removeEventListener('click', onThemeClick);
       $('#about-button').removeEventListener('click', openAbout);
       $('#close-about').removeEventListener('click', closeAbout);
     },

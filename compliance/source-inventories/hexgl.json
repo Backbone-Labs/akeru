@@ -1,0 +1,1396 @@
+{
+  "schemaVersion": 1,
+  "upstreamUrl": "https://github.com/BKcore/HexGL",
+  "revision": "6addc95a2fce3bf05f4d751823cc054c61a16d68",
+  "scope": "source-tree",
+  "rightsStatus": "unreviewed",
+  "limitation": "Per-file source identity only; no publication or asset-rights approval.",
+  "files": [
+    {
+      "path": ".gitignore",
+      "gitObjectId": "e43b0f988953ae3a84b00331d0ccf5f7d51cb3cf",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": ".htaccess",
+      "gitObjectId": "9c11e8f7920a7f99c27adec13e4a86cf3bd431d4",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "LICENSE",
+      "gitObjectId": "ccdfb1cae9a9ad9b248d830d70d52e7f3456634c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "8c5c63e4174386407d15053109c3d76c996d03af",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "audio/LICENSE",
+      "gitObjectId": "a4888a56a04370508b012b17213fa9452711218f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "audio/bg.ogg",
+      "gitObjectId": "bcb0d27d0c6c9441cee3a59ac61ed19976aff243",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "audio/boost.ogg",
+      "gitObjectId": "bcbf20c50276ab4e35d7c4b981618c4bfb3b96fd",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "audio/crash.ogg",
+      "gitObjectId": "8ff0301c71c670d7bf10c1c8a1a117bb73db9114",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "audio/destroyed.ogg",
+      "gitObjectId": "4918b1a02ea26165579e6a8e15bac90a916ad888",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "audio/wind.ogg",
+      "gitObjectId": "812077e71d07d5170ef788adc5daa40134c95262",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/ImageData.coffee",
+      "gitObjectId": "aedf606e775ef186809c4e6ad19120b1165c6a47",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/ImageData.js",
+      "gitObjectId": "a24ee84936e7ac0a182c5b92e1baaa9bee43eaad",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/Timer.coffee",
+      "gitObjectId": "d978bae425e99316f84165926f411d5bd3d6fd50",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/Timer.js",
+      "gitObjectId": "1de825bd4c3a12d6253432940e6c2a55e2381915",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/Utils.coffee",
+      "gitObjectId": "83a15b19d17f0241b459f29a7d257ed1978de697",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/Utils.js",
+      "gitObjectId": "2f2314e66441f40398816d11d313a09196a51eb7",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/controllers/GamepadController.coffee",
+      "gitObjectId": "38c090847d18ffede7738c20516ebfa37d852eb5",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/controllers/GamepadController.js",
+      "gitObjectId": "5e776315a2ca5a23ba7b400fa135bc8830019849",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/controllers/OrientationController.coffee",
+      "gitObjectId": "f9db7c497e0d577780fb19051284b3d50a64db3f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/controllers/OrientationController.js",
+      "gitObjectId": "9484a33e33e986cf365732ce6bf51cdaaae64e47",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/controllers/TouchController.coffee",
+      "gitObjectId": "24b749eed66d68af2695285b112a974fd7fb702b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/controllers/TouchController.js",
+      "gitObjectId": "d8e7f1578b0021d81663622645ebe7a410b0a2cb",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/tests.html",
+      "gitObjectId": "43f8204519023c56d1a80355b2add7215d74227c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/threejs/Particles.coffee",
+      "gitObjectId": "2ecc9123acfd20439183a2f8b3ac1ae6571c2cb9",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore.coffee/threejs/Particles.js",
+      "gitObjectId": "4208e22c4c7bcfb1b13379fc46f14c18ed87bf9f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/Audio.js",
+      "gitObjectId": "41400f1c12b762f5e00f8a1bd06bb8e9c3a736e1",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/hexgl/CameraChase.js",
+      "gitObjectId": "69a55c7487278b495f64ba7480a075f269022306",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/hexgl/Gameplay.js",
+      "gitObjectId": "9827deeff8713d4679b85d304d89ac3ea9da6324",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/hexgl/HUD.js",
+      "gitObjectId": "068e123d9aa4afc3c5e8d04dcbe46737064831c4",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/hexgl/HexGL.js",
+      "gitObjectId": "4da8e46ec7c180bac5245564f02da46cc0a80f1b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/hexgl/Ladder.js",
+      "gitObjectId": "8dbfd8fdb480e59647781348472f9f5bb6b88121",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/hexgl/RaceData.js",
+      "gitObjectId": "9d983c01b71c9496188396848ea02476537f3683",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/hexgl/ShipControls.js",
+      "gitObjectId": "685475181bbabed23a42eb556cadfb07fa0739be",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/hexgl/ShipEffects.js",
+      "gitObjectId": "1be292059203c4bd0c068872c860df4b4a466428",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/hexgl/tracks/Cityscape.js",
+      "gitObjectId": "585ca4b10f03bbefccb9a99e7096755b1ff2ed4e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/threejs/Loader.js",
+      "gitObjectId": "9744d66e69dda34f9f5db948f660fdbf44cc6a59",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/threejs/Particles.js",
+      "gitObjectId": "afb7bd4ff62d44a5563e50933dfcf40cdda4ef09",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/threejs/Preloader.js",
+      "gitObjectId": "68b37622a797ad222588830247cff0766a84c3e1",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/threejs/RenderManager.js",
+      "gitObjectId": "f847896f419f8b43127c17408352991376a136ac",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "bkcore/threejs/Shaders.js",
+      "gitObjectId": "4fe93fbd0b3963479498dc5b1d856842ccd95c62",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "cache.appcache",
+      "gitObjectId": "db218392d0b81378a714df4fde2cb4beb35b8f6b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/BebasNeue-webfont.eot",
+      "gitObjectId": "23df258b0fec767477151a74e573bb23bad9d662",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/BebasNeue-webfont.svg",
+      "gitObjectId": "df90beb838913393abe545b6ce22e100a4dfbeb5",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/BebasNeue-webfont.ttf",
+      "gitObjectId": "072487c915a886a02098221493c7a824ca23fb84",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/BebasNeue-webfont.woff",
+      "gitObjectId": "5ff9da7f269bedc16588373cbdfd04784d08fa01",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/bg.jpg",
+      "gitObjectId": "dbf5ed2493f6dd0f649131a3f2d0d9334e78088b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/fonts.css",
+      "gitObjectId": "f6a6361100bcea733a8a31bdbe198efcb8726327",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/help-0.png",
+      "gitObjectId": "27c37352670c256e892e292a9dd8fb79163bff5d",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/help-1.png",
+      "gitObjectId": "28d36d2f15a50012b521a24a10a4f01b10bfd620",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/help-2.png",
+      "gitObjectId": "97910f059b48b62fa742bc6e18fcb40dc9fc8efc",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/help-3.png",
+      "gitObjectId": "40adbb7ebe098c4a7941fb9871613938cab95d15",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/mobile-controls-1.jpg",
+      "gitObjectId": "ec1ad87063fe745afe8fd1f5ff5c9a4335a2790c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/mobile-controls-2.jpg",
+      "gitObjectId": "8aa9008661b2671ec0cca915352365a2d478eaeb",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/mobile-over.jpg",
+      "gitObjectId": "67cd9bb87e347775eb67766cb8c3454c04291a4d",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/mobile.jpg",
+      "gitObjectId": "e51887287b599ff7ede873ce91f00cbc0e04e1b0",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/multi.css",
+      "gitObjectId": "173f27bde11aa3fc8cb0cc3e4166cb880b478db0",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/title.png",
+      "gitObjectId": "9a3a509207efa4834a78aab61ca98a329be77f83",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "css/touchcontroller.css",
+      "gitObjectId": "f6212649d72c3cefd2cacb77e092e8904fe2b494",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "favicon.png",
+      "gitObjectId": "d7e74ff343b559ca5534709ac207b54b45b23f9d",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "geometries/bonus/base/base.js",
+      "gitObjectId": "a9d2d78ba76f5b28be7275b112d3ac0ee0f362fa",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "geometries/booster/booster.js",
+      "gitObjectId": "746a236aa1b5fbe00e6a62173381be089aa542ff",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "geometries/ships/feisar/feisar.js",
+      "gitObjectId": "0a53910b98e6c05d9758458d90ed3d89d055de3b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "geometries/tracks/cityscape/bonus/speed.js",
+      "gitObjectId": "c1eeddadb1fbe8ae183410db190cdda317407d59",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "geometries/tracks/cityscape/scrapers1.js",
+      "gitObjectId": "9a0adfd3cfb2d5f43aebc0d0c96b71b564adce21",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "geometries/tracks/cityscape/scrapers2.js",
+      "gitObjectId": "b530e64df86f00fe3a498474730c66bfb559125e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "geometries/tracks/cityscape/start.js",
+      "gitObjectId": "438f4e999ba6872f618acb14b51377920d5d3f62",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "geometries/tracks/cityscape/startbanner.js",
+      "gitObjectId": "ca10f64b69856b2455f5a6f173ca9102df910d5b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "geometries/tracks/cityscape/track.js",
+      "gitObjectId": "5c1fad14fc9eec36186b2d113a054291245f0084",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "geometries/tracks/edge/track.js",
+      "gitObjectId": "020c51f143f96f3de7db48fe49e9092c90e76678",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "icon_128.png",
+      "gitObjectId": "bfb50edba6731212dcb7579471d987a8fd8858aa",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "icon_256.png",
+      "gitObjectId": "edfecf319446483b5be4152952170d87a26fc154",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "icon_32.png",
+      "gitObjectId": "3319df9af3fd6b0df99bb57447f051115cfbd612",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "icon_64.png",
+      "gitObjectId": "c0921359ba217c60d2c4ecd1e4e80c2846d3bc87",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "index.html",
+      "gitObjectId": "c162c224a01cf06165735f37b626184b084ebce5",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "launch.coffee",
+      "gitObjectId": "6e6632ed329b84aa8d676d85579a4036be704193",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "launch.js",
+      "gitObjectId": "92611d2de87ce81e683f9493a0d2c168ee431bcc",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/DAT.GUI.min.js",
+      "gitObjectId": "8ed2120323ce7366b3a0397dcacc47b957e5d8a4",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Detector.js",
+      "gitObjectId": "4f34bf112e05074a650dec0d751ac4030138ea9b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor.html",
+      "gitObjectId": "a5ea659db216be9e01f46849f225b78744501a5b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/App.js",
+      "gitObjectId": "59244726eb83edddcea67b026564a4e356744d65",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/CanvasRenderer.js",
+      "gitObjectId": "6d86dfe9b3b7907ed850bb996214facaade654e9",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/Diagram.js",
+      "gitObjectId": "704b6f921d222367a2779f85114a7f75747a2656",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/Iterator.js",
+      "gitObjectId": "066631c05e87a7a7d326ded80fad0de7a8f88551",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/Links.js",
+      "gitObjectId": "a6278a028667728fcc345408c6ccc2928ec6a35a",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/ModuleList.js",
+      "gitObjectId": "8874d7892553d7453e2163aaa492bc4b1729b021",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/Node.js",
+      "gitObjectId": "6da558ea65f58c7658c6ceb3e6d78fc73ecd7dfa",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/Parser.js",
+      "gitObjectId": "d20fcec3d2960c3f737e8c6911165f09b7076350",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/Project.js",
+      "gitObjectId": "c777b75db2e645c8ab40834459823d1f4691ec67",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/Timer.js",
+      "gitObjectId": "de2aa4b5c2441b463323d0654e0410997302d9d8",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/ace.js",
+      "gitObjectId": "bdd9a2452c41856fd8611ef26d5c875f43411cd0",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/class.js",
+      "gitObjectId": "e07344745b51a5cd2f634d011cc4db4ccee5d8a6",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/editor.css",
+      "gitObjectId": "f90e74f66317fabff30b879cbbfeacf7b0611b10",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/font.css",
+      "gitObjectId": "e6df5ac5f9c36084d9ab1e21f626b2b94967a94b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/gamecore.js",
+      "gitObjectId": "eef1b035ccda4e7c6c8e07684f2a1d434e494900",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/hashlist.js",
+      "gitObjectId": "34cc37e36e5abc9bba91a6d6dd0289823f606743",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/jhashtable.js",
+      "gitObjectId": "e7947d3fea37323e88b72eb1eae97142a9889a5f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/jquery-1.8.js",
+      "gitObjectId": "f65cf1dc4573c51e54d7cf3772d06caf96726616",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/kinetic.js",
+      "gitObjectId": "c7ba0f3f7c0b4b738863482bc8cb40db060dbc17",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/main.css",
+      "gitObjectId": "217ad800637e3a4758e86300556963aa59385850",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/mode-json.js",
+      "gitObjectId": "7119cdbd38757c4967a24eaa1709f8f247e1f815",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/pooled.js",
+      "gitObjectId": "a5a51e622f1e4b73fbec10c6d14b7d94d4bdf658",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Editor_files/theme-monokai.js",
+      "gitObjectId": "bb4aacc3a86df78a386d652adec9ef7891be786d",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/ShaderExtras.js",
+      "gitObjectId": "93478400567b033812da4ce5ec4ee911f20dcae3",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Stats.js",
+      "gitObjectId": "bd4e440d8ae78a2b73cc2aed8fc1eb7eae4d89e4",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Three.dev.js",
+      "gitObjectId": "941fd22bd62f6bb8c544ef9284c4c7ca3e26079e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/Three.r53.js",
+      "gitObjectId": "103e921d84cbd20886764bf26c79df35550fc13c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/leap-0.4.1.min.js",
+      "gitObjectId": "6de41001d4570589d237996de61a0922fdf77e39",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/postprocessing/BloomPass.js",
+      "gitObjectId": "78abc058fc8209d735d58b57d2413a32cd3ec445",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/postprocessing/DotScreenPass.js",
+      "gitObjectId": "0edcb8fc1e432908352a3c2e1f2b83d0c8286425",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/postprocessing/EffectComposer.js",
+      "gitObjectId": "ef07dd1f1b81dca3f0aa65f18eecaa4cc4c6317d",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/postprocessing/FilmPass.js",
+      "gitObjectId": "be6acb262c4df06d86017784d407a043d6a2ef59",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/postprocessing/MaskPass.js",
+      "gitObjectId": "23238b086db7883a45bfc6abaac63e9170d490fd",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/postprocessing/RenderPass.js",
+      "gitObjectId": "c1596e5beeed68044c829f0b69b68a71866e06cf",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/postprocessing/SavePass.js",
+      "gitObjectId": "b604d142b72883d8ee60575aac54f9e3343591c2",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/postprocessing/ShaderPass.js",
+      "gitObjectId": "8817bf1ac60ebe940d191ecdbce44e46541800d0",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "libs/postprocessing/TexturePass.js",
+      "gitObjectId": "6d104de4b68643a35bde07658701a0753f62b8bb",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "manifest.webapp",
+      "gitObjectId": "59ec357a681d787c8c4ab6bb3d75ea4275fea728",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "package.webapp",
+      "gitObjectId": "44fe062831b1c124747fd5c602d4ed753ce0d6a8",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "package.zip",
+      "gitObjectId": "6f644d4373a9bee62868a2789213fbf17f1ab08b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "replays/cityscape-casual/bkcore.replay.json",
+      "gitObjectId": "7adc5bb25ad658ec2369f295bbbd3047269bdee6",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/bonus/base/diffuse.jpg",
+      "gitObjectId": "0b7ae964d1d8842eb7aa52af4c417e91b8ccb5de",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/bonus/base/normal.jpg",
+      "gitObjectId": "93a330e80c523eabf01f29c65fbcde71cfbc6f3e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/bonus/base/specular.jpg",
+      "gitObjectId": "890c4d1f4c8a4ef0e3a9b74e6284cfc75033072e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/checker.png",
+      "gitObjectId": "232039e9647f5cbda7b6153f5d8a417998d91b93",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/hud/hex.jpg",
+      "gitObjectId": "f8dcc2901902abcf3c5a4502540ba808c2e53a47",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/hud/hud-bg.png",
+      "gitObjectId": "1ff2522c98239e72fedbcb1e57b1d7cbdc8d6c5c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/hud/hud-fg-shield.png",
+      "gitObjectId": "f94999a3b123a4d47a510705c4214e8881fb71ef",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/hud/hud-fg-speed.png",
+      "gitObjectId": "4306683d5288672d7b2165bfeb822a4d3a5f3997",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/particles/cloud - Copie.png",
+      "gitObjectId": "6568f228f85569a06241a8d72c865620222dcd8c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/particles/cloud.png",
+      "gitObjectId": "cc893f1975b1dfc2f05ae6de53f8ced1e8a52b13",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/particles/damage.png",
+      "gitObjectId": "e24217a106437a685947909ac3bc5739cf2646af",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/particles/spark - Copie.png",
+      "gitObjectId": "3aa04effdd7cc2e4aa72e16b52ee4ea593e55757",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/particles/spark.png",
+      "gitObjectId": "1101da2c798e92c8f24ca035ec31e452d2c34a67",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/ships/feisar/booster/booster.png",
+      "gitObjectId": "62d366a13d089287b06ec744432f7c01a5927814",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/ships/feisar/booster/boostersprite.jpg",
+      "gitObjectId": "8939b8c16d76bb89ca94af3928b70e25d6421acc",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/ships/feisar/diffuse.jpg",
+      "gitObjectId": "4cefffb604b0b899eb9610813e48ca5e42f6e5e0",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/ships/feisar/normal.jpg",
+      "gitObjectId": "3ac3777887bc8c8e64528dd83e08f310dc7893c1",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/ships/feisar/specular.jpg",
+      "gitObjectId": "cb57135aeba2c27473122c3442635f0ffd9cd77d",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/skybox/dawnclouds/nx.jpg",
+      "gitObjectId": "1cae307a60b90353ccc2b1ff95b7edcb4506f383",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/skybox/dawnclouds/ny.jpg",
+      "gitObjectId": "fa7a975d349aa8a45fd1f891e8a11ab2da36effa",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/skybox/dawnclouds/nz.jpg",
+      "gitObjectId": "1e9c54ef26c720d1247750bfa9adb120bf14a5ae",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/skybox/dawnclouds/px.jpg",
+      "gitObjectId": "0ad2eeaf0498edb2d5758c4a29356d1709a0ec00",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/skybox/dawnclouds/py.jpg",
+      "gitObjectId": "de7e5ccada20846d5f100f4d92c2b8f3f7db4c32",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/skybox/dawnclouds/pz.jpg",
+      "gitObjectId": "836cdb4a32c31dec3052184044753d51eac474e7",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/collision.png",
+      "gitObjectId": "d17e4c9fd16b9b4b863bf38de01f242b1d545530",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/diffuse.jpg",
+      "gitObjectId": "36e9614160c52fd4b16c86a932c4fc4ca6383654",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/height.png",
+      "gitObjectId": "6747c9da97efe04f6f8f9c81dfc2acb3747e8949",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/normal.jpg",
+      "gitObjectId": "14a923b5af8683dca5a665b184f755b7c991b4a7",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/scrapers1/diffuse.jpg",
+      "gitObjectId": "93691022bd9b98e44ba7bf8b49a48a187602bce2",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/scrapers1/normal.jpg",
+      "gitObjectId": "f7f1b73f497595445688b08165031263458c47af",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/scrapers1/specular.jpg",
+      "gitObjectId": "4364748724eb82e7dbb8e6cc9a49fa191fd34ced",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/scrapers2/diffuse.jpg",
+      "gitObjectId": "bc1b34e224dd820fb59d6c96ee482ad4d854ca7e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/scrapers2/normal.jpg",
+      "gitObjectId": "653aa6cd31e9cb86e78348dff00a2a3bfc003dc7",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/scrapers2/specular.jpg",
+      "gitObjectId": "2bbb34cd75f1dc232a9607ff75ebacf7e89e1718",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/specular.jpg",
+      "gitObjectId": "76532ded5c89d0e61eb2b38cde74e50ebdabcc69",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/start/diffuse.jpg",
+      "gitObjectId": "e047eb941481ee52e8074c550b634312996f9771",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/start/normal.jpg",
+      "gitObjectId": "029ecbabefd919c629b593103997cf3bd08beed2",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/start/specular.jpg",
+      "gitObjectId": "235a2ae3be91d7a2f767463322e53b4d3e213734",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures.full/tracks/cityscape/start/start.jpg",
+      "gitObjectId": "56c9cb27f3e5ff7902fea7c1c8ba5eb37ce5931c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/bonus/base/diffuse.jpg",
+      "gitObjectId": "0ea0fcbc477e7e643fe047a0ffb4dffc01095a0b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/bonus/base/normal.jpg",
+      "gitObjectId": "93a330e80c523eabf01f29c65fbcde71cfbc6f3e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/bonus/base/specular.jpg",
+      "gitObjectId": "890c4d1f4c8a4ef0e3a9b74e6284cfc75033072e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/checker.png",
+      "gitObjectId": "232039e9647f5cbda7b6153f5d8a417998d91b93",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/hud/hex.jpg",
+      "gitObjectId": "f8dcc2901902abcf3c5a4502540ba808c2e53a47",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/hud/hud-bg.png",
+      "gitObjectId": "1ff2522c98239e72fedbcb1e57b1d7cbdc8d6c5c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/hud/hud-fg-shield.png",
+      "gitObjectId": "f94999a3b123a4d47a510705c4214e8881fb71ef",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/hud/hud-fg-speed.png",
+      "gitObjectId": "4306683d5288672d7b2165bfeb822a4d3a5f3997",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/particles/cloud - Copie.png",
+      "gitObjectId": "6568f228f85569a06241a8d72c865620222dcd8c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/particles/cloud.png",
+      "gitObjectId": "cc893f1975b1dfc2f05ae6de53f8ced1e8a52b13",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/particles/damage.png",
+      "gitObjectId": "e24217a106437a685947909ac3bc5739cf2646af",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/particles/spark - Copie.png",
+      "gitObjectId": "3aa04effdd7cc2e4aa72e16b52ee4ea593e55757",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/particles/spark.png",
+      "gitObjectId": "1101da2c798e92c8f24ca035ec31e452d2c34a67",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/ships/feisar/booster/booster.png",
+      "gitObjectId": "e5550c85c9898a4ae109aba514b56dd040e29f9b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/ships/feisar/booster/boostersprite.jpg",
+      "gitObjectId": "aabfd84dd7fbb2c9a46006d42e728d46a202a408",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/ships/feisar/diffuse.jpg",
+      "gitObjectId": "ed075113b4ed2872813afbbc75e43c780e796b75",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/ships/feisar/normal.jpg",
+      "gitObjectId": "3ac3777887bc8c8e64528dd83e08f310dc7893c1",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/ships/feisar/specular.jpg",
+      "gitObjectId": "cb57135aeba2c27473122c3442635f0ffd9cd77d",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/skybox/dawnclouds/nx.jpg",
+      "gitObjectId": "3fffa1f036c411a754dff74c15c935b5d0f84a49",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/skybox/dawnclouds/ny.jpg",
+      "gitObjectId": "c2e17d63c7e12246f2f95787295a6547fd40e8ed",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/skybox/dawnclouds/nz.jpg",
+      "gitObjectId": "31bfcea959c8c2f0e1dbe7a87d1535a4e9f87481",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/skybox/dawnclouds/px.jpg",
+      "gitObjectId": "180ff872217c492f26c740de7069f9e615150979",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/skybox/dawnclouds/py.jpg",
+      "gitObjectId": "7e18c57b50962bd8c14ef6e30a7ad0c2815ba0c2",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/skybox/dawnclouds/pz.jpg",
+      "gitObjectId": "558922b1d88e4c363c26b1cd87c962f0e30b61d9",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/collision.png",
+      "gitObjectId": "d17e4c9fd16b9b4b863bf38de01f242b1d545530",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/diffuse.jpg",
+      "gitObjectId": "95a4be3b5488017bf6561abbd0a3c4e16026f8cd",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/height.png",
+      "gitObjectId": "6747c9da97efe04f6f8f9c81dfc2acb3747e8949",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/normal.jpg",
+      "gitObjectId": "14a923b5af8683dca5a665b184f755b7c991b4a7",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/scrapers1/diffuse.jpg",
+      "gitObjectId": "09af2ab8f7d3e29cc3788bcf8784955479651781",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/scrapers1/normal.jpg",
+      "gitObjectId": "f7f1b73f497595445688b08165031263458c47af",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/scrapers1/specular.jpg",
+      "gitObjectId": "4364748724eb82e7dbb8e6cc9a49fa191fd34ced",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/scrapers2/diffuse.jpg",
+      "gitObjectId": "2795916dfc2ccf695185df3098032dd5145b5aac",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/scrapers2/normal.jpg",
+      "gitObjectId": "653aa6cd31e9cb86e78348dff00a2a3bfc003dc7",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/scrapers2/specular.jpg",
+      "gitObjectId": "2bbb34cd75f1dc232a9607ff75ebacf7e89e1718",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/specular.jpg",
+      "gitObjectId": "76532ded5c89d0e61eb2b38cde74e50ebdabcc69",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/start/diffuse.jpg",
+      "gitObjectId": "e047eb941481ee52e8074c550b634312996f9771",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/start/normal.jpg",
+      "gitObjectId": "029ecbabefd919c629b593103997cf3bd08beed2",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/start/specular.jpg",
+      "gitObjectId": "235a2ae3be91d7a2f767463322e53b4d3e213734",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "textures/tracks/cityscape/start/start.jpg",
+      "gitObjectId": "56c9cb27f3e5ff7902fea7c1c8ba5eb37ce5931c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    }
+  ]
+}

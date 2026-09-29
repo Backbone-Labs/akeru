@@ -1,0 +1,253 @@
+/** Reproducible local evaluation build. No upstream bytes are checked in. */
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  rmSync,
+  existsSync,
+  readdirSync,
+  copyFileSync,
+} from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { resolve, dirname, posix } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { parse, parseFragment, serialize } from 'parse5';
+import { verifySource } from '../puzzle-preview/build.mjs';
+const root = fileURLToPath(new URL('../../', import.meta.url));
+export const flatten = (path) => path.replaceAll('/', '--');
+export function transformHtml(html) {
+  const document = parse(html),
+    handlers = [],
+    styles = [];
+  const visit = (parent) => {
+    parent.childNodes = (parent.childNodes ?? []).filter((element) => {
+      const attributes = element.attrs ?? [];
+      const attr = (name) =>
+        attributes.find((entry) => entry.name === name)?.value ?? '';
+      if (element.tagName === 'script') return false;
+      if (
+        element.tagName === 'meta' &&
+        /^(og:|twitter:)/.test(attr('property') || attr('name'))
+      )
+        return false;
+      if (
+        element.tagName === 'link' &&
+        attr('rel').split(/\s+/).includes('icon')
+      )
+        return false;
+      if (element.attrs) {
+        const replaced = [];
+        for (const attribute of attributes) {
+          if (attribute.name === 'style') {
+            const id = styles.length;
+            styles.push(`[data-inline-style="${id}"]{${attribute.value}}`);
+            replaced.push({ name: 'data-inline-style', value: String(id) });
+          } else if (/^on[a-z]+$/.test(attribute.name)) {
+            const id = handlers.length;
+            // parse5 has already decoded the original attribute exactly once.
+            handlers.push(
+              `document.querySelector('[data-handler-${id}]').addEventListener(${JSON.stringify(attribute.name.slice(2))},function(event){${attribute.value}});`,
+            );
+            replaced.push({ name: `data-handler-${id}`, value: '' });
+          } else replaced.push(attribute);
+        }
+        element.attrs = replaced;
+      }
+      visit(element);
+      if (element.content) visit(element.content);
+      return true;
+    });
+  };
+  visit(document);
+  const htmlElement = document.childNodes.find(
+    (element) => element.tagName === 'html',
+  );
+  const append = (tag, markup) => {
+    const parent = htmlElement.childNodes.find(
+      (element) => element.tagName === tag,
+    );
+    for (const element of parseFragment(markup).childNodes) {
+      element.parentNode = parent;
+      parent.childNodes.push(element);
+    }
+  };
+  append(
+    'head',
+    '<link rel="stylesheet" href="utilities.css"><link rel="stylesheet" href="adapter.css">',
+  );
+  append(
+    'body',
+    '<div id="akeru-cursor" aria-hidden="true"></div><div id="akeru-help">D-pad / stick: move cursor · A: select / hold to drag · B: back <span id="save-status">Local guest save</span></div><script type="module" src="adapter.js"></script>',
+  );
+  return {
+    html: serialize(document),
+    handlers: handlers.join('\n'),
+    styles: styles.join('\n'),
+  };
+}
+export function instrumentInitialization(source) {
+  const marker = '    }\n}, 100);\n\n// getIntersect';
+  if (source.split(marker).length !== 2)
+    throw new Error('Unknown upstream initialization boundary');
+  return source.replace(
+    marker,
+    '    }\n    window.dispatchEvent(new Event("akeru-engine-initialized"));\n}, 100);\n\n// getIntersect',
+  );
+}
+export function buildServerSurvival() {
+  const inventory = JSON.parse(
+      readFileSync(
+        resolve(root, 'compliance/source-inventories/server-survival.json'),
+      ),
+    ),
+    source = resolve(root, 'dist/external/server-survival'),
+    out = resolve(root, 'dist/server-survival');
+  mkdirSync(dirname(source), { recursive: true });
+  if (!existsSync(source))
+    execFileSync(
+      'git',
+      ['clone', '--no-checkout', inventory.upstreamUrl, source],
+      { stdio: 'inherit' },
+    );
+  execFileSync(
+    'git',
+    ['-C', source, 'checkout', '--detach', inventory.revision],
+    { stdio: 'inherit' },
+  );
+  const selected = inventory.files
+    .filter(
+      (f) =>
+        f.path === 'LICENSE' ||
+        f.path === 'index.html' ||
+        f.path === 'style.css' ||
+        f.path === 'game.js' ||
+        (f.path.startsWith('src/') && f.path.endsWith('.js')),
+    )
+    .map((f) => {
+      const bytes = execFileSync('git', [
+        '-C',
+        source,
+        'show',
+        `${inventory.revision}:${f.path}`,
+      ]);
+      verifySource(bytes, f);
+      return { ...f, bytes };
+    });
+  rmSync(out, { recursive: true, force: true });
+  mkdirSync(out, { recursive: true });
+  let styles = '',
+    handlers = '';
+  for (const f of selected) {
+    let bytes = f.bytes;
+    if (f.path === 'index.html') {
+      const t = transformHtml(String(bytes));
+      bytes = t.html;
+      styles = t.styles;
+      handlers = t.handlers;
+    }
+    if (f.path === 'game.js') bytes = instrumentInitialization(String(bytes));
+    if (f.path.endsWith('.js')) {
+      bytes = String(bytes)
+        .replace(
+          /(['"])(\.\.?\/[^'"]+\.js)\1/g,
+          (_, q, path) =>
+            q +
+            './' +
+            flatten(posix.normalize(posix.join(posix.dirname(f.path), path))) +
+            q,
+        )
+        .replace(/\blocalStorage\b/g, 'window.akeruStorage')
+        .replace(/new Audio\([^)]*\)/g, 'new window.AkeruSilentClip()')
+        .replaceAll('onclick=', 'data-upstream-click=')
+        .replace(/ style="([^"]*)"/g, (_, declaration) => {
+          // The pinned metrics label uses its fixed 46px sparkline width.
+          declaration = declaration.replace('${SPARK_W}', '46');
+          if (declaration.includes('${'))
+            throw new Error('Unreviewed dynamic style');
+          const id = createHash('sha256')
+            .update(declaration)
+            .digest('hex')
+            .slice(0, 12);
+          styles += `\n[data-runtime-style="${id}"]{${declaration}}`;
+          return ` data-runtime-style="${id}"`;
+        });
+    }
+    writeFileSync(resolve(out, flatten(f.path)), bytes);
+  }
+  writeFileSync(resolve(out, 'upstream-handlers.js'), handlers);
+  writeFileSync(
+    resolve(out, 'adapter.css'),
+    readFileSync(
+      resolve(root, 'packages/server-survival/adapter.css'),
+      'utf8',
+    ) +
+      '\n' +
+      styles,
+  );
+  copyFileSync(
+    resolve(root, 'packages/server-survival/adapter.js'),
+    resolve(out, 'adapter.js'),
+  );
+  copyFileSync(
+    resolve(root, 'packages/contracts/src/save-client.js'),
+    resolve(out, 'save-client.js'),
+  );
+  const vendor = resolve(root, 'node_modules/three-legacy');
+  copyFileSync(
+    resolve(vendor, 'build/three.module.js'),
+    resolve(out, 'three.js'),
+  );
+  copyFileSync(resolve(vendor, 'LICENSE'), resolve(out, 'THREE-LICENSE.txt'));
+  writeFileSync(
+    resolve(out, 'tailwind-input.css'),
+    '@tailwind base;\n@tailwind components;\n@tailwind utilities;',
+  );
+  execFileSync(
+    process.execPath,
+    [
+      resolve(root, 'node_modules/tailwindcss/lib/cli.js'),
+      '-i',
+      resolve(out, 'tailwind-input.css'),
+      '-o',
+      resolve(out, 'utilities.css'),
+      '--content',
+      `${out}/*.html,${out}/*.js`,
+      '--minify',
+    ],
+    { cwd: root, stdio: 'inherit' },
+  );
+  rmSync(resolve(out, 'tailwind-input.css'));
+  const sha = (b) => createHash('sha256').update(b).digest('hex');
+  writeFileSync(
+    resolve(out, 'build-record.json'),
+    JSON.stringify(
+      {
+        upstream: inventory.upstreamUrl,
+        revision: inventory.revision,
+        approval: 'pending; local evaluation only',
+        excluded: [
+          'All assets/sounds: unknown provenance',
+          'promotional assets',
+          'external CDN requests',
+        ],
+        source: selected.map((f) => ({ path: f.path, sha256: sha(f.bytes) })),
+        toolchain: {
+          lockfileSha256: sha(readFileSync(resolve(root, 'package-lock.json'))),
+          three: '0.128.0',
+          tailwind: '3.4.17',
+        },
+        artifacts: readdirSync(out)
+          .sort()
+          .map((path) => ({
+            path,
+            sha256: sha(readFileSync(resolve(out, path))),
+          })),
+      },
+      null,
+      2,
+    ),
+  );
+  console.log(`Built local Server Survival in ${out}`);
+}
+if (process.argv[1] === fileURLToPath(import.meta.url)) buildServerSurvival();

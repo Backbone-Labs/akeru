@@ -14,6 +14,7 @@
     <title>Akeru — Good games. Wide open.</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/console-home.css" />
     <link rel="stylesheet" href="/input/styles.css" />
     <script type="module" src="/bootstrap.js"></script>
   </head>
@@ -90,22 +91,27 @@
         ></a
       >
       <nav aria-label="Main">
-        <a href="/" data-navigate>Discover</a
+        <a href="/games" data-navigate>Discover</a
+        ><a href="/settings" data-navigate>Settings</a
         ><button class="text-button" id="about-button" data-navigate>
           About Akeru
         </button>
       </nav>
-      <span class="guest-pill"
-        ><span aria-hidden="true">●</span> Here to play</span
+      <button
+        class="secondary theme-toggle"
+        data-theme-toggle
+        type="button"
+        aria-label="Switch light or dark theme"
       >
+        Light / Dark
+      </button>
     </header>
     <div id="demo-banner" class="demo-banner" hidden>
-      DESIGN PREVIEW · Original test fixture. No published games or approvals.
+      LOCAL PREVIEW · Games shown here are not published releases.
     </div>
     <main id="main" tabindex="-1">
       <section class="initial-state" role="status">
-        <span class="spinner" aria-hidden="true"></span>
-        <h1>Opening Akeru…</h1>
+        <span class="launch-backbone" aria-label="Opening Akeru">BACKBONE</span>
       </section>
     </main>
     <footer>

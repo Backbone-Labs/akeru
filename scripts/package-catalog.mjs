@@ -8,31 +8,51 @@ import { sha256 } from './package-staging.mjs';
 export function packageCatalog(cwd = process.cwd()) {
   const source = packageSource(cwd);
   const committed = (path) =>
-    execFileSync('git', ['show', `${source.revision}:${path}`], { cwd });
+    execFileSync('git', ['show', `${source.revision}:${path}`], {
+      cwd,
+      maxBuffer: 64 * 1024 * 1024,
+    });
   const assets = new Map();
   const add = (path, bytes, type) => assets.set(path, { bytes, type });
   for (const path of [
     'index.html',
     'favicon.svg',
+    'backbone-pro.png',
     'style.css',
+    'console-home.css',
+    'console-ui.js',
+    'game-sheet.js',
+    'manrope.ttf',
+    'manrope-OFL.txt',
     'app.js',
+    'home.js',
+    'onboarding.js',
+    'promotions.js',
+    'controller-model.js',
     'model.js',
     'channel.js',
     'save-channel.js',
+    'rumble.js',
     'catalog.json',
   ]) {
     add(
       path,
       committed(`platform/catalog/${path}`),
-      path.endsWith('.svg')
-        ? 'image/svg+xml'
-        : path.endsWith('.html')
-          ? 'text/html; charset=utf-8'
-          : path.endsWith('.css')
-            ? 'text/css; charset=utf-8'
-            : path.endsWith('.js')
-              ? 'text/javascript; charset=utf-8'
-              : 'application/json; charset=utf-8',
+      path.endsWith('.ttf')
+        ? 'font/ttf'
+        : path.endsWith('.txt')
+          ? 'text/plain; charset=utf-8'
+          : path.endsWith('.png')
+            ? 'image/png'
+            : path.endsWith('.svg')
+              ? 'image/svg+xml'
+              : path.endsWith('.html')
+                ? 'text/html; charset=utf-8'
+                : path.endsWith('.css')
+                  ? 'text/css; charset=utf-8'
+                  : path.endsWith('.js')
+                    ? 'text/javascript; charset=utf-8'
+                    : 'application/json; charset=utf-8',
     );
   }
   // Publication is a separate reviewed integration. No candidate manifests,

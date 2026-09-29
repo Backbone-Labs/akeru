@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Old San Juan Kart</title>
+    <link rel="stylesheet" href="game.css" />
+    <link rel="stylesheet" href="adapter.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene"></canvas>
+      <div id="ui"></div>
+    </div>
+    <div id="boot">
+      <div class="bootInner">
+        <h1>Old San Juan Kart</h1>
+        <div class="bootBar"><i id="bootFill"></i></div>
+        <p id="bootLabel">Loading race…</p>
+      </div>
+    </div>
+    <section id="akeru-start">
+      <h1>Old San Juan Kart</h1>
+      <p>Eight racers. Three laps. Let's go.</p>
+      <button id="race" type="button">Race · A</button>
+      <p>
+        Left stick: steer · A: gas · B: brake<br />D-pad ↓: drift · D-pad ↑:
+        item
+      </p>
+      <p id="status" role="status"></p>
+    </section>
+    <span id="save-status" hidden></span>
+    <script type="module" src="title.js"></script>
+  </body>
+</html>

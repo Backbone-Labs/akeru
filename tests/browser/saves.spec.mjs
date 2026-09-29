@@ -11,14 +11,14 @@ test.afterAll(async () => {
 test('restores guest progress after a reload and resets only on confirmation', async ({
   page,
 }) => {
-  await page.goto(demo.url);
+  await page.goto(demo.url + '/games');
   await launchDemo(page, demo.url);
   const frame = page.frameLocator('iframe');
   await expect(frame.locator('#save-status')).toContainText('this browser');
   const box = await page
-    .getByRole('button', { name: 'Right', exact: true })
+    .locator('[aria-label="Directional pad"]')
     .boundingBox();
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.move(box.x + box.width * 0.85, box.y + box.height / 2);
   await page.mouse.down();
   await page.waitForTimeout(250);
   await page.mouse.up();
@@ -43,6 +43,22 @@ test('restores guest progress after a reload and resets only on confirmation', a
   const exported = JSON.parse(await readFile(await download.path(), 'utf8'));
   expect(exported.titleId).toBe('orbit-study');
   expect(exported.records[0].slot).toBe('position');
+  const sheet = page.getByRole('dialog', { name: 'Orbit study' });
+  await expect(sheet.locator('.sheet-slot')).toHaveCount(1);
+  await expect(sheet.locator('.sheet-slot')).toContainText('Saved position');
+  await sheet.getByRole('button', { name: 'Delete Saved position' }).click();
+  await expect(
+    sheet.getByRole('button', { name: 'Confirm delete Saved position' }),
+  ).toBeVisible();
+  await expect(sheet.locator('.sheet-slot')).toHaveCount(1);
+  await sheet
+    .getByRole('button', { name: 'Confirm delete Saved position' })
+    .click();
+  await expect(page.getByRole('status')).toHaveText(
+    'Saved position deleted from this browser.',
+  );
+  await expect(sheet.locator('.sheet-slot')).toHaveCount(0);
+  await expect(sheet).toContainText('No saves yet.');
   await page.getByRole('button', { name: 'Reset saves', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Confirm reset', exact: true }),
@@ -57,7 +73,7 @@ test('restores guest progress after a reload and resets only on confirmation', a
 test('IndexedDB isolates titles and prevents stale writes across connections', async ({
   page,
 }) => {
-  await page.goto(demo.url);
+  await page.goto(demo.url + '/games');
   const result = await page.evaluate(async () => {
     const { createSaveStore } = await import('/saves/index.js');
     const a = createSaveStore(),
