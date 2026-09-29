@@ -23,7 +23,7 @@ if (
   )
 )
   throw new Error('Emscripten 4.0.15 required');
-const deutex = process.env.DEUTEX || 'deutex';
+const deutex = 'deutex';
 if (
   execFileSync(deutex, ['--version'], { encoding: 'utf8' }).trim() !==
   'DeuTex 5.2.3'

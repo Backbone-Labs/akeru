@@ -7,6 +7,7 @@ import {
   copyFileSync,
   readdirSync,
   rmSync,
+  realpathSync,
 } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -43,11 +44,15 @@ export function buildTatham() {
   );
   const source = resolve(root, 'dist/external/tatham'),
     build = resolve(root, 'dist/tatham-build');
-  const emcc =
-    process.env.AKERU_EMCC || '/tmp/akeru-emsdk/upstream/emscripten/emcc';
+  // Use the activated SDK's installed command, like the other WASM builders.
+  // Do not accept a separate environment-selected executable or license path.
+  const emcc = 'emcc';
   const version = execFileSync(emcc, ['--version'], { encoding: 'utf8' });
   if (!/\b4\.0\.15\b/.test(version))
     throw new Error('Emscripten 4.0.15 is required');
+  const compilerPath = realpathSync(
+    execFileSync('which', ['emcc'], { encoding: 'utf8' }).trim(),
+  );
   mkdirSync(resolve(root, 'dist/external'), { recursive: true });
   mkdirSync(build, { recursive: true });
   if (!existsSync(source))
@@ -155,7 +160,7 @@ export function buildTatham() {
       resolve(out, 'UPSTREAM-LICENSE.txt'),
     );
     copyFileSync(
-      resolve(dirname(emcc), 'LICENSE'),
+      resolve(dirname(compilerPath), 'LICENSE'),
       resolve(out, 'EMSCRIPTEN-LICENSE.txt'),
     );
     const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');

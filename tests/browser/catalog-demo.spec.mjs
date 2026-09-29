@@ -129,6 +129,8 @@ test('persists a per-title controller remap across reload', async ({
   await expect(runtime.getByRole('status', { name: 'Game status' })).toHaveText(
     'Ready when you are.',
   );
+  // The engine can be ready before the opening reveal releases the player UI.
+  await expect(page.locator('#runtime-overlay')).toBeHidden();
   await page.getByRole('button', { name: 'Controls', exact: true }).click();
   await expect(
     page.getByRole('combobox', { name: 'confirm control' }),
