@@ -1,0 +1,43 @@
+:focus-visible {
+  outline: 3px solid #ff7b32;
+  outline-offset: 5px;
+}
+[tabindex='0']:focus {
+  outline: 3px solid #ff7b32;
+  outline-offset: 5px;
+}
+#akeru-status:empty {
+  display: none;
+}
+#akeru-status {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 10000;
+  padding: 10px;
+  color: white;
+  background: #17191ee8;
+  font: 14px system-ui;
+  pointer-events: none;
+}
+.akeru-controller-hint {
+  position: fixed;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  background: #151820d9;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font: 12px system-ui;
+  pointer-events: none;
+  text-align: center;
+  max-width: 85vw;
+}
+@media (max-width: 700px) {
+  .akeru-controller-hint {
+    font-size: 10px;
+  }
+}

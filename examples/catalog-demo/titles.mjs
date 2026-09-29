@@ -1,3 +1,4 @@
+import { creatorTitles } from '../../packages/creator-preview/titles.mjs';
 import { options as kartOptions } from '../../packages/old-san-juan-kart/catalog.mjs';
 import { options as hexglOptions } from '../../packages/hexgl/catalog.mjs';
 import { options as racerOptions } from '../../packages/racer/catalog.mjs';
@@ -18,6 +19,7 @@ import { titles as puzzleTitles } from '../../packages/tatham/titles.mjs';
 
 export function playableTitles() {
   return [
+    ...creatorTitles(),
     anarchOptions(),
     hexglOptions(),
     racerOptions(),
