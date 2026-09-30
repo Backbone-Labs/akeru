@@ -10,6 +10,7 @@ import {
 } from 'node:fs';
 import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
+import { applyWebNetwork } from './web-patches.mjs';
 const root = new URL('../../', import.meta.url).pathname;
 const source = process.argv[2],
   godot = process.env.GODOT,
@@ -56,11 +57,31 @@ writeFileSync(
   readFileSync(resolve(work, 'project.godot'), 'utf8') +
     '\n[rendering]\n\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n',
 );
-patch(
-  'ui/main_menu/main_menu.gd',
-  '\t_button_start.grab_focus()',
-  '\t_button_online.hide()\n\t_button_start.grab_focus()',
-);
+const relayUrl = process.env.BRAWLER_RELAY_URL ?? '';
+if (relayUrl) {
+  const endpoint = new URL(relayUrl);
+  if (
+    endpoint.pathname !== '/relay' ||
+    endpoint.search ||
+    endpoint.hash ||
+    endpoint.username ||
+    endpoint.password ||
+    !(
+      endpoint.protocol === 'wss:' ||
+      (endpoint.protocol === 'ws:' && endpoint.hostname === '127.0.0.1')
+    )
+  )
+    throw Error(
+      'Expected a secure relay URL (or explicit loopback development server)',
+    );
+  applyWebNetwork(work, root, relayUrl);
+} else {
+  patch(
+    'ui/main_menu/main_menu.gd',
+    '\t_button_start.grab_focus()',
+    '\t_button_online.hide()\n\t_button_start.grab_focus()',
+  );
+}
 // Runtime scripts must not depend on EditorPlugin, which is absent in exports.
 const plugin = readFileSync(
   resolve(work, 'addons/quiver.beat_em_up/quiver_beat_em_up_plugin.gd'),
@@ -134,7 +155,7 @@ writeFileSync(
   resolve(out, 'LICENSES.txt'),
   [
     'Brawler Co-op, derived from Downtown Beatdown by Quiver (https://quiver.dev).',
-    'Web adaptation: Akeru. Game code: MIT. Art, music and audio: CC-BY 4.0. Changes: web export, host input/audio/pause, browser solo mode.',
+    'Web adaptation: Akeru. Game code: MIT. Art, music and audio: CC-BY 4.0. Changes: web export, host input/audio/pause, browser networking.',
     readFileSync(resolve(work, 'LICENSE.txt'), 'utf8'),
     readFileSync(resolve(work, 'LICENSE_ASSETS.txt'), 'utf8'),
     'Godot Engine: MIT. Engine and third-party notices: https://godotengine.org/license/',
@@ -157,6 +178,7 @@ writeFileSync(
       id: 'brawler-coop',
       revision,
       sourceUrl,
+      relayUrl,
       godot: '4.7.2',
       templateSha256: hash(readFileSync(template)),
       artifacts: readdirSync(out)

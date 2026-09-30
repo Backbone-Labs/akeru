@@ -16,6 +16,9 @@ export function brawlerOptions() {
     titleFiles,
     blobImages: true,
     wasm: true,
+    ...(record.relayUrl
+      ? { networkOrigin: new URL(record.relayUrl).origin }
+      : {}),
     assetRequests: true,
     ...(existsSync(image) ? { previewImage: readFileSync(image) } : {}),
     manifest: {
@@ -51,8 +54,9 @@ export function brawlerOptions() {
     },
     metadata: {
       summary: 'Take back the streets in a pixel-art beat ’em up.',
-      description:
-        'Brawl through a city full of enemies. This browser edition currently supports solo play; online co-op from the desktop game is not available here yet.',
+      description: record.relayUrl
+        ? 'Take back the streets solo or with up to three friends. Choose Online Co-op, create a room, and share its six-character code. The host starts the match once friends join.'
+        : 'Brawl through a city full of enemies in solo mode.',
       category: 'action',
       creator: 'Quiver; Brawler Co-op adaptation',
       ageLabel: 'Unrated',
@@ -65,7 +69,9 @@ export function brawlerOptions() {
         ],
       },
       privacy: [
-        'Solo play. No account, external network requests or cloud sync.',
+        record.relayUrl
+          ? 'Guest online co-op uses a room-scoped game relay. No account or cloud saves. The host must stay connected; rooms expire after 45 minutes.'
+          : 'Solo play. No account or cloud sync.',
         'Runs are not saved. Restart begins a new run.',
       ],
       notices: [

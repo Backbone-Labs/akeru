@@ -4,6 +4,7 @@ var bridge: JavaScriptObject
 var previous := {}
 var host_paused := false
 var game_was_paused := false
+var report_timer := 0.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -25,7 +26,7 @@ func _process(_delta: float) -> void:
 	if is_paused != host_paused:
 		if is_paused:
 			game_was_paused = get_tree().paused
-			get_tree().paused = true
+			if not Net.is_online(): get_tree().paused = true
 		else:
 			get_tree().paused = game_was_paused
 		host_paused = is_paused
@@ -40,7 +41,18 @@ func _process(_delta: float) -> void:
 			event.strength = value
 			Input.parse_input_event(event)
 	previous = actions.duplicate()
-	if bridge.take_restart():
+	if bridge.take_restart() and (not Net.is_online() or Net.is_host()):
 		game_was_paused = false
-		get_tree().paused = host_paused
-		get_tree().change_scene_to_file("res://stages/stage_01/stage_01.tscn")
+		get_tree().paused = host_paused and not Net.is_online()
+		Net.start_stage("res://stages/stage_01/stage_01.tscn")
+	report_timer += _delta
+	if report_timer >= 0.2:
+		report_timer = 0
+		var scene = get_tree().current_scene
+		var playing: bool = scene != null and scene.has_method("get_player")
+		var positions := {}
+		if playing:
+			for id in Net.sorted_peer_ids():
+				var player = scene.get_player(id)
+				if is_instance_valid(player): positions[str(id)] = [player.position.x, player.position.y]
+		bridge.report(JSON.stringify({"playing": playing, "online": Net.is_online(), "host": Net.is_host(), "room": Net.get("room_code"), "peer": Net.local_id(), "players": Net.players, "positions": positions}))

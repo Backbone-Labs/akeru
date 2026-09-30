@@ -7,6 +7,9 @@ let seq = 0,
   connected = false,
   ready = false,
   restart = false;
+let gameStatus = {},
+  lastTouch,
+  lastHost;
 const state = { paused: false, muted: false, actions: {} };
 const send = (type, payload) =>
   parent.postMessage(
@@ -37,6 +40,25 @@ async function enableAudio() {
   ]);
 }
 window.akeruBrawler = Object.freeze({
+  status: () => structuredClone(gameStatus),
+  report: (json) => {
+    gameStatus = JSON.parse(json);
+    if (ready && lastTouch !== gameStatus.playing) {
+      lastTouch = gameStatus.playing;
+      send('touch-overlay', { visible: lastTouch });
+    }
+    const canRestart = !gameStatus.online || gameStatus.host;
+    if (ready && lastHost !== canRestart) {
+      lastHost = canRestart;
+      send('actions', {
+        supported: [
+          'audio',
+          'audio-status',
+          ...(canRestart ? ['restart'] : []),
+        ],
+      });
+    }
+  },
   read: () => JSON.stringify(state),
   take_restart: () => {
     const value = restart;
@@ -64,7 +86,7 @@ async function boot() {
       canvas: document.querySelector('canvas'),
       canvasResizePolicy: 2,
       focusCanvas: true,
-      experimentalVK: false,
+      experimentalVK: true,
       persistentPaths: [],
       onExit: () => send('exit', {}),
       onPrint: () => {},

@@ -68,7 +68,7 @@ export async function startCatalogDemo(options = {}) {
       (req, res) => {
         res.setHeader(
           'Content-Security-Policy',
-          `default-src 'none'; script-src 'self' ${titleOptions.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self' ${titleOptions.blobImages ? 'blob:' : ''}; media-src 'self'; connect-src ${titleOptions.wasm || titleOptions.assetRequests ? "'self'" : "'none'"}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
+          `default-src 'none'; script-src 'self' ${titleOptions.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self' ${titleOptions.blobImages ? 'blob:' : ''}; media-src 'self'; connect-src ${titleOptions.wasm || titleOptions.assetRequests ? "'self'" : "'none'"} ${titleOptions.networkOrigin ?? ''}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
         );
         res.setHeader(
           'Permissions-Policy',

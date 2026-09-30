@@ -24,6 +24,9 @@ test('Brawler exports, controller input, audio, pause and channel isolation', as
       engineErrors.push(m.text());
   });
   try {
+    await page.addInitScript(() =>
+      localStorage.setItem('akeru.onboarding.v1', 'complete'),
+    );
     await installSimulatedGamepad(page);
     await page.addInitScript(() => {
       window.webkit = {
@@ -104,11 +107,22 @@ test.describe('Brawler touch', () => {
     test.setTimeout(90000);
     const demo = await startCatalogDemo(brawlerOptions());
     try {
+      await page.addInitScript(() =>
+        localStorage.setItem('akeru.onboarding.v1', 'complete'),
+      );
       await page.goto(demo.url + '/play/brawler-coop');
       await expect(page.locator('#runtime-overlay')).toBeHidden({
         timeout: 30000,
       });
       const frame = page.frames().find((f) => f !== page.mainFrame());
+      await frame.locator('canvas').focus();
+      await page.keyboard.press('Enter');
+      await expect
+        .poll(
+          () => frame.evaluate(() => window.akeruBrawler.status().playing),
+          { timeout: 15000 },
+        )
+        .toBe(true);
       await expect(page.locator('#touch-controls')).toBeVisible();
       const pad = page.getByLabel('left thumbstick', { exact: true });
       const box = await pad.boundingBox();
