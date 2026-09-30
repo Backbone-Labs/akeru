@@ -241,8 +241,13 @@ export function mountCatalog({
   const onVisibility = () => {
     if (document.hidden) active?.rumble?.stop();
     if (document.hidden && active?.channel?.state === 'playable') pause();
+    if (!document.hidden) void attachNativeMenu(active);
   };
   document.addEventListener('visibilitychange', onVisibility);
+  const onNativeFocus = () => {
+    if (!document.hidden) void attachNativeMenu(active);
+  };
+  window.addEventListener('focus', onNativeFocus);
   const onFullscreen = () => {
     const button = $('#runtime-fullscreen');
     if (button?.classList.contains('runtime-tool')) syncConsoleFullscreen();
@@ -278,6 +283,7 @@ export function mountCatalog({
     }
   }
   let nativeMenu = false;
+  let nativeAttachment = null;
   let nativeSequence = 0;
   globalThis.akeruNative = Object.freeze({
     async command(action, payload = {}, version = 1) {
@@ -347,22 +353,48 @@ export function mountCatalog({
     },
   });
   async function attachNativeMenu(session) {
-    if (!isPlayer() || !globalThis.webkit?.messageHandlers?.akeruPlayer) return;
+    if (
+      !session ||
+      !session.nativeMenuReady ||
+      !isPlayer() ||
+      nativeMenu ||
+      active !== session ||
+      nativeAttachment === session ||
+      !['playable', 'paused'].includes(session.channel.state) ||
+      !globalThis.webkit?.messageHandlers?.akeruPlayer
+    )
+      return;
+    nativeAttachment = session;
     try {
-      const accepted =
-        await globalThis.webkit.messageHandlers.akeruPlayer.postMessage({
-          action: 'menu',
-        });
-      if (accepted !== true || active !== session) return;
-      nativeMenu = true;
-      if ($('#player-menu')) $('#player-menu').hidden = true;
-      $('#touch-controls').hidden = true;
-    } catch {
-      /* Older app versions keep the web menu. */
+      // iOS rejects bridge messages while transitioning into the foreground.
+      // Keep the fallback until this exact session receives an acknowledgement.
+      for (let attempt = 0; attempt < 8; attempt++) {
+        if (active !== session || nativeMenu) return;
+        try {
+          const accepted =
+            await globalThis.webkit.messageHandlers.akeruPlayer.postMessage({
+              action: 'menu',
+            });
+          if (active !== session) return;
+          if (accepted === true) {
+            nativeMenu = true;
+            if ($('#player-menu')) $('#player-menu').hidden = true;
+            $('#touch-controls').hidden = true;
+            return;
+          }
+        } catch {
+          // A temporarily unavailable bridge can recover on the next attempt.
+        }
+        if (attempt < 7)
+          await new Promise((resolve) => setTimeout(resolve, 750));
+      }
+    } finally {
+      if (nativeAttachment === session) nativeAttachment = null;
     }
   }
   function clearSession() {
     nativeMenu = false;
+    nativeAttachment = null;
     clearInterval(controllerMonitor);
     controllerMonitor = null;
     stopControlsMonitor();
@@ -1060,6 +1092,7 @@ export function mountCatalog({
             durationMs: Math.min(600000, performance.now() - start),
           });
           bindInput(entry.manifest.id, true);
+          session.nativeMenuReady = true;
           void attachNativeMenu(session);
           let lastConnected = null;
           const syncController = () => {
@@ -1877,6 +1910,7 @@ export function mountCatalog({
       window.removeEventListener('popstate', renderRoute);
       document.removeEventListener('click', onClick);
       document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('focus', onNativeFocus);
       document.removeEventListener('fullscreenchange', onFullscreen);
       document.removeEventListener('click', onThemeClick);
       $('#about-button').removeEventListener('click', openAbout);
