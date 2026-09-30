@@ -71,3 +71,48 @@ test('creator pill sound state follows the game mixer', async () => {
   await f.pill.receive({ id: 2, action: 'audio-status' });
   assert.equal(f.replies[1].state.audioState, 'off');
 });
+
+test('opening the pill does not mistake deliberately paused sound for autoplay blocking', async () => {
+  const f = fixture({ audioPaused: () => true });
+  f.game.sfx.ctx.state = 'suspended';
+  await f.pill.receive({ id: 1, action: 'audio-status' });
+  assert.equal(f.replies[0].ok, true);
+  assert.equal(f.replies[0].state.audioState, 'on');
+  await f.pill.receive({ id: 2, action: 'audio' });
+  assert.equal(f.game.sfx.enabled, false);
+  assert.equal(f.replies[1].state.audioState, 'off');
+  await f.pill.receive({ id: 3, action: 'audio' });
+  assert.equal(f.game.sfx.enabled, true);
+  assert.equal(f.replies[2].state.audioState, 'on');
+  assert.equal(f.game.sfx.ctx.state, 'suspended');
+});
+
+test('autoplay blocking returns actionable machine state, without claiming audible sound', async () => {
+  const f = fixture();
+  f.game.sfx.ctx.state = 'suspended';
+  f.game.sfx.ctx.resume = async () => {};
+  for (const action of ['audio-status', 'audio']) {
+    await f.pill.receive({ id: f.replies.length, action });
+    assert.equal(f.replies.at(-1).ok, true);
+    assert.equal(f.replies.at(-1).state.audioState, 'blocked');
+    assert.match(f.replies.at(-1).message, /tap the game/);
+  }
+});
+
+test('sound status and mute still work while progress is saving', async () => {
+  let finish;
+  const f = fixture({
+    flush: () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  });
+  const saving = f.pill.receive({ id: 1, action: 'save' });
+  await f.pill.receive({ id: 2, action: 'audio-status' });
+  await f.pill.receive({ id: 3, action: 'audio' });
+  assert.equal(f.replies[0].state.audioState, 'on');
+  assert.equal(f.replies[1].state.audioState, 'off');
+  finish();
+  await saving;
+  assert.equal(f.replies[2].ok, true);
+});

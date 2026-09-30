@@ -32,7 +32,7 @@ for (const [id, options, handle] of [
       await expect(page.locator('#runtime-overlay')).toBeHidden({
         timeout: 25000,
       });
-      const frame = page.frames().find((f) => f !== page.mainFrame());
+      let frame = page.frames().find((f) => f !== page.mainFrame());
       await expect
         .poll(() => frame.evaluate((h) => Boolean(window[h]), handle))
         .toBe(true);
@@ -78,6 +78,49 @@ for (const [id, options, handle] of [
       await frame.evaluate((h) => window[h].sfx.setEnabled(false), handle);
       const audio = await command('audio-status');
       expect(audio.state.audioState).toBe('off');
+      // Audio is deliberately suspended while the native pill is expanded.
+      // Toggle both ways without turning a healthy paused context into blocked.
+      await frame.locator('body').click({ position: { x: 8, y: 8 } });
+      await frame.evaluate((h) => {
+        window[h].sfx._ensure();
+      }, handle);
+      await expect
+        .poll(() => frame.evaluate((h) => window[h].sfx.ctx?.state, handle))
+        .toBe('running');
+      await command('pause');
+      await expect
+        .poll(() => frame.evaluate((h) => window[h].sfx.ctx?.state, handle))
+        .toBe('suspended');
+      expect((await command('audio')).state.audioState).toBe('on');
+      expect((await command('audio-status')).state.audioState).toBe('on');
+      expect((await command('audio')).state.audioState).toBe('off');
+      // Save real game progress and the pill's mute preference, then reopen.
+      await frame.evaluate((h) => {
+        const g = window[h];
+        if (h === 'ss') {
+          const save = g.ui.getSave();
+          save.unlocked = 2;
+          save.settings.sensitivity = 1.25;
+          g.ui.setSave(save);
+        } else g.ui.setProgress(g.ui.levels[0].id, 2);
+      }, handle);
+      expect((await command('save')).ok).toBe(true);
+      await page.reload();
+      await expect(page.locator('#runtime-overlay')).toBeHidden({
+        timeout: 25000,
+      });
+      frame = page.frames().find((f) => f !== page.mainFrame());
+      expect(await frame.evaluate((h) => window[h].sfx.enabled, handle)).toBe(
+        false,
+      );
+      const progress = await frame.evaluate(
+        (h) =>
+          h === 'ss'
+            ? window[h].ui.getSave().unlocked
+            : Object.values(window[h].ui.getProgress()).includes(2),
+        handle,
+      );
+      expect(progress).toBe(handle === 'ss' ? 2 : true);
       // A frame impersonating its parent cannot execute a native action.
       await frame.evaluate(() =>
         window.postMessage(

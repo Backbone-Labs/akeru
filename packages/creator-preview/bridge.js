@@ -68,12 +68,22 @@ export function connectCreator(config) {
     })();
     await saving;
   };
+  let pausedAudioContext = null;
+  const suspendAudio = () => {
+    const ctx = getGame()?.sfx?.ctx;
+    if (ctx?.state === 'running') pausedAudioContext = ctx;
+    void ctx?.suspend().catch(() => {});
+  };
   const pill = config.pill
     ? createPill({
         game: getGame,
         send,
         audioChanged: config.audioChanged,
         restart: config.restart,
+        audioPaused: () =>
+          bridge.paused &&
+          pausedAudioContext === getGame()?.sfx?.ctx &&
+          pausedAudioContext?.state === 'suspended',
         flush: async () => {
           config.beforeSave?.(getGame());
           dirty = true;
@@ -139,8 +149,11 @@ export function connectCreator(config) {
     if (value || document.hidden) {
       config.beforeSave?.(game);
       void flush().catch(() => {});
-      void game?.sfx?.ctx?.suspend();
-    } else void game?.sfx?.ctx?.resume().catch(() => {});
+      suspendAudio();
+    } else {
+      pausedAudioContext = null;
+      void game?.sfx?.ctx?.resume().catch(() => {});
+    }
   };
   // Convert presentation styles through CSSOM instead of allowing inline scripts/styles.
   const styles = () =>
@@ -277,7 +290,7 @@ export function connectCreator(config) {
     if (document.hidden) {
       config.beforeSave?.(getGame());
       void flush().catch(() => {});
-      void getGame()?.sfx?.ctx?.suspend();
+      suspendAudio();
     }
   });
   setInterval(() => {

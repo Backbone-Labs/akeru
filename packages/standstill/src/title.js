@@ -10,9 +10,12 @@ let direction = '',
   nextAt = 0;
 connectCreator({
   handle: 'ss',
-  keys: ['ss_save'],
+  keys: ['ss_save', 'ss_sound'],
   whenReady: (game) => game.bootComplete,
   pill: true,
+  audioChanged(game, enabled) {
+    globalThis.akeruCreator.storage.setItem('ss_sound', enabled ? '1' : '0');
+  },
   restart(game) {
     if (!game.level) return false;
     game.retry();
@@ -106,6 +109,9 @@ connectCreator({
     game.input.lmb = game.input.rmbEdge = false;
   },
   setup(game) {
+    game.sfx.setEnabled(
+      globalThis.akeruCreator.storage.getItem('ss_sound') !== '0',
+    );
     game.ui.lockHint = false;
     addEventListener('keydown', (event) => {
       if (event.isTrusted) hints.set('keyboard');
