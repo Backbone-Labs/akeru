@@ -26,6 +26,36 @@ buildCreator({
         "if (!globalThis.akeruCreator.paused && (this.inGame() || this.mode === 'online')) this.tick(dt);",
       );
     }
+    if (path === 'client/ui/tutorial.js') {
+      code =
+        "import { controllerSteps, tutorialStyles } from '../controller-tutorial.js';\n" +
+        code;
+      code = replaceRequired(
+        code,
+        '<style>${css}</style>',
+        '${tutorialStyles(css)}',
+      );
+      code = replaceRequired(
+        code,
+        '<style>${css}</style>',
+        '${tutorialStyles(css)}',
+      );
+      code = replaceRequired(
+        code,
+        "    {\n      id: 'controls',",
+        '    ...controllerSteps,\n' + "    {\n      id: 'controls',",
+      );
+      code = replaceRequired(
+        code,
+        "title: 'CONTROLS',",
+        "title: 'KEYBOARD CONTROLS',",
+      );
+      code = replaceRequired(
+        code,
+        '<div class="tut-foot">',
+        '<div class="creator-tutorial-nav">LB back · A / RB next · B close</div><div class="tut-foot">',
+      );
+    }
     return code;
   },
 });

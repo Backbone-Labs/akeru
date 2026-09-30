@@ -63,6 +63,7 @@ export function connectCreator(config) {
     const game = getGame();
     return (
       game?.ui.screen === 'game' &&
+      !game.paused &&
       !game.ui.isPaused?.() &&
       !game.ui._tutMode &&
       !document.querySelector('.modal-layer.is-visible:not(.pause-layer)')
@@ -187,7 +188,12 @@ export function connectCreator(config) {
       };
       const pressed = (k) => controls.buttons[k] > 0.5 && !(previous[k] > 0.5);
       const game = getGame();
-      if (!playing()) {
+      if (game.ui._tutMode) {
+        if (pressed('cancel')) navigation.back();
+        else if (pressed('confirm') || pressed('rightShoulder'))
+          game.ui.tutorial.next();
+        else if (pressed('leftShoulder')) game.ui.tutorial.back();
+      } else if (!playing()) {
         navigation.update(controls, performance.now());
         if (pressed('confirm')) {
           if (game.ui.screen === 'title') game.ui.show('menu');
@@ -205,7 +211,8 @@ export function connectCreator(config) {
       clear();
   });
   const animate = (now) => {
-    if (ready && !bridge.paused && !playing()) navigation.update(controls, now);
+    if (ready && !bridge.paused && !playing() && !getGame()?.ui._tutMode)
+      navigation.update(controls, now);
     requestAnimationFrame(animate);
   };
   requestAnimationFrame(animate);

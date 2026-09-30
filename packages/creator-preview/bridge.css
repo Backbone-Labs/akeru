@@ -41,3 +41,58 @@
     font-size: 10px;
   }
 }
+
+.creator-control-plate {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem;
+  gap: 1.5rem;
+  color: var(--parchment-ink, var(--ink));
+  font-family: var(--f-head, var(--display));
+}
+.creator-control-plate .controller-caption {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+.creator-control-plate dl {
+  display: grid;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  flex: 1;
+  min-height: 0;
+  gap: 0.75rem;
+  margin: 0;
+}
+.creator-control-plate .controller-row {
+  display: grid;
+  grid-template-columns: 42% minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+}
+.creator-control-plate .controller-button {
+  border: 2px solid var(--brass-dark, var(--wood-edge));
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.25rem;
+  background: var(--parchment-2, var(--cream));
+  color: var(--parchment-ink, var(--ink));
+  text-align: center;
+  font: 700 1.2rem system-ui;
+}
+.creator-control-plate .controller-action {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.creator-control-plate[data-tone='manor'] {
+  color: var(--parchment);
+}
+.creator-tutorial-nav {
+  text-align: center;
+  font: 700 1.2rem var(--body, sans-serif);
+  color: var(--cream);
+}

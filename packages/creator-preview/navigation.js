@@ -124,7 +124,7 @@ export function createNavigation(getGame) {
         game.ui._closeTutorial?.();
         return;
       }
-      if (game.ui.isPaused?.()) {
+      if (game.paused || game.ui.isPaused?.()) {
         game.setPaused(false);
         return;
       }

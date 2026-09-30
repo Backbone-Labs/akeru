@@ -32,6 +32,9 @@ The normal evaluation catalog also includes these titles when they are built.
 - Both: stick/D-pad navigates menus, A selects, B goes back, Menu opens Akeru's
   menu. Original keyboard/mouse controls remain. Touch uses Akeru's two sticks
   and action buttons plus tappable game menus. Room names/codes use text entry.
+- Each game’s own Tutorial / How to Play includes two controller chapters before
+  the original keyboard controls. In the tutorial, A/RB advances, LB goes back
+  and B closes; the same pages are available from the game’s pause menu.
 - One host-selected gamepad is supported. Kitchen local player two retains its
   original keyboard controls; simultaneous two-controller routing is not added.
 - Host pause, controller disconnect, focus loss and backgrounding clear held

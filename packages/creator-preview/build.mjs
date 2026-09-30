@@ -127,7 +127,13 @@ export function buildCreator({ id, revision, title, patch }) {
       );
     put(flat(virtual), code);
   }
-  for (const file of ['bridge.js', 'bridge.css', 'storage.js', 'navigation.js'])
+  for (const file of [
+    'bridge.js',
+    'bridge.css',
+    'storage.js',
+    'navigation.js',
+    'controller-art.js',
+  ])
     put(file, readFileSync(new URL(file, import.meta.url)));
   for (const file of readdirSync(new URL(`../${id}/src/`, import.meta.url)))
     put(file, readFileSync(new URL(`../${id}/src/${file}`, import.meta.url)));

@@ -37,6 +37,26 @@ buildCreator({
         "this.scr.title.addEventListener('pointerdown', toMenu);",
         "this.scr.title.addEventListener('click', toMenu);",
       );
+    if (path === 'client/ui/tutorial.js') {
+      code =
+        "import { controllerChapters } from '../controller-tutorial.js';\n" +
+        code;
+      code = replaceRequired(
+        code,
+        "    { title: 'Controls',",
+        '    ...controllerChapters,\n' + "    { title: 'Controls',",
+      );
+      code = replaceRequired(
+        code,
+        "title: 'Controls',",
+        "title: 'Keyboard & Mouse',",
+      );
+      code = replaceRequired(
+        code,
+        '<span class="kbd">←</span><span class="kbd">→</span> turn the page',
+        'LB / RB pages · A next · B close',
+      );
+    }
     return code;
   },
 });
