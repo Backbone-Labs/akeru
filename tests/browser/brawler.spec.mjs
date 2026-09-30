@@ -7,6 +7,14 @@ import {
 } from './fixtures.mjs';
 import { startCatalogDemo } from '../../examples/catalog-demo/server.mjs';
 import { brawlerOptions } from '../../packages/brawler-coop/catalog.mjs';
+async function openDemo() {
+  const origin = process.env.BRAWLER_TEST_ORIGIN;
+  if (!origin) return startCatalogDemo(brawlerOptions());
+  const url = new URL(origin);
+  if (url.protocol !== 'https:' || url.origin !== origin)
+    throw new Error('Expected explicit HTTPS test origin');
+  return { url: origin, close: async () => {} };
+}
 test('Brawler exports, controller input, audio, pause and channel isolation', async ({
   page,
 }) => {
@@ -17,7 +25,7 @@ test('Brawler exports, controller input, audio, pause and channel isolation', as
     'Explicit creator export required',
   );
   test.setTimeout(90000);
-  const demo = await startCatalogDemo(brawlerOptions());
+  const demo = await openDemo();
   const engineErrors = [];
   page.on('console', (m) => {
     if (/SCRIPT ERROR|Parse Error|^ERROR:/.test(m.text()))
@@ -36,6 +44,7 @@ test('Brawler exports, controller input, audio, pause and channel isolation', as
       };
     });
     await page.goto(demo.url + '/play/brawler-coop');
+    await expect(page.locator('iframe')).toBeVisible({ timeout: 60000 });
     await expect(page.locator('#runtime-overlay')).toBeHidden({
       timeout: 30000,
     });
@@ -105,7 +114,7 @@ test.describe('Brawler touch', () => {
       'Explicit creator export required',
     );
     test.setTimeout(90000);
-    const demo = await startCatalogDemo(brawlerOptions());
+    const demo = await openDemo();
     try {
       await page.addInitScript(() =>
         localStorage.setItem('akeru.onboarding.v1', 'complete'),
@@ -160,7 +169,7 @@ test('Brawler phone rotation preserves native pause and controller gameplay', as
     'Explicit creator export required',
   );
   test.setTimeout(90000);
-  const demo = await startCatalogDemo(brawlerOptions());
+  const demo = await openDemo();
   try {
     await page.setViewportSize({ width: 390, height: 844 });
     await installSimulatedGamepad(page);
