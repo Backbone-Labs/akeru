@@ -149,3 +149,81 @@ test.describe('Brawler touch', () => {
     }
   });
 });
+
+test('Brawler phone rotation preserves native pause and controller gameplay', async ({
+  page,
+}) => {
+  test.skip(
+    !existsSync(
+      new URL('../../dist/brawler-coop/build-record.json', import.meta.url),
+    ),
+    'Explicit creator export required',
+  );
+  test.setTimeout(90000);
+  const demo = await startCatalogDemo(brawlerOptions());
+  try {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await installSimulatedGamepad(page);
+    await page.addInitScript(() => {
+      window.webkit = {
+        messageHandlers: {
+          akeruPlayer: { postMessage: async (m) => m.action === 'menu' },
+        },
+      };
+    });
+    await page.goto(demo.url + '/play/brawler-coop');
+    await expect(page.locator('iframe')).toBeVisible();
+    const frame = page.frames().find((f) => f !== page.mainFrame());
+    await expect(frame.locator('#rotate')).toBeVisible();
+    await expect(page.locator('#runtime-overlay')).toBeHidden({
+      timeout: 30000,
+    });
+    await page.screenshot({ path: '/tmp/brawler-mobile-portrait.png' });
+    const state = () =>
+      frame.evaluate(() => JSON.parse(window.akeruBrawler.read()));
+    const status = () => frame.evaluate(() => window.akeruBrawler.status());
+    const command = (a) =>
+      page.evaluate((a) => window.akeruNative.command(a, {}, 2), a);
+    expect((await state()).paused).toBe(true);
+    await command('pause');
+    await page.setViewportSize({ width: 667, height: 375 });
+    await expect(frame.locator('#rotate')).toBeHidden();
+    expect((await state()).paused).toBe(true); // Rotation cannot dismiss the native menu.
+    await command('resume');
+    await expect.poll(async () => (await state()).paused).toBe(false);
+    await page.waitForTimeout(2500);
+    await page.screenshot({ path: '/tmp/brawler-mobile-menu.png' });
+    await setGamepadButton(page, 0, 1);
+    await page.waitForTimeout(150);
+    await setGamepadButton(page, 0, 0);
+    await expect
+      .poll(async () => (await status()).playing, { timeout: 15000 })
+      .toBe(true);
+    const start = (await status()).positions['1'][0];
+    await page.evaluate(() => window.__akeruTestGamepad.axis(0, 1));
+    await expect
+      .poll(async () => (await status()).positions['1'][0])
+      .toBeGreaterThan(start + 20);
+    await page.evaluate(() => window.__akeruTestGamepad.neutral());
+    // Trigger combat and native-pause input suppression use the same game actions.
+    await page.evaluate(() =>
+      window.akeruNative.command('input', { rightTrigger: 255 }, 2),
+    );
+    await expect.poll(async () => (await state()).actions.attack).toBe(1);
+    await page.evaluate(() => window.akeruNative.command('input', {}, 2));
+    await frame.locator('canvas').click({ position: { x: 20, y: 160 } });
+    await expect
+      .poll(async () => (await command('audio-status')).state.audioState)
+      .toBe('on');
+    await command('pause');
+    expect((await command('audio')).state.audioState).toBe('off');
+    expect((await command('audio')).state.audioState).toBe('on');
+    const reply = await command('restart');
+    expect(reply.ok).toBe(true);
+    expect(reply.state).toEqual({}); // Required by AkeruCommandReply in iOS.
+    await command('resume');
+    await page.screenshot({ path: '/tmp/brawler-mobile-landscape.png' });
+  } finally {
+    await demo.close();
+  }
+});

@@ -82,6 +82,27 @@ if (relayUrl) {
     '\t_button_online.hide()\n\t_button_start.grab_focus()',
   );
 }
+// The shipped tutorial describes the web adapter, not the upstream joypad map.
+patch(
+  'ui/how_to_play/how_to_play.tscn',
+  'Left Analog Stick  - Move',
+  'Left stick / D-pad - Move',
+);
+patch(
+  'ui/how_to_play/how_to_play.tscn',
+  'X (Xbox), Square (Sony) - Attack',
+  'X / RT - Attack',
+);
+patch(
+  'ui/how_to_play/how_to_play.tscn',
+  'A (Xbox), X (Sony) - Jump',
+  'A - Jump / Confirm',
+);
+patch(
+  'ui/how_to_play/how_to_play.tscn',
+  'Menu, Options - Pause Menu',
+  'Backbone button - Game menu',
+);
 // Runtime scripts must not depend on EditorPlugin, which is absent in exports.
 const plugin = readFileSync(
   resolve(work, 'addons/quiver.beat_em_up/quiver_beat_em_up_plugin.gd'),

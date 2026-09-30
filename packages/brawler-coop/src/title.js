@@ -7,10 +7,19 @@ let seq = 0,
   connected = false,
   ready = false,
   restart = false;
+let hostPaused = false;
+const portrait = matchMedia('(orientation: portrait)');
 let gameStatus = {},
   lastTouch,
   lastHost;
 const state = { paused: false, muted: false, actions: {} };
+function updateLayout() {
+  state.paused = hostPaused || portrait.matches;
+  if (state.paused) state.actions = {};
+  document.querySelector('#rotate').hidden = !portrait.matches;
+}
+portrait.addEventListener('change', updateLayout);
+updateLayout();
 const send = (type, payload) =>
   parent.postMessage(
     { protocol: 'akeru.catalog.v1', nonce, sequence: seq++, type, payload },
@@ -120,10 +129,12 @@ addEventListener('message', (event) => {
     state.actions = mapInput(m.payload);
   else if (m.type === 'pause') {
     state.actions = {};
-    state.paused = true;
+    hostPaused = true;
+    updateLayout();
   } else if (m.type === 'resume') {
     state.actions = {};
-    state.paused = false;
+    hostPaused = false;
+    updateLayout();
     void enableAudio();
   } else if (m.type === 'action' && ready) void action(m.payload);
 });
@@ -147,7 +158,7 @@ async function action(p) {
         : audioState() === 'off'
           ? 'Sound off.'
           : 'Resume and tap the game to enable sound.';
-  else if (p.action === 'restart') {
+  else if (p.action === 'restart' && (!gameStatus.online || gameStatus.host)) {
     restart = true;
     state.actions = {};
     message = 'Starting a new run.';
@@ -161,7 +172,7 @@ async function action(p) {
     message,
     ...(typeof p.action === 'string' && p.action.startsWith('audio')
       ? { state: { audioState: audioState() } }
-      : {}),
+      : { state: {} }),
   });
 }
 document.querySelector('canvas').addEventListener('pointerdown', () => {
