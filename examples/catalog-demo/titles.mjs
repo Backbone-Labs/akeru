@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { brawlerOptions } from '../../packages/brawler-coop/catalog.mjs';
 import { creatorTitles } from '../../packages/creator-preview/titles.mjs';
 import { options as kartOptions } from '../../packages/old-san-juan-kart/catalog.mjs';
 import { options as hexglOptions } from '../../packages/hexgl/catalog.mjs';
@@ -20,6 +22,11 @@ import { titles as puzzleTitles } from '../../packages/tatham/titles.mjs';
 export function playableTitles() {
   return [
     ...creatorTitles(),
+    ...(existsSync(
+      new URL('../../dist/brawler-coop/build-record.json', import.meta.url),
+    )
+      ? [brawlerOptions()]
+      : []),
     anarchOptions(),
     hexglOptions(),
     racerOptions(),

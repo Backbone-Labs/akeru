@@ -68,7 +68,7 @@ export async function startCatalogDemo(options = {}) {
       (req, res) => {
         res.setHeader(
           'Content-Security-Policy',
-          `default-src 'none'; script-src 'self' ${titleOptions.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self'; media-src 'self'; connect-src ${titleOptions.wasm || titleOptions.assetRequests ? "'self'" : "'none'"}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
+          `default-src 'none'; script-src 'self' ${titleOptions.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self' ${titleOptions.blobImages ? 'blob:' : ''}; media-src 'self'; connect-src ${titleOptions.wasm || titleOptions.assetRequests ? "'self'" : "'none'"}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
         );
         res.setHeader(
           'Permissions-Policy',
@@ -100,15 +100,17 @@ export async function startCatalogDemo(options = {}) {
                     ? 'audio/ogg'
                     : path.endsWith('.txt')
                       ? 'text/plain'
-                      : path.endsWith('.wasm')
-                        ? 'application/wasm'
-                        : path.endsWith('.json')
-                          ? 'application/json'
-                          : path.endsWith('.html')
-                            ? 'text/html'
-                            : path.endsWith('.js')
-                              ? 'text/javascript'
-                              : 'text/css',
+                      : path.endsWith('.pck')
+                        ? 'application/octet-stream'
+                        : path.endsWith('.wasm')
+                          ? 'application/wasm'
+                          : path.endsWith('.json')
+                            ? 'application/json'
+                            : path.endsWith('.html')
+                              ? 'text/html'
+                              : path.endsWith('.js')
+                                ? 'text/javascript'
+                                : 'text/css',
         );
         res.end(titleFiles[path]);
       },

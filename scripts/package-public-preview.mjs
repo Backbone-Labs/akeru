@@ -116,7 +116,7 @@ try {
       'vercel.json',
       JSON.stringify(
         config(
-          `default-src 'none'; script-src 'self' ${options.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self'; connect-src ${options.wasm ? "'self'" : "'none'"}; frame-ancestors https://backbone-akeru.vercel.app; base-uri 'none'; form-action 'none'; object-src 'none'`,
+          `default-src 'none'; script-src 'self' ${options.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self' ${options.blobImages ? 'blob:' : ''}; connect-src ${options.wasm ? "'self'" : "'none'"}; frame-ancestors https://backbone-akeru.vercel.app; base-uri 'none'; form-action 'none'; object-src 'none'`,
         ),
         null,
         2,
