@@ -70,6 +70,11 @@ connectCreator({
     direction = '';
     nextAt = 0;
     if (!game) return;
+    if (
+      globalThis.akeruCreator.paused &&
+      document.pointerLockElement === game.canvas
+    )
+      document.exitPointerLock?.();
     game.akeruActions = {};
     game.akeruPending = {};
     game.input.dx = game.input.dy = 0;
@@ -77,16 +82,8 @@ connectCreator({
   },
   setup(game) {
     game.ui.lockHint = false;
-    game.canvas.addEventListener('pointermove', (e) => {
-      if (game.playing() && e.buttons) {
-        game.input.dx += e.movementX;
-        game.input.dy += e.movementY;
-      }
-    });
-    game.canvas.addEventListener('pointerdown', (e) => {
-      if (!game.playing()) return;
-      if (e.button === 0) game.input.lmb = true;
-      if (e.button === 2) game.input.rmbEdge = true;
+    game.canvas.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse') game.ui.lockHint = true;
     });
   },
 });

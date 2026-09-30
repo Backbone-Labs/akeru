@@ -31,14 +31,12 @@ buildCreator({
         '    try {\n      if (this.mode',
         '    if (globalThis.akeruCreator.paused) { this.input.endFrame(); requestAnimationFrame((t) => this.frame(t)); return; }\n    try {\n      if (this.mode',
       );
-      const start = code.indexOf('  lock() {'),
-        end = code.indexOf('  onLockChange()');
-      if (start < 0 || end <= start)
-        throw new Error('Pointer-lock patch anchor changed');
-      code =
-        code.slice(0, start) +
-        '  lock() {} // Host controller/touch look and mouse drag do not require pointer lock.\n' +
-        code.slice(end);
+      // Keep the game's real mouse capture. The host sandbox permits pointer lock.
+      code = replaceRequired(
+        code,
+        'document.pointerLockElement !== this.canvas && this.playing()',
+        'document.pointerLockElement !== this.canvas && this.playing() && !globalThis.akeruCreator.paused',
+      );
     }
     if (
       path === 'client/render/asset.js' ||
