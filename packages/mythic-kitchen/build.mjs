@@ -7,6 +7,11 @@ buildCreator({
     if (path === 'client/main.js') {
       code = replaceRequired(
         code,
+        'if (this.net) return this.net;',
+        'if (this.net) { await this.net.connect(); return this.net; }',
+      );
+      code = replaceRequired(
+        code,
         'pv.render?.(dt);',
         'if (canvas.getClientRects().length) pv.render?.(dt);',
       );
@@ -24,6 +29,39 @@ buildCreator({
         code,
         "if (this.inGame() || this.mode === 'online') this.tick(dt);",
         "if (!globalThis.akeruCreator.paused && (this.inGame() || this.mode === 'online')) this.tick(dt);",
+      );
+    }
+    if (path === 'client/ui/ui.js') {
+      code = replaceRequired(
+        code,
+        "${I.keyboardKey('W')}${I.keyboardKey('A')}${I.keyboardKey('S')}${I.keyboardKey('D')}",
+        "${I.keyboardKey('L STICK')}",
+      );
+      for (const [from, to] of [
+        ['Space', 'A'],
+        ['Ctrl', 'X / RT'],
+        ['Shift', 'B'],
+        ['Tab', 'Y'],
+        ['Esc', 'Menu'],
+      ]) {
+        code = replaceRequired(
+          code,
+          `I.keyboardKey('${from}')`,
+          `I.keyboardKey('${to}')`,
+        );
+      }
+      code = replaceRequired(
+        code,
+        '<span class="key">Tab</span>',
+        '<span class="key">Y</span>',
+      );
+    }
+    if (path === 'client/net/client.js') {
+      code = "import { multiplayerUrl } from '../network-config.js';\n" + code;
+      code = replaceRequired(
+        code,
+        "return proto + location.host + '/ws';",
+        "return multiplayerUrl || proto + location.host + '/ws';",
       );
     }
     if (path === 'client/ui/tutorial.js') {

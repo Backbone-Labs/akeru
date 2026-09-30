@@ -31,14 +31,12 @@ buildCreator({
         '    try {\n      if (this.mode',
         '    if (globalThis.akeruCreator.paused) { this.input.endFrame(); requestAnimationFrame((t) => this.frame(t)); return; }\n    try {\n      if (this.mode',
       );
-      const start = code.indexOf('  lock() {'),
-        end = code.indexOf('  onLockChange()');
-      if (start < 0 || end <= start)
-        throw new Error('Pointer-lock patch anchor changed');
-      code =
-        code.slice(0, start) +
-        '  lock() {} // Host controller/touch look and mouse drag do not require pointer lock.\n' +
-        code.slice(end);
+      // Keep the game's real mouse capture. The host sandbox permits pointer lock.
+      code = replaceRequired(
+        code,
+        'document.pointerLockElement !== this.canvas && this.playing()',
+        'document.pointerLockElement !== this.canvas && this.playing() && !globalThis.akeruCreator.paused',
+      );
     }
     if (
       path === 'client/render/asset.js' ||
@@ -66,6 +64,38 @@ buildCreator({
         '<b>← →</b> PAGE',
         '<b>LB / RB</b> PAGE · <b>A</b> NEXT · <b>B</b> BACK · <b>← →</b> PAGE',
       );
+    }
+    // Native gameplay/UI hints use the same controls as the host input adapter.
+    // Keyboard bindings remain available; no keyboard event codes are rewritten.
+    if (path === 'client/ui/hud.js') {
+      code = replaceRequired(code, "text: 'E'", "text: 'X'");
+      code = replaceRequired(code, 'RMB — THROW', 'LT / Y — THROW');
+    }
+    if (path === 'client/ui/screens.js' || path === 'client/ui/moments.js') {
+      for (const [from, to] of [
+        ['PRESS ANY KEY', 'PRESS A TO START'],
+        ['MOUSE / VIDEO / AUDIO', 'CONTROLS / VIDEO / AUDIO'],
+        ['Mouse sensitivity', 'Look sensitivity'],
+        ['<b>WASD</b>', '<b>LEFT STICK</b>'],
+        ['<b>MOUSE</b>', '<b>RIGHT STICK</b>'],
+        ['<b>E</b> GRAB', '<b>X</b> GRAB'],
+        ['<b>LMB</b>', '<b>RT</b>'],
+        ['<b>RMB</b>', '<b>LT / Y</b>'],
+        ['<b>SPACE</b>', '<b>A</b>'],
+        ['<b>ENTER</b>', '<b>A</b>'],
+        ['<b>ESC</b>', '<b>B</b>'],
+        ['<b>R</b> RETRY', '<b>X</b> RETRY'],
+        ['<b>L</b> LEVELS', '<b>Y</b> LEVELS'],
+        ['<b>1–5</b> JUMP', '<b>D-PAD</b> NAVIGATE'],
+        ["key: 'ENTER'", "key: 'A'"],
+        ["key: 'ESC'", "key: 'B'"],
+        ["key: 'R'", "key: 'X'"],
+        ["key: 'L'", "key: 'Y'"],
+        ["key: 'DEL'", "key: 'LB'"],
+        ["text: 'SPACE'", "text: 'A'"],
+        ['FROM THE TOP — R', 'FROM THE TOP — X'],
+      ])
+        code = code.replaceAll(from, to);
     }
     if (path === 'client/ui/screens.js' || path === 'client/ui/moments.js')
       code = replaceRequired(code, '07 PAGES', '09 PAGES');

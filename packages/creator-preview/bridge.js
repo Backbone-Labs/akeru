@@ -1,3 +1,4 @@
+import { createPill } from './pill.js';
 import { createSaveClient } from './save-client.js';
 import { createStorage, validStorage } from './storage.js';
 import { createNavigation } from './navigation.js';
@@ -12,7 +13,7 @@ export function connectCreator(config) {
     ready = false,
     paused = true,
     dirty = false,
-    saving = false,
+    saving = null,
     blocked = false,
     revision = null;
   let controls = empty(),
@@ -39,26 +40,47 @@ export function connectCreator(config) {
     dirty = true;
   });
   const flush = async () => {
-    if (!ready || !dirty || saving || blocked) return;
+    if (!ready) return;
+    if (saving) await saving;
+    if (blocked) throw new Error('Saving unavailable');
+    if (!dirty) return;
     dirty = false;
-    saving = true;
-    try {
-      const r = await saves.service.write(
-        'progress',
-        {
-          schemaVersion: 1,
-          bytes: new TextEncoder().encode(JSON.stringify(storage.serialize())),
-        },
-        revision,
-      );
-      revision = r.revision;
-    } catch {
-      blocked = true;
-      status('Saving unavailable. Existing progress is preserved.');
-    } finally {
-      saving = false;
-    }
+    saving = (async () => {
+      try {
+        const r = await saves.service.write(
+          'progress',
+          {
+            schemaVersion: 1,
+            bytes: new TextEncoder().encode(
+              JSON.stringify(storage.serialize()),
+            ),
+          },
+          revision,
+        );
+        revision = r.revision;
+      } catch (error) {
+        blocked = true;
+        status('Saving unavailable. Existing progress is preserved.');
+        throw error;
+      } finally {
+        saving = null;
+      }
+    })();
+    await saving;
   };
+  const pill = config.pill
+    ? createPill({
+        game: getGame,
+        send,
+        audioChanged: config.audioChanged,
+        restart: config.restart,
+        flush: async () => {
+          config.beforeSave?.(getGame());
+          dirty = true;
+          await flush();
+        },
+      })
+    : null;
   const navigation = createNavigation(getGame);
   const playing = () => {
     const game = getGame();
@@ -116,7 +138,7 @@ export function connectCreator(config) {
     const game = getGame();
     if (value || document.hidden) {
       config.beforeSave?.(game);
-      void flush();
+      void flush().catch(() => {});
       void game?.sfx?.ctx?.suspend();
     } else void game?.sfx?.ctx?.resume().catch(() => {});
   };
@@ -179,10 +201,13 @@ export function connectCreator(config) {
         styles();
         config.setup?.(getGame());
         send('playable', { sdkVersion: '0.1.0' });
+        if (pill) send('actions', { supported: pill.supported });
       } catch {
         status('This game could not start. Exit and try again.');
         send('error', { code: 'initialization' });
       }
+    } else if (m.type === 'action' && ready && pill) {
+      await pill.receive(m.payload);
     } else if (m.type === 'input' && ready && !bridge.paused) {
       const valid = (record) =>
         Object.fromEntries(
@@ -244,20 +269,20 @@ export function connectCreator(config) {
   addEventListener('blur', clear);
   addEventListener('pagehide', () => {
     config.beforeSave?.(getGame());
-    void flush();
+    void flush().catch(() => {});
     getGame()?.net?.close();
   });
   document.addEventListener('visibilitychange', () => {
     clear();
     if (document.hidden) {
       config.beforeSave?.(getGame());
-      void flush();
+      void flush().catch(() => {});
       void getGame()?.sfx?.ctx?.suspend();
     }
   });
   setInterval(() => {
     config.beforeSave?.(getGame());
-    void flush();
+    void flush().catch(() => {});
   }, 1000);
   return bridge;
 }

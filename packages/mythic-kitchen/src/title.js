@@ -12,11 +12,14 @@ connectCreator({
   ],
   idle,
   input,
-  setup() {
-    const hint = document.createElement('p');
-    hint.className = 'akeru-controller-hint';
-    hint.textContent =
-      'Move: left stick / D-pad · A pick up / put down · Hold X / RT chop / wash · B dash · Y switch chef · Menu pause';
-    document.body.append(hint);
+  pill: true,
+  restart(game) {
+    if (!game.level || !game.inGame()) return false;
+    game.restart();
+    return true;
+  },
+  audioChanged(game, enabled) {
+    game.ui._soundOn = enabled;
+    globalThis.akeruCreator.storage.setItem('mk_sound', enabled ? '1' : '0');
   },
 });

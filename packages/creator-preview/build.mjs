@@ -158,6 +158,7 @@ export function buildCreator({
   }
   for (const file of [
     'bridge.js',
+    'pill.js',
     'bridge.css',
     'storage.js',
     'navigation.js',

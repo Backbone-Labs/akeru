@@ -10,6 +10,12 @@ connectCreator({
   handle: 'ss',
   keys: ['ss_save'],
   whenReady: (game) => game.bootComplete,
+  pill: true,
+  restart(game) {
+    if (!game.level) return false;
+    game.retry();
+    return true;
+  },
   idle,
   input,
   look,
@@ -19,6 +25,10 @@ connectCreator({
   routeInput({ buttons: b, axes: a }, previous, game) {
     const owner = game.ui._owner();
     const pressed = (k) => b[k] > 0.5 && !(previous[k] > 0.5);
+    if (!owner && game.mode === 'replay' && pressed('confirm')) {
+      game.input.pressed.add('Space');
+      return true;
+    }
     if (!owner) {
       if (pressed('cancel') && game.inLevel()) {
         game.akeruPending = {};
@@ -41,7 +51,11 @@ connectCreator({
         new KeyboardEvent('keydown', { code, key: code, bubbles: true }),
       );
     if (pressed('cancel')) key('Escape');
-    else if (pressed('confirm')) key('Enter');
+    else if (pressed('confirm'))
+      key(game.mode === 'replay' ? 'Space' : 'Enter');
+    else if (pressed('west')) key('KeyR');
+    else if (pressed('north')) key('KeyL');
+    else if (pressed('leftShoulder') && !owner.step) key('Delete');
     else if (pressed('rightShoulder') && owner.step) owner.step(1);
     else if (pressed('leftShoulder') && owner.step) owner.step(-1);
     else {
@@ -70,6 +84,11 @@ connectCreator({
     direction = '';
     nextAt = 0;
     if (!game) return;
+    if (
+      globalThis.akeruCreator.paused &&
+      document.pointerLockElement === game.canvas
+    )
+      document.exitPointerLock?.();
     game.akeruActions = {};
     game.akeruPending = {};
     game.input.dx = game.input.dy = 0;
@@ -77,16 +96,8 @@ connectCreator({
   },
   setup(game) {
     game.ui.lockHint = false;
-    game.canvas.addEventListener('pointermove', (e) => {
-      if (game.playing() && e.buttons) {
-        game.input.dx += e.movementX;
-        game.input.dy += e.movementY;
-      }
-    });
-    game.canvas.addEventListener('pointerdown', (e) => {
-      if (!game.playing()) return;
-      if (e.button === 0) game.input.lmb = true;
-      if (e.button === 2) game.input.rmbEdge = true;
+    game.canvas.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse') game.ui.lockHint = true;
     });
   },
 });

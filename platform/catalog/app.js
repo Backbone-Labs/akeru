@@ -317,6 +317,7 @@ export function mountCatalog({
             view: down(512),
             leftShoulder: down(4096),
             rightShoulder: down(8192),
+            leftTrigger: (Number(payload.leftTrigger) || 0) / 255,
             rightTrigger: (Number(payload.rightTrigger) || 0) / 255,
           },
           axes: {
