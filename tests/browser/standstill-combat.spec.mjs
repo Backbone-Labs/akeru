@@ -49,7 +49,13 @@ test('Standstill RT and RB cause real punches and shots, with visible controller
       window.ss.sim.invulnerable = true;
     });
     await expect(frame.locator('.ss-hud__whint')).toContainText(
-      'RT / RB · LEFT CLICK — PUNCH',
+      'RT / RB — PUNCH',
+    );
+    await expect(frame.locator('.ss-hud__prompt .ss-key')).toHaveText('X');
+    await frame.locator('body').press('e');
+    await expect(frame.locator('.ss-hud__prompt .ss-key')).toHaveText('E');
+    await expect(frame.locator('.ss-hud__whint')).toContainText(
+      'LEFT CLICK — PUNCH',
     );
     for (const [button, value] of [
       [7, 0.3],
@@ -80,8 +86,9 @@ test('Standstill RT and RB cause real punches and shots, with visible controller
         .toBeLessThan(5);
       await setGamepadButton(page, button, 0);
       await expect(frame.locator('.ss-hud__whint')).toContainText(
-        'LEFT CLICK — SHOOT',
+        'RT / RB — SHOOT',
       );
+      await expect(frame.locator('.ss-hud__prompt .ss-key')).toHaveText('X');
     }
   } finally {
     await demo.close();

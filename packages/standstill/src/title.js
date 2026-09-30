@@ -1,5 +1,7 @@
 import { connectCreator } from './bridge.js';
 import { idle, input, look } from './input.js';
+import { installControlHints } from './control-hints.js';
+const hints = installControlHints(document.querySelector('#ui-root'));
 const stylesheet = document.createElement('link');
 stylesheet.rel = 'stylesheet';
 stylesheet.href = new URL('./controller.css', import.meta.url).href;
@@ -23,6 +25,13 @@ connectCreator({
   ownsNavigation: true,
   touchOverlay: (game) => Boolean(game?.playing() && !game.ui._owner()),
   routeInput({ buttons: b, axes: a }, previous, game) {
+    if (
+      Object.values(b).some((value) => value > 0.25) ||
+      Object.values(a).some((value) => Math.abs(value) > 0.25)
+    ) {
+      hints.set('controller');
+      game.ui.lockHint = false;
+    }
     const owner = game.ui._owner();
     const pressed = (k) => b[k] > 0.5 && !(previous[k] > 0.5);
     if (!owner && game.mode === 'replay' && pressed('confirm')) {
@@ -98,6 +107,13 @@ connectCreator({
   },
   setup(game) {
     game.ui.lockHint = false;
+    addEventListener('keydown', (event) => {
+      if (event.isTrusted) hints.set('keyboard');
+    });
+    addEventListener('pointerdown', (event) => {
+      if (event.isTrusted && event.pointerType === 'mouse')
+        hints.set('keyboard');
+    });
     game.canvas.addEventListener('pointerdown', (event) => {
       if (event.pointerType === 'mouse') game.ui.lockHint = true;
     });

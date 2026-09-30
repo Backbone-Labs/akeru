@@ -55,6 +55,16 @@ buildCreator({
         'export const PAGES = [',
         'export const PAGES = [...controllerPages,',
       );
+      code = replaceRequired(
+        code,
+        "lead: 'Two hands. Ten keys.'",
+        "lead: 'Make every action count.'",
+      );
+      code = replaceRequired(
+        code,
+        'art: artControls, html: true',
+        "art: () => document.querySelector('#ui-root').dataset.inputMode === 'controller' ? controllerPages[0].art() : artControls(), html: true",
+      );
     }
     if (path === 'client/ui/tutorial.js') {
       code = replaceRequired(code, '<b>1–7</b> JUMP', '<b>1–9</b> JUMP');
