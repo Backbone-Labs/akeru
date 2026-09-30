@@ -78,7 +78,9 @@ for (const viewport of [
       );
       const guide = await frame.locator('.kitchen-guide').boundingBox();
       const chips = await frame.locator('.chips-wrap').boundingBox();
-      expect(guide.y + guide.height).toBeLessThan(chips.y);
+      expect(
+        guide.y + guide.height <= chips.y || guide.x >= chips.x + chips.width,
+      ).toBe(true);
       // Actual simulation actions, with positioning accelerated only for this test.
       const cook = await frame.evaluate(() => {
         const g = window.mk,

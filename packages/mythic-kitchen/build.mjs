@@ -47,13 +47,6 @@ buildCreator({
         "if (!globalThis.akeruCreator.paused && (this.inGame() || this.mode === 'online')) this.tick(dt);",
       );
     }
-    if (path === 'client/render/renderer.js') {
-      code = replaceRequired(
-        code,
-        'const margin = { l: 0.04, r: 0.04, t: 0.26, b: 0.04 };',
-        'const margin = { l: 0.08, r: 0.08, t: Math.min(.55, 150 / this._h), b: Math.min(.65, (this.level?.id === "castle-1" ? 210 : 100) / this._h) };',
-      );
-    }
     if (path === 'client/ui/ui.js') {
       code = replaceRequired(
         code,

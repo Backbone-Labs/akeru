@@ -480,3 +480,29 @@
     transition: none !important;
   }
 }
+/* Keep the original close camera: put coaching beside the footer controls. */
+@media (min-width: 600px) {
+  .kitchen-guide {
+    bottom: var(--kitchen-bottom);
+    left: 180px;
+    right: 112px;
+    width: auto;
+    transform: none;
+    padding: 7px 10px;
+    gap: 8px;
+  }
+  .kitchen-guide strong {
+    font-size: 15px;
+  }
+  .kitchen-guide p {
+    font-size: 11px;
+  }
+  .recipe-step {
+    font-size: 15px;
+    padding: 6px;
+  }
+  .hud:has(.kitchen-guide:not([hidden])) .chip:not(.active-chef),
+  .hud:has(.kitchen-guide:not([hidden])) .tab-hint .what {
+    display: none;
+  }
+}
