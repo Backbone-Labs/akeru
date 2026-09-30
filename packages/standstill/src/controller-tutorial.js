@@ -3,17 +3,17 @@ export const controllerPages = [
   {
     title: 'YOUR CONTROLLER.',
     lead: 'Two sticks. Every second is yours.',
-    body: 'Left stick moves. Right stick aims. Release both to slow time. RT fires or punches.',
+    body: 'Left stick moves. Right stick aims. Release both to slow time. RT or RB punches with empty hands, shoots a gun, or swings a melee weapon. Mouse: left click does the same.',
     notes: [
       'A jumps. Airborne = full speed.',
-      'X grabs / catches.',
-      'LT / Y throws.',
+      'X / E grabs or catches a weapon.',
+      'LT / Y or right click throws.',
     ],
     art: () =>
       controllerPlate('standstill', [
         ['Left stick', 'Move'],
         ['Right stick', 'Aim'],
-        ['RT', 'Fire / punch'],
+        ['RT / RB', 'Shoot / punch'],
         ['A', 'Jump'],
         ['X', 'Grab / catch'],
       ]),

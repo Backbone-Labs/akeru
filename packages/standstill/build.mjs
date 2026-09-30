@@ -68,22 +68,42 @@ buildCreator({
     // Native gameplay/UI hints use the same controls as the host input adapter.
     // Keyboard bindings remain available; no keyboard event codes are rewritten.
     if (path === 'client/ui/hud.js') {
-      code = replaceRequired(code, "text: 'E'", "text: 'X'");
-      code = replaceRequired(code, 'RMB — THROW', 'LT / Y — THROW');
+      code = replaceRequired(
+        code,
+        "this.wHint.textContent = '';",
+        "this.wHint.textContent = 'RT / RB · LEFT CLICK — PUNCH';",
+      );
+      code = replaceRequired(
+        code,
+        "empty ? 'EMPTY — THROW IT' : ''",
+        "empty ? 'EMPTY · LT / Y / RIGHT CLICK — THROW' : 'RT / RB · LEFT CLICK — SHOOT'",
+      );
+      code = replaceRequired(
+        code,
+        "def.cutsBullets ? 'CUTS BULLETS' : ''",
+        "def.cutsBullets ? 'RT / RB · LEFT CLICK — SWING / CUT BULLETS' : 'RT / RB · LEFT CLICK — SWING'",
+      );
+
+      code = replaceRequired(code, "text: 'E'", "text: 'X / E'");
+      code = replaceRequired(
+        code,
+        'RMB — THROW',
+        'LT / Y · RIGHT CLICK — THROW',
+      );
     }
     if (path === 'client/ui/screens.js' || path === 'client/ui/moments.js') {
       for (const [from, to] of [
         ['PRESS ANY KEY', 'PRESS A TO START'],
         ['MOUSE / VIDEO / AUDIO', 'CONTROLS / VIDEO / AUDIO'],
         ['Mouse sensitivity', 'Look sensitivity'],
-        ['<b>WASD</b>', '<b>LEFT STICK</b>'],
-        ['<b>MOUSE</b>', '<b>RIGHT STICK</b>'],
-        ['<b>E</b> GRAB', '<b>X</b> GRAB'],
-        ['<b>LMB</b>', '<b>RT</b>'],
-        ['<b>RMB</b>', '<b>LT / Y</b>'],
-        ['<b>SPACE</b>', '<b>A</b>'],
-        ['<b>ENTER</b>', '<b>A</b>'],
-        ['<b>ESC</b>', '<b>B</b>'],
+        ['<b>WASD</b>', '<b>L STICK / WASD</b>'],
+        ['<b>MOUSE</b>', '<b>R STICK / MOUSE</b>'],
+        ['<b>E</b> GRAB', '<b>X / E</b> GRAB'],
+        ['<b>LMB</b>', '<b>RT / RB / LMB</b>'],
+        ['<b>RMB</b>', '<b>LT / Y / RMB</b>'],
+        ['<b>SPACE</b>', '<b>A / SPACE</b>'],
+        ['<b>ENTER</b>', '<b>A / ENTER</b>'],
+        ['<b>ESC</b>', '<b>B / ESC</b>'],
         ['<b>R</b> RETRY', '<b>X</b> RETRY'],
         ['<b>L</b> LEVELS', '<b>Y</b> LEVELS'],
         ['<b>1–5</b> JUMP', '<b>D-PAD</b> NAVIGATE'],

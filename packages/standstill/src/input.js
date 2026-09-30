@@ -28,7 +28,11 @@ export function input(keyboard, { buttons: b = {}, axes: a = {} }, game) {
     mx,
     mz,
     jump: keyboard.jump || b.confirm > 0.5 || Boolean(pending.jump),
-    fire: keyboard.fire || b.rightTrigger > 0.5 || Boolean(pending.fire),
+    fire:
+      keyboard.fire ||
+      b.rightTrigger > 0.25 ||
+      b.rightShoulder > 0.5 ||
+      Boolean(pending.fire),
     grab: keyboard.grab || (next.grab && !old.grab) || Boolean(pending.grab),
     throw:
       keyboard.throw || (next.throw && !old.throw) || Boolean(pending.throw),

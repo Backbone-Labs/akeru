@@ -72,3 +72,10 @@ test('short touch action edges survive release before the rendering frame and co
     assert.equal(tapped[action], true);
   assert.deepEqual(input(idle, {}, game), idle);
 });
+
+test('Standstill supports partial RT pull and RB attack without replacing keyboard fire', () => {
+  assert.equal(input(idle, { buttons: { rightTrigger: 0.3 } }, {}).fire, true);
+  assert.equal(input(idle, { buttons: { rightShoulder: 1 } }, {}).fire, true);
+  assert.equal(input(idle, { buttons: { rightTrigger: 0.1 } }, {}).fire, false);
+  assert.equal(input({ ...idle, fire: true }, { buttons: {} }, {}).fire, true);
+});

@@ -40,7 +40,9 @@ connectCreator({
       if (game.playing()) {
         const pending = (game.akeruPending ??= {});
         pending.jump ||= pressed('confirm');
-        pending.fire ||= pressed('rightTrigger');
+        pending.fire ||=
+          (b.rightTrigger > 0.25 && !(previous.rightTrigger > 0.25)) ||
+          pressed('rightShoulder');
         pending.grab ||= pressed('west');
         pending.throw ||= pressed('leftTrigger') || pressed('north');
       }
