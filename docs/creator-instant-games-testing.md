@@ -28,7 +28,7 @@ not account sync. Abrupt app termination can lose the latest unsaved change.
 
 1. Tap the app test link on iPhone; confirm the game opens inside Backbone and
    uses its native pill, with no duplicate web menu.
-2. Standstill: sticks move/look, RT fires, X grabs, LT/Y throws, A jumps, B opens
+2. Standstill: sticks move/look, RT/RB punches or fires, X grabs, LT/Y throws, A jumps, B opens
    the game's pause menu. Verify tutorial and live gameplay hints. Confirm mouse
    capture still works when returning to a desktop browser.
 3. Kitchen: stick moves, A picks up/puts down, X/RT works, B dashes, Y switches
@@ -46,3 +46,14 @@ not account sync. Abrupt app termination can lose the latest unsaved change.
 Automated native-bridge tests simulate the app boundary and do not replace this
 physical-device acceptance. The creator source and asset rights remain
 unspecified; deployment authorization is not a fabricated open-source license.
+
+## Public test build — September 30, 2026
+
+The phone launch buttons are at
+`https://backbone-akeru.vercel.app/phone-tests.html`.
+Standstill's live HUD and menus switch between controller and keyboard hints.
+Kitchen connects over WSS to the dedicated Cloud Run runtime. Public protocol
+checks cover two guests, host-only start, shared movement, expired input and
+host migration. Physical phone/controller acceptance remains outstanding.
+Rooms are currently held by one server instance; deployments and restarts end
+active sessions. This is not yet a horizontally scaled multiplayer service.
