@@ -120,6 +120,7 @@ test.describe('Brawler touch', () => {
         localStorage.setItem('akeru.onboarding.v1', 'complete'),
       );
       await page.goto(demo.url + '/play/brawler-coop');
+      await expect(page.locator('iframe')).toBeVisible({ timeout: 60000 });
       await expect(page.locator('#runtime-overlay')).toBeHidden({
         timeout: 30000,
       });
