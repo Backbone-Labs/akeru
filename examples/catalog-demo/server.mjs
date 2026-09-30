@@ -88,25 +88,27 @@ export async function startCatalogDemo(options = {}) {
         }
         res.setHeader(
           'Content-Type',
-          path.endsWith('.svg')
-            ? 'image/svg+xml'
-            : path.endsWith('.png')
-              ? 'image/png'
-              : path.endsWith('.jpg')
-                ? 'image/jpeg'
-                : path.endsWith('.ogg')
-                  ? 'audio/ogg'
-                  : path.endsWith('.txt')
-                    ? 'text/plain'
-                    : path.endsWith('.wasm')
-                      ? 'application/wasm'
-                      : path.endsWith('.json')
-                        ? 'application/json'
-                        : path.endsWith('.html')
-                          ? 'text/html'
-                          : path.endsWith('.js')
-                            ? 'text/javascript'
-                            : 'text/css',
+          path.endsWith('.glb')
+            ? 'model/gltf-binary'
+            : path.endsWith('.svg')
+              ? 'image/svg+xml'
+              : path.endsWith('.png')
+                ? 'image/png'
+                : path.endsWith('.jpg')
+                  ? 'image/jpeg'
+                  : path.endsWith('.ogg')
+                    ? 'audio/ogg'
+                    : path.endsWith('.txt')
+                      ? 'text/plain'
+                      : path.endsWith('.wasm')
+                        ? 'application/wasm'
+                        : path.endsWith('.json')
+                          ? 'application/json'
+                          : path.endsWith('.html')
+                            ? 'text/html'
+                            : path.endsWith('.js')
+                              ? 'text/javascript'
+                              : 'text/css',
         );
         res.end(titleFiles[path]);
       },

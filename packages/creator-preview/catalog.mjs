@@ -51,7 +51,9 @@ export function creatorOptions(id, metadata) {
       ageLabel: 'Unrated',
       privacy: [
         metadata.saveDescription,
-        'Progress stays in Akeru on this device. No cloud sync. Online play requires the separate game server.',
+        metadata.offlineOnly
+          ? 'Progress stays in Akeru on this device. No cloud sync. Single-player only.'
+          : 'Progress stays in Akeru on this device. No cloud sync. Online play requires the separate game server.',
       ],
       notices: [
         {

@@ -3,11 +3,11 @@ import { startCatalogDemo } from '../../examples/catalog-demo/server.mjs';
 import { creatorTitles } from './titles.mjs';
 const titles = creatorTitles();
 for (const title of titles) {
-  const key =
-    title.manifest.id === 'westwick-manor'
-      ? 'AKERU_MANOR_SERVER_PORT'
-      : 'AKERU_KITCHEN_SERVER_PORT';
-  if (process.env[key])
+  const key = {
+    'westwick-manor': 'AKERU_MANOR_SERVER_PORT',
+    'mythic-kitchen': 'AKERU_KITCHEN_SERVER_PORT',
+  }[title.manifest.id];
+  if (key && process.env[key])
     title.upgrade = createLocalNetwork(Number(process.env[key]));
 }
 if (!titles.length) throw new Error('Build the creator titles first');

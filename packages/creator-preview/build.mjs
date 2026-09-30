@@ -9,6 +9,7 @@ import {
 import { execFileSync } from 'node:child_process';
 import { resolve, dirname, relative, posix } from 'node:path';
 import { createHash } from 'node:crypto';
+import { rewriteImports } from './imports.mjs';
 export const root = new URL('../../', import.meta.url);
 const hash = (b) => createHash('sha256').update(b).digest('hex');
 const flat = (p) => p.replaceAll('/', '--');
@@ -17,7 +18,14 @@ export function replaceRequired(code, from, to) {
     throw new Error('Creator source patch no longer applies');
   return code.replace(from, to);
 }
-export function buildCreator({ id, revision, title, patch }) {
+export function buildCreator({
+  id,
+  revision,
+  title,
+  patch,
+  assets = [],
+  exclude = [],
+}) {
   const source = process.argv[2];
   if (!source)
     throw new Error('Pass the path to the authorized creator checkout');
@@ -48,11 +56,16 @@ export function buildCreator({ id, revision, title, patch }) {
       throw new Error('Unsafe artifact name');
     writeFileSync(new URL(name, out), bytes);
   };
-  const read = (p) => {
+  const read = (p, binary = false) => {
     const b = git(['show', `${revision}:${p}`]);
     selected.push({ path: p, sha256: hash(b) });
-    return b.toString();
+    return binary ? b : b.toString();
   };
+  for (const p of assets) {
+    if (!paths.includes(p) || !p.startsWith('client/assets/'))
+      throw new Error('Invalid creator asset');
+    put(flat(p.slice(7)), read(p, true));
+  }
   const threeRoot = resolve(
     new URL('../../node_modules/three/', import.meta.url).pathname,
   );
@@ -64,10 +77,27 @@ export function buildCreator({ id, revision, title, patch }) {
     const name = 'three--' + flat(relative(threeRoot, p));
     if (visited.has(p)) return name;
     visited.add(p);
-    const code = readFileSync(p, 'utf8').replace(
-      /(from\s*|import\s*(?:\(\s*)?)['"]([^'"]+)['"]/g,
-      (_m, prefix, spec) =>
-        `${prefix}'./${three(spec === 'three' ? resolve(threeRoot, 'build/three.module.js') : spec.startsWith('three/addons/') ? resolve(threeRoot, 'examples/jsm', spec.slice(13)) : resolve(dirname(p), spec))}'`,
+    let code = rewriteImports(
+      readFileSync(p, 'utf8'),
+      (spec) =>
+        './' +
+        three(
+          spec === 'three'
+            ? resolve(threeRoot, 'build/three.module.js')
+            : spec.startsWith('three/addons/')
+              ? resolve(threeRoot, 'examples/jsm', spec.slice(13))
+              : resolve(dirname(p), spec),
+        ),
+    );
+    // Three's SMAA lookup textures are files on the isolated origin, not data URLs.
+    code = code.replace(
+      /(['"])(data:image\/png;base64,([A-Za-z0-9+/=]+))\1/g,
+      (_m, _quote, _url, data) => {
+        const bytes = Buffer.from(data, 'base64');
+        const asset = 'texture-' + hash(bytes).slice(0, 12) + '.png';
+        put(asset, bytes);
+        return `new URL('./${asset}', import.meta.url).href`;
+      },
     );
     put(name, code);
     return name;
@@ -76,7 +106,8 @@ export function buildCreator({ id, revision, title, patch }) {
     (p) =>
       (p.startsWith('client/') || p.startsWith('shared/')) &&
       /\.(js|css)$/.test(p) &&
-      !/(?:demo|STYLE_REFERENCE|\.test\.)/.test(p),
+      !/(?:demo|STYLE_REFERENCE|\.test\.)/.test(p) &&
+      !exclude.includes(p),
   );
   for (const p of runtimePaths) {
     let code = read(p);
@@ -90,36 +121,34 @@ export function buildCreator({ id, revision, title, patch }) {
           'globalThis.akeruCreator.noGamepads',
         )
         .replaceAll('style="', 'data-akeru-style="');
-      code = code.replace(
-        /(from\s*|import\s*(?:\(\s*)?)['"]([^'"]+)['"]/g,
-        (_m, prefix, spec) => {
-          let name;
-          if (spec === 'three')
-            name = three(resolve(threeRoot, 'build/three.module.js'));
-          else if (spec.startsWith('three/addons/'))
-            name = three(resolve(threeRoot, 'examples/jsm', spec.slice(13)));
-          else {
-            const target = spec.startsWith('/')
-              ? spec.slice(1)
-              : posix.normalize(posix.join(posix.dirname(virtual), spec));
-            if (target.startsWith('../'))
-              throw new Error('Import escaped title');
-            name = flat(target);
-          }
-          return `${prefix}'./${name}'`;
-        },
-      );
+      code = rewriteImports(code, (spec) => {
+        let name;
+        if (spec === 'three')
+          name = three(resolve(threeRoot, 'build/three.module.js'));
+        else if (spec.startsWith('three/addons/'))
+          name = three(resolve(threeRoot, 'examples/jsm', spec.slice(13)));
+        else {
+          const target = spec.startsWith('/')
+            ? spec.slice(1)
+            : posix.normalize(posix.join(posix.dirname(virtual), spec));
+          if (target.startsWith('../')) throw new Error('Import escaped title');
+          name = flat(target);
+        }
+        return './' + name;
+      });
     } else
       code = code.replace(
-        /url\(['"]?\.\/([^)'"\s]+)['"]?\)/g,
+        /url\(['"]?(\.?\/[^)'"\s]+)['"]?\)/g,
         (_m, spec) =>
-          `url('./${flat(posix.join(posix.dirname(virtual), spec))}')`,
+          `url('./${flat(spec.startsWith('/') ? spec.slice(1) : posix.join(posix.dirname(virtual), spec))}')`,
       );
     if (p.endsWith('.css'))
       code = code.replace(
         /url\("data:image\/svg\+xml;utf8,([^"]+)"\)/g,
         (_m, svg) => {
-          const bytes = decodeURIComponent(svg);
+          const bytes = decodeURIComponent(
+            svg.replace(/%(?![0-9a-f]{2})/gi, '%25'),
+          );
           const name = 'texture-' + hash(bytes).slice(0, 12) + '.svg';
           put(name, bytes);
           return `url('./${name}')`;

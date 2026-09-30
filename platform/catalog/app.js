@@ -1078,6 +1078,12 @@ export function mountCatalog({
           syncController();
           controllerMonitor = setInterval(syncController, 250);
           frame.contentWindow.focus();
+        } else if (event.type === 'touch-overlay') {
+          // A title can suppress gameplay touch controls for its native menus.
+          // This never overrides host/controller/user restrictions on visibility.
+          $('#touch-controls').dataset.titleTouch = event.visible
+            ? 'auto'
+            : 'hidden';
         } else if (event.type === 'error') failRuntime(event.code);
         else if (event.type === 'exit') {
           if (isPlayer()) {

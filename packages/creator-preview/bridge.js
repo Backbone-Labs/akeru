@@ -17,7 +17,8 @@ export function connectCreator(config) {
     revision = null;
   let controls = empty(),
     previous = {},
-    swap = false;
+    swap = false,
+    lastTouchVisible = null;
   const getGame = () => globalThis[config.handle];
   const status = (text) => {
     document.querySelector('#akeru-status').textContent = text;
@@ -61,6 +62,7 @@ export function connectCreator(config) {
   const navigation = createNavigation(getGame);
   const playing = () => {
     const game = getGame();
+    if (config.playing) return config.playing(game);
     return (
       game?.ui.screen === 'game' &&
       !game.paused &&
@@ -82,6 +84,7 @@ export function connectCreator(config) {
       game.input.mouse.l = false;
       game.input.mouse.r = false;
     }
+    config.clear?.(game);
     if (game?.net?.inGame) game.net.sendInput(config.idle);
   };
   const bridge = (globalThis.akeruCreator = {
@@ -97,6 +100,10 @@ export function connectCreator(config) {
       const value = swap;
       swap = false;
       return value;
+    },
+    readLook(mouse, dt) {
+      if (bridge.paused || !playing()) return { dx: 0, dy: 0 };
+      return config.look ? config.look(mouse, controls, dt, getGame()) : mouse;
     },
     readInput(keyboard, primary = true) {
       if (bridge.paused || !playing()) return { ...config.idle };
@@ -167,6 +174,7 @@ export function connectCreator(config) {
       }
       try {
         await import('./main.js');
+        await config.whenReady?.(getGame());
         ready = true;
         styles();
         config.setup?.(getGame());
@@ -188,6 +196,10 @@ export function connectCreator(config) {
       };
       const pressed = (k) => controls.buttons[k] > 0.5 && !(previous[k] > 0.5);
       const game = getGame();
+      if (config.routeInput?.(controls, previous, game)) {
+        previous = { ...controls.buttons };
+        return;
+      }
       if (game.ui._tutMode) {
         if (pressed('cancel')) navigation.back();
         else if (pressed('confirm') || pressed('rightShoulder'))
@@ -211,7 +223,20 @@ export function connectCreator(config) {
       clear();
   });
   const animate = (now) => {
-    if (ready && !bridge.paused && !playing() && !getGame()?.ui._tutMode)
+    if (ready && config.touchOverlay) {
+      const visible = Boolean(config.touchOverlay(getGame()));
+      if (visible !== lastTouchVisible) {
+        lastTouchVisible = visible;
+        send('touch-overlay', { visible });
+      }
+    }
+    if (
+      !config.ownsNavigation &&
+      ready &&
+      !bridge.paused &&
+      !playing() &&
+      !getGame()?.ui._tutMode
+    )
       navigation.update(controls, now);
     requestAnimationFrame(animate);
   };

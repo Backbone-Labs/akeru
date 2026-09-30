@@ -1,6 +1,6 @@
 # Creator game evaluation
 
-Westwick Manor and Mythic Kitchen use the same isolated title protocol, selected
+Westwick Manor, Mythic Kitchen and Standstill use the same isolated title protocol, selected
 controller, touch overlay and title-owned host save namespace as other Akeru
 packages. The game implementations remain in their authorized private checkouts;
 only integration recipes and adapters are tracked here. Regular builds/CI do not
@@ -11,6 +11,7 @@ With the root's pinned Node/npm installed, run `npm ci --ignore-scripts`, then:
 ```sh
 node packages/westwick-manor/build.mjs /path/to/westwick-checkout
 node packages/mythic-kitchen/build.mjs /path/to/kitchen-checkout
+node packages/standstill/build.mjs /path/to/standstill-checkout
 node packages/creator-preview/preview.mjs
 ```
 
@@ -18,8 +19,8 @@ Each recipe pins its source revision, reads committed files through Git, refuses
 tracked working-tree changes, rewrites module paths for content-addressed isolated
 origins, bundles the root's pinned Three.js, and records artifact hashes. Patches
 fail when their anchors change. Source implementations and screenshots remain in
-ignored `dist/`. Run the command's printed `/games` URL to browse both titles, or
-`/play/westwick-manor` and `/play/mythic-kitchen` for the app-style direct player.
+ignored `dist/`. Run the command's printed `/games` URL to browse the built titles, or
+`/play/westwick-manor` `/play/mythic-kitchen` and `/play/standstill` for the app-style direct player.
 The normal evaluation catalog also includes these titles when they are built.
 
 ## Controls and progress
@@ -29,8 +30,10 @@ The normal evaluation catalog also includes these titles when they are built.
   LB/RB cycles consumables and View toggles the map.
 - Kitchen: left stick/D-pad moves, A picks up/puts down, held X/RT works
   (chop/wash/extinguish), B dashes, Y switches the solo chef.
-- Both: stick/D-pad navigates menus, A selects, B goes back, Menu opens Akeru's
-  menu. Original keyboard/mouse controls remain. Touch uses Akeru's two sticks
+- Standstill: left stick/D-pad moves, right stick aims, RT fires/punches, A jumps,
+  X grabs/catches, LT/Y throws. B opens the native pause menu. Single-player only.
+- All: stick/D-pad navigates menus, A selects, B goes back, Menu opens Akeru's
+  menu. Original keyboard actions remain; Standstill uses mouse drag to aim. Touch uses Akeru's two sticks
   and action buttons plus tappable game menus. Room names/codes use text entry.
 - Each game’s own Tutorial / How to Play includes two controller chapters before
   the original keyboard controls. In the tutorial, A/RB advances, LB goes back
@@ -41,7 +44,7 @@ The normal evaluation catalog also includes these titles when they are built.
   controls. Online games continue on the server while the local menu is open.
 - Manor saves floor checkpoints, character/relic choices and meta progression;
   continuing restarts that floor with its original layout seed. Kitchen saves earned stars, level unlocks and
-  preferences; rounds restart. Neither advertises exact snapshot/cloud saves.
+  preferences; rounds restart. Standstill saves unlocks, scores, tutorial progress and settings. None advertises exact snapshot/cloud saves.
 - A title-local synchronous storage facade reads/writes the host's `progress`
   slot. Malformed saves and write failures preserve existing bytes and display
   a saving-unavailable message instead of overwriting progress.
@@ -85,7 +88,7 @@ separate from the simulated-standard-controller browser tests.
 
 The creator states that these are original games. No source license file was
 present in the evaluated checkouts, so source/asset rights remain `unknown` and
-both options carry `publicationBlocked`. These local builds cannot silently
+all three options carry `publicationBlocked`. These local builds cannot silently
 enter the public preview packager. Public source/asset distribution and server
 hosting need their own explicit release setup. Existing public game IDs, URLs
 and Doom builds are unchanged.
