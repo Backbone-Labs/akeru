@@ -93,7 +93,7 @@ buildCreator({
     }
     if (path === 'client/ui/screens.js' || path === 'client/ui/moments.js') {
       for (const [from, to] of [
-        ['PRESS ANY KEY', 'PRESS A TO START'],
+        ['PRESS ANY KEY', 'PRESS A / ANY KEY TO START'],
         ['MOUSE / VIDEO / AUDIO', 'CONTROLS / VIDEO / AUDIO'],
         ['Mouse sensitivity', 'Look sensitivity'],
         ['<b>WASD</b>', '<b>L STICK / WASD</b>'],
@@ -104,16 +104,16 @@ buildCreator({
         ['<b>SPACE</b>', '<b>A / SPACE</b>'],
         ['<b>ENTER</b>', '<b>A / ENTER</b>'],
         ['<b>ESC</b>', '<b>B / ESC</b>'],
-        ['<b>R</b> RETRY', '<b>X</b> RETRY'],
-        ['<b>L</b> LEVELS', '<b>Y</b> LEVELS'],
-        ['<b>1–5</b> JUMP', '<b>D-PAD</b> NAVIGATE'],
-        ["key: 'ENTER'", "key: 'A'"],
-        ["key: 'ESC'", "key: 'B'"],
-        ["key: 'R'", "key: 'X'"],
-        ["key: 'L'", "key: 'Y'"],
-        ["key: 'DEL'", "key: 'LB'"],
-        ["text: 'SPACE'", "text: 'A'"],
-        ['FROM THE TOP — R', 'FROM THE TOP — X'],
+        ['<b>R</b> RETRY', '<b>X / R</b> RETRY'],
+        ['<b>L</b> LEVELS', '<b>Y / L</b> LEVELS'],
+        ['<b>1–5</b> JUMP', '<b>D-PAD / 1–5</b> NAVIGATE'],
+        ["key: 'ENTER'", "key: 'A / ENTER'"],
+        ["key: 'ESC'", "key: 'B / ESC'"],
+        ["key: 'R'", "key: 'X / R'"],
+        ["key: 'L'", "key: 'Y / L'"],
+        ["key: 'DEL'", "key: 'LB / DEL'"],
+        ["text: 'SPACE'", "text: 'A / SPACE'"],
+        ['FROM THE TOP — R', 'FROM THE TOP — X / R'],
       ])
         code = code.replaceAll(from, to);
     }
