@@ -1,0 +1,508 @@
+/* Keep the original wooden signs and parchment, with room for hands and host UI. */
+:root {
+  --kitchen-gutter: max(16px, env(safe-area-inset-left));
+  --kitchen-bottom: max(16px, env(safe-area-inset-bottom));
+  --kitchen-focus: var(--yellow);
+}
+#ui-root {
+  inset: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+#ui-root [hidden] {
+  display: none !important;
+}
+.menu-screen.active {
+  display: grid;
+  grid-template-columns: minmax(280px, 480px) minmax(200px, 300px);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 18px 40px;
+  padding: 28px max(36px, 7vw) 24px;
+  box-sizing: border-box;
+  align-content: center;
+  justify-content: center;
+}
+.menu-logo-small {
+  position: static;
+  grid-column: 1 / -1;
+  font-size: clamp(26px, 4vw, 54px);
+}
+.menu-post {
+  margin: 0;
+  min-height: 0;
+  width: 100%;
+}
+.menu-post .pole {
+  display: none;
+}
+.menu-board {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 20px;
+  gap: 18px;
+  transform: none;
+}
+.menu-board .sign-btn {
+  font-size: clamp(18px, 2.3vw, 32px);
+  min-width: 0;
+  min-height: 48px;
+  width: 100%;
+  padding: 12px 32px;
+}
+.wood.controls-sign {
+  position: static;
+  transform: none;
+  max-width: none;
+  width: 100%;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+  justify-content: stretch;
+}
+.controls-sign .ctl {
+  font-size: clamp(12px, 1.1vw, 17px);
+}
+.controls-sign .key {
+  font-size: 12px;
+  min-width: 44px;
+  box-sizing: border-box;
+}
+.menu-version {
+  display: none;
+}
+.btn.sound-toggle {
+  top: 16px;
+  right: max(100px, 8vw);
+  font-size: 14px;
+}
+/* White + gold silhouette, filled selection, and an explicit confirm badge. */
+#ui-root :is(button, .level-tile, .hero-card):focus {
+  outline: 4px solid var(--paper);
+  outline-offset: 4px;
+  box-shadow:
+    0 0 0 9px var(--kitchen-focus),
+    0 8px 0 var(--ink),
+    0 14px 20px #3b24164d;
+  z-index: 4;
+  filter: brightness(1.08);
+  transform: translateY(-2px) scale(1.025);
+}
+#ui-root :is(.sign-btn, .level-tile):focus {
+  background: var(--cream-2);
+}
+#ui-root :is(.sign-btn, .level-tile):focus::after {
+  content: 'A';
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--yellow);
+  color: var(--ink);
+  font: 900 16px var(--body);
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+#ui-root[data-kitchen-input='keyboard']
+  :is(.sign-btn, .level-tile):focus::after {
+  content: '↵';
+}
+.levels-board {
+  box-sizing: border-box;
+  max-height: calc(100% - 40px);
+  width: min(92%, 1120px);
+  padding: 22px;
+  gap: 18px;
+  transform: none;
+}
+.levels-head {
+  flex: 0 0 auto;
+  padding-right: 65px;
+}
+.levels-head .title {
+  font-size: clamp(22px, 3vw, 42px);
+}
+.levels-grid {
+  min-height: 0;
+  padding: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+.level-tile {
+  min-height: 100px;
+}
+.level-tile .strip {
+  height: 44px;
+}
+.level-tile .strip .idx {
+  font-size: 28px;
+}
+.level-tile .lname {
+  font-size: 14px;
+  min-height: 30px;
+}
+.level-tile .stars .ico {
+  width: 22px;
+  height: 22px;
+}
+.levels-foot {
+  flex-shrink: 0;
+  gap: 20px;
+}
+.levels-foot .btn {
+  min-height: 44px;
+  font-size: 14px;
+}
+.levels-foot .hint {
+  font-size: 12px;
+}
+.levels-head .mode-tag {
+  font-size: 11px;
+}
+/* Small, usable HUD. Reserve the upper-right corner for Backbone's native pill. */
+.orders {
+  left: var(--kitchen-gutter);
+  top: 12px;
+  height: auto;
+  gap: 8px;
+  max-width: calc(100% - 245px);
+}
+.ticket {
+  width: 84px;
+  flex: 0 1 84px;
+  min-width: 56px;
+  padding: 5px;
+  gap: 3px;
+}
+.ticket .dish {
+  width: 24px;
+  height: 24px;
+}
+.ticket .rname {
+  font-size: 11px;
+}
+.ticket .ings {
+  display: none;
+}
+.ticket .bar {
+  height: 6px;
+  margin-top: 3px;
+}
+.hud-right {
+  top: 12px;
+  right: 104px;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+.clock {
+  width: 68px;
+  height: 68px;
+}
+.clock .lbl {
+  font-size: 8px;
+}
+.clock .time {
+  font-size: 20px;
+}
+.score-plaque {
+  min-width: 65px;
+  padding: 8px;
+  gap: 6px;
+  border-width: 3px;
+}
+.score-plaque .ico {
+  width: 20px;
+  height: 20px;
+}
+.score-plaque .score {
+  font-size: 22px;
+  min-width: 1.6em;
+}
+.chips-wrap {
+  left: var(--kitchen-gutter);
+  bottom: var(--kitchen-bottom);
+  gap: 12px;
+}
+.chips {
+  gap: 8px;
+}
+.chip {
+  padding: 3px 8px 3px 3px;
+  gap: 5px;
+}
+.chip .face {
+  width: 26px;
+  height: 26px;
+}
+.chip .who .nm {
+  font-size: 11px;
+}
+.chip .who .ch {
+  font-size: 8px;
+}
+.chip .pnum {
+  font-size: 9px;
+}
+.tab-hint {
+  font-size: 11px;
+}
+.tab-hint .key {
+  font-size: 10px;
+}
+.hud .btn.pause-btn {
+  right: var(--kitchen-gutter);
+  bottom: var(--kitchen-bottom);
+  min-height: 40px;
+  font-size: 12px;
+}
+.kitchen-guide {
+  bottom: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(580px, calc(100% - 48px));
+  box-sizing: border-box;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 14px;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  background: var(--cream);
+  box-shadow: 0 4px 0 var(--wood-edge);
+  color: var(--ink);
+}
+.recipe-step {
+  flex-shrink: 0;
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  border-radius: 9px;
+  padding: 8px;
+  font: 400 18px var(--display);
+}
+.kitchen-guide strong {
+  display: block;
+  font: 400 18px var(--display);
+  line-height: 1.1;
+}
+.kitchen-guide p {
+  margin: 3px 0 0;
+  font: 800 12px/1.25 var(--body);
+}
+.kitchen-action {
+  transform: translate(-50%, -100%);
+  padding: 6px 10px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 2px solid var(--cream);
+  border-radius: 9px;
+  font: 900 12px/1.2 var(--body);
+  max-width: 190px;
+  text-align: center;
+  box-shadow: 0 3px 0 #0004;
+}
+.kitchen-action.holding {
+  background: var(--green-dark);
+}
+.kitchen-target {
+  transform: translate(-50%, -100%);
+  color: var(--yellow);
+  font: 900 24px var(--body);
+  -webkit-text-stroke: 2px var(--ink);
+  paint-order: stroke fill;
+}
+@media (max-height: 500px) and (min-width: 600px) {
+  .menu-screen.active {
+    padding: 14px 48px 18px;
+    gap: 8px 28px;
+    grid-template-columns: minmax(280px, 360px) minmax(210px, 270px);
+  }
+  .menu-logo-small {
+    font-size: 26px;
+  }
+  .menu-board {
+    padding: 14px 18px 18px;
+    gap: 16px;
+  }
+  .menu-board .sign-btn {
+    font-size: 20px;
+    padding: 9px 30px;
+    min-height: 44px;
+  }
+  .wood.controls-sign {
+    padding: 16px;
+    gap: 13px;
+  }
+  .levels-board {
+    padding: 14px 20px;
+    max-height: calc(100% - 28px);
+    gap: 8px;
+  }
+  .level-tile .strip {
+    height: 30px;
+  }
+  .level-tile .strip .idx {
+    font-size: 24px;
+  }
+  .level-tile .lname {
+    font-size: 12px;
+    min-height: 26px;
+  }
+  .level-tile {
+    gap: 2px;
+    min-height: 82px;
+    padding-bottom: 6px;
+  }
+  .level-tile .stars .ico {
+    width: 16px;
+    height: 16px;
+  }
+  .levels-grid {
+    gap: 18px;
+  }
+  .levels-head .title {
+    font-size: 26px;
+  }
+  .kitchen-guide {
+    bottom: 59px;
+    padding: 7px 12px;
+  }
+  .kitchen-guide strong {
+    font-size: 16px;
+  }
+  .kitchen-guide p {
+    font-size: 11px;
+  }
+  .recipe-step {
+    font-size: 16px;
+    padding: 6px;
+  }
+  .online-board {
+    box-sizing: border-box;
+    max-height: calc(100% - 32px);
+    overflow: auto;
+    padding: 16px 22px;
+    gap: 10px 24px;
+  }
+  .char-card {
+    height: 130px;
+    width: 150px;
+  }
+  .online-form {
+    gap: 12px;
+  }
+  .online-board .head .title {
+    font-size: 26px;
+  }
+  .lobby-screen {
+    padding: 18px 32px;
+    box-sizing: border-box;
+    overflow: auto;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  .slot-card {
+    height: 16rem;
+  }
+  .results-board {
+    max-height: calc(100% - 60px);
+    overflow: auto;
+    box-sizing: border-box;
+  }
+}
+@media (max-width: 599px) {
+  .menu-screen.active {
+    display: flex;
+    padding: 20px 28px;
+    gap: 18px;
+    overflow: auto;
+    justify-content: flex-start;
+  }
+  .menu-logo-small {
+    font-size: 30px;
+    margin-top: 45px;
+  }
+  .wood.controls-sign {
+    grid-template-columns: 1fr 1fr;
+    padding: 14px;
+    gap: 14px 8px;
+  }
+  .controls-sign .ctl {
+    flex-direction: column;
+    text-align: center;
+  }
+  .levels-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .levels-head {
+    padding: 35px 0 0;
+    align-items: flex-start;
+  }
+  .levels-head .mode-tag {
+    display: none;
+  }
+  .levels-foot {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .orders {
+    max-width: calc(100% - 30px);
+    top: 75px;
+  }
+  .hud-right {
+    left: 20px;
+    right: auto;
+  }
+  .chip:not(.active-chef),
+  .tab-hint .what {
+    display: none;
+  }
+  .kitchen-guide {
+    width: calc(100% - 24px);
+    bottom: 78px;
+  }
+  .online-board {
+    width: calc(100% - 32px);
+    max-height: calc(100% - 48px);
+    overflow: auto;
+    box-sizing: border-box;
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #ui-root *,
+  #ui-root *::before,
+  #ui-root *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* Keep the original close camera: put coaching beside the footer controls. */
+@media (min-width: 600px) {
+  .kitchen-guide {
+    bottom: var(--kitchen-bottom);
+    left: 180px;
+    right: 112px;
+    width: auto;
+    transform: none;
+    padding: 7px 10px;
+    gap: 8px;
+  }
+  .kitchen-guide strong {
+    font-size: 15px;
+  }
+  .kitchen-guide p {
+    font-size: 11px;
+  }
+  .recipe-step {
+    font-size: 15px;
+    padding: 6px;
+  }
+  .hud:has(.kitchen-guide:not([hidden])) .chip:not(.active-chef),
+  .hud:has(.kitchen-guide:not([hidden])) .tab-hint .what {
+    display: none;
+  }
+}

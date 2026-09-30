@@ -16,6 +16,8 @@ export function packageCatalog(cwd = process.cwd()) {
   const add = (path, bytes, type) => assets.set(path, { bytes, type });
   for (const path of [
     'index.html',
+    'phone-tests.html',
+    'phone-tests.css',
     'favicon.svg',
     'backbone-pro.png',
     'style.css',

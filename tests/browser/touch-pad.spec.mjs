@@ -76,6 +76,23 @@ test('glass pad supports concurrent sticks, fire, cancellation and hide release'
     await expect
       .poll(() => page.evaluate(() => window.seen.at(-1).axes.moveX))
       .toBe(1);
+    await page.evaluate(() => {
+      document.querySelector('#touch-controls').dataset.titleTouch = 'hidden';
+    });
+    await expect(page.locator('#touch-controls')).toBeHidden();
+    await expect
+      .poll(() => page.evaluate(() => window.seen.at(-1).axes.moveX ?? 0))
+      .toBe(0);
+    await page.evaluate(() => {
+      const root = document.querySelector('#touch-controls');
+      root.hidden = true;
+      root.dataset.titleTouch = 'auto';
+    });
+    await expect(page.locator('#touch-controls')).toBeHidden();
+    await page.evaluate(() => {
+      document.querySelector('#touch-controls').hidden = false;
+    });
+    await expect(page.locator('#touch-controls')).toBeVisible();
     await page.mouse.up();
     await expect
       .poll(() => page.evaluate(() => window.seen.at(-1).axes.moveX ?? 0))

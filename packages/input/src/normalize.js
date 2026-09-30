@@ -39,6 +39,13 @@ export const DEFAULT_MAPPINGS = Object.freeze({
     buttons: Object.freeze({
       south: 'confirm',
       east: 'cancel',
+      west: 'west',
+      north: 'north',
+      leftShoulder: 'leftShoulder',
+      rightShoulder: 'rightShoulder',
+      leftTrigger: 'leftTrigger',
+      rightTrigger: 'rightTrigger',
+      select: 'view',
       start: 'menu',
       dpadUp: 'up',
       dpadDown: 'down',
