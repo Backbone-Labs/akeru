@@ -5,6 +5,22 @@ buildCreator({
   revision: 'd33b14759a29c30d48d039c4cdcbedb14817741e',
   patch(path, code) {
     if (path === 'client/main.js') {
+      code = "import { installKitchenUI } from './kitchen-ui.js';\n" + code;
+      code = replaceRequired(
+        code,
+        'import { Simulation }',
+        'import { Simulation, facingTile }',
+      );
+      code = replaceRequired(
+        code,
+        'this.resize();\n',
+        'this.resize();\n    this.updateKitchenUI = installKitchenUI(this, facingTile);\n',
+      );
+      code = replaceRequired(
+        code,
+        'if (!this.inGame()) this.previews.render(dt);',
+        'this.updateKitchenUI?.();\n    if (!this.inGame()) this.previews.render(dt);',
+      );
       code = replaceRequired(
         code,
         'if (this.net) return this.net;',
@@ -31,6 +47,13 @@ buildCreator({
         "if (!globalThis.akeruCreator.paused && (this.inGame() || this.mode === 'online')) this.tick(dt);",
       );
     }
+    if (path === 'client/render/renderer.js') {
+      code = replaceRequired(
+        code,
+        'const margin = { l: 0.04, r: 0.04, t: 0.26, b: 0.04 };',
+        'const margin = { l: 0.08, r: 0.08, t: Math.min(.55, 150 / this._h), b: Math.min(.65, (this.level?.id === "castle-1" ? 210 : 100) / this._h) };',
+      );
+    }
     if (path === 'client/ui/ui.js') {
       code = replaceRequired(
         code,
@@ -50,6 +73,7 @@ buildCreator({
           `I.keyboardKey('${to}')`,
         );
       }
+      code = replaceRequired(code, 'Chop / Wash', 'Hold to chop / wash');
       code = replaceRequired(
         code,
         '<span class="key">Tab</span>',
