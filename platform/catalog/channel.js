@@ -35,7 +35,7 @@ export function createRuntimeChannel({
     !/^[-a-zA-Z0-9]{32,128}$/.test(nonce) ||
     !Number.isFinite(timeoutMs) ||
     timeoutMs < 100 ||
-    timeoutMs > 60000
+    timeoutMs > 180000
   )
     throw new Error('Invalid runtime channel');
   if (new URL(origin).origin !== origin)

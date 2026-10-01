@@ -1,4 +1,5 @@
 import { mapInput } from './input.js';
+import { fileSizes } from './engine-config.js';
 const p = new URLSearchParams(location.hash.slice(1)),
   shell = p.get('shell'),
   nonce = p.get('nonce');
@@ -92,11 +93,21 @@ async function boot() {
     });
     const engine = new window.Engine({
       executable: 'game',
+      fileSizes,
       canvas: document.querySelector('canvas'),
       canvasResizePolicy: 2,
       focusCanvas: true,
       experimentalVK: true,
       persistentPaths: [],
+      onProgress: (loaded, total) => {
+        if (ready) return;
+        const progress = total > 0 ? Math.min(1, loaded / total) : 0;
+        document.querySelector('#status').textContent =
+          progress >= 1
+            ? 'Starting Brawler…'
+            : `Loading Brawler… ${Math.floor(progress * 100)}%`;
+        send('loading', { progress });
+      },
       onExit: () => send('exit', {}),
       onPrint: () => {},
       onPrintError: console.warn,

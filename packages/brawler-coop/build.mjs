@@ -11,6 +11,10 @@ import {
 import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { applyWebNetwork } from './web-patches.mjs';
+import {
+  prepareMobileTextures,
+  finishMobileTextures,
+} from './mobile-textures.mjs';
 const root = new URL('../../', import.meta.url).pathname;
 const source = process.argv[2],
   godot = process.env.GODOT,
@@ -140,10 +144,12 @@ writeFileSync(
   resolve(work, 'export_presets.cfg'),
   `[preset.0]\nname="Akeru Web"\nplatform="Web"\nrunnable=true\nexport_filter="all_resources"\ninclude_filter=""\nexclude_filter=""\nexport_path=""\n[preset.0.options]\ncustom_template/release=${JSON.stringify(template)}\nvariant/extensions_support=false\nvariant/thread_support=false\nhtml/canvas_resize_policy=2\nhtml/focus_canvas_on_start=true\nprogressive_web_app/enabled=false\nhtml/export_icon=false\n`,
 );
+const mobileTextures = prepareMobileTextures(work);
 execFileSync(godot, ['--headless', '--path', work, '--editor', '--import'], {
   stdio: 'inherit',
   timeout: 180000,
 });
+const textureBudget = finishMobileTextures(mobileTextures);
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 execFileSync(
@@ -157,6 +163,10 @@ execFileSync(
     resolve(out, 'game.html'),
   ],
   { stdio: 'inherit', timeout: 180000 },
+);
+writeFileSync(
+  resolve(out, 'engine-config.js'),
+  `export const fileSizes = ${JSON.stringify(Object.fromEntries(['game.wasm', 'game.pck'].map((file) => [file, readFileSync(resolve(out, file)).length])))};\n`,
 );
 for (const f of readdirSync(out))
   if (f.endsWith('.html') || f.endsWith('.png')) rmSync(resolve(out, f));
@@ -201,6 +211,7 @@ writeFileSync(
       sourceUrl,
       relayUrl,
       godot: '4.7.2',
+      textureBudget,
       templateSha256: hash(readFileSync(template)),
       artifacts: readdirSync(out)
         .sort()

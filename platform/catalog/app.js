@@ -1057,9 +1057,12 @@ export function mountCatalog({
     active.channel = createRuntimeChannel({
       frame: frame.contentWindow,
       presentation: isPlayer() ? 'embedded' : 'web',
-      timeoutMs: entry.manifest.runtime.requiredFeatures.includes('wasm')
-        ? 60000
-        : 15000,
+      timeoutMs:
+        entry.manifest.id === 'brawler-coop'
+          ? 180000
+          : entry.manifest.runtime.requiredFeatures.includes('wasm')
+            ? 60000
+            : 15000,
       origin: entry.release.origin,
       nonce,
       saveService: savesFor(entry).service,
@@ -1118,6 +1121,11 @@ export function mountCatalog({
           $('#touch-controls').dataset.titleTouch = event.visible
             ? 'auto'
             : 'hidden';
+        } else if (event.type === 'loading') {
+          $('#runtime-overlay p').textContent =
+            event.progress >= 1
+              ? 'Download complete. Starting game…'
+              : `Downloading game · ${Math.floor(event.progress * 100)}%`;
         } else if (event.type === 'error') failRuntime(event.code);
         else if (event.type === 'exit') {
           if (isPlayer()) {
