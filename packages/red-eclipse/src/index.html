@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>Red Eclipse · Akeru</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="960"
+      height="540"
+      tabindex="0"
+      aria-label="Red Eclipse multiplayer arena"
+    ></canvas>
+    <main id="entry">
+      <div class="eyebrow">AKERU / MULTIPLAYER</div>
+      <h1>Red Eclipse<span>.</span></h1>
+      <p id="status" role="status">Connecting to Akeru…</p>
+      <progress
+        id="progress"
+        max="1"
+        value="0"
+        aria-label="Game download"
+      ></progress>
+      <button id="join" hidden>
+        Enter the arena <span aria-hidden="true">↗</span>
+      </button>
+      <div class="controls">
+        <p>
+          <b>Controller</b> Left stick move · Right stick aim<br />RT fire · LT
+          alternate · A jump · X reload · B crouch
+        </p>
+        <p>
+          <b>Keyboard</b> WASD move · Mouse aim / fire<br />Space jump · R
+          reload · E use
+        </p>
+      </div>
+      <p class="fine">
+        A shared live match. Opening the menu stops your input, not the
+        arena.<br />Community browser port ·
+        <a href="credits.html" id="credits-link">Credits &amp; licenses</a>
+      </p>
+    </main>
+    <dialog id="credits">
+      <h2>Credits &amp; licenses</h2>
+      <pre></pre>
+      <button id="credits-close">Back</button>
+    </dialog>
+    <div id="notice" role="status" hidden></div>
+    <script type="module" src="title.js"></script>
+  </body>
+</html>

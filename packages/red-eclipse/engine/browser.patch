@@ -1,0 +1,1309 @@
+--- a/src/engine/client.cpp
++++ b/src/engine/client.cpp
+@@ -151,6 +151,9 @@
+     }
+ 
+     connpeer = enet_host_connect(clienthost, &address, server::numchannels(), 0);
++#ifdef __EMSCRIPTEN__
++    if(connpeer) enet_peer_timeout(connpeer, 32, 120000, 180000);
++#endif
+     enet_host_flush(clienthost);
+     connmillis = totalmillis;
+     connattempts = 0;
+--- a/src/engine/console.cpp
++++ b/src/engine/console.cpp
+@@ -1149,12 +1149,14 @@
+ }
+ 
+ bool capslockon = false, numlockon = false;
+-#ifndef WIN32
++#if !defined(WIN32) && !defined(__EMSCRIPTEN__)
+ #include <X11/XKBlib.h>
+ #endif
+ bool capslocked()
+ {
+-    #ifdef WIN32
++    #ifdef __EMSCRIPTEN__
++    return (SDL_GetModState() & KMOD_CAPS) != 0;
++    #elif defined(WIN32)
+     if(GetKeyState(VK_CAPITAL)) return true;
+     #else
+     Display *d = XOpenDisplay((char*)0);
+@@ -1172,7 +1174,9 @@
+ 
+ bool numlocked()
+ {
+-    #ifdef WIN32
++    #ifdef __EMSCRIPTEN__
++    return (SDL_GetModState() & KMOD_NUM) != 0;
++    #elif defined(WIN32)
+     if(GetKeyState(VK_NUMLOCK)) return true;
+     #else
+     Display *d = XOpenDisplay((char*)0);
+--- a/src/engine/main.cpp
++++ b/src/engine/main.cpp
+@@ -2,6 +2,9 @@
+ 
+ #include "engine.h"
+ #include <signal.h>
++#ifdef __EMSCRIPTEN__
++#include <emscripten.h>
++#endif
+ 
+ #ifdef SDL_VIDEO_DRIVER_X11
+ #include "SDL_syswm.h"
+@@ -128,7 +131,11 @@
+     if(on)
+     {
+         SDL_ShowCursor(SDL_FALSE);
+-        if(canrelativemouse && userelativemouse)
++        if(canrelativemouse && userelativemouse
++#ifdef __EMSCRIPTEN__
++            && EM_ASM_INT({ return !!document.pointerLockElement; })
++#endif
++        )
+         {
+             if(SDL_SetRelativeMouseMode(SDL_TRUE) >= 0)
+             {
+@@ -535,6 +542,13 @@
+     SDL_SetWindowMinimumSize(screen, SCR_MINW, SCR_MINH);
+     SDL_SetWindowMaximumSize(screen, SCR_MAXW, SCR_MAXH);
+ 
++#ifdef __EMSCRIPTEN__
++    glcompat = 0;
++    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
++    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
++    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
++    glcontext = SDL_GL_CreateContext(screen);
++#else
+     static const int glversions[] = { 40, 33, 32, 31, 30, 20 };
+     loopi(sizeof(glversions)/sizeof(glversions[0]))
+     {
+@@ -545,6 +559,7 @@
+         glcontext = SDL_GL_CreateContext(screen);
+         if(glcontext) break;
+     }
++#endif
+     if(!glcontext) fatal("Failed to create OpenGL context: %s", SDL_GetError());
+     setupdisplay(dogl, engineready);
+ }
+@@ -833,6 +848,13 @@
+ }
+ 
+ int frameloops = 0;
++#ifdef __EMSCRIPTEN__
++extern "C" EMSCRIPTEN_KEEPALIVE void akeru_resize(int w, int h) { if(screen && w > 0 && h > 0) { SDL_SetWindowSize(screen, clamp(w, 320, 1920), clamp(h, 180, 1080)); wantdisplaysetup = true; } }
++extern "C" EMSCRIPTEN_KEEPALIVE int akeru_frame_count() { return frameloops; }
++extern "C" EMSCRIPTEN_KEEPALIVE float akeru_camera_x() { return camera1 ? camera1->o.x : 0; }
++extern "C" EMSCRIPTEN_KEEPALIVE float akeru_camera_y() { return camera1 ? camera1->o.y : 0; }
++extern "C" EMSCRIPTEN_KEEPALIVE float akeru_camera_yaw() { return camera1 ? camera1->yaw : 0; }
++#endif
+ 
+ VAR(IDF_PERSIST, menufps, -1, -1, VAR_MAX);
+ FVAR(IDF_PERSIST, menufpsrefresh, 0.1f, 1, 100);
+@@ -845,6 +867,11 @@
+ 
+ void limitfps(int &millis, int curmillis)
+ {
++#ifdef __EMSCRIPTEN__
++    // requestAnimationFrame owns browser pacing. SDL may report a zero refresh
++    // rate, turning the native adaptive cap into 1 FPS and blocking networking.
++    return;
++#endif
+     int curmax = GETFPS(maxfps), curmenu = GETFPS(menufps),
+         limit = (hasnoview() || (minimized && !renderunfocused)) && curmenu ? (curmax > 0 ? min(curmax, curmenu) : curmenu) : curmax;
+     if(!limit || (limit >= refreshrate && vsync)) return;
+@@ -1049,9 +1076,13 @@
+     identflags &= ~IDF_MAP;
+     progressing = true;
+ 
++#ifndef __EMSCRIPTEN__
++    // The web host owns loading presentation. Synchronous progress rendering
++    // cannot paint until this task yields and may use shaders mid-reload.
+     updatetextures();
+     gl_drawnoview();
+     swapbuffers(false);
++#endif
+ 
+     lastprogress = getclockticks();
+ 
+@@ -1346,7 +1377,88 @@
+         DELETEA(reprotoarg);
+ 
+         if(initscript) execute(initscript, true);
++
++#ifdef __EMSCRIPTEN__
++        frameloops = 0;
++        emscripten_set_main_loop([]() {
++
++            fx::startframe();
++            if(wantdisplaysetup) setupdisplay();
++            curtextscale = textscale;
++
++            int elapsed = updatetimer(true);
++            updatefps(frameloops, elapsed);
+ 
++            cdpi::runframe();
++            UI::poke();
++            checkinput();
++            tryedit();
++
++            checksleep(lastmillis);
++            serverslice();
++            ircslice();
++
++            if(frameloops)
++            {
++                RUNMAP("on_update");
++                updateworldcols();
++                game::updateworld();
++
++                game::recomputecamera();
++                setviewcell(camera1->o);
++                if(!hasnoview()) halosurf.render(); // need halos to be first in pipline..
++
++                cleardynlights();
++
++                fx::update();
++                updatewind();
++                UI::update();
++                updatetextures();
++                updateparticles();
++                updatesounds();
++
++                if(!minimized || renderunfocused)
++                {
++                    inbetweenframes = renderedframe = false;
++
++                    if(UI::processviewports())
++                    {   // .. and the camera needs to be restored for the rest of the rendering
++                        game::recomputecamera();
++                        setviewcell(camera1->o);
++                        cleardynlights();
++                    }
++
++                    gl_drawframe();
++                    renderedframe = true;
++                    swapbuffers();
++                    inbetweenframes = true;
++
++                    if(pixeling)
++                    {
++                        if(editmode)
++                        {
++                            glReadPixels(pixelingx, pixelingy, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &pixel.v[0]);
++                            if(pixelact) execute(pixelact);
++                        }
++                        if(pixelact) delete[] pixelact;
++                        pixelact = NULL;
++                        pixeling = false;
++                    }
++                }
++
++                if(*progresstitle || progressamt >= 0)
++                {
++                    setsvar("progresstitle", "");
++                    setfvar("progressamt", -1.f);
++                }
++
++                setcaption(game::gametitle(), game::gametext());
++            }
++        
++            frameloops = frameloops >= INT_MAX-1 ? MAXFPSHISTORY+1 : frameloops+1;
++        }, 0, true);
++        return EXIT_SUCCESS;
++#else
+         for(frameloops = 0; ; frameloops = frameloops >= INT_MAX-1 ? MAXFPSHISTORY+1 : frameloops+1)
+         {
+             fx::startframe();
+@@ -1422,6 +1534,7 @@
+                 setcaption(game::gametitle(), game::gametext());
+             }
+         }
++#endif
+     }
+ 
+     ASSERT(0);
+--- a/src/engine/rendergl.cpp
++++ b/src/engine/rendergl.cpp
+@@ -1,6 +1,9 @@
+ // rendergl.cpp: core opengl rendering stuff
+ 
+ #include "engine.h"
++#ifdef __EMSCRIPTEN__
++#include <emscripten/html5_webgl.h>
++#endif
+ 
+ bool hasVAO = false, hasTR = false, hasTSW = false, hasPBO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasCBF = false, hasS3TC = false, hasFXT1 = false, hasLATC = false, hasRGTC = false, hasAF = false, hasFBB = false, hasFBMS = false, hasTMS = false, hasMSS = false, hasFBMSBS = false, hasUBO = false, hasMBR = false, hasDB2 = false, hasDBB = false, hasTG = false, hasTQ = false, hasPF = false, hasTRG = false, hasTI = false, hasHFV = false, hasHFP = false, hasDBT = false, hasDC = false, hasDBGO = false, hasEGPU4 = false, hasGPU4 = false, hasGPU5 = false, hasBFE = false, hasEAL = false, hasCR = false, hasOQ2 = false, hasES2 = false, hasES3 = false, hasCB = false, hasCI = false, hasTS = false;
+ bool mesa = false, intel = false, amd = false, nvidia = false;
+@@ -244,7 +247,14 @@
+ 
+ void *getprocaddress(const char *name)
+ {
++#ifdef __EMSCRIPTEN__
++    // Prefer ES3 core entry points: SDL's extension lookup can resolve the
++    // same name to WebGL1 timer-query EXT functions, invalid in WebGL2.
++    if(void *core = emscripten_webgl2_get_proc_address(name)) return core;
++    return emscripten_webgl1_get_proc_address(name);
++#else
+     return SDL_GL_GetProcAddress(name);
++#endif
+ }
+ 
+ VAR(0, glerr, 0, 0, 1);
+@@ -368,7 +378,324 @@
+ SVARR(gfxvendor, "");
+ SVARR(gfxrenderer, "");
+ SVARR(gfxversion, "");
++
++
++#ifdef __EMSCRIPTEN__
++// WebGL2 is an ES 3.0 API, not a desktop OpenGL version. Keep its
++// capabilities independent of the desktop version/extension heuristics.
++static void webglmultidrawarrays(GLenum mode, const GLint *first, const GLsizei *count, GLsizei draws)
++{
++    for(GLsizei i = 0; i < draws; ++i) glDrawArrays(mode, first[i], count[i]);
++}
++
++static void webglmultidrawelements(GLenum mode, const GLsizei *count, GLenum type, const void *const *indices, GLsizei draws)
++{
++    for(GLsizei i = 0; i < draws; ++i) glDrawElements(mode, count[i], type, indices[i]);
++}
++
++static void webglgetqueryobjectiv(GLuint query, GLenum pname, GLint *result)
++{
++    GLuint value = 0;
++    glGetQueryObjectuiv_(query, pname, &value);
++    *result = GLint(value);
++}
++
++static void webglVertexAttrib1s(GLuint index, GLshort x) { glVertexAttrib1f_(index, GLfloat(x)); }
++static void webglVertexAttrib1sv(GLuint index, const GLshort *v) { glVertexAttrib1f_(index, GLfloat(v[0])); }
++static void webglVertexAttrib2s(GLuint index, GLshort x, GLshort y) { glVertexAttrib2f_(index, GLfloat(x), GLfloat(y)); }
++static void webglVertexAttrib2sv(GLuint index, const GLshort *v) { glVertexAttrib2f_(index, GLfloat(v[0]), GLfloat(v[1])); }
++static void webglVertexAttrib3s(GLuint index, GLshort x, GLshort y, GLshort z) { glVertexAttrib3f_(index, GLfloat(x), GLfloat(y), GLfloat(z)); }
++static void webglVertexAttrib3sv(GLuint index, const GLshort *v) { glVertexAttrib3f_(index, GLfloat(v[0]), GLfloat(v[1]), GLfloat(v[2])); }
++static void webglVertexAttrib4s(GLuint index, GLshort x, GLshort y, GLshort z, GLshort w) { glVertexAttrib4f_(index, GLfloat(x), GLfloat(y), GLfloat(z), GLfloat(w)); }
++static void webglVertexAttrib4sv(GLuint index, const GLshort *v) { glVertexAttrib4f_(index, GLfloat(v[0]), GLfloat(v[1]), GLfloat(v[2]), GLfloat(v[3])); }
++static void webglVertexAttrib4bv(GLuint index, const GLbyte *v) { glVertexAttrib4f_(index, GLfloat(v[0]), GLfloat(v[1]), GLfloat(v[2]), GLfloat(v[3])); }
++static void webglVertexAttrib4Nbv(GLuint index, const GLbyte *v) { glVertexAttrib4f_(index, max(GLfloat(v[0])/127.0f, -1.0f), max(GLfloat(v[1])/127.0f, -1.0f), max(GLfloat(v[2])/127.0f, -1.0f), max(GLfloat(v[3])/127.0f, -1.0f)); }
++static void webglVertexAttrib4iv(GLuint index, const GLint *v) { glVertexAttrib4f_(index, GLfloat(v[0]), GLfloat(v[1]), GLfloat(v[2]), GLfloat(v[3])); }
++static void webglVertexAttrib4Niv(GLuint index, const GLint *v) { glVertexAttrib4f_(index, max(GLfloat(v[0])/2147483647.0f, -1.0f), max(GLfloat(v[1])/2147483647.0f, -1.0f), max(GLfloat(v[2])/2147483647.0f, -1.0f), max(GLfloat(v[3])/2147483647.0f, -1.0f)); }
++static void webglVertexAttrib4ubv(GLuint index, const GLubyte *v) { glVertexAttrib4f_(index, GLfloat(v[0]), GLfloat(v[1]), GLfloat(v[2]), GLfloat(v[3])); }
++static void webglVertexAttrib4Nubv(GLuint index, const GLubyte *v) { glVertexAttrib4f_(index, GLfloat(v[0])/255.0f, GLfloat(v[1])/255.0f, GLfloat(v[2])/255.0f, GLfloat(v[3])/255.0f); }
++static void webglVertexAttrib4uiv(GLuint index, const GLuint *v) { glVertexAttrib4f_(index, GLfloat(v[0]), GLfloat(v[1]), GLfloat(v[2]), GLfloat(v[3])); }
++static void webglVertexAttrib4Nuiv(GLuint index, const GLuint *v) { glVertexAttrib4f_(index, GLfloat(v[0])/4294967295.0f, GLfloat(v[1])/4294967295.0f, GLfloat(v[2])/4294967295.0f, GLfloat(v[3])/4294967295.0f); }
++static void webglVertexAttrib4usv(GLuint index, const GLushort *v) { glVertexAttrib4f_(index, GLfloat(v[0]), GLfloat(v[1]), GLfloat(v[2]), GLfloat(v[3])); }
++static void webglVertexAttrib4Nusv(GLuint index, const GLushort *v) { glVertexAttrib4f_(index, GLfloat(v[0])/65535.0f, GLfloat(v[1])/65535.0f, GLfloat(v[2])/65535.0f, GLfloat(v[3])/65535.0f); }
++static void webglVertexAttrib4Nub(GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w) { glVertexAttrib4f_(index, x/255.0f, y/255.0f, z/255.0f, w/255.0f); }
++
++static void gl_checkwebgl2()
++{
++    unsigned major = 0, minor = 0;
++    if(sscanf(gfxversion, "OpenGL ES %u.%u", &major, &minor) != 2 || major < 3)
++        fatal("This browser build requires a WebGL2 / OpenGL ES 3 context (got %s)", gfxversion);
++    glversion = major*100 + minor*10;
++    const char *version = (const char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
++    if(!version || sscanf(version, "OpenGL ES GLSL ES %u.%u", &major, &minor) != 2 || major < 3)
++        fatal("This browser build requires GLSL ES 3.00");
++    glslversion = major*100 + minor;
++    conoutf(colourwhite, "GLSL ES: %s", version);
++    glBlendFuncSeparate_ = (PFNGLBLENDFUNCSEPARATEPROC)getprocaddress("glBlendFuncSeparate");
++    if(!glBlendFuncSeparate_) fatal("Missing required WebGL2 entry point: glBlendFuncSeparate");
++    glBlendEquationSeparate_ = (PFNGLBLENDEQUATIONSEPARATEPROC)getprocaddress("glBlendEquationSeparate");
++    if(!glBlendEquationSeparate_) fatal("Missing required WebGL2 entry point: glBlendEquationSeparate");
++    glStencilOpSeparate_ = (PFNGLSTENCILOPSEPARATEPROC)getprocaddress("glStencilOpSeparate");
++    if(!glStencilOpSeparate_) fatal("Missing required WebGL2 entry point: glStencilOpSeparate");
++    glStencilFuncSeparate_ = (PFNGLSTENCILFUNCSEPARATEPROC)getprocaddress("glStencilFuncSeparate");
++    if(!glStencilFuncSeparate_) fatal("Missing required WebGL2 entry point: glStencilFuncSeparate");
++    glStencilMaskSeparate_ = (PFNGLSTENCILMASKSEPARATEPROC)getprocaddress("glStencilMaskSeparate");
++    if(!glStencilMaskSeparate_) fatal("Missing required WebGL2 entry point: glStencilMaskSeparate");
++    glGenBuffers_ = (PFNGLGENBUFFERSPROC)getprocaddress("glGenBuffers");
++    if(!glGenBuffers_) fatal("Missing required WebGL2 entry point: glGenBuffers");
++    glBindBuffer_ = (PFNGLBINDBUFFERPROC)getprocaddress("glBindBuffer");
++    if(!glBindBuffer_) fatal("Missing required WebGL2 entry point: glBindBuffer");
++    glBufferData_ = (PFNGLBUFFERDATAPROC)getprocaddress("glBufferData");
++    if(!glBufferData_) fatal("Missing required WebGL2 entry point: glBufferData");
++    glBufferSubData_ = (PFNGLBUFFERSUBDATAPROC)getprocaddress("glBufferSubData");
++    if(!glBufferSubData_) fatal("Missing required WebGL2 entry point: glBufferSubData");
++    glDeleteBuffers_ = (PFNGLDELETEBUFFERSPROC)getprocaddress("glDeleteBuffers");
++    if(!glDeleteBuffers_) fatal("Missing required WebGL2 entry point: glDeleteBuffers");
++    glGetQueryiv_ = (PFNGLGETQUERYIVPROC)getprocaddress("glGetQueryiv");
++    if(!glGetQueryiv_) fatal("Missing required WebGL2 entry point: glGetQueryiv");
++    glGenQueries_ = (PFNGLGENQUERIESPROC)getprocaddress("glGenQueries");
++    if(!glGenQueries_) fatal("Missing required WebGL2 entry point: glGenQueries");
++    glDeleteQueries_ = (PFNGLDELETEQUERIESPROC)getprocaddress("glDeleteQueries");
++    if(!glDeleteQueries_) fatal("Missing required WebGL2 entry point: glDeleteQueries");
++    glBeginQuery_ = (PFNGLBEGINQUERYPROC)getprocaddress("glBeginQuery");
++    if(!glBeginQuery_) fatal("Missing required WebGL2 entry point: glBeginQuery");
++    glEndQuery_ = (PFNGLENDQUERYPROC)getprocaddress("glEndQuery");
++    if(!glEndQuery_) fatal("Missing required WebGL2 entry point: glEndQuery");
++    glGetQueryObjectuiv_ = (PFNGLGETQUERYOBJECTUIVPROC)getprocaddress("glGetQueryObjectuiv");
++    if(!glGetQueryObjectuiv_) fatal("Missing required WebGL2 entry point: glGetQueryObjectuiv");
++    glCreateProgram_ = (PFNGLCREATEPROGRAMPROC)getprocaddress("glCreateProgram");
++    if(!glCreateProgram_) fatal("Missing required WebGL2 entry point: glCreateProgram");
++    glDeleteProgram_ = (PFNGLDELETEPROGRAMPROC)getprocaddress("glDeleteProgram");
++    if(!glDeleteProgram_) fatal("Missing required WebGL2 entry point: glDeleteProgram");
++    glUseProgram_ = (PFNGLUSEPROGRAMPROC)getprocaddress("glUseProgram");
++    if(!glUseProgram_) fatal("Missing required WebGL2 entry point: glUseProgram");
++    glCreateShader_ = (PFNGLCREATESHADERPROC)getprocaddress("glCreateShader");
++    if(!glCreateShader_) fatal("Missing required WebGL2 entry point: glCreateShader");
++    glDeleteShader_ = (PFNGLDELETESHADERPROC)getprocaddress("glDeleteShader");
++    if(!glDeleteShader_) fatal("Missing required WebGL2 entry point: glDeleteShader");
++    glShaderSource_ = (PFNGLSHADERSOURCEPROC)getprocaddress("glShaderSource");
++    if(!glShaderSource_) fatal("Missing required WebGL2 entry point: glShaderSource");
++    glCompileShader_ = (PFNGLCOMPILESHADERPROC)getprocaddress("glCompileShader");
++    if(!glCompileShader_) fatal("Missing required WebGL2 entry point: glCompileShader");
++    glGetShaderiv_ = (PFNGLGETSHADERIVPROC)getprocaddress("glGetShaderiv");
++    if(!glGetShaderiv_) fatal("Missing required WebGL2 entry point: glGetShaderiv");
++    glGetProgramiv_ = (PFNGLGETPROGRAMIVPROC)getprocaddress("glGetProgramiv");
++    if(!glGetProgramiv_) fatal("Missing required WebGL2 entry point: glGetProgramiv");
++    glAttachShader_ = (PFNGLATTACHSHADERPROC)getprocaddress("glAttachShader");
++    if(!glAttachShader_) fatal("Missing required WebGL2 entry point: glAttachShader");
++    glGetProgramInfoLog_ = (PFNGLGETPROGRAMINFOLOGPROC)getprocaddress("glGetProgramInfoLog");
++    if(!glGetProgramInfoLog_) fatal("Missing required WebGL2 entry point: glGetProgramInfoLog");
++    glGetShaderInfoLog_ = (PFNGLGETSHADERINFOLOGPROC)getprocaddress("glGetShaderInfoLog");
++    if(!glGetShaderInfoLog_) fatal("Missing required WebGL2 entry point: glGetShaderInfoLog");
++    glLinkProgram_ = (PFNGLLINKPROGRAMPROC)getprocaddress("glLinkProgram");
++    if(!glLinkProgram_) fatal("Missing required WebGL2 entry point: glLinkProgram");
++    glGetUniformLocation_ = (PFNGLGETUNIFORMLOCATIONPROC)getprocaddress("glGetUniformLocation");
++    if(!glGetUniformLocation_) fatal("Missing required WebGL2 entry point: glGetUniformLocation");
++    glUniform1f_ = (PFNGLUNIFORM1FPROC)getprocaddress("glUniform1f");
++    if(!glUniform1f_) fatal("Missing required WebGL2 entry point: glUniform1f");
++    glUniform2f_ = (PFNGLUNIFORM2FPROC)getprocaddress("glUniform2f");
++    if(!glUniform2f_) fatal("Missing required WebGL2 entry point: glUniform2f");
++    glUniform3f_ = (PFNGLUNIFORM3FPROC)getprocaddress("glUniform3f");
++    if(!glUniform3f_) fatal("Missing required WebGL2 entry point: glUniform3f");
++    glUniform4f_ = (PFNGLUNIFORM4FPROC)getprocaddress("glUniform4f");
++    if(!glUniform4f_) fatal("Missing required WebGL2 entry point: glUniform4f");
++    glUniform1fv_ = (PFNGLUNIFORM1FVPROC)getprocaddress("glUniform1fv");
++    if(!glUniform1fv_) fatal("Missing required WebGL2 entry point: glUniform1fv");
++    glUniform2fv_ = (PFNGLUNIFORM2FVPROC)getprocaddress("glUniform2fv");
++    if(!glUniform2fv_) fatal("Missing required WebGL2 entry point: glUniform2fv");
++    glUniform3fv_ = (PFNGLUNIFORM3FVPROC)getprocaddress("glUniform3fv");
++    if(!glUniform3fv_) fatal("Missing required WebGL2 entry point: glUniform3fv");
++    glUniform4fv_ = (PFNGLUNIFORM4FVPROC)getprocaddress("glUniform4fv");
++    if(!glUniform4fv_) fatal("Missing required WebGL2 entry point: glUniform4fv");
++    glUniform1i_ = (PFNGLUNIFORM1IPROC)getprocaddress("glUniform1i");
++    if(!glUniform1i_) fatal("Missing required WebGL2 entry point: glUniform1i");
++    glUniform2i_ = (PFNGLUNIFORM2IPROC)getprocaddress("glUniform2i");
++    if(!glUniform2i_) fatal("Missing required WebGL2 entry point: glUniform2i");
++    glUniform3i_ = (PFNGLUNIFORM3IPROC)getprocaddress("glUniform3i");
++    if(!glUniform3i_) fatal("Missing required WebGL2 entry point: glUniform3i");
++    glUniform4i_ = (PFNGLUNIFORM4IPROC)getprocaddress("glUniform4i");
++    if(!glUniform4i_) fatal("Missing required WebGL2 entry point: glUniform4i");
++    glUniform1iv_ = (PFNGLUNIFORM1IVPROC)getprocaddress("glUniform1iv");
++    if(!glUniform1iv_) fatal("Missing required WebGL2 entry point: glUniform1iv");
++    glUniform2iv_ = (PFNGLUNIFORM2IVPROC)getprocaddress("glUniform2iv");
++    if(!glUniform2iv_) fatal("Missing required WebGL2 entry point: glUniform2iv");
++    glUniform3iv_ = (PFNGLUNIFORM3IVPROC)getprocaddress("glUniform3iv");
++    if(!glUniform3iv_) fatal("Missing required WebGL2 entry point: glUniform3iv");
++    glUniform4iv_ = (PFNGLUNIFORM4IVPROC)getprocaddress("glUniform4iv");
++    if(!glUniform4iv_) fatal("Missing required WebGL2 entry point: glUniform4iv");
++    glUniformMatrix2fv_ = (PFNGLUNIFORMMATRIX2FVPROC)getprocaddress("glUniformMatrix2fv");
++    if(!glUniformMatrix2fv_) fatal("Missing required WebGL2 entry point: glUniformMatrix2fv");
++    glUniformMatrix3fv_ = (PFNGLUNIFORMMATRIX3FVPROC)getprocaddress("glUniformMatrix3fv");
++    if(!glUniformMatrix3fv_) fatal("Missing required WebGL2 entry point: glUniformMatrix3fv");
++    glUniformMatrix4fv_ = (PFNGLUNIFORMMATRIX4FVPROC)getprocaddress("glUniformMatrix4fv");
++    if(!glUniformMatrix4fv_) fatal("Missing required WebGL2 entry point: glUniformMatrix4fv");
++    glBindAttribLocation_ = (PFNGLBINDATTRIBLOCATIONPROC)getprocaddress("glBindAttribLocation");
++    if(!glBindAttribLocation_) fatal("Missing required WebGL2 entry point: glBindAttribLocation");
++    glGetActiveUniform_ = (PFNGLGETACTIVEUNIFORMPROC)getprocaddress("glGetActiveUniform");
++    if(!glGetActiveUniform_) fatal("Missing required WebGL2 entry point: glGetActiveUniform");
++    glEnableVertexAttribArray_ = (PFNGLENABLEVERTEXATTRIBARRAYPROC)getprocaddress("glEnableVertexAttribArray");
++    if(!glEnableVertexAttribArray_) fatal("Missing required WebGL2 entry point: glEnableVertexAttribArray");
++    glDisableVertexAttribArray_ = (PFNGLDISABLEVERTEXATTRIBARRAYPROC)getprocaddress("glDisableVertexAttribArray");
++    if(!glDisableVertexAttribArray_) fatal("Missing required WebGL2 entry point: glDisableVertexAttribArray");
++    glVertexAttrib1f_ = (PFNGLVERTEXATTRIB1FPROC)getprocaddress("glVertexAttrib1f");
++    if(!glVertexAttrib1f_) fatal("Missing required WebGL2 entry point: glVertexAttrib1f");
++    glVertexAttrib1fv_ = (PFNGLVERTEXATTRIB1FVPROC)getprocaddress("glVertexAttrib1fv");
++    if(!glVertexAttrib1fv_) fatal("Missing required WebGL2 entry point: glVertexAttrib1fv");
++    glVertexAttrib2f_ = (PFNGLVERTEXATTRIB2FPROC)getprocaddress("glVertexAttrib2f");
++    if(!glVertexAttrib2f_) fatal("Missing required WebGL2 entry point: glVertexAttrib2f");
++    glVertexAttrib2fv_ = (PFNGLVERTEXATTRIB2FVPROC)getprocaddress("glVertexAttrib2fv");
++    if(!glVertexAttrib2fv_) fatal("Missing required WebGL2 entry point: glVertexAttrib2fv");
++    glVertexAttrib3f_ = (PFNGLVERTEXATTRIB3FPROC)getprocaddress("glVertexAttrib3f");
++    if(!glVertexAttrib3f_) fatal("Missing required WebGL2 entry point: glVertexAttrib3f");
++    glVertexAttrib3fv_ = (PFNGLVERTEXATTRIB3FVPROC)getprocaddress("glVertexAttrib3fv");
++    if(!glVertexAttrib3fv_) fatal("Missing required WebGL2 entry point: glVertexAttrib3fv");
++    glVertexAttrib4f_ = (PFNGLVERTEXATTRIB4FPROC)getprocaddress("glVertexAttrib4f");
++    if(!glVertexAttrib4f_) fatal("Missing required WebGL2 entry point: glVertexAttrib4f");
++    glVertexAttrib4fv_ = (PFNGLVERTEXATTRIB4FVPROC)getprocaddress("glVertexAttrib4fv");
++    if(!glVertexAttrib4fv_) fatal("Missing required WebGL2 entry point: glVertexAttrib4fv");
++    glVertexAttribPointer_ = (PFNGLVERTEXATTRIBPOINTERPROC)getprocaddress("glVertexAttribPointer");
++    if(!glVertexAttribPointer_) fatal("Missing required WebGL2 entry point: glVertexAttribPointer");
++    glDrawBuffers_ = (PFNGLDRAWBUFFERSPROC)getprocaddress("glDrawBuffers");
++    if(!glDrawBuffers_) fatal("Missing required WebGL2 entry point: glDrawBuffers");
++    glGetStringi_ = (PFNGLGETSTRINGIPROC)getprocaddress("glGetStringi");
++    if(!glGetStringi_) fatal("Missing required WebGL2 entry point: glGetStringi");
++    glBindVertexArray_ = (PFNGLBINDVERTEXARRAYPROC)getprocaddress("glBindVertexArray");
++    if(!glBindVertexArray_) fatal("Missing required WebGL2 entry point: glBindVertexArray");
++    glDeleteVertexArrays_ = (PFNGLDELETEVERTEXARRAYSPROC)getprocaddress("glDeleteVertexArrays");
++    if(!glDeleteVertexArrays_) fatal("Missing required WebGL2 entry point: glDeleteVertexArrays");
++    glGenVertexArrays_ = (PFNGLGENVERTEXARRAYSPROC)getprocaddress("glGenVertexArrays");
++    if(!glGenVertexArrays_) fatal("Missing required WebGL2 entry point: glGenVertexArrays");
++    glIsVertexArray_ = (PFNGLISVERTEXARRAYPROC)getprocaddress("glIsVertexArray");
++    if(!glIsVertexArray_) fatal("Missing required WebGL2 entry point: glIsVertexArray");
++    glUniform1ui_ = (PFNGLUNIFORM1UIPROC)getprocaddress("glUniform1ui");
++    if(!glUniform1ui_) fatal("Missing required WebGL2 entry point: glUniform1ui");
++    glUniform2ui_ = (PFNGLUNIFORM2UIPROC)getprocaddress("glUniform2ui");
++    if(!glUniform2ui_) fatal("Missing required WebGL2 entry point: glUniform2ui");
++    glUniform3ui_ = (PFNGLUNIFORM3UIPROC)getprocaddress("glUniform3ui");
++    if(!glUniform3ui_) fatal("Missing required WebGL2 entry point: glUniform3ui");
++    glUniform4ui_ = (PFNGLUNIFORM4UIPROC)getprocaddress("glUniform4ui");
++    if(!glUniform4ui_) fatal("Missing required WebGL2 entry point: glUniform4ui");
++    glUniform1uiv_ = (PFNGLUNIFORM1UIVPROC)getprocaddress("glUniform1uiv");
++    if(!glUniform1uiv_) fatal("Missing required WebGL2 entry point: glUniform1uiv");
++    glUniform2uiv_ = (PFNGLUNIFORM2UIVPROC)getprocaddress("glUniform2uiv");
++    if(!glUniform2uiv_) fatal("Missing required WebGL2 entry point: glUniform2uiv");
++    glUniform3uiv_ = (PFNGLUNIFORM3UIVPROC)getprocaddress("glUniform3uiv");
++    if(!glUniform3uiv_) fatal("Missing required WebGL2 entry point: glUniform3uiv");
++    glUniform4uiv_ = (PFNGLUNIFORM4UIVPROC)getprocaddress("glUniform4uiv");
++    if(!glUniform4uiv_) fatal("Missing required WebGL2 entry point: glUniform4uiv");
++    glClearBufferiv_ = (PFNGLCLEARBUFFERIVPROC)getprocaddress("glClearBufferiv");
++    if(!glClearBufferiv_) fatal("Missing required WebGL2 entry point: glClearBufferiv");
++    glClearBufferuiv_ = (PFNGLCLEARBUFFERUIVPROC)getprocaddress("glClearBufferuiv");
++    if(!glClearBufferuiv_) fatal("Missing required WebGL2 entry point: glClearBufferuiv");
++    glClearBufferfv_ = (PFNGLCLEARBUFFERFVPROC)getprocaddress("glClearBufferfv");
++    if(!glClearBufferfv_) fatal("Missing required WebGL2 entry point: glClearBufferfv");
++    glClearBufferfi_ = (PFNGLCLEARBUFFERFIPROC)getprocaddress("glClearBufferfi");
++    if(!glClearBufferfi_) fatal("Missing required WebGL2 entry point: glClearBufferfi");
++    glBindRenderbuffer_ = (PFNGLBINDRENDERBUFFERPROC)getprocaddress("glBindRenderbuffer");
++    if(!glBindRenderbuffer_) fatal("Missing required WebGL2 entry point: glBindRenderbuffer");
++    glDeleteRenderbuffers_ = (PFNGLDELETERENDERBUFFERSPROC)getprocaddress("glDeleteRenderbuffers");
++    if(!glDeleteRenderbuffers_) fatal("Missing required WebGL2 entry point: glDeleteRenderbuffers");
++    glGenRenderbuffers_ = (PFNGLGENFRAMEBUFFERSPROC)getprocaddress("glGenRenderbuffers");
++    if(!glGenRenderbuffers_) fatal("Missing required WebGL2 entry point: glGenRenderbuffers");
++    glRenderbufferStorage_ = (PFNGLRENDERBUFFERSTORAGEPROC)getprocaddress("glRenderbufferStorage");
++    if(!glRenderbufferStorage_) fatal("Missing required WebGL2 entry point: glRenderbufferStorage");
++    glGetRenderbufferParameteriv_ = (PFNGLGETRENDERBUFFERPARAMETERIVPROC)getprocaddress("glGetRenderbufferParameteriv");
++    if(!glGetRenderbufferParameteriv_) fatal("Missing required WebGL2 entry point: glGetRenderbufferParameteriv");
++    glCheckFramebufferStatus_ = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)getprocaddress("glCheckFramebufferStatus");
++    if(!glCheckFramebufferStatus_) fatal("Missing required WebGL2 entry point: glCheckFramebufferStatus");
++    glBindFramebuffer_ = (PFNGLBINDFRAMEBUFFERPROC)getprocaddress("glBindFramebuffer");
++    if(!glBindFramebuffer_) fatal("Missing required WebGL2 entry point: glBindFramebuffer");
++    glDeleteFramebuffers_ = (PFNGLDELETEFRAMEBUFFERSPROC)getprocaddress("glDeleteFramebuffers");
++    if(!glDeleteFramebuffers_) fatal("Missing required WebGL2 entry point: glDeleteFramebuffers");
++    glGenFramebuffers_ = (PFNGLGENFRAMEBUFFERSPROC)getprocaddress("glGenFramebuffers");
++    if(!glGenFramebuffers_) fatal("Missing required WebGL2 entry point: glGenFramebuffers");
++    glFramebufferTexture2D_ = (PFNGLFRAMEBUFFERTEXTURE2DPROC)getprocaddress("glFramebufferTexture2D");
++    if(!glFramebufferTexture2D_) fatal("Missing required WebGL2 entry point: glFramebufferTexture2D");
++    glFramebufferRenderbuffer_ = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)getprocaddress("glFramebufferRenderbuffer");
++    if(!glFramebufferRenderbuffer_) fatal("Missing required WebGL2 entry point: glFramebufferRenderbuffer");
++    glGenerateMipmap_ = (PFNGLGENERATEMIPMAPPROC)getprocaddress("glGenerateMipmap");
++    if(!glGenerateMipmap_) fatal("Missing required WebGL2 entry point: glGenerateMipmap");
++    glBlitFramebuffer_ = (PFNGLBLITFRAMEBUFFERPROC)getprocaddress("glBlitFramebuffer");
++    if(!glBlitFramebuffer_) fatal("Missing required WebGL2 entry point: glBlitFramebuffer");
++    glRenderbufferStorageMultisample_ = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)getprocaddress("glRenderbufferStorageMultisample");
++    if(!glRenderbufferStorageMultisample_) fatal("Missing required WebGL2 entry point: glRenderbufferStorageMultisample");
++    glGetUniformIndices_ = (PFNGLGETUNIFORMINDICESPROC)getprocaddress("glGetUniformIndices");
++    if(!glGetUniformIndices_) fatal("Missing required WebGL2 entry point: glGetUniformIndices");
++    glGetActiveUniformsiv_ = (PFNGLGETACTIVEUNIFORMSIVPROC)getprocaddress("glGetActiveUniformsiv");
++    if(!glGetActiveUniformsiv_) fatal("Missing required WebGL2 entry point: glGetActiveUniformsiv");
++    glGetUniformBlockIndex_ = (PFNGLGETUNIFORMBLOCKINDEXPROC)getprocaddress("glGetUniformBlockIndex");
++    if(!glGetUniformBlockIndex_) fatal("Missing required WebGL2 entry point: glGetUniformBlockIndex");
++    glGetActiveUniformBlockiv_ = (PFNGLGETACTIVEUNIFORMBLOCKIVPROC)getprocaddress("glGetActiveUniformBlockiv");
++    if(!glGetActiveUniformBlockiv_) fatal("Missing required WebGL2 entry point: glGetActiveUniformBlockiv");
++    glUniformBlockBinding_ = (PFNGLUNIFORMBLOCKBINDINGPROC)getprocaddress("glUniformBlockBinding");
++    if(!glUniformBlockBinding_) fatal("Missing required WebGL2 entry point: glUniformBlockBinding");
++    glBindBufferBase_ = (PFNGLBINDBUFFERBASEPROC)getprocaddress("glBindBufferBase");
++    if(!glBindBufferBase_) fatal("Missing required WebGL2 entry point: glBindBufferBase");
++    glBindBufferRange_ = (PFNGLBINDBUFFERRANGEPROC)getprocaddress("glBindBufferRange");
++    if(!glBindBufferRange_) fatal("Missing required WebGL2 entry point: glBindBufferRange");
++    glCopyBufferSubData_ = (PFNGLCOPYBUFFERSUBDATAPROC)getprocaddress("glCopyBufferSubData");
++    if(!glCopyBufferSubData_) fatal("Missing required WebGL2 entry point: glCopyBufferSubData");
++    glTexStorage2D_ = (PFNGLTEXSTORAGE2DPROC)getprocaddress("glTexStorage2D");
++    if(!glTexStorage2D_) fatal("Missing required WebGL2 entry point: glTexStorage2D");
++    glVertexAttrib1s_ = webglVertexAttrib1s;
++    glVertexAttrib1sv_ = webglVertexAttrib1sv;
++    glVertexAttrib2s_ = webglVertexAttrib2s;
++    glVertexAttrib2sv_ = webglVertexAttrib2sv;
++    glVertexAttrib3s_ = webglVertexAttrib3s;
++    glVertexAttrib3sv_ = webglVertexAttrib3sv;
++    glVertexAttrib4s_ = webglVertexAttrib4s;
++    glVertexAttrib4sv_ = webglVertexAttrib4sv;
++    glVertexAttrib4bv_ = webglVertexAttrib4bv;
++    glVertexAttrib4Nbv_ = webglVertexAttrib4Nbv;
++    glVertexAttrib4iv_ = webglVertexAttrib4iv;
++    glVertexAttrib4Niv_ = webglVertexAttrib4Niv;
++    glVertexAttrib4ubv_ = webglVertexAttrib4ubv;
++    glVertexAttrib4Nubv_ = webglVertexAttrib4Nubv;
++    glVertexAttrib4uiv_ = webglVertexAttrib4uiv;
++    glVertexAttrib4Nuiv_ = webglVertexAttrib4Nuiv;
++    glVertexAttrib4usv_ = webglVertexAttrib4usv;
++    glVertexAttrib4Nusv_ = webglVertexAttrib4Nusv;
++    glVertexAttrib4Nub_ = webglVertexAttrib4Nub;
++    glMultiDrawArrays_ = webglmultidrawarrays;
++    glMultiDrawElements_ = webglmultidrawelements;
++    glGetQueryObjectiv_ = webglgetqueryobjectiv;
++    parseglexts();
++
++    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &hwtexsize);
++    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &hwtexunits);
++    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &hwvtexunits);
++    glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &hwcubetexsize);
++    glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxdrawbufs);
++    if(hwtexsize < 2048 || hwtexunits < 16 || maxdrawbufs < 4)
++        fatal("WebGL2 context does not meet the renderer's minimum texture/MRT limits");
+ 
++    // ES3 core operations actually available through the entry points above.
++    hasVAO = hasPBO = hasFBO = hasAFBO = hasFBB = hasDS = true;
++    hasTRG = hasHFV = hasHFP = hasGPU4 = hasEAL = hasOQ2 = true;
++    hasES2 = hasES3 = hasUBO = hasCB = hasTS = true;
++    useubo = 1;
++
++    // No WebGL mapped-buffer API. gle::end uses its bufferSubData fallback.
++    hasMBR = false;
++    // The parent port translates *logical* rectangle textures to 2D textures;
++    // this is not hardware texture-rectangle support.
++    hasTR = false;
++    // Float textures exist in ES3, but the engine uses these flags to choose
++    // render targets (including RGB16F). Enable only after format-specific FBO
++    // validation in the browser renderer, not from the ES version number.
++    hasTF = hasPF = false;
++    hasTMS = hasFBMS = hasFBMSBS = hasBFE = hasDB2 = hasDBB = false;
++    hasCR = hasTQ = hasTG = hasGPU5 = hasDC = hasTI = hasTSW = false;
++    hasS3TC = hasext("GL_WEBGL_compressed_texture_s3tc") || hasext("GL_EXT_texture_compression_s3tc");
++    hasRGTC = hasext("GL_EXT_texture_compression_rgtc");
++    // Do not ask the browser driver to compress arbitrary source textures.
++    usetexcompress = 0;
++    hasAF = hasext("GL_EXT_texture_filter_anisotropic");
++    if(hasAF) glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &hwmaxaniso);
++    conoutf(colourwhite, "WebGL2 capabilities initialized; desktop-only rendering features disabled");
++}
++#endif
++
+ void gl_checkextensions()
+ {
+     setsvar("gfxvendor", (const char *)glGetString(GL_VENDOR));
+@@ -376,6 +703,11 @@
+     setsvar("gfxversion", (const char *)glGetString(GL_VERSION));
+ 
+     conoutf(colourwhite, "Video: %s (%s) %s", gfxrenderer, gfxvendor, gfxversion);
++
++#ifdef __EMSCRIPTEN__
++    gl_checkwebgl2();
++    return;
++#endif
+ 
+     if(strstr(gfxrenderer, "Mesa") || strstr(gfxversion, "Mesa"))
+     {
+@@ -1237,7 +1569,9 @@
+     glStencilFunc(GL_ALWAYS, 0, ~0);
+     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+ 
++#ifndef __EMSCRIPTEN__
+     glEnable(GL_LINE_SMOOTH);
++#endif
+     //glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+ 
+     glFrontFace(GL_CW);
+@@ -2161,10 +2495,16 @@
+     drawtex = 0;
+ 
+     createtexture(minimaptex, size, size, NULL, 3, 1, hasES2 ? GL_RGB565 : GL_RGB5, GL_TEXTURE_2D);
++#ifdef __EMSCRIPTEN__
++    // WebGL has no sampler border colour. The browser minimap clamps its edge.
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++#else
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+     GLfloat border[4] = { minimapcolour.x/255.0f, minimapcolour.y/255.0f, minimapcolour.z/255.0f, 1.0f };
+     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
++#endif
+     glBindTexture(GL_TEXTURE_2D, 0);
+ 
+     GLuint fbo = 0;
+--- a/src/engine/renderlights.cpp
++++ b/src/engine/renderlights.cpp
+@@ -20,10 +20,17 @@
+ 
+ int gethdrformat(int prec, int fallback = GL_RGB)
+ {
++#ifdef __EMSCRIPTEN__
++    // The initial browser renderer deliberately uses normalized 8-bit color.
++    // RGBA8 is WebGL2 color-renderable; desktop RGB10/RGB16F are not assumed.
++    // This reduces HDR range until float target support is validated separately.
++    return GL_RGBA8;
++#else
+     if(prec >= 3 && hasTF) return GL_RGB16F;
+     if(prec >= 2 && hasPF && !amd_pf_bug) return GL_R11F_G11F_B10F;
+     if(prec >= 1) return GL_RGB10;
+     return fallback;
++#endif
+ }
+ 
+ extern int bloomsize, bloomprec;
+@@ -58,6 +65,11 @@
+         createtexture(bloomtex[5], bloomw, bloomh, NULL, 3, 1, bloomformat, GL_TEXTURE_RECTANGLE);
+     }
+ 
++#ifdef __EMSCRIPTEN__
++    // WebGL2 guarantees vertex texture sampling. Never enter the desktop
++    // unsigned-short pixel-pack/readback path for this R8 exposure texture.
++    if(hwvtexunits < 4) fatal("WebGL2 exposure rendering requires vertex texture sampling");
++#else
+     if(hwvtexunits < 4)
+     {
+         glGenBuffers_(1, &bloompbo);
+@@ -66,9 +78,18 @@
+         glBindBuffer_(GL_PIXEL_PACK_BUFFER, 0);
+     }
+ 
++#endif
++
+     static const uchar gray[12] = { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32 };
+     static const float grayf[12] = { 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f };
++#ifdef __EMSCRIPTEN__
++    // Exposure stores normalized luminance, sampled from .r by the shaders.
++    // R8 preserves those semantics at lower precision and is renderable in
++    // WebGL2, unlike the desktop normalized-16 format. gray uploads as bytes.
++    createtexture(bloomtex[4], 1, 1, gray, 3, 1, GL_R8);
++#else
+     createtexture(bloomtex[4], bloompbo ? 4 : 1, 1, hasTF ? (const void *)grayf : (const void *)gray, 3, 1, hasTF ? (hasTRG ? GL_R16F : GL_RGB16F) : (hasTRG ? GL_R16 : GL_RGB16));
++#endif
+ 
+     loopi(5 + (bloomformat != GL_RGB ? 1 : 0))
+     {
+@@ -548,6 +569,13 @@
+     }
+ 
+     int lineardepth = glineardepth;
++#ifdef __EMSCRIPTEN__
++    // WebGL forbids sampling the depth texture while it is also attached to
++    // the lighting framebuffer, even with depth writes disabled. Use the
++    // existing packed RGBA8 linear-depth buffer plus independent depth/stencil
++    // renderbuffer. This keeps depth testing and lighting without feedback.
++    lineardepth = 1;
++#endif
+     if(msaaminsamples)
+     {
+         if(msaamaxdepthtexsamples < msaaminsamples)
+@@ -581,6 +609,33 @@
+ 
+ void maskgbuffer(const char *mask)
+ {
++#ifdef __EMSCRIPTEN__
++    // Desktop drawBuffers can route fragment output i to arbitrary attachment
++    // j. WebGL requires attachment i (or NONE). Preserve the engine's compact
++    // output order by attaching the requested image at that output location.
++    // This also supports depth-only and normal-only shader variants.
++    GLenum webbufs[4];
++    int webcount = 0;
++    while(*mask)
++    {
++        GLuint image = 0;
++        switch(*mask++)
++        {
++            case 'c': image = gcolortex; break;
++            case 'n': image = gnormaltex; break;
++            case 'd': if(gdepthformat) image = gdepthtex; else continue; break;
++            case 'g': image = gglowtex; break;
++            default: continue;
++        }
++        glFramebufferTexture2D_(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + webcount, GL_TEXTURE_RECTANGLE, image, 0);
++        webbufs[webcount] = GL_COLOR_ATTACHMENT0 + webcount;
++        ++webcount;
++    }
++    for(int i = webcount; i < 4; ++i)
++        glFramebufferTexture2D_(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_RECTANGLE, 0, 0);
++    glDrawBuffers_(webcount, webbufs);
++    return;
++#endif
+     GLenum drawbufs[4];
+     int numbufs = 0;
+     while(*mask) switch(*mask++)
+@@ -831,7 +886,9 @@
+ 
+         glBindFramebuffer_(GL_FRAMEBUFFER, gfbo);
+ 
++#ifndef __EMSCRIPTEN__
+         maskgbuffer("cndg");
++#endif
+ 
+         static const GLenum depthformats[] = { GL_RGBA8, GL_R16F, GL_R32F };
+         GLenum depthformat = gdepthformat ? depthformats[gdepthformat-1] : (ghasstencil > 1 ? stencilformat : GL_DEPTH_COMPONENT24);
+@@ -846,13 +903,20 @@
+         glFramebufferTexture2D_(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_RECTANGLE, gnormaltex, 0);
+         glFramebufferTexture2D_(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_RECTANGLE, gglowtex, 0);
+         if(gdepthformat) glFramebufferTexture2D_(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_RECTANGLE, gdepthtex, 0);
++#ifdef __EMSCRIPTEN__
++        maskgbuffer("cndg");
++#endif
+ 
+         if(glCheckFramebufferStatus_(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+         {
+             if(hasAFBO)
+             {
+                 createtexture(gglowtex, gw, gh, NULL, 3, 0, GL_RGBA8, GL_TEXTURE_RECTANGLE);
++#ifdef __EMSCRIPTEN__
++                maskgbuffer("cndg");
++#else
+                 glFramebufferTexture2D_(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_RECTANGLE, gglowtex, 0);
++#endif
+                 if(glCheckFramebufferStatus_(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+                     fatal("Failed allocating g-buffer!");
+             }
+@@ -995,11 +1059,19 @@
+ VAR(IDF_PERSIST, bloomblur, 0, 5, MAXBLURRADIUS);
+ VAR(IDF_PERSIST, bloomiter, 0, 0, 4);
+ VARF(IDF_PERSIST, bloomsize, 6, 9, 11, cleanupbloom());
++#ifdef __EMSCRIPTEN__
++VARF(IDF_PERSIST, bloomprec, 0, 0, 0, cleanupbloom());
++#else
+ VARF(IDF_PERSIST, bloomprec, 0, 2, 3, cleanupbloom());
++#endif
+ FVAR(0, hdraccumscale, 0, 0.98f, 1);
+ VAR(0, hdraccummillis, 1, 33, 1000);
+ VAR(0, hdrreduce, 0, 2, 2);
++#ifdef __EMSCRIPTEN__
++VARF(IDF_PERSIST, hdrprec, 0, 0, 0, cleanupgbuffer());
++#else
+ VARF(IDF_PERSIST, hdrprec, 0, 2, 3, cleanupgbuffer());
++#endif
+ FVARF(IDF_PERSIST, hdrgamma, 1e-3f, 2, 1e3f, initwarning("HDR setup", INIT_LOAD, CHANGE_SHADERS));
+ FVAR(IDF_PERSIST, hdrbrightscale, 0.1f, 1.0f, 3.0f);
+ FVAR(0, hdrsaturate, 1e-3f, 0.9f, 1e3f);
+--- a/src/engine/renderva.cpp
++++ b/src/engine/renderva.cpp
+@@ -305,7 +305,13 @@
+ 
+ static inline GLenum querytarget()
+ {
++#ifdef __EMSCRIPTEN__
++    // WebGL 2 exposes boolean occlusion queries, not desktop sample counts.
++    // checkquery converts a passed boolean to the configured visibility threshold.
++    return GL_ANY_SAMPLES_PASSED;
++#else
+     return oqany && hasOQ2 ? (oqany > 1 && hasES3 ? GL_ANY_SAMPLES_PASSED_CONSERVATIVE : GL_ANY_SAMPLES_PASSED) : GL_SAMPLES_PASSED;
++#endif
+ }
+ 
+ void startquery(occludequery *query)
+@@ -322,7 +328,13 @@
+ {
+     if(query->fragments < 0)
+     {
++#ifdef __EMSCRIPTEN__
++        // WebGL queries are asynchronous: unlike desktop GL, requesting a result
++        // cannot wait for completion. Keep geometry visible until it is ready.
++        if(true)
++#else
+         if(nowait || !oqwait)
++#endif
+         {
+             GLint avail;
+             glGetQueryObjectiv_(query->id, GL_QUERY_RESULT_AVAILABLE, &avail);
+--- a/src/engine/serverbrowser.cpp
++++ b/src/engine/serverbrowser.cpp
+@@ -142,6 +142,13 @@
+ 
+ bool resolverwait(const char *name, ENetAddress *address)
+ {
++#ifdef __EMSCRIPTEN__
++    // The initial single-threaded browser port supports numeric IP endpoints.
++    // SDL resolver threads cannot run here. Do not emulate successful DNS:
++    // reject hostnames until an explicit host-owned browser transport exists.
++    return name && address && enet_address_set_host_ip(address, name) == 0 && address->host != ENET_HOST_ANY;
++#endif
++
+     if(resolverthreads.empty()) resolverinit();
+ 
+     defformatstring(text, "Resolving %s..", name);
+--- a/src/engine/shader.cpp
++++ b/src/engine/shader.cpp
+@@ -153,6 +153,41 @@
+     char *modsource = NULL;
+     const char *parts[16];
+     int numparts = 0;
++    // Browser prototype: WebGL2 accepts GLSL ES 3.00, not desktop GLSL.
++    // Rectangle samplers retain their pixel-coordinate contract, backed by 2D textures.
++    // The renderer must translate GL texture targets separately before enabling this path.
++#ifdef __EMSCRIPTEN__
++    parts[numparts++] = "#version 300 es\n"
++        "precision highp float;\n"
++        "precision highp int;\n"
++        "precision highp sampler2D;\n"
++        "precision highp sampler3D;\n"
++        "precision highp sampler2DShadow;\n";
++    if(type == GL_VERTEX_SHADER) parts[numparts++] =
++        "#define attribute in\n#define varying out\n";
++    else parts[numparts++] =
++        "#define varying in\n"
++        "#define fragdata(loc) layout(location = loc) out\n";
++    // Dual-source blending has no WebGL2 equivalent. Do not define fragblend:
++    // an accidentally requested shader variant must fail instead of changing output.
++    parts[numparts++] =
++        "#define sampler2DRect sampler2D\n"
++        "#define sampler2DRectShadow sampler2DShadow\n"
++        "#define texture2D(s,c) texture(s,c)\n"
++        "#define texture2DLod(s,c,l) textureLod(s,c,l)\n"
++        "#define texture2DOffset(s,c,o) textureOffset(s,c,o)\n"
++        "#define texture2DProj(s,c) textureProj(s,c)\n"
++        "#define shadow2D(s,c) texture(s,c)\n"
++        "#define shadow2DOffset(s,c,o) textureOffset(s,c,o)\n"
++        "#define texture3D(s,c) texture(s,c)\n"
++        "#define textureCube(s,c) texture(s,c)\n"
++        "#define texture2DRect(s,c) texture(s,(c)/vec2(textureSize(s,0)))\n"
++        "#define texture2DRectLod(s,c,l) textureLod(s,(c)/vec2(textureSize(s,0)),l)\n"
++        "#define texture2DRectProj(s,c) textureProj(s,(c)/vec3(vec2(textureSize(s,0)),1.0))\n"
++        "#define texture2DRectOffset(s,c,o) texture(s,((c)+vec2(o))/vec2(textureSize(s,0)))\n"
++        "#define shadow2DRect(s,c) texture(s,(c)/vec3(vec2(textureSize(s,0)),1.0))\n"
++        "#define shadow2DRectOffset(s,c,o) texture(s,((c)+vec3(vec2(o),0.0))/vec3(vec2(textureSize(s,0)),1.0))\n";
++#else
+     static const struct { int version; const char * const header; } glslversions[] =
+     {
+         { 400, "#version 400\n" },
+@@ -281,6 +316,7 @@
+             }
+         }
+     }
++#endif
+     parts[numparts++] = modsource ? modsource : source;
+ 
+     obj = glCreateShader_(type);
+@@ -372,6 +408,7 @@
+             attribs |= 1<<a.loc;
+         }
+         loopi(gle::MAXATTRIBS) if(!(attribs&(1<<i))) glBindAttribLocation_(s.program, i, gle::attribnames[i]);
++#ifndef __EMSCRIPTEN__
+         if(hasGPU4 && ((glslversion < 330 && (glslversion < 150 || !hasEAL)) || amd_eal_bug)) loopv(s.fragdatalocs)
+         {
+             FragDataLoc &d = s.fragdatalocs[i];
+@@ -381,6 +418,7 @@
+             }
+             else glBindFragDataLocation_(s.program, d.loc, d.name);
+         }
++#endif
+         glLinkProgram_(s.program);
+         glGetProgramiv_(s.program, GL_LINK_STATUS, &success);
+     }
+--- a/src/engine/sound.cpp
++++ b/src/engine/sound.cpp
+@@ -99,6 +99,7 @@
+ void allocsoundefxslots()
+ {
+     delsoundfxslots();
++    if(!al_ext_efx) return;
+ 
+     loopi(maxsoundefxslots)
+     {
+@@ -1662,7 +1663,7 @@
+             SOUNDERRORTRACK(clear(); return err);
+         }
+ 
+-        if(!(flags&SND_NOENV))
++        if(al_ext_efx && !(flags&SND_NOENV))
+         {
+             if(alIsFilter(efxfilter))
+             {
+@@ -1890,7 +1891,7 @@
+ 
+     updatefilter();
+ 
+-    if(!(flags&SND_NOENV))
++    if(al_ext_efx && !(flags&SND_NOENV))
+     {
+         soundenvzone *zone = getactiveenvzone(pos);
+ 
+--- a/src/engine/texture.cpp
++++ b/src/engine/texture.cpp
+@@ -898,6 +898,14 @@
+         }
+     }
+     bool shouldgpumipmap = pixels && mipmap && max(tw, th) > 1 && gpumipmap && hasFBB && !uncompressedformat(internal);
++#ifdef __EMSCRIPTEN__
++    // WebGL requires cube completeness even when attaching a single face. The
++    // per-face loader has not uploaded the other five faces yet, so its FBO
++    // downsample path is invalid. Generate these mips with the existing CPU
++    // downsampler, which preserves all six faces and their complete mip chains.
++    if(target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X && target <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z)
++        shouldgpumipmap = false;
++#endif
+     for(int level = 0, align = 0, mw = tw, mh = th;; level++)
+     {
+         uchar *src = buf ? buf : (uchar *)pixels;
+--- a/src/game/game.cpp
++++ b/src/game/game.cpp
+@@ -5112,3 +5112,47 @@
+     bool clientoption(char *arg) { return false; }
+ }
+ #undef CPP_GAME_MAIN
++
++#ifdef __EMSCRIPTEN__
++#include <emscripten.h>
++extern "C" {
++EMSCRIPTEN_KEEPALIVE int akeru_connected() { return connected(false, false) ? 1 : 0; }
++EMSCRIPTEN_KEEPALIVE int akeru_player_state() { return game::player1 ? game::player1->state : -1; }
++EMSCRIPTEN_KEEPALIVE int akeru_map_time() { return game::maptime; }
++EMSCRIPTEN_KEEPALIVE int akeru_player_ready() { return game::maptime > 0 && game::player1 && game::player1->state == CS_ALIVE; }
++EMSCRIPTEN_KEEPALIVE float akeru_player_x() { return game::player1 ? game::player1->o.x : 0; }
++EMSCRIPTEN_KEEPALIVE float akeru_player_y() { return game::player1 ? game::player1->o.y : 0; }
++EMSCRIPTEN_KEEPALIVE float akeru_player_z() { return game::player1 ? game::player1->o.z : 0; }
++EMSCRIPTEN_KEEPALIVE void akeru_look(float yaw, float pitch)
++{
++    if(!game::player1 || !game::allowmove(game::player1) || !isfinite(yaw) || !isfinite(pitch)) return;
++    game::player1->yaw += clamp(yaw, -45.f, 45.f);
++    game::player1->pitch = clamp(game::player1->pitch - clamp(pitch, -45.f, 45.f), -89.f, 89.f);
++    fixrange(game::player1->yaw, game::player1->pitch);
++}
++EMSCRIPTEN_KEEPALIVE int akeru_join()
++{
++    if(!game::player1 || game::maptime <= 0 || !connected(false, false) || !client::isready) return 0;
++    execute("gameui_close; hideui", true);
++    if(game::player1->state == CS_SPECTATOR) execute("spectate 0", true);
++    else if(game::player1->state == CS_DEAD) game::respawn(game::player1);
++    return 1;
++}
++EMSCRIPTEN_KEEPALIVE void akeru_mute(int muted) { setfvar("soundmastervol", muted ? 0.f : 1.f, true); }
++EMSCRIPTEN_KEEPALIVE int akeru_health() { return game::player1 ? game::player1->health : 0; }
++EMSCRIPTEN_KEEPALIVE int akeru_remote_players() { int n = 0; loopv(game::players) if(game::players[i] && game::players[i] != game::player1 && game::players[i]->ownernum < 0) ++n; return n; }
++EMSCRIPTEN_KEEPALIVE int akeru_ammo() { return game::player1 && isweap(game::player1->weapselect) ? game::player1->weapammo[game::player1->weapselect][W_A_CLIP] : -1; }
++EMSCRIPTEN_KEEPALIVE int akeru_weapon() { return game::player1 ? game::player1->weapselect : -1; }
++EMSCRIPTEN_KEEPALIVE int akeru_prepare_and_connect()
++{
++    if(!engineready) return 0;
++    if(!load_world("fortitude")) return 0;
++    updatetimer(false);
++    connectserv("127.0.0.1", 28700, "");
++    return 1;
++}
++EMSCRIPTEN_KEEPALIVE void akeru_reconnect() { disconnect(); connectserv("127.0.0.1", 28700, ""); }
++EMSCRIPTEN_KEEPALIVE void akeru_leave() { disconnect(); }
++
++}
++#endif
+--- a/src/game/physics.cpp
++++ b/src/game/physics.cpp
+@@ -1,4 +1,7 @@
+ #include "game.h"
++#ifdef __EMSCRIPTEN__
++#include <emscripten.h>
++#endif
+ namespace physics
+ {
+     FVAR(IDF_MAP, stairheight, 0, 4.1f, 1000);
+@@ -150,6 +153,28 @@
+     ICOMMAND(0, drop, "D", (int *n), doaction(AC_DROP, *n!=0));
+     ICOMMAND(0, affinity, "D", (int *n), doaction(AC_AFFINITY, *n!=0));
+ 
++#ifdef __EMSCRIPTEN__
++    // Only normalized controls cross this boundary; no game-script evaluation.
++    extern "C" EMSCRIPTEN_KEEPALIVE void akeru_move(float x, float y)
++    {
++        if(!game::player1 || !isfinite(x) || !isfinite(y)) return;
++        doleft(x < -0.2f); doright(x > 0.2f);
++        doforward(y < -0.2f); dobackward(y > 0.2f);
++    }
++    extern "C" EMSCRIPTEN_KEEPALIVE void akeru_action(int action, int down)
++    {
++        static const int actions[] = { AC_PRIMARY, AC_SECONDARY, AC_JUMP, AC_RELOAD, AC_USE, AC_CROUCH, AC_SPECIAL, AC_WALK };
++        if(!game::player1 || action < 0 || action >= int(sizeof(actions)/sizeof(actions[0]))) return;
++        doaction(actions[action], down != 0);
++    }
++    extern "C" EMSCRIPTEN_KEEPALIVE void akeru_reset_input()
++    {
++        if(!game::player1) return;
++        doleft(false); doright(false); doforward(false); dobackward(false);
++        loopi(AC_MAX) { game::player1->action[i] = false; game::player1->actiontime[i] = 0; }
++    }
++#endif
++
+     int hasaffinity(gameent *d)
+     {
+         if(m_capture(game::gamemode)) return capture::hasaffinity(d);
+--- a/src/shared/cube.h
++++ b/src/shared/cube.h
+@@ -64,6 +64,9 @@
+ #ifndef STANDALONE
+ #include "glexts.h"
+ #include "glemu.h"
++#ifdef __EMSCRIPTEN__
++#include "webgl-targets.h"
++#endif
+ #else
+ typedef enet_uint32 Uint32;
+ #endif
+--- a/src/shared/glemu.cpp
++++ b/src/shared/glemu.cpp
+@@ -1,6 +1,7 @@
+ #include "cube.h"
+ 
+ extern int glversion;
++extern bool hasMBR;
+ extern int intel_mapbufferrange_bug;
+ 
+ namespace gle
+@@ -220,7 +221,7 @@
+     void begin(GLenum mode, int numverts)
+     {
+         primtype = mode;
+-        if(glversion >= 300 && !intel_mapbufferrange_bug)
++        if(glversion >= 300 && hasMBR && !intel_mapbufferrange_bug)
+         {
+             int len = numverts * vertexsize;
+             if(vbooffset + len >= MAXVBOSIZE)
+@@ -273,7 +274,7 @@
+                     vbooffset = 0;
+                 }
+                 else if(!lastvertexsize) glBindBuffer_(GL_ARRAY_BUFFER, vbo);
+-                void *dst = intel_mapbufferrange_bug ? NULL :
++                void *dst = (!hasMBR || intel_mapbufferrange_bug) ? NULL :
+                     glMapBufferRange_(GL_ARRAY_BUFFER, vbooffset, attribbuf.length(), GL_MAP_WRITE_BIT|GL_MAP_INVALIDATE_RANGE_BIT|GL_MAP_UNSYNCHRONIZED_BIT);
+                 if(dst)
+                 {
+--- a/src/shared/webgl-targets.h
++++ b/src/shared/webgl-targets.h
+@@ -0,0 +1,23 @@
++#ifndef AKERU_WEBGL_TARGETS_H
++#define AKERU_WEBGL_TARGETS_H
++// Preserve logical rectangle identity for shader selection, translate only GL calls.
++inline GLenum webglTextureTarget(GLenum t) { return t == GL_TEXTURE_RECTANGLE ? GL_TEXTURE_2D : t; }
++inline void webglBindTexture(GLenum t, GLuint id) { glBindTexture(webglTextureTarget(t), id); }
++inline void webglTexImage2D(GLenum t, GLint l, GLint internal, GLsizei w, GLsizei h, GLint border, GLenum fmt, GLenum type, const void *data) { if(!data && fmt == GL_DEPTH_COMPONENT) { type = internal == GL_DEPTH_COMPONENT16 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT; } if(type == GL_UNSIGNED_BYTE) { if(internal == GL_RED) internal = GL_R8; else if(internal == GL_RG) internal = GL_RG8; } glTexImage2D(webglTextureTarget(t),l,internal,w,h,border,fmt,type,data); }
++inline void webglTexSubImage2D(GLenum t, GLint l, GLint x, GLint y, GLsizei w, GLsizei h, GLenum fmt, GLenum type, const void *data) { glTexSubImage2D(webglTextureTarget(t),l,x,y,w,h,fmt,type,data); }
++inline void webglCopyTexSubImage2D(GLenum t, GLint l, GLint xoff, GLint yoff, GLint x, GLint y, GLsizei w, GLsizei h) { glCopyTexSubImage2D(webglTextureTarget(t),l,xoff,yoff,x,y,w,h); }
++inline void webglTexParameteri(GLenum t, GLenum param, GLint v) { glTexParameteri(webglTextureTarget(t),param,v); }
++inline void webglTexParameterf(GLenum t, GLenum param, GLfloat v) { glTexParameterf(webglTextureTarget(t),param,v); }
++inline void webglTexParameterfv(GLenum t, GLenum param, const GLfloat *v) { glTexParameterfv(webglTextureTarget(t),param,v); }
++inline void webglFramebufferTexture2D(GLenum t, GLenum attachment, GLenum txtarget, GLuint id, GLint level) { glFramebufferTexture2D_(t,attachment,webglTextureTarget(txtarget),id,level); }
++inline void webglGenerateMipmap(GLenum t) { glGenerateMipmap_(webglTextureTarget(t)); }
++#define glBindTexture(t,id) webglBindTexture(t,id)
++#define glTexImage2D(t,l,i,w,h,b,f,y,d) webglTexImage2D(t,l,i,w,h,b,f,y,d)
++#define glTexSubImage2D(t,l,x,y,w,h,f,k,d) webglTexSubImage2D(t,l,x,y,w,h,f,k,d)
++#define glCopyTexSubImage2D(t,l,xo,yo,x,y,w,h) webglCopyTexSubImage2D(t,l,xo,yo,x,y,w,h)
++#define glTexParameteri(t,p,v) webglTexParameteri(t,p,v)
++#define glTexParameterf(t,p,v) webglTexParameterf(t,p,v)
++#define glTexParameterfv(t,p,v) webglTexParameterfv(t,p,v)
++#define glFramebufferTexture2D_(t,a,tt,i,l) webglFramebufferTexture2D(t,a,tt,i,l)
++#define glGenerateMipmap_(t) webglGenerateMipmap(t)
++#endif
+--- a/config/comp/burn.cfg
++++ b/config/comp/burn.cfg
+@@ -68,7 +68,7 @@
+         {
+             float dist = 0.0;
+             
+-            for(int i = 0; i < params.z; i++)
++            for(int i = 0; float(i) < params.z; i++)
+             {
+                 vec3 pos = ro + rd * dist;
+                 float m = model(pos, speed);
+@@ -94,7 +94,7 @@
+             bool found = false;
+             vec3 ldscaled = 0.1 * ld;
+             
+-            for(int i = 0; i < params.z; i++)
++            for(int i = 0; float(i) < params.z; i++)
+             {
+                 float m = model(p, speed);
+                 p += rd * volparams.x;
+--- a/config/comp/cathode.cfg
++++ b/config/comp/cathode.cfg
+@@ -42,7 +42,7 @@
+     void main(void)
+     {
+         vec4 diffuse = texture2D(tex0, texcoord0);
+-        if(bgcol.a > 0)
++        if(bgcol.a > 0.0)
+         {
+             if(diffuse.a < bgcol.a) diffuse.rgb = mix(bgcol.rgb, diffuse.rgb, smoothstep(0.0, bgcol.a, diffuse.a));
+             diffuse.a = 1.0;
+@@ -56,12 +56,12 @@
+         diffuse.rgb += diffuse.rgb * vec3(random(texcoord0 * curmillis.x)) * params.z;
+         diffuse.rgb += diffuse.rgb * sin(110.0 * curmillis.x) * params.w;
+ 
+-        if(feather.x > 0)
++        if(feather.x > 0.0)
+         {
+             float offset = texcoord0.x < feather.x ? texcoord0.x : 1.0 - texcoord0.x;
+             if(offset < feather.x) diffuse.a *= offset / feather.x;
+         }
+-        if(feather.y > 0)
++        if(feather.y > 0.0)
+         {
+             float offset = texcoord0.y < feather.y ? texcoord0.y : 1.0 - texcoord0.y;
+             if(offset < feather.y) diffuse.a *= offset / feather.y;
+--- a/config/comp/caustic.cfg
++++ b/config/comp/caustic.cfg
+@@ -30,7 +30,7 @@
+         float c = 1.0;
+         float inten = params.w;
+ 
+-        for(int n = 0; n < params.x; n++)
++        for(int n = 0; float(n) < params.x; n++)
+         {
+             float t = time * (1.0 - (3.5 / float(n + 1)));
+             i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));
+--- a/config/comp/clouds.cfg
++++ b/config/comp/clouds.cfg
+@@ -39,7 +39,7 @@
+         float f = 0.0, scale = s;
+         vec2 coord = mod(p, scale);
+         float amplitude = a;
+-        for(int i = 0; i < params.w; i++)
++        for(int i = 0; float(i) < params.w; i++)
+         {
+             f += absolute ? abs(noise(p, scale) * amplitude) : noise(p, scale) * amplitude;
+             amplitude *= x;
+--- a/config/comp/feather.cfg
++++ b/config/comp/feather.cfg
+@@ -40,12 +40,12 @@
+     {
+         vec4 diffuse = texture2D(tex0, texcoord0);
+ 
+-        if(params.x > 0)
++        if(params.x > 0.0)
+         {
+             float offset = texcoord0.x < params.x ? texcoord0.x : 1.0 - texcoord0.x;
+             if(offset < params.x) diffuse.a *= offset / params.x;
+         }
+-        if(params.y > 0)
++        if(params.y > 0.0)
+         {
+             float offset = texcoord0.y < params.y ? texcoord0.y : 1.0 - texcoord0.y;
+             if(offset < params.y) diffuse.a *= offset / params.y;
+--- a/config/comp/misc.cfg
++++ b/config/comp/misc.cfg
+@@ -190,7 +190,7 @@
+     {
+         gl_Position = hudmatrix * vvertex;
+         texcoord0 = vtexcoord0 + texscroll.xy;
+-        if(texscroll.z != 0) texcoord0 = rotateuv(texcoord0, texscroll.z, vec2(0.5, 0.5));
++        if(texscroll.z != 0.0) texcoord0 = rotateuv(texcoord0, texscroll.z, vec2(0.5, 0.5));
+         colorscale = vcolor;
+     }
+ ] [
+--- a/config/comp/plasmascr.cfg
++++ b/config/comp/plasmascr.cfg
+@@ -28,17 +28,17 @@
+         }
+         else if(texcoord0.x < 0.45)
+         {
+-            if(params.z == 1) // Shooting
++            if(params.z == 1.0) // Shooting
+             {
+                 float w = clamp(100.0 * (abs(0.55 * fract(texcoord0.x - 0.5 * abs(texcoord0.y  -0.75) + 2.0 * curmillis.x)) - 0.05), 0.0, 1.0);
+                 fragcolor.rgb = (1.0 - w) * vec3(1.0);
+             }
+-            else if(params.z == 2) // Clip empty
++            else if(params.z == 2.0) // Clip empty
+             {
+                 float w = clamp(100.0 * (min(abs(texcoord0.x + texcoord0.y - 1.0), abs(texcoord0.x - texcoord0.y + 0.5)) - 0.05), 0.0, 1.0);
+                 fragcolor.rgb = (1.0 - w) * vec3(1.0);
+             }
+-            else if(params.z == 3) // Reloading
++            else if(params.z == 3.0) // Reloading
+             {
+                 vec2 p = texcoord0 - vec2(0.24, 0.75);
+                 float r2 = p.x*p.x + p.y*p.y;
+@@ -47,7 +47,7 @@
+                 w = max(w, clamp(100.0 * (abs(r2 - 0.0475) - 0.01), 0.0, 1.0));
+                 fragcolor.rgb = (1.0 - w) * vec3(1.0);
+             }
+-            else if(params.z == 4) // Cooking
++            else if(params.z == 4.0) // Cooking
+             {
+                 float w = clamp(100.0 * (abs(0.55 * (texcoord0.x - 0.5 *abs(texcoord0.y - 0.75) - 0.2)) - 0.2 * abs(1.0 - 2.0 * fract(2.0 * curmillis.x))), 0.0, 1.0);
+                 fragcolor.rgb = (1.0 - w) * vec3(1.0);
+--- a/config/comp/portal.cfg
++++ b/config/comp/portal.cfg
+@@ -51,7 +51,7 @@
+         vec2 coord = p * scale;
+         coord -= (seed - time) * scroll.xy;
+         float weight = wstart;
+-        for(int i = 0; i < params.w; i++)
++        for(int i = 0; float(i) < params.w; i++)
+         {
+             total += absolute ? abs(weight * noise(coord)) : weight*noise(coord);
+             coord = portalmat * coord + time * scroll.xy;
+@@ -63,7 +63,7 @@
+     float fbm(vec2 p)
+     {
+         float total = 0.0, amplitude = 0.1;
+-        for(int i = 0; i < params.w; i++)
++        for(int i = 0; float(i) < params.w; i++)
+         {
+             total += noise(p) * amplitude;
+             p = portalmat * p;
+--- a/config/glsl/init.cfg
++++ b/config/glsl/init.cfg
+@@ -271,7 +271,7 @@
+         vec4 dy = (s1 - s3) * 0.5;
+         vec4 dx = (s2 - s4) * 0.5;
+ 
+-        float noise = clamp(hash(screenpos.x + screenpos.y + (int(millis*10)&255)), 0.5, 1.0);
++        float noise = clamp(hash(screenpos.x + screenpos.y + float(int(millis*10.0)&255)), 0.5, 1.0);
+         float edge = dot((sqrt(dx*dx + dy*dy) * 10.0).rgb, vec3(0.333));
+ 
+         color.rgb += min(edge, 0.5) * noise;
+@@ -322,11 +322,11 @@
+ 
+         float nebulamask = mask.r * 0.2;
+ 
+-        float xspeed1 = sin((pos.x*10)+time*0.5)*0.05;
+-        float yspeed1 = cos((pos.y*10)+time*0.5)*0.05;
++        float xspeed1 = sin((pos.x*10.0)+time*0.5)*0.05;
++        float yspeed1 = cos((pos.y*10.0)+time*0.5)*0.05;
+ 
+-        float xspeed2 = sin((pos.x*10)+time*0.6)*0.05;
+-        float yspeed2 = cos((pos.y*10)+time*0.6)*0.05;
++        float xspeed2 = sin((pos.x*10.0)+time*0.6)*0.05;
++        float yspeed2 = cos((pos.y*10.0)+time*0.6)*0.05;
+ 
+         vec2 guv0 = vec2((pos.x*0.75+nebulamask)-xspeed1, (pos.y*0.75+nebulamask)-yspeed1);
+         vec2 guv1 = vec2((pos.x*0.5+nebulamask)-yspeed1, (pos.y*0.5+nebulamask)-xspeed1);
+@@ -352,10 +352,10 @@
+         float threshold = min(bg.g * 1.11111, 1.0) * (1.0 - smoothstep(0.0, 0.5, mask.r));
+         threshold *= dot(vec3(0.333), bg.rgb);
+         // float glimmer_mix = threshold * (1.0 - smoothstep(0.0, 0.2, mask.r));
+-        col *= mix(1.0, max(pow(glimmer.r, 1) * 3, 0.5), threshold);
++        col *= mix(1.0, max(pow(glimmer.r, 1.0) * 3.0, 0.5), threshold);
+ 
+         // Eclipse ring highlight
+-        col *= mix(1.0 , ring.r * 2, pow(mask.r, 5));
++        col *= mix(1.0 , ring.r * 2.0, pow(mask.r, 5.0));
+ 
+         fragcolor = col;
+     }
+--- a/config/glsl/model.cfg
++++ b/config/glsl/model.cfg
+@@ -663,7 +663,7 @@
+ 
+         void main(void)
+         {
+-            if(colorscale.a <= 0) discard;
++            if(colorscale.a <= 0.0) discard;
+ 
+             vec4 color = texture2D(tex0, texcoord0);
+ 
+--- a/config/glsl/sky.cfg
++++ b/config/glsl/sky.cfg
+@@ -118,7 +118,7 @@
+                 vec2 coord = p * scale;
+                 coord -= (seed - time) * cloudscroll;
+                 float weight = wstart;
+-                for(int i = 0; i < cloudparams.w; i++)
++                for(int i = 0; float(i) < cloudparams.w; i++)
+                 {
+                     total += absolute ? abs(weight * noise(coord)) : weight*noise(coord);
+                     coord = cloudmat * coord + time * cloudscroll;
+@@ -130,7 +130,7 @@
+             float fbm(vec2 p)
+             {
+                 float total = 0.0, amplitude = 0.1;
+-                for(int i = 0; i < cloudparams.w; i++)
++                for(int i = 0; float(i) < cloudparams.w; i++)
+                 {
+                     total += noise(p) * amplitude;
+                     p = cloudmat * p;
+@@ -180,7 +180,7 @@
+ 
+             // generate clouds
+             @(? (>= (strstr $arg1 "cloud") 0) [
+-                if(camdir.z > 0)
++                if(camdir.z > 0.0)
+                 {
+                     vec2 cloudcoord = camdir.xy / camdir.z;
+                     float cloudseed = fbm(cloudcoord * cloudparams.x * 0.5);
