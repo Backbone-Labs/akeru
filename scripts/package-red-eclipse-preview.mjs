@@ -44,11 +44,22 @@ export function relayEndpoint(value) {
     throw Error('Expected fixed WSS /relay endpoint');
   return u.href;
 }
-export function appendCatalog(catalog, entry) {
-  if (catalog.entries.some((e) => e.manifest.id === entry.manifest.id))
-    throw Error('Existing title needs explicit review');
+export function appendCatalog(catalog, entry, replaceDigest) {
+  const existing = catalog.entries.findIndex(
+    (e) => e.manifest.id === entry.manifest.id,
+  );
+  if (
+    existing >= 0 &&
+    (!replaceDigest ||
+      entry.manifest.id !== 'red-eclipse' ||
+      catalog.entries[existing].release.digest !== replaceDigest)
+  )
+    throw Error('Existing title needs explicit review of its current digest');
+  if (existing < 0 && replaceDigest)
+    throw Error('Expected title to replace is absent');
   const copy = structuredClone(catalog);
-  copy.entries.push(structuredClone(entry));
+  if (existing >= 0) copy.entries[existing] = structuredClone(entry);
+  else copy.entries.push(structuredClone(entry));
   validateCatalog(copy, { mode: 'demo', shellOrigin: PUBLIC_SHELL });
   return copy;
 }
@@ -78,6 +89,15 @@ export function configForTitle(endpoint, ancestors = [PUBLIC_SHELL]) {
     buildCommand: null,
     installCommand: null,
     headers: [
+      {
+        source: '/releases/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [
@@ -303,6 +323,7 @@ export async function packageRedEclipse({
   engineDir,
   assetDir,
   previewOrigin,
+  replaceDigest,
   titlesOnly = false,
   skipLiveBaseline = false,
 } = {}) {
@@ -483,6 +504,7 @@ export async function packageRedEclipse({
     const catalog = appendCatalog(
       JSON.parse(readFileSync(resolve(baseline, 'catalog.json'), 'utf8')),
       entry,
+      replaceDigest,
     );
     const bytes = JSON.stringify(catalog),
       release = hash(bytes);
@@ -528,6 +550,7 @@ if (
     '--engine-dir': 'engineDir',
     '--asset-dir': 'assetDir',
     '--preview-origin': 'previewOrigin',
+    '--replace-digest': 'replaceDigest',
   };
   for (let i = 2; i < process.argv.length; i++) {
     const a = process.argv[i];

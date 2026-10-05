@@ -25,9 +25,9 @@ test('relay rejects insecure, credentialed, arbitrary-path and query-controlled 
 });
 test('title network policy permits only its own origin and one fixed relay', () => {
   const config = configForTitle(endpoint);
-  const csp = config.headers[0].headers.find(
-    (h) => h.key === 'Content-Security-Policy',
-  ).value;
+  const csp = config.headers
+    .flatMap((rule) => rule.headers)
+    .find((h) => h.key === 'Content-Security-Policy').value;
   assert.match(csp, /connect-src 'self' wss:\/\/example\.run\.app;/);
   assert.match(csp, /worker-src 'none'/);
   assert.doesNotMatch(csp, /connect-src[^;]*\*/);
@@ -128,5 +128,37 @@ test('published Python recipe uses environment workspace instead of account path
         false,
       ),
     /Private home path/,
+  );
+});
+
+test('replacement is limited to the exact reviewed Red Eclipse release', () => {
+  const catalog = {
+    schemaVersion: '0.1.0',
+    mode: 'demo',
+    entries: [entry('old-game'), entry('red-eclipse')],
+  };
+  const next = entry('red-eclipse');
+  next.release.digest = 'b'.repeat(64);
+  assert.throws(
+    () => appendCatalog(catalog, next, 'c'.repeat(64)),
+    /explicit review/,
+  );
+  assert.throws(
+    () => appendCatalog(catalog, entry('old-game'), 'a'.repeat(64)),
+    /explicit review/,
+  );
+  const result = appendCatalog(catalog, next, 'a'.repeat(64));
+  assert.equal(result.entries.length, 2);
+  assert.deepEqual(result.entries[0], catalog.entries[0]);
+  assert.equal(result.entries[1].release.digest, 'b'.repeat(64));
+  assert.equal(catalog.entries[1].release.digest, 'a'.repeat(64));
+});
+test('only versioned release paths receive immutable browser caching', () => {
+  const rules = configForTitle(endpoint).headers;
+  assert.deepEqual(
+    rules
+      .filter((r) => r.headers.some((h) => h.key === 'Cache-Control'))
+      .map((r) => r.source),
+    ['/releases/(.*)'],
   );
 });

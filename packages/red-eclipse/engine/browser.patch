@@ -926,7 +926,7 @@
          uchar *src = buf ? buf : (uchar *)pixels;
 --- a/src/game/game.cpp
 +++ b/src/game/game.cpp
-@@ -5112,3 +5112,47 @@
+@@ -5112,3 +5112,48 @@
      bool clientoption(char *arg) { return false; }
  }
  #undef CPP_GAME_MAIN
@@ -964,7 +964,8 @@
 +EMSCRIPTEN_KEEPALIVE int akeru_prepare_and_connect()
 +{
 +    if(!engineready) return 0;
-+    if(!load_world("fortitude")) return 0;
++    // Load the server-selected map once, on the authoritative welcome packet.
++    // Preloading here repeats world setup and shader work before joining.
 +    updatetimer(false);
 +    connectserv("127.0.0.1", 28700, "");
 +    return 1;

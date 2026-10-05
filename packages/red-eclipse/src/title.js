@@ -171,6 +171,10 @@ async function boot() {
   send('touch-overlay', { visible: false });
   status.textContent = 'Downloading the arena…';
   resize();
+  // Compile while assets download instead of serializing both startup costs.
+  const compiledEngine = WebAssembly.compileStreaming(
+    fetch(new URL('./red-eclipse-opt.wasm', import.meta.url)),
+  ).catch(() => null);
   let packageData;
   try {
     packageData = await downloadArena();
@@ -226,6 +230,17 @@ async function boot() {
     print: () => {},
     printErr: (text) => console.warn('[Red Eclipse]', text),
   };
+  const compiled = await compiledEngine;
+  if (compiled) {
+    globalThis.Module.instantiateWasm = (imports, receive) => {
+      WebAssembly.instantiate(compiled, imports)
+        .then((instance) => receive(instance, compiled))
+        .catch(() =>
+          fail('The game engine could not start. Reopen the game to retry.'),
+        );
+      return {};
+    };
+  }
   const script = document.createElement('script');
   script.src = './red-eclipse-opt.js';
   script.onerror = () =>
@@ -308,7 +323,7 @@ function frame(now) {
   if (initialized && !failed) {
     if (!preparing && engine()._akeru_frame_count() > 0) {
       preparing = true;
-      status.textContent = 'Preparing the arena for this device…';
+      status.textContent = 'Joining the arena and preparing graphics…';
       setTimeout(() => {
         engine()._akeru_prepare_and_connect();
         readyAt = performance.now();

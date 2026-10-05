@@ -23,3 +23,9 @@ Use `scripts/package-red-eclipse-preview.mjs` with reviewed engine and asset inp
 The server source and isolated build instructions live in `server/`. Local builds and tests never deploy it. Deploy the title to its own immutable origin, add that exact origin to the relay allowlist, then package the catalog against that origin. Verify two real game clients before publishing the updated shell.
 
 A Cloud Run WebSocket connection has a bounded lifetime; reconnecting starts a fresh guest connection. Match state is held by the dedicated server, not a cloud-save account. The single-instance preview is intended for small playtests, not production matchmaking or high availability.
+
+## Startup budget
+
+The mobile asset recipe in `tools/optimize-assets.py` caps world/model textures at 512 pixels and resamples high-rate PCM sounds to 22.05 kHz with channels preserved. It leaves interface/font atlases untouched, never edits the source asset set, and records every changed hash and modification in the derived rights inventory. Use the pinned Python tool versions documented in the recipe.
+
+Compile the WebAssembly module while the data package downloads. Immutable release URLs receive long-lived browser caching; catalog and shell documents remain refreshable. The engine loads Fortitude only through the server welcome, avoiding duplicate world setup. To replace a published title, packaging requires `--replace-digest` to match the exact reviewed current Red Eclipse digest, plus a verified live shell baseline.

@@ -16,7 +16,8 @@ to a fixed loopback ENet address carried by a separately configured WebSocket
 relay. The JavaScript adapter never accepts arbitrary game script or arbitrary
 network destination commands from the host.
 
-The browser profile preloads the arena before connecting, avoids desktop-only
+The browser profile loads the server-selected arena once, avoids desktop-only
 rendering paths and runtime navigation expansion, and keeps network progress
-independent of local menu input. Build the native dedicated server with the
+independent of local menu input. Server connection grace covers initial graphics
+preparation; do not add a second local map preload before connecting. Build the native dedicated server with the
 separate server recipe; do not apply the browser patch to that build.
