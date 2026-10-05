@@ -24,13 +24,13 @@ const server = createServer((q, r) => {
   );
   if (p === '/')
     return r.end(
-      `<iframe src="/index.html#shell=${origin}&nonce=1234567890abcdef" style="border:0;width:100vw;height:100vh"></iframe><script>let seq=0;window.events=[];window.send=(type,payload)=>document.querySelector('iframe').contentWindow.postMessage({protocol:'akeru.catalog.v1',nonce:'1234567890abcdef',sequence:seq++,type,payload},location.origin);document.querySelector('iframe').onload=()=>send('connect',{sdkVersion:'0.1.0'});onmessage=e=>events.push(e.data);</script>`,
+      `<iframe sandbox="allow-scripts allow-same-origin allow-pointer-lock" src="/index.html#shell=${origin}&nonce=1234567890abcdef" style="border:0;width:100vw;height:100vh"></iframe><script>let seq=0;window.events=[];window.send=(type,payload)=>document.querySelector('iframe').contentWindow.postMessage({protocol:'akeru.catalog.v1',nonce:'1234567890abcdef',sequence:seq++,type,payload},location.origin);document.querySelector('iframe').onload=()=>send('connect',{sdkVersion:'0.1.0'});onmessage=e=>events.push(e.data);</script>`,
     );
   if (p === '/runtime-config.js')
     return r.end(
       `export const relayUrl='${origin.replace('http:', 'ws:')}/relay';export const allowedShellOrigins=['${origin}'];`,
     );
-  if (p === '/rooms') {
+  if (p === '/rooms' || p === '/rooms/join') {
     r.setHeader('Content-Type', 'application/json');
     return r.end(
       JSON.stringify({ code: 'ABCD'.repeat(5), token: 'a'.repeat(48) }),
@@ -64,7 +64,8 @@ try {
   });
   await page.goto(origin);
   const f = page.frames()[1];
-  await f.locator('#room-create').click();
+  await f.locator('#room-code').fill('ABCD'.repeat(5));
+  await f.locator('#room-join-form button').click();
   await f.locator('#join').waitFor({ state: 'visible' });
   await page.screenshot({ path: output + 'entry.png' });
   await f.locator('#join').click();

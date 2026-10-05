@@ -18,6 +18,7 @@ export function chooseRoom({ relayUrl, shell, invitation, status }) {
   const invite = document.querySelector('#room-invite');
   const roomLabel = document.querySelector('#room-label');
   let busy = false,
+    endArmed = false,
     current;
   lobby.hidden = false;
   status.textContent = 'Your friends. Your arena.';
@@ -39,7 +40,12 @@ export function chooseRoom({ relayUrl, shell, invitation, status }) {
       throw Error(result.error || 'Could not open this room. Try again.');
     return result;
   };
-  share.onclick = () => dialog.showModal();
+  share.onclick = () => {
+    endArmed = false;
+    document.querySelector('#room-end').textContent = 'Close room for everyone';
+    document.querySelector('#room-copy-status').textContent = '';
+    dialog.showModal();
+  };
   document.querySelector('#room-dialog-close').onclick = () => dialog.close();
   document.querySelector('#room-copy').onclick = async () => {
     try {
@@ -54,7 +60,14 @@ export function chooseRoom({ relayUrl, shell, invitation, status }) {
     }
   };
   document.querySelector('#room-end').onclick = async () => {
-    if (!current?.owner || !confirm('Close this room for everyone?')) return;
+    if (!current?.owner) return;
+    if (!endArmed) {
+      endArmed = true;
+      document.querySelector('#room-end').textContent = 'Confirm close room';
+      document.querySelector('#room-copy-status').textContent =
+        'This will disconnect everyone. Press Confirm close room to continue, or Back to game to cancel.';
+      return;
+    }
     try {
       await request('rooms/close', {
         code: current.code,
@@ -99,8 +112,7 @@ export function chooseRoom({ relayUrl, shell, invitation, status }) {
       }
     };
     create.onclick = () => void open();
-    form.onsubmit = (event) => {
-      event.preventDefault();
+    const joinRoom = () => {
       const code = roomCode(input.value);
       if (!code) {
         status.textContent =
@@ -110,6 +122,14 @@ export function chooseRoom({ relayUrl, shell, invitation, status }) {
       }
       void open(code);
     };
+    form.querySelector('button').onclick = joinRoom;
+    form.onsubmit = (event) => event.preventDefault();
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        joinRoom();
+      }
+    });
   });
 }
 

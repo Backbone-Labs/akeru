@@ -229,7 +229,7 @@ async function boot() {
       initialized = true;
       readyAt = performance.now();
       progress.removeAttribute('value');
-      status.textContent = 'Connecting to the shared arena…';
+      status.textContent = 'Connecting to your private arena…';
       engine()._akeru_mute(Number(muted || paused));
     },
     onAbort: () =>
@@ -337,7 +337,7 @@ function frame(now) {
       setTimeout(() => {
         engine()._akeru_prepare_and_connect();
         readyAt = performance.now();
-        status.textContent = 'Connecting to the shared arena…';
+        status.textContent = 'Connecting to your private arena…';
       }, 50);
     }
     const online = Boolean(engine()._akeru_connected());
