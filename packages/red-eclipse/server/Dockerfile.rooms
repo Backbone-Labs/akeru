@@ -1,0 +1,5 @@
+# Reuse our pinned, source-built native engine; only the room coordinator changes.
+FROM us-east4-docker.pkg.dev/backbone-backend/akeru-games/red-eclipse@sha256:c366b6474a0dfc7039ddd823a009bc014c9654b1a662747c39c97930e3df0025
+COPY server/service.cjs server/policy.cjs server/rooms.cjs server/check-runtime.cjs /app/
+COPY server/servinit.cfg /app/runtime/home/servinit.cfg
+RUN node /app/check-runtime.cjs

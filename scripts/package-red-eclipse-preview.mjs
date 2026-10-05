@@ -103,7 +103,7 @@ export function configForTitle(endpoint, ancestors = [PUBLIC_SHELL]) {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: `default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ${new URL(endpoint).origin}; worker-src 'none'; frame-ancestors ${ancestors.join(' ')}; base-uri 'none'; form-action 'none'; object-src 'none'`,
+            value: `default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ${new URL(endpoint).origin} ${new URL(endpoint).origin.replace('wss:', 'https:')}; worker-src 'none'; frame-ancestors ${ancestors.join(' ')}; base-uri 'none'; form-action 'none'; object-src 'none'`,
           },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'no-referrer' },
@@ -357,7 +357,13 @@ export async function packageRedEclipse({
   mkdirSync(stage, { recursive: true });
   rmSync(resolve(title, 'releases'), { recursive: true, force: true });
   mkdirSync(title, { recursive: true });
-  for (const name of ['index.html', 'title.js', 'input.js', 'style.css'])
+  for (const name of [
+    'index.html',
+    'title.js',
+    'input.js',
+    'rooms.js',
+    'style.css',
+  ])
     put(
       stage,
       name,
@@ -459,9 +465,9 @@ export async function packageRedEclipse({
     },
     metadata: {
       summary:
-        'Fast arena action. Join the same multiplayer match in your browser.',
+        'Fast arena action. Create a private room and invite your friends.',
       description:
-        'An independently modified browser preview of Red Eclipse. Fight in Fortitude with other players. This is an early port and is not an official Red Eclipse release. Live matches are not saved or paused for other players.',
+        'An independently modified browser preview of Red Eclipse. Fight in Fortitude with invited friends in a private, human-only room. This is an early port and is not an official Red Eclipse release. Live matches are not saved or paused for other players.',
       category: 'action',
       creator: 'Red Eclipse Team and contributors',
       ageLabel: 'Unrated — shooting and combat',
@@ -476,8 +482,8 @@ export async function packageRedEclipse({
         ],
       },
       privacy: [
-        'Guest multiplayer connects to the dedicated Akeru preview server. Gameplay position and actions are shared with match participants.',
-        'No account is required. Live matches do not support save states.',
+        'Private guest rooms run on dedicated Akeru infrastructure. Anyone with the invite can join. Gameplay position and actions are shared with match participants.',
+        'No account is required. Rooms expire after 10 minutes empty or a server restart; live matches do not support save states.',
       ],
       notices: [
         {
@@ -506,6 +512,22 @@ export async function packageRedEclipse({
       entry,
       replaceDigest,
     );
+    const appPath = resolve(shell, 'app.js');
+    let app = readFileSync(appPath, 'utf8');
+    const original = 'new URLSearchParams({ nonce, shell: location.origin })';
+    const withRoom =
+      "new URLSearchParams({ nonce, shell: location.origin, ...(entry.manifest.id === 'red-eclipse' && /^[A-Fa-f0-9]{20}$/.test(new URLSearchParams(location.search).get('room') || '') ? { room: new URLSearchParams(location.search).get('room').toUpperCase() } : {}) })";
+    if (app.includes(original)) app = app.replace(original, withRoom);
+    else if (!app.includes(withRoom))
+      throw Error(
+        'Cannot safely add private-room invite routing to this shell',
+      );
+    const originalAllow = "frame.setAttribute('allow', 'gamepad; autoplay');";
+    app = app.replace(
+      originalAllow,
+      "frame.setAttribute('allow', entry.manifest.id === 'red-eclipse' ? 'gamepad; autoplay; clipboard-write' : 'gamepad; autoplay');",
+    );
+    put(shell, 'app.js', app);
     const bytes = JSON.stringify(catalog),
       release = hash(bytes);
     put(shell, 'catalog.json', bytes);

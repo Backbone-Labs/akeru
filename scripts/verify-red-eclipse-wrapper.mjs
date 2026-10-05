@@ -28,12 +28,26 @@ const server = createServer((q, r) => {
     );
   if (p === '/runtime-config.js')
     return r.end(
-      `export const relayUrl='wss://example.com/relay';export const allowedShellOrigins=['${origin}'];`,
+      `export const relayUrl='${origin.replace('http:', 'ws:')}/relay';export const allowedShellOrigins=['${origin}'];`,
     );
+  if (p === '/rooms') {
+    r.setHeader('Content-Type', 'application/json');
+    return r.end(
+      JSON.stringify({ code: 'ABCD'.repeat(5), token: 'a'.repeat(48) }),
+    );
+  }
   if (p === '/red-eclipse-opt.data') return r.end(Buffer.alloc(8));
   if (p === '/red-eclipse-opt.js') return r.end(fake);
   try {
-    if (!['/index.html', '/style.css', '/title.js', '/input.js'].includes(p))
+    if (
+      ![
+        '/index.html',
+        '/style.css',
+        '/title.js',
+        '/input.js',
+        '/rooms.js',
+      ].includes(p)
+    )
       throw Error('Unknown fixture');
     r.end(readFileSync(root + p.slice(1)));
   } catch {
@@ -50,6 +64,7 @@ try {
   });
   await page.goto(origin);
   const f = page.frames()[1];
+  await f.locator('#room-create').click();
   await f.locator('#join').waitFor({ state: 'visible' });
   await page.screenshot({ path: output + 'entry.png' });
   await f.locator('#join').click();

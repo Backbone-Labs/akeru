@@ -28,7 +28,10 @@ test('title network policy permits only its own origin and one fixed relay', () 
   const csp = config.headers
     .flatMap((rule) => rule.headers)
     .find((h) => h.key === 'Content-Security-Policy').value;
-  assert.match(csp, /connect-src 'self' wss:\/\/example\.run\.app;/);
+  assert.match(
+    csp,
+    /connect-src 'self' wss:\/\/example\.run\.app https:\/\/example\.run\.app;/,
+  );
   assert.match(csp, /worker-src 'none'/);
   assert.doesNotMatch(csp, /connect-src[^;]*\*/);
   assert.match(csp, /frame-ancestors https:\/\/backbone-akeru\.vercel\.app;/);

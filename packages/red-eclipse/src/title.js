@@ -1,4 +1,5 @@
 import { mapInput, trustedMessage } from './input.js';
+import { chooseRoom, navigateRoom } from './rooms.js';
 import { relayUrl, allowedShellOrigins } from './runtime-config.js';
 
 const params = new URLSearchParams(location.hash.slice(1));
@@ -103,7 +104,7 @@ function disconnected() {
   join.dataset.reconnect = 'true';
   join.textContent = 'Reconnect ↗';
   status.textContent =
-    'You left the arena. Reconnect to join the current match.';
+    'Connection lost. Reconnect to your private room, or reopen the game if it has closed.';
   send('touch-overlay', { visible: false });
 }
 function resize() {
@@ -169,6 +170,14 @@ async function boot() {
   send('playable', { sdkVersion: '0.1.0' });
   send('actions', { supported: ['audio', 'audio-status'] });
   send('touch-overlay', { visible: false });
+  progress.hidden = true;
+  const room = await chooseRoom({
+    relayUrl,
+    shell,
+    invitation: params.get('room'),
+    status,
+  });
+  progress.hidden = false;
   status.textContent = 'Downloading the arena…';
   resize();
   // Compile while assets download instead of serializing both startup costs.
@@ -195,7 +204,7 @@ async function boot() {
       packageData = null;
       return bytes;
     },
-    websocket: { url: relayUrl, subprotocol: 'binary' },
+    websocket: { url: relayUrl, subprotocol: 'binary,room.' + room.token },
     arguments: [
       '-dw' + canvas.width,
       '-dh' + canvas.height,
@@ -301,7 +310,8 @@ addEventListener('message', (event) => {
       if (inputProvider !== m.payload.provider) neutral();
       inputProvider = m.payload.provider;
       current = mapInput(m.payload);
-      if (!playing && current.actions[2]) activateEntry();
+      if (!initialized || roomDialog.open) navigateRoom(current);
+      else if (!playing && current.actions[2]) activateEntry();
     }
   } else if (m.type === 'pause') {
     paused = true;
@@ -348,7 +358,13 @@ function frame(now) {
       fail(
         'The multiplayer server did not respond. Close the game and try again.',
       );
-    if (playing && inputProvider && !paused && !document.hidden) {
+    if (
+      playing &&
+      inputProvider &&
+      !paused &&
+      !document.hidden &&
+      !roomDialog.open
+    ) {
       engine()._akeru_move(current.x, current.y);
       engine()._akeru_look(current.yaw * 150 * dt, current.pitch * 115 * dt);
       current.actions.forEach((down, id) => {
@@ -405,6 +421,12 @@ if (!authorized) {
 }
 requestAnimationFrame(frame);
 
+const roomDialog = document.querySelector('#room-dialog');
+roomDialog.addEventListener('keydown', (event) => event.stopPropagation());
+roomDialog.addEventListener('pointerdown', () => neutral());
+roomDialog.addEventListener('toggle', () => {
+  if (roomDialog.open) neutral();
+});
 const credits = document.querySelector('#credits');
 document
   .querySelector('#credits-link')

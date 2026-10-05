@@ -17,7 +17,7 @@ COPY --from=build /build/upstream/doc/license.txt ./notices/engine-license.txt
 COPY maps ./runtime/data/maps
 COPY notices ./notices
 COPY server/servinit.cfg ./runtime/home/servinit.cfg
-COPY server/service.cjs server/policy.cjs server/check-runtime.cjs ./
+COPY server/service.cjs server/policy.cjs server/rooms.cjs server/check-runtime.cjs ./
 RUN chown -R node:node /app/runtime/home
 USER node
 RUN node check-runtime.cjs

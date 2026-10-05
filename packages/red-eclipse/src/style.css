@@ -180,7 +180,122 @@ dialog pre {
     13px/1.6 Arial,
     sans-serif;
 }
-dialog button {
+#credits button {
   position: sticky;
   bottom: 0;
+}
+
+#room-lobby {
+  width: min(540px, 100%);
+}
+.room-divider {
+  margin: 24px 0 12px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #858585;
+}
+#room-lobby label,
+#room-dialog label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: #c8c8c8;
+}
+.room-code-row {
+  display: flex;
+  gap: 10px;
+}
+input {
+  min-width: 0;
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #4b4b4b;
+  border-radius: 12px;
+  background: #161819;
+  color: #f5f5f5;
+  padding: 12px;
+  font: 14px/1.4 monospace;
+}
+input:focus-visible {
+  outline: 2px solid #ff651f;
+  outline-offset: 2px;
+}
+.room-secondary {
+  background: #242728;
+  color: #f5f5f5;
+  border: 1px solid #424647;
+}
+.room-secondary:hover {
+  background: #343839;
+}
+.room-code-row button {
+  white-space: nowrap;
+  min-height: 46px;
+  padding: 10px 20px;
+}
+.room-note {
+  font-size: 12px;
+  color: #b5b5b5;
+  margin: 18px 0 0;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+#room-share {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  top: max(12px, env(safe-area-inset-top));
+  min-height: 36px;
+  padding: 8px 16px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+#room-dialog {
+  width: min(500px, 92vw);
+}
+#room-dialog h2 {
+  font-size: 30px;
+  letter-spacing: -0.035em;
+  margin: 12px 0;
+}
+#room-dialog p {
+  color: #bfc2c4;
+  line-height: 1.5;
+}
+.room-dialog-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+#room-label {
+  font-family: monospace;
+  letter-spacing: 0.08em;
+  user-select: all;
+  font-size: 17px;
+  color: white !important;
+}
+#entry {
+  overflow-y: auto;
+}
+#entry:has(#room-lobby:not([hidden])) .controls,
+#entry:has(#room-lobby:not([hidden])) .fine {
+  display: none;
+}
+@media (max-height: 500px) {
+  #entry:has(#room-lobby:not([hidden])) h1 {
+    font-size: 32px;
+    margin: 8px 0;
+  }
+  .room-divider {
+    margin-top: 14px;
+  }
+  #room-create {
+    min-height: 44px;
+    padding: 10px 22px;
+  }
+  #room-lobby {
+    max-width: 560px;
+  }
 }

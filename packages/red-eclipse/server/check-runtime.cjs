@@ -19,6 +19,16 @@ child.on('exit', (code) => {
       try {
         const response = await fetch('http://127.0.0.1:8080/ready');
         if (response.ok && (await response.json()).ready) {
+          const created = await fetch('http://127.0.0.1:8080/rooms', {
+            method: 'POST',
+            headers: {
+              Origin: 'https://build.invalid',
+              'Content-Type': 'application/json',
+            },
+            body: '{}',
+          });
+          if (created.status !== 201 || !(await created.json()).token)
+            throw Error('Native private room failed startup');
           done = true;
           child.kill('SIGTERM');
           return;
