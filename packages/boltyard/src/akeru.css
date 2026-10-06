@@ -1,0 +1,19 @@
+/* Akeru host status line (save warnings, start failures). Game styles are untouched. */
+#akeru-status:empty {
+  display: none;
+}
+#akeru-status {
+  position: fixed;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  left: 10px;
+  right: 10px;
+  z-index: 10000;
+  margin: 0;
+  padding: 10px;
+  color: #e9edf5;
+  background: #0b1220e8;
+  font:
+    14px system-ui,
+    sans-serif;
+  pointer-events: none;
+}
