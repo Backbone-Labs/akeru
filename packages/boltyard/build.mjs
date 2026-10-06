@@ -99,7 +99,7 @@ export function buildBoltyard({
         './' +
         three(
           spec === 'three'
-            ? resolve(threeRoot, 'build/three.module.js')
+            ? resolve(threeRoot, 'build/three.module.min.js')
             : spec.startsWith('three/addons/')
               ? resolve(threeRoot, 'examples/jsm', spec.slice(13))
               : resolve(dirname(p), spec),
@@ -143,7 +143,7 @@ export function buildBoltyard({
         );
       code = rewriteImports(code, (spec) => {
         if (spec === 'three')
-          return './' + three(resolve(threeRoot, 'build/three.module.js'));
+          return './' + three(resolve(threeRoot, 'build/three.module.min.js'));
         if (spec.startsWith('three/addons/'))
           return (
             './' + three(resolve(threeRoot, 'examples/jsm', spec.slice(13)))
@@ -199,12 +199,24 @@ export function buildBoltyard({
   for (const s of sheets)
     if (!readdirSync(out).includes(s))
       throw new Error(`Missing stylesheet ${s}`);
+  // Keep the game's generated modulepreload list (it saves ~12 round trips on mobile networks).
+  const preloads = [
+    ...page.matchAll(/<link rel="modulepreload" href="([^"]+)"/g),
+  ].map(([, href]) =>
+    href.startsWith('/vendor/three/')
+      ? three(resolve(threeRoot, href.slice('/vendor/three/'.length)))
+      : flat(servedPath('client/index.html', href)),
+  );
+  for (const m of preloads)
+    if (!readdirSync(out).includes(m))
+      throw new Error(`Missing preloaded module ${m}`);
   put(
     'index.html',
     '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
       '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">' +
       '<meta name="theme-color" content="#0b1220"><title>BOLTYARD</title>' +
       sheets.map((s) => `<link rel="stylesheet" href="./${s}">`).join('') +
+      preloads.map((m) => `<link rel="modulepreload" href="./${m}">`).join('') +
       '<link rel="stylesheet" href="./akeru.css"></head><body>' +
       body.trim() +
       '<p id="akeru-status" role="status"></p><script type="module" src="./title.js"></script></body></html>\n',
