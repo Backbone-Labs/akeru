@@ -106,7 +106,7 @@ export const METADATA = {
   controls: {
     controller: [
       'Left stick moves, right stick aims. RT fires, LT scopes / heavy knife / lobs a grenade. A jumps, X reloads, B uses or defuses, Y / RB next weapon, LB previous weapon.',
-      'D-pad up cycles grenades, D-pad down readies the charge, D-pad left opens the buy menu, D-pad right swaps to the last weapon, View shows the scoreboard, R3 crouches, L3 walks silently. Menus: D-pad browse, A selects, B goes back. Menu opens the pause screen.',
+      'D-pad: up cycles grenades, down readies the charge, left opens the buy menu, right swaps to the last weapon. View shows the scoreboard, R3 crouches, L3 walks silently. Menus: D-pad browse, A selects, B goes back.',
     ],
     touch: [
       'Left thumb moves, drag on the right to aim. On-screen buttons fire, aim, jump, crouch, reload, use, swap weapons, throw grenades and open the buy menu. Tap menus directly.',

@@ -105,14 +105,19 @@ export function buildDockfuse({
     .map((p) => ({ path: p, sha256: hash(git(['show', `${revision}:${p}`])) }));
 
   // ---- the game's own pinned toolchain ----
-  const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  const run = (args) =>
-    execFileSync(npm, args, {
+  // npm's own CLI script through this Node binary: works identically on every platform, no shell
+  const npmCli = resolve(
+    dirname(process.execPath),
+    'node_modules/npm/bin/npm-cli.js',
+  );
+  if (!existsSync(npmCli)) throw new Error('npm-cli.js not found next to node');
+  const npm = (args, options = {}) =>
+    execFileSync(process.execPath, [npmCli, ...args], {
       cwd: source,
-      stdio: 'inherit',
-      shell: process.platform === 'win32',
       env: { ...process.env, CI: '1' },
+      ...options,
     });
+  const run = (args) => npm(args, { stdio: 'inherit' });
   run(['ci', '--ignore-scripts', '--no-audit', '--no-fund']);
   run(['run', 'build']);
   const built = resolve(source, 'dist/client');
