@@ -145,6 +145,7 @@ export function connectCreator(config) {
   const pause = (value) => {
     paused = value;
     clear();
+    config.lifecycle?.(value || document.hidden);
     const game = getGame();
     if (value || document.hidden) {
       config.beforeSave?.(game);
