@@ -164,6 +164,15 @@ export function buildBubblekick({
         'await adapter.initialize({',
         'await adapter.initialize({ storage: globalThis.bubblekickStorage,',
       );
+    if (p === 'client/game/app.js') {
+      const oldHeading = "this.screen.el.querySelector('h1').innerHTML";
+      if (!code.includes(oldHeading))
+        throw new Error('Bubblekick room heading patch no longer matches');
+      code = code.replace(
+        oldHeading,
+        "this.screen.el.querySelector('.ribbon > span').innerHTML",
+      );
+    }
     if (p === 'client/game/app.js' && !endpoint)
       code = code.replace(
         '() => this.showOnline()',
