@@ -47,7 +47,11 @@ test('origins are exact', () => {
 });
 
 test('the catalog gains BOLTYARD once and never silently replaces it', () => {
-  const entry = { manifest: { id: 'boltyard' } };
+  const entry = {
+    manifest: { id: 'boltyard' },
+    release: { digest: 'a'.repeat(64) },
+  };
   const catalog = { schemaVersion: '0.1.0', mode: 'demo', entries: [entry] };
   assert.throws(() => appendCatalog(catalog, entry), /already/);
+  assert.throws(() => appendCatalog(catalog, entry, 'f'.repeat(64)), /already/);
 });

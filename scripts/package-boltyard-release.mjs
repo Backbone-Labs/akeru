@@ -232,13 +232,19 @@ export async function verifyBaseline(baseline) {
   return results;
 }
 
-export function appendCatalog(catalog, entry) {
-  if (catalog.entries.some((e) => e.manifest.id === entry.manifest.id))
+export function appendCatalog(catalog, entry, replaceDigest = null) {
+  const at = catalog.entries.findIndex(
+    (e) => e.manifest.id === entry.manifest.id,
+  );
+  if (at >= 0 && catalog.entries[at].release.digest !== replaceDigest)
     throw Error(
-      'BOLTYARD is already in this catalog; replacing it needs an explicit review',
+      'BOLTYARD is already in this catalog; pass --replace-digest <its current digest> to replace it',
     );
+  if (at < 0 && replaceDigest)
+    throw Error('Expected BOLTYARD release to replace is absent');
   const copy = structuredClone(catalog);
-  copy.entries.push(structuredClone(entry));
+  if (at >= 0) copy.entries[at] = structuredClone(entry);
+  else copy.entries.push(structuredClone(entry));
   validateCatalog(copy, { mode: 'demo', shellOrigin: PUBLIC_SHELL });
   return copy;
 }
@@ -248,6 +254,7 @@ export async function packageShell({
   baseline,
   origin,
   cover,
+  replaceDigest = null,
   skipLiveBaseline = false,
 }) {
   exactOrigin(origin);
@@ -269,6 +276,7 @@ export async function packageShell({
   const catalog = appendCatalog(
     JSON.parse(readFileSync(resolve(baseline, 'catalog.json'), 'utf8')),
     entry,
+    replaceDigest,
   );
   const bytes = JSON.stringify(catalog);
   put(shell, 'catalog.json', bytes);
@@ -320,6 +328,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     else if (a === '--baseline') opts.baseline = rest[++i];
     else if (a === '--cover') opts.cover = rest[++i];
     else if (a === '--skip-live-baseline') opts.skipLiveBaseline = true;
+    else if (a === '--replace-digest') opts.replaceDigest = rest[++i];
     else throw Error(`Unknown argument ${a}`);
   }
   if (cmd === 'title') console.log(json(packageTitle(opts)));
