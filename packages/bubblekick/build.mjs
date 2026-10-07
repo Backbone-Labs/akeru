@@ -51,8 +51,6 @@ export function buildBubblekick({
   if (!/^[0-9a-f]{40}$/.test(revision))
     throw new Error('Set BUBBLEKICK_REVISION to the full commit to build');
   const endpoint = serverEndpoint(server);
-  if (endpoint)
-    throw new Error('Online release is not configured; omit BUBBLEKICK_SERVER');
   const git = (args) =>
     execFileSync('git', ['-C', resolve(source), ...args], {
       maxBuffer: 64 * 1024 * 1024,
@@ -166,10 +164,15 @@ export function buildBubblekick({
         'await adapter.initialize({',
         'await adapter.initialize({ storage: globalThis.bubblekickStorage,',
       );
-    if (p === 'client/game/app.js')
+    if (p === 'client/game/app.js' && !endpoint)
       code = code.replace(
         '() => this.showOnline()',
         "() => this.showMain('Online play is not connected in this preview. Choose PLAY for local matches.')",
+      );
+    if (p === 'client/net/connection.js')
+      code = code.replace(
+        'export function defaultServerUrl() {',
+        'export function defaultServerUrl() { if(globalThis.BUBBLEKICK_SERVER) return globalThis.BUBBLEKICK_SERVER;',
       );
     put(flat(virtual), code);
   }

@@ -1,4 +1,6 @@
 import { connectCreator } from './bridge.js';
+import { serverUrl } from './runtime-config.js';
+if (serverUrl) globalThis.BUBBLEKICK_SERVER = serverUrl;
 const game = () => globalThis.__bubblekick?.game;
 const BUTTONS = [
   'confirm',
@@ -83,7 +85,9 @@ globalThis.bubblekickStorage = {
   async get(key) {
     if (key !== 'save') throw Error('Unknown save slot');
     const raw = globalThis.akeruCreator.storage.getItem(SAVE_KEY);
-    return raw ? JSON.parse(raw) : null;
+    const value = raw ? JSON.parse(raw) : null;
+    if (value?.settings && serverUrl) value.settings.server = serverUrl;
+    return value;
   },
   async set(key, value) {
     if (key !== 'save') throw Error('Unknown save slot');

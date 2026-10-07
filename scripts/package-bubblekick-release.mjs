@@ -190,7 +190,17 @@ export function packageTitle({ adapterRevision, ancestors = [PUBLIC_SHELL] }) {
   const entry = {
     manifest,
     release: { digest, origin: 'https://bubblekick-pending.invalid' },
-    metadata: METADATA,
+    metadata: record.server
+      ? {
+          ...METADATA,
+          description:
+            'Pick a critter and play five-a-side bubble soccer against the CPU, on the couch, or online. Create a room and share its code with friends. Three stadiums, charged shots and penalty shootouts.',
+          privacy: [
+            METADATA.privacy[0],
+            'Online play sends a display name and game inputs to the Backbone-hosted Bubble Kick server. Rooms are temporary and end when empty or the server restarts. No account or chat.',
+          ],
+        }
+      : METADATA,
     availability: 'available',
   };
   put(out, 'entry.json', json(entry));

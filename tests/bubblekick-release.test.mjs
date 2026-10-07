@@ -1,22 +1,26 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildBubblekick } from '../packages/bubblekick/build.mjs';
+import {
+  buildBubblekick,
+  serverEndpoint,
+} from '../packages/bubblekick/build.mjs';
 import {
   appendCatalog,
   titleConfig,
   METADATA,
 } from '../scripts/package-bubblekick-release.mjs';
-test('Bubble Kick rejects missing revision and unconfigured multiplayer', () => {
+test('Bubble Kick rejects missing revision and unsafe multiplayer endpoints', () => {
   assert.throws(() => buildBubblekick({ source: '/unused' }), /full commit/);
-  assert.throws(
-    () =>
-      buildBubblekick({
-        source: '/unused',
-        revision: 'a'.repeat(40),
-        server: 'wss://game.example/ws',
-      }),
-    /not configured/,
+  assert.equal(
+    serverEndpoint('wss://game.example/ws'),
+    'wss://game.example/ws',
   );
+  for (const bad of [
+    'ws://game.example/ws',
+    'wss://user:pw@game.example/ws',
+    'wss://game.example/ws?x=1',
+  ])
+    assert.throws(() => serverEndpoint(bad));
 });
 test('offline release has no network permission to game servers', () => {
   const csp = titleConfig(null)
