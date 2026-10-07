@@ -5,10 +5,10 @@ const allowed = originSet(process.env.ALLOWED_ORIGINS || '');
 const server = http.createServer((req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-store');
-  res.writeHead(req.method === 'GET' && req.url === '/healthz' ? 200 : 404);
+  res.writeHead(req.method === 'GET' && ['/healthz', '/ready'].includes(req.url) ? 200 : 404);
   res.end(
     JSON.stringify(
-      req.url === '/healthz'
+      ['/healthz', '/ready'].includes(req.url)
         ? { ok: true, game: 'bubblekick' }
         : { error: 'not-found' },
     ),
