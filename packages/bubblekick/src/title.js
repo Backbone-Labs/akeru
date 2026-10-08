@@ -1,61 +1,9 @@
+import { createController } from './controller.js';
 import { connectCreator } from './bridge.js';
 import { serverUrl } from './runtime-config.js';
 if (serverUrl) globalThis.BUBBLEKICK_SERVER = serverUrl;
 const game = () => globalThis.__bubblekick?.game;
-const BUTTONS = [
-  'confirm',
-  'cancel',
-  'west',
-  'north',
-  'leftShoulder',
-  'rightShoulder',
-  'leftTrigger',
-  'rightTrigger',
-  'view',
-  'menu',
-  null,
-  null,
-  'up',
-  'down',
-  'left',
-  'right',
-  null,
-];
-const AXES = ['moveX', 'moveY', 'lookX', 'lookY'];
-let padSeen = false;
-let padTimestamp = 0;
-const pad = {
-  id: 'Akeru host controller (STANDARD GAMEPAD)',
-  index: 0,
-  connected: true,
-  mapping: 'standard',
-  get timestamp() {
-    return padTimestamp;
-  },
-  buttons: BUTTONS.map(() => ({ pressed: false, touched: false, value: 0 })),
-  axes: [0, 0, 0, 0],
-  vibrationActuator: null,
-};
-function applyControls(controls) {
-  const b = controls?.buttons || {};
-  const a = controls?.axes || {};
-  let active = false;
-  BUTTONS.forEach((name, i) => {
-    const v = name ? Math.max(0, Math.min(1, Number(b[name]) || 0)) : 0;
-    const slot = pad.buttons[i];
-    slot.value = v;
-    slot.pressed = v > 0.5;
-    slot.touched = v > 0;
-    if (v > 0.25) active = true;
-  });
-  AXES.forEach((name, i) => {
-    const v = Math.max(-1, Math.min(1, Number(a[name]) || 0));
-    pad.axes[i] = v;
-    if (Math.abs(v) > 0.25) active = true;
-  });
-  if (active) padSeen = true;
-  padTimestamp = performance.now();
-}
+const controller = createController();
 
 const SAVE_KEY = 'bubblekick.save.v1',
   AUDIO_KEY = 'bubblekick.audio.v1';
@@ -128,15 +76,15 @@ const bridge = connectCreator({
   },
   playing: () => game()?.screen?.name === 'match',
   routeInput(controls) {
-    applyControls(controls);
+    controller.update(controls);
     return true;
   },
   clear() {
-    applyControls(null);
+    controller.clear();
     game()?.input?.clearAll();
   },
 });
-bridge.noGamepads = () => (padSeen ? [pad] : []);
+bridge.noGamepads = controller.read;
 let paused = null;
 function sync() {
   const g = game();

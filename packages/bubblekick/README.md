@@ -12,7 +12,6 @@ Without BUBBLEKICK_SERVER the build supports CPU matches and local play and disa
 
 Build output and private source records stay in ignored `dist/`. Release packaging excludes the private build record. The title is deployed to an isolated game origin; shell packaging verifies the live baseline before adding the entry, screenshot and frame origin. Local builds and tests never deploy.
 
-
 ## GCP multiplayer
 
 Prepare the server from the same clean, pinned creator checkout:
@@ -36,3 +35,15 @@ node packages/bubblekick/server/smoke.mjs wss://<service>/ws https://<allowed-ti
 ```
 
 Checks Origin denial, host-only start, two-client snapshots, room isolation and disconnect cleanup. Physical Backbone/mobile performance needs real-device acceptance.
+
+## Controller input
+
+The host-selected Backbone/browser controller drives menus and gameplay through the shared input contract. The adapter retains button edges until a game frame consumes them, so short presses between frames are not lost. Pause clears pending input. The Backbone Home button remains host-owned.
+
+- Left stick / D-pad: move and navigate menus.
+- A: confirm, shoot (hold to charge), tackle.
+- B: back / pass.
+- X: lob.
+- Y / RB: switch player.
+
+Regression coverage includes short presses, held buttons, standard mappings and input clearing. Browser integration checks cover the title-to-match flow and gameplay via both browser Gamepad input and the native host input command. Physical Backbone acceptance is still required.
