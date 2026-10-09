@@ -64,8 +64,9 @@ try {
   assert.equal(sa.humans.length, 2);
   assert.equal(sb.humans.length, 2);
   assert.notDeepEqual(sa.you, sb.you);
+  let sequence = 0;
   let timer = setInterval(
-    () => b.send({ type: 'in', i: [[0, -127, 0, 0]] }),
+    () => b.send({ type: 'in', s: sequence++, i: [[0, -127, 0, 0]] }),
     50,
   );
   await new Promise((r) => setTimeout(r, 3000));
