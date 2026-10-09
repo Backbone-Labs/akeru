@@ -1,0 +1,69 @@
+#stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 85px 24px 80px;
+  gap: 48px;
+  background: radial-gradient(ellipse at 35% 40%, #253645, #111217 65%);
+}
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 70px);
+  gap: 18px;
+}
+.dot {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  font-size: 22px;
+  background: #293540;
+}
+.dot.selected {
+  background: #e56837;
+}
+.dot.cursor {
+  outline: 3px solid #ff9b6c;
+  outline-offset: 4px;
+}
+#history {
+  padding: 0;
+  list-style: none;
+  font: 16px monospace;
+  line-height: 2;
+  min-width: 240px;
+}
+#selection {
+  margin-bottom: 24px;
+  color: #ffc8a5;
+}
+header {
+  pointer-events: none;
+}
+#instructions {
+  color: #b0b4bf;
+  font-size: 12px;
+  max-width: 280px;
+}
+@media (max-width: 650px) {
+  #stage {
+    gap: 24px;
+    flex-direction: column;
+  }
+  #board {
+    grid-template-columns: repeat(3, 48px);
+    gap: 14px;
+  }
+  .dot {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+  }
+  #history {
+    font-size: 12px;
+    max-height: 95px;
+    overflow: auto;
+  }
+  #selection {
+    margin-bottom: 12px;
+  }
+}

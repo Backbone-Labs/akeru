@@ -29,4 +29,38 @@ export default [
       eqeqeq: 'error',
     },
   },
+  // These two fragments are joined around verified upstream code at build time.
+  // Declare only that shared lexical interface; keep other lint rules enabled.
+  {
+    files: ['packages/isocity/engine-prefix.js'],
+    rules: {
+      'no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern:
+            '^(w|h|x|y|ntiles|tileWidth|tileHeight|tool|isPlacing|map|bg|cf|texture|changed|updateHashState)$',
+          caughtErrors: 'none',
+        },
+      ],
+    },
+  },
+  {
+    files: ['packages/isocity/engine-suffix.js'],
+    languageOptions: {
+      globals: {
+        texture: 'writable',
+        map: 'writable',
+        bg: 'writable',
+        cf: 'writable',
+        w: 'readonly',
+        drawMap: 'readonly',
+        tool: 'writable',
+        click: 'readonly',
+        isPlacing: 'writable',
+        viz: 'readonly',
+        changed: 'writable',
+      },
+    },
+  },
 ];

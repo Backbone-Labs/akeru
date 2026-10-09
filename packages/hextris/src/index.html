@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  /><title>Hextris</title
+  ><link rel="stylesheet" href="style.css" />
+  <header>
+    <strong>HEXTRIS</strong><span id="score">Score 0</span
+    ><button data-action="restart">New game</button>
+  </header>
+  <canvas width="800" height="680" aria-label="Hextris game"></canvas>
+  <footer>
+    <button data-action="left">↶ Rotate left</button
+    ><span id="status">Match 3 colors · ← → / A D · click either side</span
+    ><button data-action="right">Rotate right ↷</button>
+  </footer>
+  <small id="save-status" role="status"></small>
+  <script src="engine.js"></script>
+  <script type="module" src="title.js"></script>
+</html>

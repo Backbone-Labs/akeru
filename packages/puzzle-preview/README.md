@@ -1,0 +1,7 @@
+# Local puzzle ports
+
+Run `node packages/puzzle-preview/build.mjs`, then `node packages/puzzle-preview/preview.mjs` with the repository's pinned Node/npm versions. Build one title by passing `2048` or `hextris`. Builds fetch the exact inventory revisions into ignored `dist/external`, verify every selected Git blob, and write integrity-recorded local artifacts. No upstream game source, binaries, fonts, images, or screenshots are committed.
+
+2048 uses the original Grid, Tile and GameManager with an Akeru DOM renderer and input/storage adapter. Hextris uses the original block collision, rotation, matching, scoring and wave generation with an Akeru initialization, drawing loop and controls. Its upstream analytics, menus, persistence, external requests and unknown vendor/font/art groups are excluded. Only the initial drawing functions from view.js are included. The build retains the selected upstream license. Hextris output contains GPL-covered code; the script plus exact pinned selected files document its corresponding-source recipe. Publication and artifact rights remain unknown/pending; these are local evaluation packages, not release approvals.
+
+Keyboard, mouse, touch and host controller input are supported. 2048 saves the board; Hextris saves the best score. Persistence goes through the host save contract. Hextris rounds start fresh. An optional ignored `dist/previews/<id>.png` screenshot is served on the catalog's shell origin as the title cover. `puzzleOptions(id)` can join other local title options in `startCatalogDemo({titles:[...]})`.

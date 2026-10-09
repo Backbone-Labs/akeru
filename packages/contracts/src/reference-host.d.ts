@@ -9,7 +9,7 @@ import type {
 } from './index.js';
 
 export interface LaunchPlan {
-  readonly renderer: 'dom' | 'canvas2d' | 'webgl2' | 'webgpu';
+  readonly renderer: 'dom' | 'canvas2d' | 'webgl1' | 'webgl2' | 'webgpu';
   readonly sdkVersion: string;
   readonly titleOrigin: string;
   readonly sandbox: 'allow-scripts allow-same-origin';
@@ -20,7 +20,7 @@ export function planLaunch(
   manifest: unknown,
   environment: {
     grants: readonly string[];
-    graphics: readonly ('dom' | 'canvas2d' | 'webgl2' | 'webgpu')[];
+    graphics: readonly ('dom' | 'canvas2d' | 'webgl1' | 'webgl2' | 'webgpu')[];
     features: readonly string[];
     shellOrigin: string;
     titleOrigin: string;

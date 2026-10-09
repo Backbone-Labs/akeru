@@ -34,10 +34,15 @@ test.afterAll(async () => {
 test('serves the validated production release with an empty catalog', async ({
   page,
 }) => {
-  await page.goto(url);
-  await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible();
+  await page.goto(url + '/games');
+  await page.getByRole('button', { name: 'Discover', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Discover', level: 1 }),
+  ).toBeVisible();
   await expect(page.getByText('0 games', { exact: true })).toBeVisible();
-  await expect(page.getByText('The library is being prepared.')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'The library is being prepared.' }),
+  ).toBeVisible();
   await expect(page.locator('#demo-banner')).toBeHidden();
   await expectNoHorizontalOverflow(page);
 

@@ -1,0 +1,192 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #edf3ec;
+  color: #183b2c;
+  font-family: system-ui, sans-serif;
+}
+main {
+  max-width: 1180px;
+  margin: auto;
+  padding: 28px 34px;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  color: #558568;
+}
+h1 {
+  font-size: 36px;
+  letter-spacing: -1.5px;
+  margin: 7px 0;
+}
+h1 span {
+  display: block;
+  font-size: 14px;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: #668270;
+  margin-top: 6px;
+}
+.tag {
+  font-size: 10px;
+  letter-spacing: 1px;
+  border: 1px solid #bfd3c3;
+  padding: 9px 12px;
+  border-radius: 99px;
+}
+#board {
+  position: relative;
+  max-width: 910px;
+  margin: -22px auto -72px;
+  aspect-ratio: 910/666;
+}
+canvas#bg,
+canvas#fg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}
+#fg {
+  touch-action: none;
+}
+.hint {
+  position: absolute;
+  bottom: 98px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  pointer-events: none;
+  font-size: 12px;
+  color: #73947b;
+}
+#tools {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 7px;
+  z-index: 1;
+}
+button {
+  background: #f8fbf6;
+  border: 1px solid #d1dfcf;
+  border-radius: 13px;
+  padding: 7px 0 10px;
+  cursor: pointer;
+  color: #496c52;
+  font: 10px system-ui;
+  transition:
+    transform 0.15s,
+    background 0.15s;
+}
+button:hover {
+  transform: translateY(-4px);
+}
+button[aria-pressed='true'] {
+  background: #d2e9c1;
+  border: 2px solid #668b43;
+  color: #244523;
+}
+button canvas {
+  width: 100%;
+  height: 76px;
+  object-fit: contain;
+  display: block;
+}
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 10px;
+  color: #6f8a72;
+  margin-top: 18px;
+}
+#save-status {
+  color: #9a5b36;
+}
+@media (max-width: 700px) {
+  main {
+    padding: 16px 12px;
+  }
+  header .tag {
+    display: none;
+  }
+  h1 {
+    font-size: 28px;
+  }
+  #board {
+    margin: 0 auto -35px;
+  }
+  .hint {
+    bottom: 46px;
+    font-size: 10px;
+  }
+  #tools {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  button canvas {
+    height: 50px;
+  }
+  footer {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  button {
+    transition: none;
+  }
+}
+/* Keep the palette reachable inside a landscape game frame. */
+main {
+  min-height: 100dvh;
+  padding-top: 20px;
+  padding-bottom: 14px;
+}
+#board {
+  height: min(666px, calc(100dvh - 230px));
+  width: min(100%, calc((100dvh - 230px) * 1.366));
+  aspect-ratio: 910/666;
+  margin: -8px auto -46px;
+}
+.hint {
+  bottom: 68px;
+}
+#tools {
+  margin-top: 0;
+}
+footer {
+  margin-top: 10px;
+}
+@media (max-width: 700px) {
+  #board {
+    height: calc(100dvh - 325px);
+    width: min(100%, calc((100dvh - 325px) * 1.366));
+    min-height: 180px;
+    min-width: 246px;
+    margin: 0 auto -28px;
+  }
+  .hint {
+    bottom: 35px;
+  }
+  main {
+    padding-top: 12px;
+  }
+  button canvas {
+    height: 43px;
+  }
+  footer {
+    gap: 6px;
+  }
+}
+.hint {
+  display: none;
+}

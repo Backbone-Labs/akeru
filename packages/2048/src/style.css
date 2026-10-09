@@ -1,0 +1,89 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #101214;
+  color: #eee;
+  font: 16px system-ui;
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+}
+main {
+  width: min(92vw, 72vh, 680px);
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+h1 {
+  font-size: 40px;
+  margin: 10px auto 10px 0;
+}
+#score {
+  font-size: 26px;
+  font-weight: 700;
+}
+#board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  background: #292c31;
+  padding: 10px;
+  border-radius: 16px;
+  touch-action: none;
+}
+.tile {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  background: #363a41;
+  border-radius: 9px;
+  font-size: clamp(22px, 5vh, 52px);
+  font-weight: 800;
+  color: #fff;
+}
+.tile[data-value='2'] {
+  background: #696251;
+}
+.tile[data-value='4'] {
+  background: #837552;
+}
+.tile[data-value='8'] {
+  background: #bd8049;
+}
+.tile[data-value='16'] {
+  background: #bd6646;
+}
+.tile[data-value='32'] {
+  background: #b74f44;
+}
+.tile[data-value='64'] {
+  background: #b93232;
+}
+.tile[data-value='128'],
+.tile[data-value='256'],
+.tile[data-value='512'],
+.tile[data-value='1024'],
+.tile[data-value='2048'] {
+  background: #b59824;
+}
+button {
+  background: #30343b;
+  color: white;
+  border: 1px solid #515660;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+nav {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+p {
+  color: #c1c2c7;
+  text-align: center;
+}

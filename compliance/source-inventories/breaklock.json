@@ -1,0 +1,563 @@
+{
+  "schemaVersion": 1,
+  "upstreamUrl": "https://github.com/maxwellito/breaklock",
+  "revision": "a06fb28a3fa6072a089ca664c66a7bf08c0a3e99",
+  "scope": "source-tree",
+  "rightsStatus": "unreviewed",
+  "limitation": "Per-file source identity only; no publication or asset-rights approval.",
+  "files": [
+    {
+      "path": ".github/workflows/build.yml",
+      "gitObjectId": "382b067c185b745daf3c8d8a2bd5ef1412141990",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": ".gitignore",
+      "gitObjectId": "1fd2e535fab16ba542133df994acce1de0c81d6c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "LICENSE",
+      "gitObjectId": "1fab0d9276521ecb90befbbb3eebc88e578b3441",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/banner.png",
+      "gitObjectId": "0642f96efbc6f1daadd2e5a658f4e300bbe6b308",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/favicon.ico",
+      "gitObjectId": "1d258ce064bfafac5298430d9421f162bd76564e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/fonts/robotomono-light-webfont.ttf",
+      "gitObjectId": "430b8d7cea47c4d717abfe27b5e2c184d435b507",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/fonts/robotomono-light-webfont.woff",
+      "gitObjectId": "cfc4403d49f4b1826c2572b715e744562a50458a",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/fonts/robotomono-light-webfont.woff2",
+      "gitObjectId": "b55b283ee1fc7a2164cc1e9b48d7f73da7374f7f",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/icons/icon-128x128.png",
+      "gitObjectId": "85e9ab0ec45091804e6b66c423dff11af0d49db2",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/icons/icon-144x144.png",
+      "gitObjectId": "0c81288f7c4bd811ed5dd06090444e6d48a1e914",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/icons/icon-152x152.png",
+      "gitObjectId": "bf6b960c19f6011ef5c35912d1b41e1a49c6211f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/icons/icon-192x192.png",
+      "gitObjectId": "bd523530b7f8683662be9e52a0d250292a2ad91f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/icons/icon-256x256.png",
+      "gitObjectId": "43f3e1d652e177361c549ae603791cd4a889e2b8",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/icons/ios-180x180.png",
+      "gitObjectId": "a99aaa7a23d740f37da2dd1362583d66777dd8f9",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/icons/ios-192x192.png",
+      "gitObjectId": "fa9e1a2241766704fd66c9b2b4eb14da78d96d7b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/icons/ios-256x256.png",
+      "gitObjectId": "d4f4a2b226c293360832fc4b101a4759220fec92",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/intro.svg",
+      "gitObjectId": "ecd63a30f1bcc959a0c60ff1a875648d45209473",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/ios-startup/startup-1080x1920.png",
+      "gitObjectId": "426b457e9063457bc336ee2dcf6e28b4fb01c130",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/ios-startup/startup-640x1136.png",
+      "gitObjectId": "581d9036c7c248e131778eaefd6798c6d4138063",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/ios-startup/startup-640x960.png",
+      "gitObjectId": "7d223ae7f6267a8785b9c5f741d7ca134c327c13",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/ios-startup/startup-750x1334.png",
+      "gitObjectId": "adf1351402c6caaeca5d99d9a65f93a753aaa184",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/vectors/cover.svg",
+      "gitObjectId": "ff23c4e9e2d4e67ef4673ff58e885bc653e3a700",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "assets/vectors/icon.svg",
+      "gitObjectId": "2012f6f1849b6c34e21f66b4265729cb9e664487",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "index.html",
+      "gitObjectId": "af493679e8092b83ae07cdaf8fe517f36ad0c824",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "lab/bruteCalc.js",
+      "gitObjectId": "34767ac48d4a79984128ec66ba00403635efe0d6",
+      "mode": "100755",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "lab/cover_generator.js",
+      "gitObjectId": "3d357c477169569297cf5e7c6a5009e9d2a98e40",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "manifest.json",
+      "gitObjectId": "04057a0b42744beb298c8fd54163eef2f454047e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "package-lock.json",
+      "gitObjectId": "951a8ada2faf5e3f0ce260daaf5a2e4bab34a889",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "package.json",
+      "gitObjectId": "ff24c35f2c61e0101ac5e1ee2670092f2e0e2b58",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "readme.md",
+      "gitObjectId": "88b21e2a23ee8b56c5a6b41ed87e4b0873769a84",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "service-worker.js",
+      "gitObjectId": "49d7c10d4e588484ae47c106347f88710e29cd0a",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/_variables.scss",
+      "gitObjectId": "320ee2578f7127f93474143db352ee8e6c40e6ad",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/app.js",
+      "gitObjectId": "fdb6781ee6d2fa79aaa9aac0e0c7f44878e93ff4",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/build/build.mjs",
+      "gitObjectId": "b32de6fbb73037ef30f861effa222f95c1f4b77c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/build/i18n.mjs",
+      "gitObjectId": "3344f003b93d9c842146eb3b8ac189fb4dfeff90",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/build/paths.mjs",
+      "gitObjectId": "554e0d15309ffd725285c6734dc711b2371a4bda",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/build/webpackCompiler.mjs",
+      "gitObjectId": "6e56642eefc1778fef660f6646152280c756f073",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/config.js",
+      "gitObjectId": "1b93e5f5a4d1548cfcdefc73c3ce91856eb40afb",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/countdown/countdown.ctrl.js",
+      "gitObjectId": "396c8e8954ec4fb3a1042386747ad0735f0329fd",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/countdown/countdown.scss",
+      "gitObjectId": "cd27f2dba332c82a101ff3ea0459331c9ff5dadf",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/extender/extender.ctrl.js",
+      "gitObjectId": "98e02f242b5e5daf3365494a3ce28169fe3be72a",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/extender/extender.scss",
+      "gitObjectId": "8b28bc6055718592bc4101e4999fad5b7a44218b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/game/game.ctrl.js",
+      "gitObjectId": "a3dd411d56e53798dcb9f0bd93df62b8796fc6de",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/game/game.scss",
+      "gitObjectId": "fe1d23ebfb7cd416f7b7b43b42429b6047b7c55d",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/history/history.ctrl.js",
+      "gitObjectId": "d3c63643d381a820f1dfa8a5c631e0ad87dfc68d",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/history/history.scss",
+      "gitObjectId": "c6492ba46dedcefb5e599ee6173cf1bc17fa0193",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/langselector/langselector.ctrl.js",
+      "gitObjectId": "0ec86fac04f14e0b9dbb7f1a238adf120ce7261f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/langselector/langselector.scss",
+      "gitObjectId": "b8b4f86676c4e49d203d9321c96836dedb5ccff0",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/lock/lock.ctrl.js",
+      "gitObjectId": "ea89f22f8d1b8f860983534807da51a2fca5be7e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/lock/lock.scss",
+      "gitObjectId": "2e9b791c7d094fb455f85df608a5b0f03eb9ca28",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/menu/menu.ctrl.js",
+      "gitObjectId": "e052ee98fdd74de8a525962f6e2c497e58df4e10",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/menu/menu.scss",
+      "gitObjectId": "e88a70cd54207100a4bccd2dbc33a14640d5692c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/option/option.ctrl.js",
+      "gitObjectId": "5696c115265d88ee70b02a2817641ba4d05225fc",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/option/option.scss",
+      "gitObjectId": "ceea2f4067bfc6598b0adbc95971195c20a024ae",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/readme.md",
+      "gitObjectId": "d3c0daa171b61ae23193d09800556c4294c8c1dc",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/selector/selector.ctrl.js",
+      "gitObjectId": "4838fe55c420ee5b940f2c4072fdeb790c45ecd8",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/selector/selector.scss",
+      "gitObjectId": "a3e3e456e613f1450526291810754fabad7d5884",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/statusBar/statusBar.ctrl.js",
+      "gitObjectId": "d1f79fa2ee549ef8e3c0c2954237569f2b160dc7",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/statusBar/statusBar.scss",
+      "gitObjectId": "c2b03c5fb1336c83743a260182c44cef7ea8593f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/summary/summary.ctrl.js",
+      "gitObjectId": "ac726632d8896a412c4f0aee1d0d07d9fb2edf7c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/summary/summary.scss",
+      "gitObjectId": "ee223e4b5298265705d92050b7d0e86fb363c0fe",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/controllers/summary/summaryFeedback.js",
+      "gitObjectId": "cdddd7c50ef8934d2fc8141abadf544b4218862e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/l10n/en.yml",
+      "gitObjectId": "162e4e2e83c28b63d54a593c1c4453043d851d5d",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/l10n/fa.yml",
+      "gitObjectId": "4d5b7d989dd26438db30f6b217b72fe4f2a7f6ec",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/l10n/fr.yml",
+      "gitObjectId": "313c98c7cfa9d3d6883eaf7fc3b3bbc7584d85f4",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/l10n/it.yml",
+      "gitObjectId": "8c2e8add624cee602d460204c2545241e02584a7",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/l10n/pt_br.yml",
+      "gitObjectId": "0b45ff0ad2a7b627298d837b819ab19f7e5f418f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/l10n/ru.yml",
+      "gitObjectId": "845e64a393802455ef50b36068086dc915efa41a",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/l10n/zh.yml",
+      "gitObjectId": "e854f19441254eff1f96d39fc2e2ca73799bd99e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/models/pattern.js",
+      "gitObjectId": "02650eb9571393ae7cc97776ea56169e3335e58f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/style.scss",
+      "gitObjectId": "12c7eeb6ddbea3e5a37d23f298acaca1cc494f6c",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/utils/airportText.js",
+      "gitObjectId": "6193dd14d445e48cd705cb070d4017f82a2887d3",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/utils/color.js",
+      "gitObjectId": "7d1e0247b3e9b46273acf7db6b9696fc73f55f96",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/utils/dom.js",
+      "gitObjectId": "1c9821faeb0e3492effa5262fd26d9f9d0b74572",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/utils/leftPadNum.js",
+      "gitObjectId": "27c855c0c2400402254fc0ba5fdc8580eb9f9dfe",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/utils/patternSVG.js",
+      "gitObjectId": "4f496a1a0f993ffa268cf65ee8d803d31172f69f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/utils/pluralize.js",
+      "gitObjectId": "c5c59af14da307bead06e89a330cd8aa160ee473",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/utils/polyfill.js",
+      "gitObjectId": "002ed74e9820ac9443a95c7bdcc5fc8c6168c1c9",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "src/utils/share.js",
+      "gitObjectId": "bc4f51f4f567b06eb9ec6137f145f57b854d39a9",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    }
+  ]
+}

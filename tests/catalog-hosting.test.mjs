@@ -242,3 +242,57 @@ test('local catalog verifier rejects tampering, extra files and symlink assets b
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test('retired generated covers and unreviewed images are not shell publication exceptions', () => {
+  const image = {
+    path: 'cover-open-golf.png',
+    type: 'image/png',
+    size: 12,
+    sha256: 'c'.repeat(64),
+  };
+  assert.throws(
+    () => createCatalogWorker({ ...release, files: [...release.files, image] }),
+    /Invalid release file/,
+  );
+  for (const replacement of [
+    { path: 'unreviewed.png' },
+    { path: 'titles/cover-open-golf.png' },
+    { path: 'cover-open-golf.svg', type: 'image/svg+xml' },
+    { type: 'image/jpeg' },
+  ]) {
+    assert.throws(
+      () =>
+        createCatalogWorker({
+          ...release,
+          files: [...release.files, { ...image, ...replacement }],
+        }),
+      /Invalid release file/,
+    );
+  }
+});
+
+test('local font allowance does not accept arbitrary fonts or incorrect media types', () => {
+  const font = {
+    path: 'manrope.ttf',
+    type: 'font/ttf',
+    size: 12,
+    sha256: 'd'.repeat(64),
+  };
+  assert.doesNotThrow(() =>
+    createCatalogWorker({ ...release, files: [...release.files, font] }),
+  );
+  for (const replacement of [
+    { path: 'unknown.ttf' },
+    { path: 'title/manrope.ttf' },
+    { type: 'font/woff2' },
+  ]) {
+    assert.throws(
+      () =>
+        createCatalogWorker({
+          ...release,
+          files: [...release.files, { ...font, ...replacement }],
+        }),
+      /Invalid release file/,
+    );
+  }
+});

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>IsoCity</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow">A LITTLE CITY, ALL YOUR OWN</p>
+          <h1>IsoCity<span>Make room for imagination.</span></h1>
+        </div>
+        <span class="tag">CREATIVE SANDBOX</span>
+      </header>
+      <section id="board" aria-label="Isometric city board">
+        <canvas id="bg" width="910" height="666"></canvas
+        ><canvas
+          id="fg"
+          width="910"
+          height="666"
+          aria-label="Tap a tile to build"
+        ></canvas>
+        <div class="hint">Select a building, then tap a tile.</div>
+      </section>
+      <section id="tools" aria-label="Building palette"></section>
+      <footer>
+        <span id="selected">Selected: House</span
+        ><span>D-pad: move · A: build · B: next building</span
+        ><span id="save-status"></span>
+      </footer>
+    </main>
+    <script src="engine.js"></script>
+    <script type="module" src="title.js"></script>
+  </body>
+</html>

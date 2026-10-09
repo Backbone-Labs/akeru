@@ -27,11 +27,17 @@ test.beforeEach(async () => {
 test('browses from catalog to detail and launches the isolated original fixture', async ({
   page,
 }) => {
-  await page.goto(demo.url);
-  await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible();
+  await page.goto(demo.url + '/games');
+  await page.getByRole('button', { name: 'Discover', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Discover', level: 1 }),
+  ).toBeVisible();
   await expect(page.getByText('1 game', { exact: true })).toBeVisible();
 
-  await page.getByRole('link', { name: /Orbit study/ }).click();
+  await page
+    .locator('#game-grid')
+    .getByRole('link', { name: /Orbit study/ })
+    .click();
   await expect(page).toHaveURL(/\/g\/orbit-study$/);
   await expect(
     page.getByRole('heading', { name: 'Orbit study' }),
@@ -55,11 +61,15 @@ test('holds and releases touch input while an idle controller remains connected'
 }) => {
   await installSimulatedGamepad(page);
   const runtime = await launchDemo(page, demo.url);
-  const right = page.getByRole('button', { name: 'Right', exact: true });
+  const right = page.locator('[aria-label="Directional pad"]');
   const before = await orbPosition(runtime);
   const box = await right.boundingBox();
   const browser = await page.context().newCDPSession(page);
-  const point = { x: box.x + box.width / 2, y: box.y + box.height / 2, id: 41 };
+  const point = {
+    x: box.x + box.width * 0.85,
+    y: box.y + box.height / 2,
+    id: 41,
+  };
 
   await browser.send('Input.dispatchTouchEvent', {
     type: 'touchStart',
@@ -106,7 +116,7 @@ test('persists a per-title controller remap across reload', async ({
   page,
 }) => {
   await launchDemo(page, demo.url);
-  await page.getByRole('button', { name: 'Controls' }).click();
+  await page.getByRole('button', { name: 'Controls', exact: true }).click();
   const confirm = page.getByRole('combobox', { name: 'confirm control' });
   await confirm.selectOption('north');
   await expect(confirm).toHaveValue('north');
@@ -119,7 +129,9 @@ test('persists a per-title controller remap across reload', async ({
   await expect(runtime.getByRole('status', { name: 'Game status' })).toHaveText(
     'Ready when you are.',
   );
-  await page.getByRole('button', { name: 'Controls' }).click();
+  // The engine can be ready before the opening reveal releases the player UI.
+  await expect(page.locator('#runtime-overlay')).toBeHidden();
+  await page.getByRole('button', { name: 'Controls', exact: true }).click();
   await expect(
     page.getByRole('combobox', { name: 'confirm control' }),
   ).toHaveValue('north');
@@ -202,8 +214,10 @@ test('renders paused, unpublished, and unknown routes safely', async ({
   await expect(
     page.getByRole('heading', { name: 'This game isn’t available.' }),
   ).toBeVisible();
-  await page.goto(demo.url);
-  await expect(page.getByText('The library is being prepared.')).toBeVisible();
+  await page.goto(demo.url + '/games');
+  await expect(
+    page.getByRole('heading', { name: 'The library is being prepared.' }),
+  ).toBeVisible();
 
   await page.evaluate(() =>
     window.catalogPreview.navigate('/outside-the-catalog'),
@@ -217,11 +231,17 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(demo.url);
-  await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible();
+  await page.goto(demo.url + '/games');
+  await page.getByRole('button', { name: 'Discover', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Discover', level: 1 }),
+  ).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
-  await page.getByRole('link', { name: /Orbit study/ }).click();
+  await page
+    .locator('#game-grid')
+    .getByRole('link', { name: /Orbit study/ })
+    .click();
   await expect(
     page.getByRole('heading', { name: 'Orbit study' }),
   ).toBeVisible();
@@ -236,7 +256,7 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
   );
   await expectNoHorizontalOverflow(page);
 
-  await page.getByRole('button', { name: 'Controls' }).click();
+  await page.getByRole('button', { name: 'Controls', exact: true }).click();
   await expect(
     page.getByRole('dialog', { name: 'Control settings' }),
   ).toBeVisible();
@@ -245,4 +265,23 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
     .locator('html')
     .evaluate((element) => element.scrollWidth - element.clientWidth);
   expect(frameOverflow).toBeLessThanOrEqual(0);
+});
+
+test('controller remains active after pointer focus enters the isolated game', async ({
+  page,
+}) => {
+  await installSimulatedGamepad(page);
+  const runtime = await launchDemo(page, demo.url);
+  await neutralGamepad(page);
+  await runtime.getByRole('heading', { name: 'Find a little space.' }).click();
+  await expect
+    .poll(() => page.evaluate(() => document.activeElement?.tagName))
+    .toBe('IFRAME');
+  await page.waitForTimeout(100);
+  const before = await orbPosition(runtime);
+  await setGamepadButton(page, 15, 1);
+  await expect
+    .poll(async () => (await orbPosition(runtime)).x)
+    .toBeGreaterThan(before.x + 5);
+  await neutralGamepad(page);
 });

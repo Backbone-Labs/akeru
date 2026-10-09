@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  /><title>2048</title
+  ><link rel="stylesheet" href="style.css" />
+  <main>
+    <header>
+      <h1>2048</h1>
+      <div id="score">0</div>
+      <button data-action="restart">New game</button>
+    </header>
+    <div id="board" aria-label="2048 board"></div>
+    <p id="status">Use arrow keys or swipe to merge matching tiles.</p>
+    <nav aria-label="Directions">
+      <button data-action="left">←</button><button data-action="up">↑</button
+      ><button data-action="down">↓</button
+      ><button data-action="right">→</button
+      ><button data-action="confirm">Continue</button>
+    </nav>
+  </main>
+  <small id="save-status" role="status"></small>
+  <script src="engine.js"></script>
+  <script type="module" src="title.js"></script>
+</html>

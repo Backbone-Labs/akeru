@@ -106,3 +106,24 @@ final runs reported no JavaScript or console errors. Controller simulation
 verifies the browser integration, not physical hardware. Local desktop-browser results do not establish iOS/Android WebView,
 physical controller, native deep-link, hosted domain, account migration or
 performance acceptance. Those integration gates remain explicit.
+
+### First-run setup
+
+The shell introduces guest play, controller setup, and optional Backbone ID.
+Setup is remembered in host local storage; blocked storage never prevents play.
+Backbone ID currently explains its unavailable state and does not simulate an
+account session. The existing host input provider owns controller navigation.
+The setup screen labels a device Backbone only when a supported Gamepad entry
+reports that name; other devices remain generic. Browser Bluetooth pairing is
+not offered: users pair in device settings, return, and press a button.
+
+Local design previews may set `AKERU_CONTROLLER_MODEL` to an absolute external
+GLB path when starting `examples/catalog-demo/server.mjs`. Only that explicit
+file is served, on the local demo origin. Three.js and the model load lazily on
+the controller step; WebGL/model failures retain a lightweight illustration.
+The renderer supports meshopt-compressed GLB, reduced motion, and hidden-tab
+suspension. The supplied Backbone model and derived variants have **unknown
+asset publication rights**, remain outside the repository, and are excluded
+from production catalog packaging. Do not add them to a public commit without
+reviewed rights evidence. Production uses the illustration until a reviewed
+host asset integration is available.

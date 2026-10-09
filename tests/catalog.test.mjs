@@ -8,6 +8,7 @@ import {
   routeFor,
   titleUrl,
   createShellTelemetry,
+  validateMetadata,
 } from '../platform/catalog/model.js';
 import { createRuntimeChannel } from '../platform/catalog/channel.js';
 const manifest = JSON.parse(
@@ -32,6 +33,20 @@ const registry = (entry) => ({
   schemaVersion: '0.1.0',
   mode: 'production',
   entries: [entry],
+});
+test('cover metadata allows only local preview image paths', () => {
+  const metadata = candidate().metadata;
+  assert.doesNotThrow(() =>
+    validateMetadata({ ...metadata, cover: '/previews/anarch.png' }),
+  );
+  for (const cover of [
+    'https://tracker.example/pixel.png',
+    '//tracker.example/x.png',
+    '/previews/../secret.png',
+    'data:image/svg+xml,test',
+  ]) {
+    assert.throws(() => validateMetadata({ ...metadata, cover }));
+  }
 });
 test('publication is independently denied by default; manifest validity and documented rights grant nothing', async () => {
   assert.deepEqual((await createPublishedCatalog([candidate()])).entries, []);
@@ -278,4 +293,35 @@ test('a missing playable handshake produces a timeout and closes the session', a
   await new Promise((r) => setTimeout(r, 130));
   assert.deepEqual(events, [{ type: 'error', code: 'timeout' }]);
   assert.equal(c.state, 'closed');
+});
+
+test('direct game routes accept catalog IDs, never arbitrary destinations', () => {
+  assert.deepEqual(routeFor('/play/freedoom1'), {
+    view: 'player',
+    id: 'freedoom1',
+  });
+  for (const path of [
+    '/play/https://example.com',
+    '/play/../settings',
+    '/play/%2Fexample',
+    '/play/' + 'a'.repeat(65),
+  ])
+    assert.equal(routeFor(path).view, 'not-found');
+});
+
+test('controller presence is boolean-only and cannot outlive the runtime', () => {
+  const s = setup();
+  try {
+    assert.equal(s.channel.sendControllerStatus(true), false);
+    s.channel.connect();
+    s.channel.receive(s.event('playable', { sdkVersion: '0.1.0' }));
+    assert.equal(s.channel.sendControllerStatus('connected'), false);
+    assert.equal(s.channel.sendControllerStatus(true), true);
+    s.channel.pause();
+    assert.equal(s.channel.sendControllerStatus(false), true);
+    s.channel.dispose();
+    assert.equal(s.channel.sendControllerStatus(true), false);
+  } finally {
+    s.channel.dispose();
+  }
 });

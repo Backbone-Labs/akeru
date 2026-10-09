@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Open Golf</title
+  ><link rel="stylesheet" href="style.css" />
+  <main>
+    <canvas
+      id="canvas"
+      width="600"
+      height="720"
+      tabindex="0"
+      aria-label="Open Golf. Drag the ball to aim, then release to putt."
+    ></canvas>
+    <aside>
+      <span id="status" role="status">Loading Open Golf…</span>
+      <div class="shot">
+        <span id="direction">↑</span><span id="power">Power 45%</span
+        ><button id="putt">Play / Putt</button
+        ><button id="menu">Courses</button>
+      </div>
+      <small
+        >Drag ball to putt · arrows / stick aim and power · Enter / A putt · M /
+        Menu courses</small
+      >
+    </aside>
+  </main>
+  <script type="module" src="title.js"></script>
+</html>
