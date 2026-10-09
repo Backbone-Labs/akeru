@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import {
   chmodSync,
   existsSync,
@@ -8,12 +8,10 @@ import {
   mkdtempSync,
   readFileSync,
   rmSync,
-  symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { join } from 'node:path';
 import {
   PROTOCOL,
   createGate,
@@ -40,6 +38,10 @@ import {
   createActions,
   supported,
 } from '../packages/dead-end-dash/src/actions.js';
+import {
+  partyUrl,
+  validEndpoint,
+} from '../packages/dead-end-dash/src/network.js';
 import { multiplayerUrl } from '../packages/dead-end-dash/src/network-config.js';
 import {
   deadEndDashOptions,
@@ -50,14 +52,22 @@ import {
 import {
   buildDeadEndDash,
   checkStylesheet,
+  resolveGameImport,
+} from '../packages/dead-end-dash/build.mjs';
+import {
   digestSources,
   normalizeRemote,
   regularBlobs,
-  resolveGameImport,
   revision,
+  serverDigest,
   sourceDigest,
   sourceUrl,
-} from '../packages/dead-end-dash/build.mjs';
+} from '../packages/dead-end-dash/pinned.mjs';
+import {
+  fixture,
+  fixtureUrl,
+  run,
+} from './fixtures/dead-end-dash-checkout.mjs';
 import { readBuiltTitle } from '../packages/anarch/artifacts.mjs';
 import {
   DEFAULT_MAPPINGS,
@@ -758,8 +768,62 @@ test('a page not launched by the shell has no channel at all', () => {
     assert.equal(launchArgs(hash), null, hash);
 });
 
-test('no party endpoint ships; the local preview alone points the title at a bridged relay', () => {
-  assert.equal(multiplayerUrl, null);
+test('the party address that ships is off or one exact secure address, and anything else is no address', () => {
+  // What is committed. Switching parties on changes that one line, and a
+  // malformed address there fails here rather than quietly in a player's hands.
+  assert.ok(
+    multiplayerUrl === null || validEndpoint(multiplayerUrl),
+    'network-config.js holds neither null nor wss://<host>/ws',
+  );
+  const page = { protocol: 'https:', host: 'title.example' };
+  assert.equal(partyUrl(null, page), '');
+  assert.equal(
+    partyUrl('wss://relay.example/ws', page),
+    'wss://relay.example/ws',
+  );
+  assert.equal(
+    partyUrl('wss://relay.example:8443/ws', page),
+    'wss://relay.example:8443/ws',
+  );
+  // The local preview's bridge, on whichever scheme the page has.
+  assert.equal(partyUrl('same-origin', page), 'wss://title.example/ws');
+  assert.equal(
+    partyUrl('same-origin', { protocol: 'http:', host: '127.0.0.1:4174' }),
+    'ws://127.0.0.1:4174/ws',
+  );
+  for (const bad of [
+    undefined,
+    '',
+    0,
+    true,
+    {},
+    'relay.example/ws',
+    'ws://relay.example/ws',
+    'https://relay.example/ws',
+    'wss://relay.example',
+    'wss://relay.example/',
+    'wss://relay.example/relay',
+    'wss://relay.example/ws/',
+    'wss://relay.example/ws?room=1',
+    'wss://relay.example/ws#x',
+    'wss://user:secret@relay.example/ws',
+    'wss://RELAY.example/ws',
+    'wss://relay.example:443/ws',
+    ' wss://relay.example/ws',
+    'wss://localhost/ws',
+    'wss://dev.localhost/ws',
+    'wss://127.0.0.1:8080/ws',
+    'wss://0.0.0.0/ws',
+    'wss://[::1]/ws',
+    'javascript:alert(1)',
+    'Same-Origin',
+  ]) {
+    assert.equal(validEndpoint(bad), false, String(bad));
+    assert.equal(partyUrl(bad, page), '', String(bad));
+  }
+});
+
+test('the local preview alone points the title at a bridged relay, and leaves the built files alone', () => {
   const options = { titleFiles: { 'network-config.js': Buffer.from('x') } };
   const local = withLocalRelay(options, 8787);
   assert.equal(typeof local.upgrade, 'function');
@@ -767,7 +831,6 @@ test('no party endpoint ships; the local preview alone points the title at a bri
     local.titleFiles['network-config.js'].toString(),
     /^export const multiplayerUrl = 'same-origin';\n$/,
   );
-  // The built files a release would use are not touched.
   assert.equal(options.titleFiles['network-config.js'].toString(), 'x');
   assert.equal(options.upgrade, undefined);
   for (const bad of [0, 80, 65536, 1.5, NaN, '8787'])
@@ -776,15 +839,19 @@ test('no party endpoint ships; the local preview alone points the title at a bri
 
 // ---------------------------------------------------------------- the build
 
-test('the pin names one repository, one commit and one set of bytes', () => {
+test('the pin names one repository, one commit and the bytes each recipe reads', () => {
   assert.match(
     sourceUrl,
     /^https:\/\/github\.com\/[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/,
   );
   assert.match(revision, /^[a-f0-9]{40}$/);
-  assert.match(sourceDigest, /^[a-f0-9]{64}$/);
   assert.notEqual(revision, '0'.repeat(40));
-  assert.notEqual(sourceDigest, '0'.repeat(64));
+  // One digest for what the title is built from, one for the party relay.
+  for (const digest of [sourceDigest, serverDigest]) {
+    assert.match(digest, /^[a-f0-9]{64}$/);
+    assert.notEqual(digest, '0'.repeat(64));
+  }
+  assert.notEqual(sourceDigest, serverDigest);
 });
 
 test('remotes, tree entries, imports and stylesheets are each checked on their own', () => {
@@ -887,63 +954,6 @@ test('remotes, tree entries, imports and stylesheets are each checked on their o
     digestSources(new Map([['a', '2']])),
   );
 });
-
-// A stand-in for the game with the same shape as the files the recipe reads.
-// It lets every refusal run in public CI, where the real source is absent.
-const fixtureUrl = 'https://github.com/fixture/dead-end-dash';
-const run = (dir, ...args) =>
-  execFileSync(
-    'git',
-    [
-      '-C',
-      dir,
-      '-c',
-      'user.name=Test',
-      '-c',
-      'user.email=test@example.invalid',
-      ...args,
-    ],
-    { stdio: ['ignore', 'pipe', 'ignore'] },
-  )
-    .toString()
-    .trim();
-function fixture(change = () => {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'akeru-ded-fixture-'));
-  const files = {
-    'package.json': '{"version":"9.9.9"}\n',
-    'src/config.js': "export const VERSION = '9.9.9';\n",
-    'src/game.js':
-      "import css from './ui/styles.css';\n" +
-      "import font from '../assets/fonts/pixelify-sans-latin-400-normal.woff2';\n" +
-      "export class Game { constructor() { this.marker = 'fixture-game' + css + font; } }\n",
-    'src/ui/styles.css': '.ded{color:red}\n',
-    'assets/fonts/pixelify-sans-latin-400-normal.woff2': 'four',
-    'assets/fonts/pixelify-sans-latin-700-normal.woff2': 'seven',
-    'assets/fonts/OFL-Pixelify-Sans.txt': 'SIL Open Font License\n',
-  };
-  change(files, dir);
-  run(dir, 'init', '-q', '-b', 'main');
-  for (const [path, content] of Object.entries(files)) {
-    mkdirSync(dirname(join(dir, path)), { recursive: true });
-    if (content && typeof content === 'object')
-      symlinkSync(content.link, join(dir, path));
-    else writeFileSync(join(dir, path), content);
-  }
-  run(dir, 'add', '-A');
-  run(dir, 'commit', '-q', '-m', 'fixture');
-  run(dir, 'remote', 'add', 'origin', fixtureUrl + '.git');
-  const out = mkdtempSync(join(tmpdir(), 'akeru-ded-out-'));
-  return {
-    dir,
-    out,
-    outUrl: pathToFileURL(out + '/'),
-    pin: { sourceUrl: fixtureUrl, revision: run(dir, 'rev-parse', 'HEAD') },
-    done() {
-      rmSync(dir, { recursive: true, force: true });
-      rmSync(out, { recursive: true, force: true });
-    },
-  };
-}
 
 test('the recipe builds a pinned checkout into hashed files and nothing else', async () => {
   const f = fixture();
@@ -1273,9 +1283,16 @@ test(
         title.titleFiles[css].toString(),
         /url\(|@import|@font-face/,
       );
-    assert.match(
+    // The built file is the committed one, byte for byte.
+    assert.equal(
       title.titleFiles['network-config.js'].toString(),
-      /export const multiplayerUrl = null;/,
+      readFileSync(
+        new URL(
+          '../packages/dead-end-dash/src/network-config.js',
+          import.meta.url,
+        ),
+        'utf8',
+      ),
     );
   },
 );

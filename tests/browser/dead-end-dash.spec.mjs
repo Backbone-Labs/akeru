@@ -1,4 +1,8 @@
+import { spawn } from 'node:child_process';
+import { once } from 'node:events';
 import { existsSync } from 'node:fs';
+import { createServer } from 'node:net';
+import { fileURLToPath } from 'node:url';
 import {
   test,
   expect,
@@ -15,7 +19,52 @@ import {
 const built = existsSync(
   new URL('../../dist/dead-end-dash/build-record.json', import.meta.url),
 );
-const relayPort = process.env.AKERU_DEAD_END_DASH_RELAY_PORT;
+// The party relay is a second, separate build of the same pinned source.
+const relayEntry = fileURLToPath(
+  new URL('../../dist/dead-end-dash-server/index.mjs', import.meta.url),
+);
+/** A free loopback port. The relay has to know its own address before it
+ * starts: the local bridge presents that address as the title's origin. */
+const freePort = () =>
+  new Promise((resolve, reject) => {
+    const probe = createServer();
+    probe.on('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+      const { port } = probe.address();
+      probe.close(() => resolve(port));
+    });
+  });
+/** The built relay runtime on a loopback port, admitting only the bridge. */
+const startRelay = async (port) => {
+  const child = spawn(process.execPath, [relayEntry], {
+    env: {
+      PATH: process.env.PATH,
+      PORT: String(port),
+      HOST: '127.0.0.1',
+      TITLE_ORIGINS: `http://127.0.0.1:${port}`,
+    },
+    stdio: ['ignore', 'pipe', 'inherit'],
+  });
+  const gone = once(child, 'close');
+  await new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error('Relay did not start')),
+      8000,
+    );
+    child.stdout.on('data', (data) => {
+      if (String(data).includes('localhost:' + port)) {
+        clearTimeout(timer);
+        resolve();
+      }
+    });
+    gone.then(() => reject(new Error('Relay exited')));
+  });
+  return async () => {
+    if (child.exitCode === null && child.signalCode === null)
+      child.kill('SIGTERM');
+    await gone;
+  };
+};
 const press = async (page, index) => {
   await setGamepadButton(page, index, 1);
   await page.waitForTimeout(100);
@@ -454,35 +503,72 @@ test.describe('Dead End Dash', () => {
     });
   });
 
-  test('two players share a party through the local relay bridge', async ({
+  test('two players share a party through the built relay, and it survives the relay restarting', async ({
     page,
     browser,
   }) => {
-    test.skip(!relayPort, 'Opt-in local Dead End Dash relay required');
-    test.setTimeout(120000);
+    test.skip(
+      !existsSync(relayEntry),
+      'Explicit Dead End Dash party relay build required',
+    );
+    test.setTimeout(150000);
+    const port = await freePort();
+    let stopRelay = await startRelay(port);
     const [options] = deadEndDashTitles();
     const party = await startCatalogDemo({
-      titles: [withLocalRelay(options, Number(relayPort))],
+      titles: [withLocalRelay(options, port)],
     });
     const guest = await browser.newPage();
+    const session = (frame) =>
+      frame.evaluate(() => {
+        const s = window.__ded.game.session;
+        return s
+          ? { status: s.status, members: s.members().length, host: s.isHost }
+          : null;
+      });
     try {
       const host = await open(page, party);
       const other = await open(guest, party);
       await host.locator('[data-fid=host]').click();
       await expect.poll(async () => (await state(host)).screen).toBe('lobby');
       const code = await host.evaluate(() => window.__ded.game.session.code);
-      expect(code).toMatch(/^[A-Z]{4}$/);
-      await other.evaluate((c) => window.__ded.game.joinParty(c), code);
-      await expect
-        .poll(() =>
-          host.evaluate(() => window.__ded.game.session.members().length),
-        )
-        .toBe(2);
+      expect(code).toMatch(/^[A-HJ-NP-Z]{6}$/);
+      // The guest joins the way a player does: the code, typed.
+      await other.locator('[data-fid=join]').click();
+      await expect.poll(async () => (await state(other)).screen).toBe('join');
+      await guest.keyboard.type(code, { delay: 30 });
+      await other.locator('[data-fid=go]').click();
+      await expect.poll(async () => (await state(other)).screen).toBe('lobby');
+      await expect.poll(async () => (await session(host)).members).toBe(2);
       await host.locator('[data-fid=start]').click();
       await host.locator('[data-fid=dnormal]').click();
       for (const f of [host, other])
         await expect.poll(async () => (await state(f)).mode).toBe('huddle');
-      await host.locator('[data-fid=dash]').click();
+      const seed = await host.evaluate(() => window.__ded.game.h.mz.seed);
+
+      // The relay restarts under them, as it does on every deployment. It
+      // holds no game state, so the party and its descent are still theirs.
+      await stopRelay();
+      await expect
+        .poll(async () => (await session(host)).status)
+        .toBe('reconnecting');
+      stopRelay = await startRelay(port);
+      for (const f of [host, other])
+        await expect
+          .poll(async () => (await session(f)).status, { timeout: 20000 })
+          .toBe('open');
+      for (const f of [host, other])
+        await expect
+          .poll(async () => (await session(f)).members, { timeout: 10000 })
+          .toBe(2);
+      expect(
+        [(await session(host)).host, (await session(other)).host].sort(),
+      ).toEqual([false, true]);
+      for (const f of [host, other])
+        expect(await f.evaluate(() => window.__ded.game.h.mz.seed)).toBe(seed);
+
+      const dasher = (await session(host)).host ? host : other;
+      await dasher.locator('[data-fid=dash]').click();
       await startDash(host);
       await startDash(other);
       const seen = () =>
@@ -526,6 +612,7 @@ test.describe('Dead End Dash', () => {
       await guest.close();
       await page.goto('about:blank');
       await party.close();
+      await stopRelay();
     }
   });
 });

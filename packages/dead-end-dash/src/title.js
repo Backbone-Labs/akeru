@@ -8,6 +8,7 @@ import { VERSION } from 'dead-end-dash:src/config.js';
 import { createActions, supported } from './actions.js';
 import { PROTOCOL, createGate, launchArgs } from './channel.js';
 import { controlText, createHostInput } from './input.js';
+import { partyUrl } from './network.js';
 import { multiplayerUrl } from './network-config.js';
 import { openHostStore } from './saves.js';
 
@@ -103,21 +104,6 @@ function applyPause() {
   }
 }
 
-/** `null`: no parties. 'same-origin': a relay bridged onto this title's own
- * origin by the local preview. Otherwise an approved secure endpoint. */
-function relayUrl() {
-  if (multiplayerUrl === 'same-origin')
-    return (
-      (location.protocol === 'https:' ? 'wss://' : 'ws://') +
-      location.host +
-      '/ws'
-    );
-  return typeof multiplayerUrl === 'string' &&
-    multiplayerUrl.startsWith('wss://')
-    ? multiplayerUrl
-    : '';
-}
-
 /** Akeru's touch controls belong on screen during a dash, not over the game's
  * own tappable menus. Said once per change. */
 function watchPlay() {
@@ -146,7 +132,7 @@ async function start(payload) {
       pauseOnBlur: false,
       // Akeru's own menu button sits in the top-right corner of the player.
       pauseButton: false,
-      relayUrl: relayUrl(),
+      relayUrl: partyUrl(multiplayerUrl, location),
       controlText,
       onProgress(progress) {
         if (!ready && progress >= 0 && progress <= 1)

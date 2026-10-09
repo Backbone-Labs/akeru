@@ -10,6 +10,10 @@ node packages/dead-end-dash/build.mjs /path/to/dead-end-dash-checkout
 node packages/dead-end-dash/preview.mjs
 ```
 
+Online parties need a second build of the same checkout, the party relay.
+That is described under [Online parties](#online-parties) and in
+[`server/README.md`](server/README.md).
+
 Open the printed `/play/dead-end-dash` URL. The normal evaluation catalog
 (`examples/catalog-demo/playable.mjs`) also lists the title once it is built.
 The preview runs loopback servers only. Nothing here publishes the game,
@@ -17,13 +21,14 @@ deploys anything or changes a deployed URL.
 
 ## What the build does
 
-`build.mjs` pins three things together: the repository the source comes from,
-one commit of it, and a digest of every file read from that commit. It refuses
-a checkout whose `HEAD` is another commit, whose `origin` is not the pinned
-repository, or whose files hash differently. The `origin` check compares a
-string in the checkout's configuration; it does not contact GitHub. The digest
-is what ties the build to bytes that were reviewed: Git does not re-verify
-object ids on every read.
+`pinned.mjs` pins the source once for both recipes: the repository it comes
+from, one commit of it, and a digest of the files each recipe reads from that
+commit (`sourceDigest` for the title, `serverDigest` for the party relay). A
+recipe refuses a checkout whose `HEAD` is another commit, whose `origin` is
+not the pinned repository, or whose files hash differently. The `origin` check
+compares a string in the checkout's configuration; it does not contact GitHub.
+The digest is what ties a build to bytes that were reviewed: Git does not
+re-verify object ids on every read.
 
 Nothing from the checkout is run. The working tree is never read, so local
 edits have no effect and no clean filter or hook has a reason to fire; Git is
@@ -33,9 +38,9 @@ pinned esbuild into ignored `dist/dead-end-dash/`, and the hash of every
 source file read and every artifact written goes into `build-record.json`.
 The output does not depend on where the repository or the checkout sits.
 
-To move to a newer revision of the game, change `revision` and `sourceDigest`
-in `build.mjs` together; a build with a stale digest fails and names the
-digest it read. Review the game's diff before accepting that value.
+To move to a newer revision of the game, change `revision` and both digests
+in `pinned.mjs` together; a build with a stale digest fails and names the
+digest it read. Review the game's diff before accepting those values.
 
 The game's own build inlines its stylesheet and typeface. A title origin
 admits neither, so here the stylesheet is a linked file and the game is told
@@ -123,58 +128,81 @@ stopped, and play continues from memory. There is no cloud sync and no account.
 
 ## Online parties
 
-Parties are off. `src/network-config.js` holds `null`, the title is given no
-relay, and Host a Party and Join a Party say that parties are not switched on
-here; solo play is unaffected. Parties use the game's own presence relay
-(`server/relay.mjs` in the game's repository), which is separate from the
-static title files. Switching them on for a release means a recipe that
-replaces `network-config.js` with an approved `wss://` endpoint and grants
-that one destination in the title's deployment policy. Neither exists.
+Parties are off. `src/network-config.js` holds `null`, so the title is given
+no relay, and Host a Party and Join a Party say that parties are not switched
+on here; solo play is unaffected.
 
-For local evaluation only, run the relay from the checkout and bridge it onto
-the title's origin:
+The game's netcode is its own: players exchange small keyed values through a
+presence relay, each player's game keeps the state, and the relay keeps none.
+Akeru's host-owned rooms run an authoritative simulation, which this game
+does not have, so the title needs a small service of its own, deployed
+separately the way Mythic Kitchen's server is. This package builds it, from
+the same pinned commit as the title:
 
 ```sh
-# in the game checkout
-npm ci --omit=dev --ignore-scripts
-PORT=8787 HOST=127.0.0.1 ALLOWED_ORIGINS=http://127.0.0.1:8787 node server/relay.mjs
-# in this repository
+node packages/dead-end-dash/build-server.mjs /path/to/dead-end-dash-checkout
+```
+
+That writes ignored `dist/dead-end-dash-server/`: the game's relay, an entry
+point and admission policy that belong to this package, the WebSocket package
+the root lockfile records, a `Dockerfile` and a record of every file. It
+builds no image and deploys nothing. What the service admits, its limits, how
+it would be deployed and how parties are then switched on are in
+[`server/README.md`](server/README.md). **Nobody has deployed it.** Until
+someone with release permission does, and commits the service's address to
+`src/network-config.js`, parties stay off.
+
+For local evaluation, run the built relay on a loopback port and bridge it
+onto the title's origin:
+
+```sh
+TITLE_ORIGINS=http://127.0.0.1:8787 PORT=8787 HOST=127.0.0.1 \
+  node dist/dead-end-dash-server/index.mjs
+# in another terminal
 AKERU_DEAD_END_DASH_RELAY_PORT=8787 node packages/dead-end-dash/preview.mjs
 ```
 
 With that variable set, the preview serves a `network-config.js` that points
 the title at its own origin and bridges `/ws` there with the creator
 preview's `local-network.mjs`, which accepts only upgrades from that title's
-origin and forwards them to the named loopback port. The relay forwards small
-keyed values between up to eight players in a room; it holds no accounts. A
-party shares each player's chosen name, colour and what their dasher does in
-the maze. This is not a public multiplayer deployment or a Backbone friends
-integration.
+origin and forwards them to the named loopback port. A party code is six
+letters. A party shares each player's chosen name, colour and what their
+dasher does in the maze; there are no accounts and nothing is stored. This is
+not a Backbone friends integration, and party codes are an invitation, not a
+secret: anyone who has one can join until the party is full.
 
 ## Validation
 
 ```sh
 npm run check
 npx playwright test tests/browser/dead-end-dash.spec.mjs
-AKERU_DEAD_END_DASH_RELAY_PORT=8787 \
-  npx playwright test tests/browser/dead-end-dash.spec.mjs
 ```
 
-`tests/dead-end-dash.test.mjs` runs everywhere, without the game's source. It
-covers the input mapping and its bounds, malformed payloads, held-input and
-carry-over rules, each check of the message gate on its own, the save codec
-and conflict handling, the pill actions and sound states, and the recipe
+Two unit test files run everywhere, without the game's source.
+`tests/dead-end-dash.test.mjs` covers the input mapping and its bounds,
+malformed payloads, held-input and carry-over rules, each check of the message
+gate on its own, the save codec and conflict handling, the pill actions and
+sound states, the party address the title will accept, and the title recipe
 against a stand-in checkout: a good build, its manifest and rights fields, and
 refusals for the wrong commit, repository or bytes, replacement objects,
 commands configured in the checkout, links, outside imports and stylesheets
-that fetch. One further test inspects the real build when it is present.
+that fetch. `tests/dead-end-dash-server.test.mjs` covers the relay's admission
+policy, the relay recipe against the same stand-in (a good build with every
+file recorded, and refusals for the wrong commit, repository, bytes or `ws`
+version, a relay that imports anything else, and uncommitted edits), and the
+built entry point running around a stand-in relay: the health check, no file
+served, every refused origin and path, the limits it passes on, a clean stop.
+Further tests in both files inspect the real builds when they are present:
+the title bundle, and the real relay with two guests forming a party, a
+stranger's attempts, an oversized message, a restart and per-address counting.
 
 The browser spec runs the built title in the local catalog shell: controller
 menus and a solo dash, both menus, controller loss, a forged message, saves
 across a reload, the Backbone pill and bridge, parties reported as off, an
-unreadable save, a launch outside the shell, the touch overlay and, with the
-relay bridged, a two-player party. It skips when the title has not been built;
-a skip is not gameplay validation.
+unreadable save, a launch outside the shell, the touch overlay and, when the
+relay has been built too, a two-player party through it that survives the
+relay being stopped and started again. It skips when the title has not been
+built; a skip is not gameplay validation.
 
 The controller in these tests is a simulated standard gamepad and the pill is
 a simulated app bridge, in Chromium. A physical Backbone, Bluetooth
