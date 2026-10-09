@@ -36,6 +36,7 @@ test('kart launches at phone width, drives, and pauses without stuck throttle', 
   await page.goto(demo.url + '/play/old-san-juan-kart');
   const frame = page.frameLocator('iframe');
   await expect(frame.locator('#race')).toBeVisible({ timeout: 90000 });
+  await expect(page.locator('#runtime-overlay')).toBeHidden();
   await setGamepadButton(page, 0, 1);
   const game = page.frames().find((f) => f !== page.mainFrame());
   await expect
@@ -76,13 +77,18 @@ test('kart launches at phone width, drives, and pauses without stuck throttle', 
   );
   await page.waitForTimeout(100);
   expect(await game.evaluate(() => window.akeruKart.controls.throttle)).toBe(0);
-  await page.locator('#player-menu').click();
+  // Check reconnect while paused: controller availability must still update,
+  // and software WebGL need not render eight karts for these DOM assertions.
   await expect(frame.locator('#touch')).toBeHidden();
   await page.evaluate(() => window.__akeruTestGamepad.connect(false));
   await expect(frame.locator('#touch')).toBeVisible();
   await page.evaluate(() => window.__akeruTestGamepad.connect(true));
   await expect(frame.locator('#touch')).toBeHidden();
-  // Stop gameplay through the host before software-GPU screenshot readback.
+  // Resume through the real host, then stop before screenshot readback.
+  await page.locator('#player-menu').click();
+  await expect
+    .poll(() => game.evaluate(() => window.akeruKart.active()))
+    .toBe(true);
   await page.locator('#player-menu').click();
   await expect
     .poll(() => game.evaluate(() => window.akeruKart.active()))

@@ -1,6 +1,6 @@
-FROM node:24.19.0-bookworm-slim
+FROM node:24.21.0-bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
-RUN npm install --global npm@11.17.0
+RUN npm install --global npm@11.21.0
 WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
 COPY packages ./packages
