@@ -9,7 +9,7 @@ platform license does not relicense third-party code or assets.
 
 ## Development
 
-Use Node.js **24.19.0** and npm **11.17.0** (also recorded in `.node-version`
+Use Node.js **24.21.0** and npm **11.21.0** (also recorded in `.node-version`
 and `package.json`). From a clean checkout:
 
 ```sh

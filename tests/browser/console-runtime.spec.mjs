@@ -115,6 +115,7 @@ test('guide exit and quick switch leave through the existing /g/:id URLs', async
       .frameLocator('iframe[title="Orbit study isolated runtime"]')
       .getByRole('status', { name: 'Game status' }),
   ).toHaveText('Ready when you are.');
+  await expect(page.locator('#runtime-overlay')).toBeHidden();
   await page.getByRole('button', { name: 'Pause', exact: true }).click();
   await page
     .getByRole('group', { name: 'Game menu' })

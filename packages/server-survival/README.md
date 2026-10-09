@@ -9,3 +9,5 @@ All five unknown-provenance audio assets and promotional art are excluded. Audio
 Controller: move the pointer with D-pad/stick, press A to click, hold A and move to drag connections, B to go back. Original mouse, keyboard and touch handling remains available. Pause releases drag state and pauses upstream simulation; resize clamps the pointer.
 
 Repository MIT declarations do not constitute publication approval. Metadata retains unknown rights/pending publication. This build does not publish or register a production game.
+
+The utility stylesheet is compiled with pinned Tailwind 4.3.3. Explicit source directives scan only this title’s generated HTML/JavaScript, including ignored build output. The CLI watcher is pinned to 2.6.0 through the root override to avoid the vulnerable braces dependency; builds do not use watch mode.
