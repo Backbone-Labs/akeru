@@ -32,9 +32,10 @@
       this.net.send({type:C.SEATS, seats:this.seats.map((seat,n)=>({...seat,char:n===0?i:seat.char}))});
     }));
     if(host) {
-      rows.append(optionRow('FILL EMPTY SPOTS', ['BOTS','NO BOTS'], s.bots===false?1:0, i=>this.net.send({type:C.SETTINGS,...s,bots:i===0})),
+      rows.append(optionRow('FIELD SIZE', ['STANDARD','LARGE'], s.fieldSize==='large'?1:0, i=>this.net.send({type:C.SETTINGS,...s,fieldSize:i===1?'large':'standard'})),
+        optionRow('FILL EMPTY SPOTS', ['BOTS','NO BOTS'], s.bots===false?1:0, i=>this.net.send({type:C.SETTINGS,...s,bots:i===0})),
         optionRow('MATCH LENGTH', MINUTES.map(m=>`${m} MIN`), Math.max(0, MINUTES.indexOf(s.minutes)), i=>this.net.send({type:C.SETTINGS,...s,minutes:MINUTES[i]})));
-    } else { const info=document.createElement('p'); info.className='note'; info.textContent=`${s.minutes} min · ${s.bots===false?'No bots':'Bots fill empty spots'}`; rows.append(info); }
+    } else { const info=document.createElement('p'); info.className='note'; info.textContent=`${s.fieldSize==='large'?'Large':'Standard'} field · ${s.minutes} min · ${s.bots===false?'No bots':'Bots fill empty spots'}`; rows.append(info); }
     if(s.bots===false) { const note=document.createElement('small'); note.className='note'; note.textContent='Players only, including open goals. Tied matches end in a draw.'; rows.append(note); }
     const btns = el.querySelector('.row-btns'); btns.replaceChildren();
     if(host) btns.append(this._btn('START MATCH', ()=>this.net.send({type:C.START}), 'primary'));

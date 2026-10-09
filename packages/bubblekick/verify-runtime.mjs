@@ -226,7 +226,7 @@ server.on('upgrade', (r, s, h) =>
 );
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
 const clients = [];
-async function connect(name) {
+async function connect(name, fieldSizes = true) {
   const ws = new WebSocket(`ws://127.0.0.1:${server.address().port}/ws`);
   const msgs = [];
   ws.on('message', (d) => msgs.push(JSON.parse(d)));
@@ -240,7 +240,7 @@ async function connect(name) {
     }
     throw Error('Timeout ' + type);
   };
-  send({ type: 'hello', v: 1, name });
+  send({ type: 'hello', v: 1, name, fieldSizes });
   await wait('welcome');
   const c = { ws, msgs, send, wait };
   clients.push(c);
@@ -255,10 +255,10 @@ try {
   await b.wait('room');
   a.send({ type: 'seats', seats: [{ team: 0, char: 0 }] });
   b.send({ type: 'seats', seats: [{ team: 1, char: 1 }] });
-  a.send({ type: 'settings', bots: false, minutes: 1 });
+  a.send({ type: 'settings', bots: false, minutes: 1, fieldSize: 'large' });
   await new Promise((r) => setTimeout(r, 100));
   // Non-host cannot start or change the bot policy.
-  b.send({ type: 'settings', bots: true });
+  b.send({ type: 'settings', bots: true, fieldSize: 'standard' });
   b.send({ type: 'start' });
   await new Promise((r) => setTimeout(r, 100));
   assert(!a.msgs.some((m) => m.type === 'start'));
@@ -268,17 +268,25 @@ try {
     seats: Array.from({ length: 4 }, () => ({ team: 0, char: 0 })),
   });
   assert.equal((await b.wait('error')).code, 'team_full');
+  const legacy = await connect('Old tab', false);
+  legacy.send({ type: 'join', code: room.code });
+  assert.equal((await legacy.wait('error')).code, 'update');
+  legacy.send({ type: 'create' });
+  await legacy.wait('room');
+  legacy.send({ type: 'settings', fieldSize: 'large' });
+  assert.equal((await legacy.wait('error')).code, 'update');
   a.send({ type: 'start' });
   const start = await a.wait('start');
   assert.equal(start.settings.bots, false);
-  await b.wait('start');
+  assert.equal(start.settings.fieldSize, 'large');
+  assert.equal((await b.wait('start')).settings.fieldSize, 'large');
   a.send({ type: 'in', s: 7, i: [[0, 127, 0, 0]] });
   let snap;
   do {
     snap = await a.wait('snap');
   } while (snap.ack !== 7);
   assert.equal(snap.movement.length, 10);
-  b.send({ type: 'settings', bots: true });
+  b.send({ type: 'settings', bots: true, fieldSize: 'standard' });
   await new Promise((r) => setTimeout(r, 60));
   assert.equal(start.settings.bots, false);
   console.log(

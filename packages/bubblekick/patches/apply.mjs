@@ -1,3 +1,4 @@
+import { patchFieldSize } from './field-size.mjs';
 import { readFileSync } from 'node:fs';
 const file = (name) => readFileSync(new URL(name, import.meta.url), 'utf8');
 export function patchBubblekick(path, source) {
@@ -206,7 +207,7 @@ export function patchBubblekick(path, source) {
     const ev = this.pending;`,
     );
   }
-  return code;
+  return patchFieldSize(path, code);
 }
 
 export function patchOnlineServer(code) {
@@ -214,6 +215,22 @@ export function patchOnlineServer(code) {
     if (!code.includes(from)) throw Error('Server patch mismatch: ' + from);
     code = code.replace(from, to);
   };
+  replace(
+    '      client.name = sanitizeName(msg.name);',
+    '      client.fieldSizes = msg.fieldSizes === true;\n      client.name = sanitizeName(msg.name);',
+  );
+  replace(
+    '      client.room.settings = sanitizeSettings(msg);',
+    `      if(msg.fieldSize === 'large' && [...client.room.members.values()].some(m=>!m.fieldSizes))
+        return send(client.ws,{type:S.ERROR,code:'update',message:'Everyone must close and reopen Bubble Kick before choosing a large field.'});
+      client.room.settings = sanitizeSettings(msg);`,
+  );
+  replace(
+    '      if (room.members.size >= MAX_HUMANS)',
+    `      if(room.settings.fieldSize === 'large' && !client.fieldSizes)
+        return send(client.ws,{type:S.ERROR,code:'update',message:'Close and reopen Bubble Kick to join this large-field room.'});
+      if (room.members.size >= MAX_HUMANS)`,
+  );
   replace(
     '      client.seats = seats;',
     `      const all=[...client.room.members.values()].filter(m=>m.id!==client.id).flatMap(m=>m.seats).concat(seats);

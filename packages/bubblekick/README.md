@@ -70,3 +70,18 @@ joining, team capacity and host-only controls. This uses only a loopback server.
 The player-following broadcast camera uses smooth tracking, bounded ball lead and
 a closer view of the surrounding pitch and stands. The root check covers player
 and nearby touchline visibility at phone/tablet/desktop sizes.
+
+### Field size
+
+Choose **Standard** (60 × 38 game units) or **Large** (80 × 50) under local
+Match Rules or the online host's lobby settings. Guests see the host's choice.
+The local preference is saved and rematches retain it. Each match owns immutable
+field dimensions: collision boundaries, goals, AI, formations, stadium geometry,
+minimap and camera tracking use that match's field. Player speed and goal size
+stay unchanged. Older open tabs can still play Standard; Large rooms ask those
+players to reopen the updated title before joining.
+
+After building, `node packages/bubblekick/verify-field-size.mjs` checks both
+runtimes and interleaved rooms. `npx playwright test
+ tests/browser/bubblekick-field-size.spec.mjs` exercises the local field selector,
+rendered stadium, rematch, size changes and host/guest lobby presentation.

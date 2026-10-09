@@ -7,6 +7,7 @@ export function followCamera(state, localHumans, aspect) {
     .map((id) => state.players[state.humans[id]?.player])
     .filter((p) => p && p.active !== false);
   const ball = state.ball;
+  const field = state.field || { halfLength: 30, halfWidth: 19 };
   const count = players.length || 1;
   const focus = players.length
     ? players.reduce(
@@ -23,10 +24,14 @@ export function followCamera(state, localHumans, aspect) {
     focus.x +
       clamp((ball.x - focus.x) * 0.15, -3, 3) +
       clamp(focus.vx * 0.15, -1.5, 1.5),
-    -26,
-    26,
+    -field.halfLength + 4,
+    field.halfLength - 4,
   );
-  const z = clamp(focus.z + clamp((ball.z - focus.z) * 0.12, -2, 2), -18, 18);
+  const z = clamp(
+    focus.z + clamp((ball.z - focus.z) * 0.12, -2, 2),
+    -field.halfWidth + 1,
+    field.halfWidth - 1,
+  );
   const spread = players.reduce(
     (n, p) => Math.max(n, Math.hypot(p.x - focus.x, p.z - focus.z)),
     0,

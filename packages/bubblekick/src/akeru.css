@@ -17,3 +17,55 @@
     sans-serif;
   pointer-events: none;
 }
+
+/* Match rules must leave the footer and kickoff action usable on landscape phones. */
+.screen-options:has(> .helpbar) {
+  justify-content: flex-start;
+  padding-top: max(8px, env(safe-area-inset-top));
+  gap: 10px;
+}
+.screen-options .panel {
+  min-height: 0;
+  overflow-y: auto;
+  flex-shrink: 1;
+  touch-action: pan-y;
+}
+.screen-options .rows,
+.screen-options .row-btns {
+  flex-shrink: 0;
+}
+@media (max-height: 500px) and (min-width: 600px) {
+  .screen-options .ribbon span {
+    font-size: 24px;
+    padding: 4px 20px;
+  }
+  .screen-options .panel {
+    width: min(780px, 94vw);
+    padding: 12px 20px;
+    gap: 10px;
+  }
+  .screen-options .rows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .screen-options .opt {
+    min-height: 44px;
+    padding: 6px 12px;
+  }
+  .screen-options .opt-label {
+    font-size: 11px;
+  }
+  .screen-options .opt-val {
+    font-size: 13px;
+    gap: 8px;
+  }
+  .screen-options .opt.focus::after {
+    display: none;
+  }
+  .screen-options .row-btns .btn {
+    min-height: 44px;
+    padding: 8px 20px;
+    font-size: 18px;
+  }
+}
