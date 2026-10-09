@@ -93,6 +93,21 @@ export function patchBubblekick(path, source) {
     }\n`;
   }
   if (path === 'shared/sim/actions.js') {
+    code += '\n' + file('pass-flight.mjs');
+    replace(
+      '  const speed = Math.max(11, Math.min(26, dist0 * 1.3 + 8)) * (lob ? 0.78 : 1);\n  const lead = (dist0 / speed) * 0.85;',
+      `  const tuning = {lob,groundFriction:BALL.groundFriction,airDrag:BALL.airDrag,gravity:BALL.gravity};
+  const lead = passFlight({...tuning,distance:Math.max(0,dist0-DRIBBLE_DIST)}).duration * 1.12;`,
+    );
+    replace(
+      '  b.vx = dx * speed;\n  b.vz = dz * speed;\n  b.vy = lob ? 7.5 : 0;',
+      `  const flight=passFlight({...tuning,distance:Math.max(0,Math.hypot(tx-p.x,tz-p.z)-DRIBBLE_DIST)});
+  b.y = BALL.radius;
+  b.vx = dx * flight.speed;
+  b.vz = dz * flight.speed;
+  b.vy = flight.verticalSpeed;`,
+    );
+
     replace(
       'return world.players.slice(team * 5, team * 5 + 5);',
       'return world.players.slice(team * 5, team * 5 + 5).filter(p=>p.active !== false);',

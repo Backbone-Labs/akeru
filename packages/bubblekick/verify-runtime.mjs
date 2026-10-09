@@ -13,6 +13,84 @@ import {
 } from '../../dist/bubblekick-server/shared/protocol.js';
 import { OnlineSession } from '../../dist/bubblekick/game--sessions.js';
 import { attachGameServer } from '../../dist/bubblekick-server/server/net.js';
+// Exercise the real patched simulation, not only the flight-time calculation.
+const serverActions =
+  await import('../../dist/bubblekick-server/shared/sim/actions.js');
+const clientWorld = await import('../../dist/bubblekick/shared--sim--world.js');
+const clientActions =
+  await import('../../dist/bubblekick/shared--sim--actions.js');
+for (const [create, tick, actions] of [
+  [createWorld, step, serverActions],
+  [clientWorld.createWorld, clientWorld.step, clientActions],
+]) {
+  for (const distance of [6, 18, 30, 50]) {
+    const w = create({
+      seed: 8,
+      settings: { bots: false },
+      humans: [
+        { team: 0, char: 0 },
+        { team: 0, char: 1 },
+        { team: 1, char: 0 },
+      ],
+    });
+    w.phase = 'play';
+    w.pt = 0;
+    const passer = w.players[w.humans[0].player],
+      receiver = w.players[w.humans[1].player];
+    Object.assign(passer, { x: -25, z: -7, vx: 0, vz: 0, fx: 1, fz: 0 });
+    Object.assign(receiver, { x: -25 + distance, z: -7, vx: 0, vz: 0 });
+    Object.assign(w.players[w.humans[2].player], { x: 0, z: 15 });
+    Object.assign(w.ball, {
+      owner: passer.id,
+      x: -23.5,
+      y: 0.48,
+      z: -7,
+      vx: 0,
+      vy: 0,
+      vz: 0,
+    });
+    assert(actions.doPass(w, passer, 1, 0, false, receiver.id));
+    let ticks = 0;
+    while (w.ball.owner !== receiver.id && ticks++ < 60)
+      tick(
+        w,
+        w.humans.map(() => ({ mx: 0, mz: 0, bits: 0 })),
+      );
+    assert.equal(
+      w.ball.owner,
+      receiver.id,
+      `pass did not reach receiver at ${distance}`,
+    );
+    assert(ticks < 60, `pass too slow at ${distance}`);
+  }
+}
+// Moving receivers are led; defenders can still block the pass.
+for (const blocked of [false, true]) {
+  const w = createWorld({
+    settings: { bots: false },
+    humans: [{ team: 0 }, { team: 0 }, { team: 1 }],
+  });
+  w.phase = 'play';
+  const a = w.players[3],
+    b = w.players[4],
+    defender = w.players[8];
+  Object.assign(a, { x: -25, z: -8, fx: 1, fz: 0 });
+  Object.assign(b, { x: 5, z: -8, vz: blocked ? 0 : 8 });
+  Object.assign(defender, { x: -10, z: blocked ? -8 : 15 });
+  Object.assign(w.ball, { owner: 3, x: -23.5, y: 0.48, z: -8 });
+  serverActions.doPass(w, a, 1, 0, false, 4);
+  let intercepted = false;
+  for (let i = 0; i < 60; i++) {
+    step(w, [{}, { mx: 0, mz: blocked ? 0 : 1, bits: 0 }, {}]);
+    if (w.ball.lastTouch === 8) intercepted = true;
+    if (w.ball.owner === 4) break;
+  }
+  if (blocked) assert(intercepted, 'pass must not bypass a defender');
+  else assert.equal(w.ball.owner, 4, 'moving teammate should receive the pass');
+}
+console.log(
+  'PASS short/medium/long passes reach their receiver in under one second in client and server simulation',
+);
 const humans = [
   { team: 0, char: 0 },
   { team: 1, char: 1 },
