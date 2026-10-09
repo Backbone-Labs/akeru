@@ -1,0 +1,10 @@
+{
+  "name": "@akeru/identity",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": { "types": "./src/index.d.ts", "import": "./src/index.js" }
+  }
+}
