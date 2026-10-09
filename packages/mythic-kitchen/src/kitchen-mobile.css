@@ -484,7 +484,7 @@
 @media (min-width: 600px) {
   .kitchen-guide {
     bottom: var(--kitchen-bottom);
-    left: 180px;
+    left: clamp(180px, 16vw, 240px);
     right: 112px;
     width: auto;
     transform: none;

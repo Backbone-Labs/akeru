@@ -12,7 +12,13 @@ export function createLocalNetwork(port) {
       socket.end('HTTP/1.1 403 Forbidden\r\n\r\n');
       return;
     }
-    const headers = { Connection: 'Upgrade', Upgrade: 'websocket' };
+    // The local proxy authenticates the incoming title origin above. Its fixed
+    // loopback origin lets the bounded game server admit this development hop.
+    const headers = {
+      Connection: 'Upgrade',
+      Upgrade: 'websocket',
+      Origin: `http://127.0.0.1:${port}`,
+    };
     for (const key of ['sec-websocket-key', 'sec-websocket-version'])
       if (req.headers[key]) headers[key] = req.headers[key];
     const upstream = request({

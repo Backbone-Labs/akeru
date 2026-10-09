@@ -1,4 +1,7 @@
 import test from 'node:test';
+import { createServer } from 'node:http';
+import { once } from 'node:events';
+import { WebSocket, WebSocketServer } from 'ws';
 import assert from 'node:assert/strict';
 import {
   createStorage,
@@ -202,3 +205,39 @@ test(
     }
   },
 );
+
+// Exercise the same origin admission used by the bounded Kitchen runtime.
+test('local lobby proxy supplies its fixed loopback origin to the server', async () => {
+  const upstream = createServer();
+  const sockets = new WebSocketServer({ noServer: true });
+  upstream.listen(0, '127.0.0.1');
+  await once(upstream, 'listening');
+  const port = upstream.address().port;
+  upstream.on('upgrade', (req, socket, head) => {
+    if (req.headers.origin !== `http://127.0.0.1:${port}`) {
+      socket.end('HTTP/1.1 403 Forbidden\r\n\r\n');
+      return;
+    }
+    sockets.handleUpgrade(req, socket, head, (peer) => peer.send('admitted'));
+  });
+  const shell = createServer();
+  shell.on('upgrade', createLocalNetwork(port));
+  shell.listen(0, '127.0.0.1');
+  await once(shell, 'listening');
+  const origin = `http://127.0.0.1:${shell.address().port}`;
+  const client = new WebSocket(origin.replace('http:', 'ws:') + '/ws', {
+    origin,
+  });
+  try {
+    const [message] = await once(client, 'message');
+    assert.equal(message.toString(), 'admitted');
+  } finally {
+    client.terminate();
+    for (const peer of sockets.clients) peer.terminate();
+    await Promise.all([
+      new Promise((resolve) => sockets.close(resolve)),
+      new Promise((resolve) => shell.close(resolve)),
+      new Promise((resolve) => upstream.close(resolve)),
+    ]);
+  }
+});
