@@ -283,18 +283,17 @@ export async function packageMultiplayerPreview({
   const options = [kartOptions({ multiplayer: true }), blacklineOptions()];
   const demo = await startCatalogDemo({ titles: options });
   try {
-    const fresh = await (await fetch(demo.url + '/catalog.json')).json();
+    const fresh = demo.catalog;
     const titleRecords = [];
     for (const [index, entry] of fresh.entries.entries()) {
       const id = entry.manifest.id,
         dir = resolve(out, 'titles', id);
       if (!MULTIPLAYER_TITLES.includes(id)) throw Error('Unexpected title');
       for (const artifact of entry.manifest.artifacts) {
-        const response = await fetch(
-          `${entry.release.origin}/releases/${entry.release.digest}/${artifact.path}`,
-        );
-        if (!response.ok) throw Error(`Missing ${id} artifact`);
-        const bytes = Buffer.from(await response.arrayBuffer());
+        // Use the verified build bytes already passed to the local host. No
+        // network response can supply executable files for the release.
+        const bytes = options[index].titleFiles[artifact.path];
+        if (!bytes) throw Error(`Missing ${id} artifact`);
         if (hash(bytes) !== artifact.sha256)
           throw Error(`Artifact mismatch: ${id}/${artifact.path}`);
         put(dir, `releases/${entry.release.digest}/${artifact.path}`, bytes);

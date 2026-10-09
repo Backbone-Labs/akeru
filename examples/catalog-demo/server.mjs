@@ -355,6 +355,8 @@ export async function startCatalogDemo(options = {}) {
   return {
     url: shellOrigin,
     titleOrigin,
+    // Packaging consumes trusted local build metadata, not an HTTP response.
+    catalog: structuredClone({ schemaVersion: '0.1.0', mode: 'demo', entries }),
     setAvailability(next) {
       if (!['available', 'paused', 'unpublished'].includes(next))
         throw new Error('Invalid fixture state');

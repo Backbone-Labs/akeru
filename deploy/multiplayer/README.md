@@ -13,7 +13,7 @@ docker run --rm -p 8080:8080 -e SHELL_ORIGINS=https://backbone-akeru.vercel.app 
 
 `GET /health` should return `200 ok`. Matchmaking and WebSocket upgrades reject unlisted shell origins. No-origin clients are denied in the deployed CLI entry point; the `allowHeadless` option exists only for explicit local tests.
 
-The multi-stage image installs exact dependencies from the root lockfile and verifies pinned upstream source hashes. `stage-runtime.mjs` copies only the installed, integrity-locked runtime dependency closure and server artifacts, retaining upstream notices. It writes `runtime-lock-evidence.json`; it never resolves a second dependency tree. The runtime runs as the unprivileged Node user and contains no host credentials, browser assets or source checkout.
+The multi-stage image installs exact dependencies from the root lockfile and verifies pinned upstream source hashes. `stage-runtime.mjs` copies only the installed, integrity-locked runtime dependency closure and server artifacts, retaining upstream notices. With no argument it stages into the fixed `dist/multiplayer-runtime` directory; `/runtime` is the only accepted argument for the container build. It writes `runtime-lock-evidence.json`; it never resolves a second dependency tree. The runtime runs as the unprivileged Node user and contains no host credentials, browser assets or source checkout.
 
 Run `npm run check` and `node --test tests/multiplayer-combined.test.mjs` before publishing the image. The smoke test exercises both room types on the same endpoint, origin rejection, incompatible/cross-title builds, guest joining and independent starts.
 

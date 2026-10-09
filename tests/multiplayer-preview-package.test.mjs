@@ -1,4 +1,6 @@
 import test from 'node:test';
+import { execFileSync } from 'node:child_process';
+import { startCatalogDemo } from '../examples/catalog-demo/server.mjs';
 import assert from 'node:assert/strict';
 import {
   mkdtempSync,
@@ -135,4 +137,36 @@ test('network and frame origins cannot smuggle credentials, paths, insecure tran
     'https://network.example.com;script-src *',
   ])
     assert.throws(() => httpsOrigin(origin));
+});
+
+test('runtime staging rejects arbitrary CLI output directories before writing', () => {
+  const script = new URL(
+    '../deploy/multiplayer/stage-runtime.mjs',
+    import.meta.url,
+  );
+  for (const output of ['/', '..', '/tmp/other-runtime', 'dist/../outside']) {
+    assert.throws(
+      () =>
+        execFileSync(process.execPath, [script.pathname, output], {
+          stdio: 'pipe',
+        }),
+      (error) =>
+        error.status === 1 &&
+        /Only the container destination/.test(error.stderr.toString()),
+    );
+  }
+});
+test('packaging metadata is a detached snapshot of the locally built catalog', async () => {
+  const demo = await startCatalogDemo();
+  try {
+    const served = await (await fetch(demo.url + '/catalog.json')).json();
+    assert.deepEqual(demo.catalog, served);
+    demo.catalog.entries[0].manifest.title = 'changed';
+    assert.deepEqual(
+      await (await fetch(demo.url + '/catalog.json')).json(),
+      served,
+    );
+  } finally {
+    await demo.close();
+  }
 });

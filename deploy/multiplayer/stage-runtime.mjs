@@ -8,7 +8,18 @@ import {
 } from 'node:fs';
 import { dirname, resolve, posix } from 'node:path';
 const root = resolve(new URL('../..', import.meta.url).pathname);
-const out = resolve(process.argv[2] || '/runtime');
+if (
+  process.argv.length > 3 ||
+  (process.argv[2] && process.argv[2] !== '/runtime')
+)
+  throw Error(
+    'Only the container destination /runtime is accepted; omit it for local staging',
+  );
+// Never turn a command-line path into a write destination.
+const out =
+  process.argv[2] === '/runtime'
+    ? '/runtime'
+    : resolve(root, 'dist/multiplayer-runtime');
 const read = (file) => JSON.parse(readFileSync(resolve(root, file), 'utf8'));
 const lock = read('package-lock.json');
 const manifest = read('deploy/multiplayer/runtime-package.json');
