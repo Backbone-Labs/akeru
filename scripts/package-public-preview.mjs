@@ -148,6 +148,11 @@ try {
     'favicon.svg',
     'backbone-pro.png',
     'style.css',
+    'console-home.css',
+    'console-ui.js',
+    'game-sheet.js',
+    'manrope.ttf',
+    'manrope-OFL.txt',
     'app.js',
     'home.js',
     'onboarding.js',
@@ -218,7 +223,7 @@ try {
     'vercel.json',
     JSON.stringify(
       config(
-        `default-src 'none'; script-src 'self' ; style-src 'self'; img-src 'self' https://backbone.com; connect-src 'self'; frame-src ${origins ? Object.values(origins).join(' ') : "'none'"}; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
+        `default-src 'none'; script-src 'self' ; style-src 'self'; img-src 'self' https://backbone.com; font-src 'self'; connect-src 'self'; frame-src ${origins ? Object.values(origins).join(' ') : "'none'"}; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
         [
           { source: '/games', destination: '/index.html' },
           { source: '/settings', destination: '/index.html' },

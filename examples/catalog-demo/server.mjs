@@ -20,12 +20,13 @@ export async function startCatalogDemo(options = {}) {
   const servers = [];
   let state = 'available',
     shellOrigin;
-  const serve = async (handler) => {
+  const serve = async (handler, port = 0) => {
     const server = createServer(handler);
     servers.push(server);
-    await new Promise((r) =>
-      server.listen(0, options.bindHost ?? '127.0.0.1', r),
-    );
+    await new Promise((resolveListen, rejectListen) => {
+      server.once('error', rejectListen);
+      server.listen(port, options.bindHost ?? '127.0.0.1', resolveListen);
+    });
     return `http://${options.publicHost ?? '127.0.0.1'}:${server.address().port}`;
   };
   const entries = [];
@@ -203,9 +204,16 @@ export async function startCatalogDemo(options = {}) {
       res.setHeader('Content-Type', 'image/png');
       return res.end(previewImages[req.url]);
     }
-    if (req.url === '/backbone-pro.png') {
+    if (['/backbone-pro.png'].includes(req.url)) {
       res.setHeader('Content-Type', 'image/png');
-      return res.end(read('platform/catalog/backbone-pro.png'));
+      return res.end(read(`platform/catalog${req.url}`));
+    }
+    if (req.url === '/manrope.ttf' || req.url === '/manrope-OFL.txt') {
+      res.setHeader(
+        'Content-Type',
+        req.url.endsWith('.ttf') ? 'font/ttf' : 'text/plain',
+      );
+      return res.end(read(`platform/catalog${req.url}`));
     }
     if (req.url === '/favicon.ico') {
       res.writeHead(204);
@@ -277,7 +285,7 @@ export async function startCatalogDemo(options = {}) {
       ['/', '/games', '/settings'].includes(req.url) ||
       /^\/(?:g|play)\/[a-z0-9-]+\/?$/.test(req.url)
         ? 'platform/catalog/index.html'
-        : /^\/(?:favicon\.svg|style\.css|app\.js|home\.js|onboarding\.js|promotions\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js|rumble\.js)$/.test(
+        : /^\/(?:favicon\.svg|style\.css|console-home\.css|console-ui\.js|game-sheet\.js|app\.js|home\.js|onboarding\.js|promotions\.js|controller-model\.js|model\.js|channel\.js|save-channel\.js|rumble\.js)$/.test(
               req.url,
             )
           ? `platform/catalog${req.url}`
@@ -316,7 +324,7 @@ export async function startCatalogDemo(options = {}) {
       res.writeHead(404);
       res.end('Asset unavailable');
     }
-  });
+  }, options.shellPort ?? 0);
   return {
     url: shellOrigin,
     titleOrigin,

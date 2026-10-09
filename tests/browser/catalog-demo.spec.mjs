@@ -28,6 +28,7 @@ test('browses from catalog to detail and launches the isolated original fixture'
   page,
 }) => {
   await page.goto(demo.url + '/games');
+  await page.getByRole('button', { name: 'Discover', exact: true }).click();
   await expect(
     page.getByRole('heading', { name: 'Discover', level: 1 }),
   ).toBeVisible();
@@ -128,6 +129,8 @@ test('persists a per-title controller remap across reload', async ({
   await expect(runtime.getByRole('status', { name: 'Game status' })).toHaveText(
     'Ready when you are.',
   );
+  // The engine can be ready before the opening reveal releases the player UI.
+  await expect(page.locator('#runtime-overlay')).toBeHidden();
   await page.getByRole('button', { name: 'Controls', exact: true }).click();
   await expect(
     page.getByRole('combobox', { name: 'confirm control' }),
@@ -212,7 +215,9 @@ test('renders paused, unpublished, and unknown routes safely', async ({
     page.getByRole('heading', { name: 'This game isn’t available.' }),
   ).toBeVisible();
   await page.goto(demo.url + '/games');
-  await expect(page.getByText('The library is being prepared.')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'The library is being prepared.' }),
+  ).toBeVisible();
 
   await page.evaluate(() =>
     window.catalogPreview.navigate('/outside-the-catalog'),
@@ -227,6 +232,7 @@ test('has no horizontal overflow through the mobile browse, detail, runtime, and
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(demo.url + '/games');
+  await page.getByRole('button', { name: 'Discover', exact: true }).click();
   await expect(
     page.getByRole('heading', { name: 'Discover', level: 1 }),
   ).toBeVisible();

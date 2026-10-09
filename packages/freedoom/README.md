@@ -13,7 +13,7 @@ Clone the original public repositories, then set paths to those checkouts:
 ```sh
 git clone https://github.com/libretro/libretro-prboom.git /tmp/prboom
 git clone https://github.com/freedoom/freedoom.git /tmp/freedoom
-PRBOOM_SOURCE=/tmp/prboom FREEDOOM_SOURCE=/tmp/freedoom DEUTEX=deutex node packages/freedoom/build.mjs
+PRBOOM_SOURCE=/tmp/prboom FREEDOOM_SOURCE=/tmp/freedoom node packages/freedoom/build.mjs
 node packages/freedoom/preview.mjs freedoom1
 ```
 

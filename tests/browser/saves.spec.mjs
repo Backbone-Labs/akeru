@@ -43,6 +43,22 @@ test('restores guest progress after a reload and resets only on confirmation', a
   const exported = JSON.parse(await readFile(await download.path(), 'utf8'));
   expect(exported.titleId).toBe('orbit-study');
   expect(exported.records[0].slot).toBe('position');
+  const sheet = page.getByRole('dialog', { name: 'Orbit study' });
+  await expect(sheet.locator('.sheet-slot')).toHaveCount(1);
+  await expect(sheet.locator('.sheet-slot')).toContainText('Saved position');
+  await sheet.getByRole('button', { name: 'Delete Saved position' }).click();
+  await expect(
+    sheet.getByRole('button', { name: 'Confirm delete Saved position' }),
+  ).toBeVisible();
+  await expect(sheet.locator('.sheet-slot')).toHaveCount(1);
+  await sheet
+    .getByRole('button', { name: 'Confirm delete Saved position' })
+    .click();
+  await expect(page.getByRole('status')).toHaveText(
+    'Saved position deleted from this browser.',
+  );
+  await expect(sheet.locator('.sheet-slot')).toHaveCount(0);
+  await expect(sheet).toContainText('No saves yet.');
   await page.getByRole('button', { name: 'Reset saves', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Confirm reset', exact: true }),

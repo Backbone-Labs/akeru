@@ -27,13 +27,10 @@ test('minimal guest flow is accessible, honest about accounts, and remembered', 
   ).toBeVisible();
   await page.getByRole('button', { name: /Play as a guest/ }).click();
   await expect(dialog).toHaveCount(0);
-  await expect(
-    page.getByRole('heading', { name: 'Discover', level: 1 }),
-  ).toBeVisible();
+  await expect(page.locator('#home-title')).toBeVisible();
+  await expect(page.locator('.bento-feature')).toBeVisible();
   await page.reload();
-  await expect(
-    page.getByRole('heading', { name: 'Discover', level: 1 }),
-  ).toBeVisible();
+  await expect(page.locator('#home-title')).toBeVisible();
   await expect(dialog).toHaveCount(0);
 });
 test('recognizes already connected Backbone, generic reconnection and disconnect', async ({
@@ -116,21 +113,22 @@ test('landing, library and settings stay separate with persistent theme and rema
   await expect(page.locator('.hero')).toHaveCount(0);
   await page.getByRole('link', { name: 'Settings', exact: true }).click();
   await expect(
-    page.getByRole('heading', { name: 'Your setup.' }),
+    page.getByRole('heading', { name: 'Settings', level: 1 }),
   ).toBeVisible();
   const before = await page.locator('html').getAttribute('data-theme');
+  const next = before === 'dark' ? 'light' : 'dark';
   await page
-    .getByRole('button', { name: 'Switch light / dark', exact: true })
+    .getByRole('group', { name: 'Theme' })
+    .getByRole('button', { name: next === 'dark' ? 'Dark' : 'Light' })
     .click();
-  await expect(page.locator('html')).toHaveAttribute(
-    'data-theme',
-    before === 'dark' ? 'light' : 'dark',
-  );
+  await expect(page.locator('html')).toHaveAttribute('data-theme', next);
+  await expect(
+    page
+      .getByRole('group', { name: 'Theme' })
+      .getByRole('button', { name: next === 'dark' ? 'Dark' : 'Light' }),
+  ).toHaveAttribute('aria-pressed', 'true');
   await page.reload();
-  await expect(page.locator('html')).toHaveAttribute(
-    'data-theme',
-    before === 'dark' ? 'light' : 'dark',
-  );
+  await expect(page.locator('html')).toHaveAttribute('data-theme', next);
   await page.getByRole('button', { name: 'Remap controller' }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
 });

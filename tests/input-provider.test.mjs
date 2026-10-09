@@ -89,6 +89,10 @@ function gamepad(index, { buttons = {}, axes = {} } = {}) {
   const buttonIndexes = {
     south: 0,
     east: 1,
+    west: 2,
+    north: 3,
+    leftTrigger: 6,
+    rightTrigger: 7,
     start: 9,
     dpadUp: 12,
     dpadDown: 13,
@@ -441,4 +445,50 @@ test('stopped controls can refresh hotplug state without input or navigation', (
   assert.equal(navigation.length, 0);
   provider.dispose();
   assert.throws(() => provider.refreshControllers(), /disposed/);
+});
+
+test('console shortcuts require fresh edges and do not repeat or leak into gameplay', () => {
+  const pads = [gamepad(0)],
+    clock = { value: 0 },
+    env = environment({ pads, now: clock });
+  const provider = createBrowserInputProvider({
+    titleId: 'catalog',
+    window: env.window,
+    document: env.document,
+    navigator: env.navigator,
+    requestAnimationFrame: env.frames.request,
+    cancelAnimationFrame: env.frames.cancel,
+    now: () => clock.value,
+  });
+  const events = [];
+  provider.subscribeNavigation((event) => events.push(event));
+  provider.start();
+  env.frames.step();
+  for (const [name, action] of [
+    ['leftTrigger', 'previousTab'],
+    ['rightTrigger', 'nextTab'],
+    ['west', 'details'],
+    ['north', 'search'],
+  ]) {
+    pads[0] = gamepad(0, { buttons: { [name]: 1 } });
+    env.frames.step();
+    assert.equal(events.at(-1).type, action);
+    const count = events.length;
+    clock.value += 1000;
+    env.frames.step();
+    assert.equal(events.length, count);
+    pads[0] = gamepad(0);
+    env.frames.step();
+  }
+  const count = events.length;
+  provider.mount({
+    touchRoot: env.document.createElement('div'),
+    controlsRoot: env.document.createElement('div'),
+  });
+  pads[0] = gamepad(0, {
+    buttons: { leftTrigger: 1, rightTrigger: 1, west: 1, north: 1 },
+  });
+  env.frames.step();
+  assert.equal(events.length, count);
+  provider.dispose();
 });

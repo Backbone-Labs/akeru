@@ -31,7 +31,10 @@ are removed from the website bundle. Build recipes are in each package.
    launch from each engine family, guest save restoration, CSP and source links.
 
 This preview targets `https://backbone-akeru.vercel.app`; title CSP only allows
-that shell to embed games. The two new Akeru projects are public as requested;
+that shell to embed games. Keep this production alias and existing `/play/:id`
+paths stable: Retool and Backbone app entries use them directly. Website-only
+releases must preserve the live catalog, title origins and save namespaces.
+The two new Akeru projects are public as requested;
 this does not change deployment protection on other Backbone projects. Public
 preview pages send `noindex, nofollow` to avoid treating this evaluation as a
 search-indexed launch. No passwords, API tokens or backend service bindings are
