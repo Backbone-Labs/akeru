@@ -153,7 +153,7 @@ writeFileSync(
   JSON.stringify({
     private: true,
     type: 'module',
-    engines: { node: '24.19.0' },
+    engines: { node: '24.21.0' },
     dependencies: { ws: ws.version },
   }),
 );
@@ -163,7 +163,7 @@ writeFileSync(
 );
 writeFileSync(
   new URL('Dockerfile', out),
-  'FROM node:24.19.0-slim\nWORKDIR /app\nCOPY --chown=node:node . .\nUSER node\nENV NODE_ENV=production PORT=8080\nEXPOSE 8080\nCMD ["node", "server/index.js"]\n',
+  'FROM node:24.21.0-slim\nWORKDIR /app\nCOPY --chown=node:node . .\nUSER node\nENV NODE_ENV=production PORT=8080\nEXPOSE 8080\nCMD ["node", "server/index.js"]\n',
 );
 console.log(
   'Prepared private Mythic Kitchen cloud runtime; no deployment performed.',
