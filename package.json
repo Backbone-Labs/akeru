@@ -40,7 +40,7 @@
     "prettier": "3.9.9",
     "tailwindcss": "4.3.3",
     "three": "0.180.0",
-    "three-legacy": "npm:three@0.128.0",
+    "three-legacy": "npm:three@0.186.1",
     "typescript": "7.0.2"
   },
   "overrides": {
