@@ -1,0 +1,48 @@
+/* The page behind the game is the colour of its sand, day or night. */
+:root {
+  color-scheme: light;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #f1ddab;
+  color: #2a1c17;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+#slipface {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #f1ddab;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#akeru-status {
+  position: fixed;
+  z-index: 1;
+  top: max(8px, env(safe-area-inset-top));
+  left: 50%;
+  max-width: min(92vw, 560px);
+  margin: 0;
+  padding: 6px 10px;
+  transform: translateX(-50%);
+  border: 2px solid #2a1c17;
+  background: #f1ddab;
+  font:
+    600 12px/1.35 ui-monospace,
+    'SF Mono',
+    Menlo,
+    Consolas,
+    monospace;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+#akeru-status:empty {
+  display: none;
+}

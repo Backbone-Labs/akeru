@@ -6,6 +6,10 @@ packages. The game implementations remain in their authorized private checkouts;
 only integration recipes and adapters are tracked here. Regular builds/CI do not
 fetch private sources or activate these titles.
 
+Slipface is previewed alongside them and follows the same source rules, but it
+does not use the shared bridge: it has its own adapter and recipe. See
+[its package](../slipface/README.md).
+
 With the root's pinned Node/npm installed, run `npm ci --ignore-scripts`, then:
 
 ```sh
