@@ -20,8 +20,18 @@ export async function startCatalogDemo(options = {}) {
   const servers = [];
   let state = 'available',
     shellOrigin;
-  const serve = async (handler, port = 0) => {
+  const serve = async (handler, port = 0, upgrade = null) => {
     const server = createServer(handler);
+    const upgraded = new Set();
+    if (upgrade)
+      server.on('upgrade', (req, socket, head) => {
+        upgraded.add(socket);
+        socket.once('close', () => upgraded.delete(socket));
+        upgrade(req, socket, head);
+      });
+    server.closeUpgraded = () => {
+      for (const socket of upgraded) socket.destroy();
+    };
     servers.push(server);
     await new Promise((resolveListen, rejectListen) => {
       server.once('error', rejectListen);
@@ -54,49 +64,57 @@ export async function startCatalogDemo(options = {}) {
         ),
       ),
     );
-    titleOrigin = await serve((req, res) => {
-      res.setHeader(
-        'Content-Security-Policy',
-        `default-src 'none'; script-src 'self' ${titleOptions.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self'; media-src 'self'; connect-src ${titleOptions.wasm || titleOptions.assetRequests ? "'self'" : "'none'"}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
-      );
-      res.setHeader(
-        'Permissions-Policy',
-        'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=()',
-      );
-      res.setHeader('Referrer-Policy', 'no-referrer');
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      res.setHeader('Cache-Control', 'no-store');
-      const path = req.url?.slice(`/releases/${digest}/`.length);
-      if (
-        req.method !== 'GET' ||
-        !req.url.startsWith(`/releases/${digest}/`) ||
-        !Object.hasOwn(titleFiles, path)
-      ) {
-        res.writeHead(404);
-        return res.end('Not found');
-      }
-      res.setHeader(
-        'Content-Type',
-        path.endsWith('.png')
-          ? 'image/png'
-          : path.endsWith('.jpg')
-            ? 'image/jpeg'
-            : path.endsWith('.ogg')
-              ? 'audio/ogg'
-              : path.endsWith('.txt')
-                ? 'text/plain'
-                : path.endsWith('.wasm')
-                  ? 'application/wasm'
-                  : path.endsWith('.json')
-                    ? 'application/json'
-                    : path.endsWith('.html')
-                      ? 'text/html'
-                      : path.endsWith('.js')
-                        ? 'text/javascript'
-                        : 'text/css',
-      );
-      res.end(titleFiles[path]);
-    });
+    titleOrigin = await serve(
+      (req, res) => {
+        res.setHeader(
+          'Content-Security-Policy',
+          `default-src 'none'; script-src 'self' ${titleOptions.wasm ? "'wasm-unsafe-eval'" : ''}; style-src 'self'; img-src 'self'; media-src 'self'; connect-src ${titleOptions.wasm || titleOptions.assetRequests ? "'self'" : "'none'"}; frame-ancestors ${shellOrigin}; base-uri 'none'; form-action 'none'; object-src 'none'`,
+        );
+        res.setHeader(
+          'Permissions-Policy',
+          'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=()',
+        );
+        res.setHeader('Referrer-Policy', 'no-referrer');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('Cache-Control', 'no-store');
+        const path = req.url?.slice(`/releases/${digest}/`.length);
+        if (
+          req.method !== 'GET' ||
+          !req.url.startsWith(`/releases/${digest}/`) ||
+          !Object.hasOwn(titleFiles, path)
+        ) {
+          res.writeHead(404);
+          return res.end('Not found');
+        }
+        res.setHeader(
+          'Content-Type',
+          path.endsWith('.glb')
+            ? 'model/gltf-binary'
+            : path.endsWith('.svg')
+              ? 'image/svg+xml'
+              : path.endsWith('.png')
+                ? 'image/png'
+                : path.endsWith('.jpg')
+                  ? 'image/jpeg'
+                  : path.endsWith('.ogg')
+                    ? 'audio/ogg'
+                    : path.endsWith('.txt')
+                      ? 'text/plain'
+                      : path.endsWith('.wasm')
+                        ? 'application/wasm'
+                        : path.endsWith('.json')
+                          ? 'application/json'
+                          : path.endsWith('.html')
+                            ? 'text/html'
+                            : path.endsWith('.js')
+                              ? 'text/javascript'
+                              : 'text/css',
+        );
+        res.end(titleFiles[path]);
+      },
+      0,
+      titleOptions.upgrade,
+    );
     const manifest = titleOptions.manifest
       ? {
           ...titleOptions.manifest,
@@ -347,6 +365,7 @@ export async function startCatalogDemo(options = {}) {
         servers.map(
           (s) =>
             new Promise((r) => {
+              s.closeUpgraded();
               s.closeAllConnections();
               s.close(r);
             }),

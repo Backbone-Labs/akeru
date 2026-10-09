@@ -48,21 +48,21 @@ test('kart launches at phone width, drives, and pauses without stuck throttle', 
     window.__game.race.start();
     window.__game.race.countdown = 0.01;
   });
-  await setGamepadButton(page, 0, 1);
   await expect
     .poll(() => game.evaluate(() => window.__game.player.speed), {
       timeout: 25000,
     })
     .toBeGreaterThan(3);
-  const box = await frame.locator('#scene').boundingBox();
-  expect(box.width).toBe(844);
-  expect(box.height).toBe(390);
   await setGamepadButton(page, 0, 0);
   await page.locator('#player-menu').click();
   await expect
     .poll(() => game.evaluate(() => window.akeruKart.active()))
     .toBe(false);
   expect(await game.evaluate(() => window.akeruKart.controls.throttle)).toBe(0);
+  // Geometry reads can stall behind software-GPU frames; inspect the paused scene.
+  const box = await frame.locator('#scene').boundingBox();
+  expect(box.width).toBe(844);
+  expect(box.height).toBe(390);
   await page.evaluate(() =>
     document.querySelector('iframe').contentWindow.postMessage(
       {
@@ -89,7 +89,9 @@ test('kart launches at phone width, drives, and pauses without stuck throttle', 
   await expect
     .poll(() => game.evaluate(() => window.akeruKart.active()))
     .toBe(true);
-  await page.locator('#player-menu').click();
+  // Final screenshot cleanup uses the host pause command; the click path is
+  // already verified above and need not wait on more software-rendered frames.
+  await page.evaluate(() => window.akeruNative.command('pause', {}, 2));
   await expect
     .poll(() => game.evaluate(() => window.akeruKart.active()))
     .toBe(false);

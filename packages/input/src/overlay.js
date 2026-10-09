@@ -216,12 +216,13 @@ export function createInputUi({
   const observer =
     typeof MutationObserver === 'function'
       ? new MutationObserver(() => {
-          if (touchRoot.hidden) clearTouch();
+          if (touchRoot.hidden || touchRoot.dataset.titleTouch === 'hidden')
+            clearTouch();
         })
       : null;
   observer?.observe(touchRoot, {
     attributes: true,
-    attributeFilter: ['hidden'],
+    attributeFilter: ['hidden', 'data-title-touch'],
   });
   removers.push(() => observer?.disconnect());
   touchRoot.appendChild(touch);
