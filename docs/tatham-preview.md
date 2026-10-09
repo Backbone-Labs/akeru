@@ -9,7 +9,7 @@ individual games from that collection, not Akeru reimplementations.
 
 ## Reproduce
 
-Use the repository’s pinned Node 24.19.0 and npm 11.17.0. Install Emscripten
+Use the repository’s pinned Node 24.21.0 and npm 11.21.0. Install Emscripten
 4.0.15 separately and activate its environment so `emcc` is on `PATH`, then run:
 
 ```sh
