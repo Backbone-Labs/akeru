@@ -64,6 +64,72 @@ for (const [create, tick, actions] of [
     assert(ticks < 60, `pass too slow at ${distance}`);
   }
 }
+// Both runtimes must score with powerful shots without skipping player contacts.
+for (const [create, tick, actions] of [
+  [createWorld, step, serverActions],
+  [clientWorld.createWorld, clientWorld.step, clientActions],
+]) {
+  for (const char of [0, 1, 2, 3, 4, 5])
+    for (const charge of [0, 0.5, 1]) {
+      const w = create({
+        settings: { bots: false },
+        humans: [
+          { team: 0, char },
+          { team: 1, char: 0 },
+        ],
+      });
+      w.phase = 'play';
+      const p = w.players[3],
+        defender = w.players[8];
+      Object.assign(p, { x: 0, z: 0, fx: 1, fz: 0 });
+      Object.assign(defender, { x: 0, z: 15 });
+      Object.assign(w.ball, { owner: 3, x: 1.5, y: 0.48, z: 0 });
+      assert(actions.doShot(w, p, 1, 0, charge, true));
+      const speed = Math.hypot(w.ball.vx, w.ball.vz);
+      assert(speed >= (charge === 0 ? 30 : 40), 'shot lacks punch');
+      let ticks = 0;
+      while (w.phase === 'play' && ticks++ < 180) tick(w, [{}, {}]);
+      assert.equal(
+        w.score[0],
+        1,
+        `shot failed to reach goal: char ${char}, charge ${charge}`,
+      );
+      assert(
+        ticks < (charge === 0 ? 150 : 80),
+        'shot took too long to reach goal',
+      );
+    }
+  const blocked = create({
+    settings: { bots: false },
+    humans: [{ team: 0, char: 2 }, { team: 1 }],
+  });
+  blocked.phase = 'play';
+  Object.assign(blocked.players[3], { x: 0, z: 0 });
+  Object.assign(blocked.players[8], { x: 10, z: 0 });
+  Object.assign(blocked.ball, { owner: 3, x: 1.5, y: 0.48, z: 0 });
+  actions.doShot(blocked, blocked.players[3], 1, 0, 1, true);
+  let touched = false;
+  for (let i = 0; i < 30; i++) {
+    tick(blocked, [{}, {}]);
+    if (blocked.ball.lastTouch === 8) touched = true;
+  }
+  assert(touched, 'powerful shots must not tunnel through defenders');
+  // Holding charges the shot; releasing fires it exactly once.
+  const w = create({ settings: { bots: false }, humans: [{ team: 0 }] });
+  w.phase = 'play';
+  Object.assign(w.players[3], { x: 0, z: 0, fx: 1, fz: 0 });
+  Object.assign(w.ball, { owner: 3, x: 1.5, y: 0.48, z: 0 });
+  for (let i = 0; i < 15; i++) tick(w, [{ mx: 0, mz: 0, bits: 1 }]);
+  assert.equal(w.ball.owner, 3);
+  tick(w, [{ mx: 0, mz: 0, bits: 0 }]);
+  assert.equal(w.ball.owner, -1);
+  assert.equal(w.stats.shots[0], 1);
+  for (let i = 0; i < 5; i++) tick(w, [{}]);
+  assert.equal(w.stats.shots[0], 1);
+}
+console.log(
+  'PASS stronger shots score for all characters/charge levels, respect defenders, and fire once on release in both runtimes',
+);
 // Moving receivers are led; defenders can still block the pass.
 for (const blocked of [false, true]) {
   const w = createWorld({

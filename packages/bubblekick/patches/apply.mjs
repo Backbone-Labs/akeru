@@ -93,6 +93,11 @@ export function patchBubblekick(path, source) {
     }\n`;
   }
   if (path === 'shared/sim/actions.js') {
+    // Stronger taps and charged shots, without increasing lift or changing aim assist.
+    replace(
+      '  const sp = (13 + 19 * charge) * p.pow;',
+      '  const sp = (32 + 32 * charge) * p.pow;',
+    );
     code += '\n' + file('pass-flight.mjs');
     replace(
       '  const speed = Math.max(11, Math.min(26, dist0 * 1.3 + 8)) * (lob ? 0.78 : 1);\n  const lead = (dist0 / speed) * 0.85;',
