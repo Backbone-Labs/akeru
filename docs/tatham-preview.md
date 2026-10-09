@@ -10,16 +10,16 @@ individual games from that collection, not Akeru reimplementations.
 ## Reproduce
 
 Use the repository’s pinned Node 24.19.0 and npm 11.17.0. Install Emscripten
-4.0.15 separately, then run:
+4.0.15 separately and activate its environment so `emcc` is on `PATH`, then run:
 
 ```sh
-AKERU_EMCC=/absolute/path/to/emscripten/emcc node packages/tatham/build.mjs
+node packages/tatham/build.mjs
 npx playwright test tests/browser/tatham-preview.spec.mjs --workers=1
 npm run check
 ```
 
-`AKERU_EMCC` defaults to `/tmp/akeru-emsdk/upstream/emscripten/emcc` for the local
-evaluation workspace. This explicit build downloads the public source; ordinary
+The build uses the installed `emcc` command and copies its SDK license. It does
+not accept an `AKERU_EMCC` executable override. This explicit build downloads the public source; ordinary
 root builds and tests do not acquire third-party content. The immutable revision
 is `ea09098d71db949351437eba1920033d3a08f491`. Every source/header used in the build
 is checked against the inventory’s Git blob identity before compilation. The

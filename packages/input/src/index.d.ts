@@ -5,7 +5,16 @@ export type NavigationEvent =
       readonly type: 'move';
       readonly direction: 'up' | 'down' | 'left' | 'right';
     }
-  | { readonly type: 'activate' | 'back' | 'menu' };
+  | {
+      readonly type:
+        | 'activate'
+        | 'back'
+        | 'menu'
+        | 'previousTab'
+        | 'nextTab'
+        | 'details'
+        | 'search';
+    };
 export interface InputPreferences {
   version: 1;
   deadzone: number;

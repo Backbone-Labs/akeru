@@ -236,7 +236,10 @@ export function createInputUi({
     capture = null,
     neutralSeen = false;
   const stopCapture = () => {
-    if (capture) capture.button.textContent = 'Press to assign';
+    if (capture) {
+      capture.button.textContent = 'Press to assign';
+      capture.button.setAttribute('data-capturing', 'false');
+    }
     capture = null;
     neutralSeen = false;
   };
@@ -435,6 +438,7 @@ export function createInputUi({
           stopCapture();
           if (!cancel) {
             capture = { select, button: assign };
+            assign.setAttribute('data-capturing', 'true');
             assign.textContent = 'Release buttons, then press…';
           }
         });
@@ -513,6 +517,12 @@ export function createInputUi({
     update,
     updateInput(raw, identity) {
       if (!overlay || overlay.hidden) return;
+      if (
+        !capture &&
+        raw &&
+        GAMEPAD_BUTTONS.every((source) => (raw.buttons[source] ?? 0) <= 0.5)
+      )
+        overlay.setAttribute('data-capture-settling', 'false');
       const connected = !!raw;
       const message = connected
         ? /backbone/i.test(identity ?? '')
@@ -537,6 +547,7 @@ export function createInputUi({
           const select = capture.select;
           select.value = pressed[0];
           stopCapture();
+          overlay.setAttribute('data-capture-settling', 'true');
           applySelection(select);
         }
       }
