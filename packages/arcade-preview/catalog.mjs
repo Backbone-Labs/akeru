@@ -6,7 +6,14 @@ export function titleOptions(
   { graphics = 'canvas2d', assetRequests = false, license = 'unknown' } = {},
 ) {
   if (
-    !['hexgl', 'racer', 'astray', 'breaklock', 'old-san-juan-kart'].includes(id)
+    ![
+      'hexgl',
+      'racer',
+      'astray',
+      'breaklock',
+      'old-san-juan-kart',
+      'operation-blackline',
+    ].includes(id)
   )
     throw new Error('Unknown title');
   const titleFiles = readBuiltTitle(

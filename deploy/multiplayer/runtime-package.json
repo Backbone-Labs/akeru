@@ -1,0 +1,15 @@
+{
+  "name": "akeru-multiplayer-runtime",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "24.21.0" },
+  "dependencies": {
+    "@colyseus/core": "0.18.17",
+    "@colyseus/redis-driver": "0.18.4",
+    "@colyseus/redis-presence": "0.18.5",
+    "@colyseus/schema": "5.0.34",
+    "@colyseus/ws-transport": "0.18.4",
+    "three": "0.180.0",
+    "three-blackline": "npm:three@0.169.0"
+  }
+}

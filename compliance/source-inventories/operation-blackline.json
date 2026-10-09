@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "upstreamUrl": "https://github.com/TheFadGhost/operation-blackline",
+  "revision": "8533717e4ebfadcc106d96414389aae314e3cdc2",
+  "scope": "source-tree",
+  "rightsStatus": "unreviewed",
+  "limitation": "Tracked paths only; root MIT license and procedural-asset claims are evidence, not publication approval. External dependencies and generated artifacts require separate validation.",
+  "files": [
+    {
+      "path": ".gitignore",
+      "gitObjectId": "7946992039d9da27eb62885330b8e748cf873cb6",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "CONTRACTS.md",
+      "gitObjectId": "40e7acf5f74e5f7a88719069a7910f381fa72c28",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "LICENSE",
+      "gitObjectId": "cbb536cacca69b5c68d8b0b63ef5640381300e3f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "README.md",
+      "gitObjectId": "4ecbccbc05570f716e273250c7d2a361113c30e0",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "RUBRIC.md",
+      "gitObjectId": "6e5892d3142ed5dae774dac650310570b2259a4b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "docs/screenshots/end.png",
+      "gitObjectId": "43f3d2eb80c91c4ceff1a959c85e729f76d06549",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "docs/screenshots/menu.png",
+      "gitObjectId": "50d6886a28d341e262c791677676e9c214f048bf",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "docs/screenshots/pose1.png",
+      "gitObjectId": "9cedb631273ac255d87d864df1c1ab87a7180816",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "docs/screenshots/pose1_scoreboard.png",
+      "gitObjectId": "3f7a80deb711e5db402560075c3d33cf07923584",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "docs/screenshots/pose3.png",
+      "gitObjectId": "f1e42f5e5dfc392336effed5acf434d3dc3f5258",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "docs/screenshots/pose4.png",
+      "gitObjectId": "1dc1a0199ed9b1174672beb8003acd699130e44b",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "package.json",
+      "gitObjectId": "4e5f7693093b23f00958689da2861dd8f4f0c222",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/css/hud.css",
+      "gitObjectId": "9c258cc4dc25409e048bd7a42169ce7ef1259e48",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/css/menu.css",
+      "gitObjectId": "06704b6aa95f3c9e728248639d56158df95943c6",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/icons/icon-192.png",
+      "gitObjectId": "a9bf2e9c23c816708d75e86fa5c50961dec28957",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/icons/icon-512.png",
+      "gitObjectId": "adc445db369a7b94cb948a768281cfe6c8494431",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/icons/icon-maskable-512.png",
+      "gitObjectId": "003e06ec13e0e7a76eef8e28ed3974f1c166eb07",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/index.html",
+      "gitObjectId": "2c63ca2f73428149ad2d8b9060ee084db1d7dfd7",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/js/audio.js",
+      "gitObjectId": "f7196ecc09a0415a7f40be5f9bf0227fdf3174b7",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/js/characters.js",
+      "gitObjectId": "f14d58416d980d28a0969e66ab8fe07ac8204ac2",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/js/engine.js",
+      "gitObjectId": "e71ae573c97af3a2f1bcdc21075748714966f5a6",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/js/hud.js",
+      "gitObjectId": "4c1826795ca93991a048e881642002338826b0ac",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/js/main.js",
+      "gitObjectId": "079eb1cb04e266475401869553d11d2c07bae65a",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/js/menus.js",
+      "gitObjectId": "266aa0fddd3ea333e6a875d16f160c93bd6015cb",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/js/net.js",
+      "gitObjectId": "8c1239ab681e599bc43d026be6a3b64b09b9b570",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/js/player.js",
+      "gitObjectId": "d001b1b481a8108453feee7d834a79dd9d90309e",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/js/weapons.js",
+      "gitObjectId": "3d04f6d9b10af9b3f281cae30e31972589cee387",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/js/world.js",
+      "gitObjectId": "3c6ff87e1107717fe6d05537eb5133dbd8df0088",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/manifest.webmanifest",
+      "gitObjectId": "e0c80bd101004982ae8ac2fa41f0d7aa8b48466f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "public/sw.js",
+      "gitObjectId": "d5a31724feca5b797372581855a8bbf43212ddc8",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "server/server.js",
+      "gitObjectId": "3040de3e6e1ca429c0571cda39663f2178326989",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "shared/map-spec.json",
+      "gitObjectId": "036df3571a8bd8fe5408f3577edde1cee3c99649",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "tools/genicon.mjs",
+      "gitObjectId": "7503c1ade0a1313d2309fc0477405c4ff622a80f",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    },
+    {
+      "path": "tools/shoot.mjs",
+      "gitObjectId": "d42abfcf30f99cf3c966161037a6b0878e826b38",
+      "mode": "100644",
+      "kind": "file",
+      "rightsStatus": "unreviewed"
+    }
+  ]
+}

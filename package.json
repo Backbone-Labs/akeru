@@ -29,7 +29,11 @@
     "package:catalog": "node scripts/package-catalog.mjs",
     "build:kart-multiplayer": "node packages/old-san-juan-kart/build.mjs && node packages/old-san-juan-kart/multiplayer/build.mjs && node packages/multiplayer/build.mjs",
     "preview:kart-multiplayer": "npm run build:kart-multiplayer && node examples/catalog-demo/multiplayer.mjs",
-    "test:kart-multiplayer": "npm run build:kart-multiplayer && node --test tests/multiplayer*.test.mjs && playwright test tests/browser/kart-multiplayer.spec.mjs tests/browser/old-san-juan-kart.spec.mjs"
+    "test:kart-multiplayer": "npm run build:kart-multiplayer && node --test tests/multiplayer*.test.mjs && playwright test tests/browser/kart-multiplayer.spec.mjs tests/browser/old-san-juan-kart.spec.mjs",
+    "build:blackline-multiplayer": "node packages/operation-blackline/build.mjs && node packages/operation-blackline/multiplayer/build.mjs && node packages/multiplayer/build.mjs",
+    "build:multiplayer": "npm run build:kart-multiplayer && npm run build:blackline-multiplayer",
+    "preview:multiplayer": "npm run build:multiplayer && node examples/catalog-demo/multiplayer-all.mjs",
+    "test:blackline-multiplayer": "npm run build:multiplayer && node --test tests/blackline-multiplayer*.test.mjs && playwright test tests/browser/blackline-*.spec.mjs"
   },
   "devDependencies": {
     "@colyseus/core": "0.18.17",
@@ -48,6 +52,7 @@
     "prettier": "3.9.9",
     "tailwindcss": "4.3.3",
     "three": "0.180.0",
+    "three-blackline": "npm:three@0.169.0",
     "three-legacy": "npm:three@0.128.0",
     "typescript": "7.0.2",
     "@tailwindcss/cli": "4.3.3",
