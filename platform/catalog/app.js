@@ -25,7 +25,7 @@ import {
   titleUrl,
   createShellTelemetry,
 } from './model.js';
-import { createRuntimeChannel } from './channel.js';
+import { createRuntimeChannel, createRuntimeNonce } from './channel.js';
 const $ = (selector) => document.querySelector(selector);
 const node = (tag, className, text) => {
   const e = document.createElement(tag);
@@ -129,6 +129,7 @@ export function mountCatalog({
   onboarding = true,
   controllerModelUrl = null,
   inputProviderFactory,
+  multiplayerServiceFactory,
   telemetrySink,
   acquisitionSink: _acquisitionSink,
   acquisitionConsent: _acquisitionConsent = () => false,
@@ -1047,7 +1048,7 @@ export function mountCatalog({
     );
     frame.setAttribute('referrerpolicy', 'no-referrer');
     frame.setAttribute('allow', 'gamepad; autoplay');
-    const nonce = crypto.randomUUID(),
+    const nonce = createRuntimeNonce(),
       start = performance.now();
     frame.src = `${titleUrl(entry)}#${new URLSearchParams({ nonce, shell: location.origin })}`;
     $('#runtime-stage').prepend(frame);
@@ -1063,6 +1064,7 @@ export function mountCatalog({
       origin: entry.release.origin,
       nonce,
       saveService: savesFor(entry).service,
+      multiplayerService: multiplayerServiceFactory?.(entry),
       onRumble: (effect) => {
         void session.rumble.play(effect);
       },
@@ -1251,7 +1253,13 @@ export function mountCatalog({
     o.replaceChildren(
       node('p', 'eyebrow', 'TAKE YOUR TIME'),
       node('h2', '', 'A little breather.'),
-      node('p', '', 'Your session is paused. Come back when you’re ready.'),
+      node(
+        'p',
+        '',
+        active.entry.manifest.capabilities.includes('multiplayer.rooms.v1')
+          ? 'Your controls are paused. Online races continue.'
+          : 'Your session is paused. Come back when you’re ready.',
+      ),
     );
     const b = node('button', 'primary', 'Keep playing ↗');
     b.onclick = resume;

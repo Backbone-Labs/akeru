@@ -255,10 +255,11 @@
       "items": {
         "enum": [
           "save.local",
-          "save.account-sync"
+          "save.account-sync",
+          "multiplayer.rooms.v1"
         ]
       },
-      "maxItems": 2
+      "maxItems": 3
     },
     "saves": {
       "type": "object",

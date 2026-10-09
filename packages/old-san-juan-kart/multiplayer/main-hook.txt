@@ -1,0 +1,46 @@
+import { Kart as PredictionKart } from '../prediction-kart.js';
+// Prepare models in the lobby so the countdown does not pay their construction cost.
+const onlineModels = new Map();
+globalThis.akeruKart.setupOnline = (players, ownId, prepare = false) => {
+  game.items?.dispose?.();
+  game.items = null;
+  game.drivers = [];
+  for (const k of onlineModels.values()) k.object.visible = false;
+  game.karts = players.map((p, i) => {
+    let k = onlineModels.get(p.slot);
+    if (!k) {
+      k = new Kart(engine.scene, CHARACTERS[p.slot], { isPlayer: p.id === ownId, index: i, name: p.name });
+      onlineModels.set(p.slot, k);
+    }
+    k.networkId = p.id;
+    k.isPlayer = p.id === ownId;
+    k.object.visible = !prepare;
+    return k;
+  });
+  game.player = game.karts.find(k => k.networkId === ownId);
+  if (prepare) return;
+  globalThis.akeruKart.predictionActor = new PredictionKart(null, game.player.character);
+  globalThis.akeruKart.predictionTrack = Object.create(track);
+  globalThis.akeruKart.predictionTrack.clearance = null;
+  game.race = new Race(track, game.karts, { laps: 3 });
+  game.state = 'race';
+  rig._init = false;
+  hud.el.results.classList.add('hidden');
+  hud.showHUD();
+  touch?.show(true);
+  audio.init();
+  audio.resume();
+  audio.setMusicState('race');
+};
+globalThis.akeruKart.exitOnline = () => {
+  game.state = 'menu';
+  hud.el.hud.classList.add('hidden');
+  touch?.show(false);
+  hud.el.results.classList.add('hidden');
+};
+globalThis.akeruKart.clearOnline = () => {
+  for (const k of onlineModels.values()) k.dispose();
+  onlineModels.clear();
+  game.karts = [];
+  game.player = null;
+};

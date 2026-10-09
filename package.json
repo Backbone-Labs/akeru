@@ -26,13 +26,22 @@
     "format": "prettier --write \"**/*.{js,mjs,ts,css,html,yml}\"",
     "typecheck": "tsc -p tsconfig.json",
     "test:browser": "playwright test",
-    "package:catalog": "node scripts/package-catalog.mjs"
+    "package:catalog": "node scripts/package-catalog.mjs",
+    "build:kart-multiplayer": "node packages/old-san-juan-kart/build.mjs && node packages/old-san-juan-kart/multiplayer/build.mjs && node packages/multiplayer/build.mjs",
+    "preview:kart-multiplayer": "npm run build:kart-multiplayer && node examples/catalog-demo/multiplayer.mjs",
+    "test:kart-multiplayer": "npm run build:kart-multiplayer && node --test tests/multiplayer*.test.mjs && playwright test tests/browser/kart-multiplayer.spec.mjs tests/browser/old-san-juan-kart.spec.mjs"
   },
   "devDependencies": {
+    "@colyseus/core": "0.18.17",
+    "@colyseus/redis-driver": "0.18.4",
+    "@colyseus/redis-presence": "0.18.5",
+    "@colyseus/schema": "5.0.34",
+    "@colyseus/sdk": "0.18.4",
+    "@colyseus/ws-transport": "0.18.4",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.63.0",
+    "esbuild": "0.28.2",
     "eslint": "10.12.0",
-    "espree": "11.2.0",
     "fake-indexeddb": "6.2.5",
     "globals": "17.12.0",
     "parse5": "8.0.1",
@@ -41,8 +50,9 @@
     "three": "0.180.0",
     "three-legacy": "npm:three@0.128.0",
     "typescript": "7.0.2",
-    "ws": "8.22.0",
-    "@tailwindcss/cli": "4.3.3"
+    "@tailwindcss/cli": "4.3.3",
+    "espree": "11.2.0",
+    "ws": "8.22.0"
   },
   "overrides": {
     "@tailwindcss/cli": {

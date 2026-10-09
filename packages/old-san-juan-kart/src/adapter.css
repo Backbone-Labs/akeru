@@ -39,3 +39,138 @@ body[data-controller='true'] #touch {
   margin: 10px;
   font: 14px system-ui;
 }
+[hidden] {
+  display: none !important;
+}
+#multiplayer-panel {
+  width: min(580px, 88vw);
+  text-align: left;
+  background: #111925f2;
+  border: 1px solid #ffffff24;
+  border-radius: 22px;
+  padding: 24px;
+  box-sizing: border-box;
+  box-shadow: 0 24px 90px #0008;
+  color: #f4f6fb;
+  font: 15px system-ui;
+}
+#multiplayer-panel h2 {
+  font-size: 32px;
+  letter-spacing: -1px;
+  margin: 8px 0;
+}
+.room-heading span {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #ff9865;
+}
+#akeru-start #multiplayer-panel p {
+  margin: 14px 0;
+  line-height: 1.5;
+}
+#multiplayer-panel button,
+#online-menu {
+  min-height: 44px;
+  border: 1px solid #ffffff2b;
+  border-radius: 10px;
+  padding: 10px 16px;
+  background: #263247;
+  color: white;
+  font: 600 14px system-ui;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+#multiplayer-panel button:active {
+  transform: scale(0.97);
+}
+#multiplayer-panel button:focus-visible,
+#multiplayer-panel input:focus-visible,
+#online-menu:focus-visible {
+  outline: 3px solid #ff8b4b;
+  outline-offset: 3px;
+}
+#multiplayer-panel button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+#create-room,
+#ready-room,
+#start-room {
+  background: #e95824 !important;
+}
+#multiplayer-panel input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  background: #080f1d;
+  color: #fff;
+  border: 1px solid #ffffff30;
+  border-radius: 9px;
+  padding: 10px;
+  font: 15px system-ui;
+  margin: 7px 0;
+}
+.join-row {
+  margin-top: 16px;
+}
+#room-players,
+#race-results {
+  white-space: pre-line;
+}
+.room-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+#multiplayer-panel .room-note {
+  color: #adb8c9;
+  font-size: 12px;
+}
+#online-options {
+  margin-top: 20px;
+}
+body[data-online='true'] #akeru-start {
+  display: contents;
+}
+body[data-online='true'] .solo-only {
+  display: none;
+}
+body[data-online='true'] #multiplayer-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 80;
+  max-height: 90dvh;
+  overflow: auto;
+}
+#online-menu {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 70;
+  background: #111925d9;
+}
+@media (max-height: 550px) {
+  #akeru-start {
+    place-content: start center;
+    padding: 12px;
+  }
+  #multiplayer-panel {
+    padding: 16px;
+  }
+  #multiplayer-panel h2 {
+    font-size: 24px;
+  }
+}
+body[data-online='true'] #itemSlot,
+body[data-online='true'] #btnItem {
+  display: none !important;
+}
+#online-menu {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}

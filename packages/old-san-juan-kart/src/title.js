@@ -1,4 +1,5 @@
 import { connectGame } from './host.js';
+import { installMultiplayer } from './multiplayer.js';
 // Convert pinned upstream presentation attributes through CSSOM, keeping CSP strict.
 new MutationObserver(() => {
   document.querySelectorAll('[data-akeru-style]').forEach((el) => {
@@ -40,7 +41,7 @@ const bridge = (globalThis.akeruKart = {
   },
 });
 function race() {
-  if (!host.active) return;
+  if (!host.active || bridge.online) return;
   if (
     globalThis.__game?.state === 'menu' ||
     globalThis.__game?.state === 'results'
@@ -50,7 +51,9 @@ function race() {
   }
   globalThis.__game?.audio.resume();
 }
+const multiplayer = installMultiplayer(bridge, () => host);
 const host = connectGame({
+  multiplayer: (event) => bridge.receiveMultiplayer(event),
   validate: (v) =>
     v &&
     typeof v === 'object' &&
@@ -82,6 +85,7 @@ const host = connectGame({
     };
   },
   action(action) {
+    if (multiplayer.action(action)) return;
     if (action === 'confirm') race();
   },
   controllerChanged(connected) {
@@ -89,6 +93,7 @@ const host = connectGame({
     if (!connected) bridge.controls = neutral();
   },
   pause(paused) {
+    multiplayer.pause(paused);
     bridge.controls = neutral();
     const game = globalThis.__game;
     game?.input.keys.clear();

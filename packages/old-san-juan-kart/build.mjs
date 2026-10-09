@@ -1,3 +1,4 @@
+import { headlessKart } from './physics-source.mjs';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve, relative, posix } from 'node:path';
 import { beginBuild, replaceRequired, root } from '../arcade-preview/build.mjs';
@@ -55,12 +56,18 @@ for (const entry of b.inventory.files.filter((f) =>
       'globalThis.localStorage',
       'globalThis.akeruKart.storage',
     );
-  if (entry.path === 'src/core/engine.js')
+  if (entry.path === 'src/core/engine.js') {
+    code = replaceRequired(
+      code,
+      '  resize() {',
+      '  resize() {\n    this._menuRendered = false;',
+    );
     code = replaceRequired(
       code,
       'const dt = Math.min(this._clock.getDelta(), 0.1);',
-      'const elapsed = this._clock.getDelta();\n      if (!globalThis.akeruKart.active()) return;\n      const dt = Math.min(elapsed, 0.1);',
+      "if (document.hidden || (globalThis.__game?.state === 'menu' && this._menuRendered)) return;\n      this._menuRendered = globalThis.__game?.state === 'menu';\n      const elapsed = this._clock.getDelta();\n      if (!globalThis.akeruKart.active() && !globalThis.akeruKart.online) return;\n      const dt = Math.min(elapsed, 0.1);",
     );
+  }
   if (entry.path === 'src/main.js') {
     const start = code.indexOf('hud.showTitle(() => {');
     const end = code.indexOf(
@@ -76,6 +83,38 @@ for (const entry of b.inventory.files.filter((f) =>
       startRace(0);
     };\n` +
       code.slice(end);
+  }
+  if (entry.path === 'src/core/input.js') {
+    code = replaceRequired(
+      code,
+      "addEventListener('keydown', (e) => {",
+      "addEventListener('keydown', (e) => {\n      if (e.target?.matches('input,textarea,select')) return;\n      if (globalThis.akeruKart.online && !globalThis.akeruKart.driving()) return;",
+    );
+  }
+  if (entry.path === 'src/main.js') {
+    code = replaceRequired(
+      code,
+      'function fixedUpdate(dt) {',
+      `function fixedUpdate(dt) {
+      if (globalThis.akeruKart.online) {
+        touch?.update(dt); input.update();
+        globalThis.akeruKart.networkTick(dt, input.state);
+        if (game.player) env.update(dt, game.player.position);
+        return;
+      }`,
+    );
+    code = replaceRequired(
+      code,
+      'function frameUpdate(dt) {',
+      `function frameUpdate(dt) {
+      if (globalThis.akeruKart.online) globalThis.akeruKart.networkFrame(dt);`,
+    );
+    code +=
+      '\n' +
+      readFileSync(
+        new URL('./multiplayer/main-hook.txt', import.meta.url),
+        'utf8',
+      );
   }
   code = code.replace(
     /(from\s*|import\s*)['"]([^'"]+)['"]/g,
@@ -93,6 +132,8 @@ for (const entry of b.inventory.files.filter((f) =>
       return `${prefix}'./${name}'`;
     },
   );
+  if (entry.path === 'src/kart/kart.js')
+    b.put('prediction-kart.js', headlessKart(code));
   b.put(flat(entry.path), code);
 }
 b.put('game.css', b.read('src/ui/style.css'));

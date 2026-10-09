@@ -36,31 +36,33 @@ test('kart launches at phone width, drives, and pauses without stuck throttle', 
   await page.goto(demo.url + '/play/old-san-juan-kart');
   const frame = page.frameLocator('iframe');
   await expect(frame.locator('#race')).toBeVisible({ timeout: 90000 });
+  await expect(page.locator('#runtime-overlay')).toBeHidden();
   await setGamepadButton(page, 0, 1);
   const game = page.frames().find((f) => f !== page.mainFrame());
   await expect
-    .poll(() => game.evaluate(() => window.__game.state))
+    // Building the eight-kart field can exceed five seconds in software WebGL.
+    .poll(() => game.evaluate(() => window.__game.state), { timeout: 25000 })
     .toBe('race');
   // Skip only the cinematic countdown in software-rendered CI.
   await game.evaluate(() => {
     window.__game.race.start();
     window.__game.race.countdown = 0.01;
   });
-  await setGamepadButton(page, 0, 1);
   await expect
     .poll(() => game.evaluate(() => window.__game.player.speed), {
       timeout: 25000,
     })
     .toBeGreaterThan(3);
-  const box = await frame.locator('#scene').boundingBox();
-  expect(box.width).toBe(844);
-  expect(box.height).toBe(390);
   await setGamepadButton(page, 0, 0);
   await page.locator('#player-menu').click();
   await expect
     .poll(() => game.evaluate(() => window.akeruKart.active()))
     .toBe(false);
   expect(await game.evaluate(() => window.akeruKart.controls.throttle)).toBe(0);
+  // Geometry reads can stall behind software-GPU frames; inspect the paused scene.
+  const box = await frame.locator('#scene').boundingBox();
+  expect(box.width).toBe(844);
+  expect(box.height).toBe(390);
   await page.evaluate(() =>
     document.querySelector('iframe').contentWindow.postMessage(
       {
@@ -75,12 +77,24 @@ test('kart launches at phone width, drives, and pauses without stuck throttle', 
   );
   await page.waitForTimeout(100);
   expect(await game.evaluate(() => window.akeruKart.controls.throttle)).toBe(0);
-  await page.locator('#player-menu').click();
+  // Check reconnect while paused: controller availability must still update,
+  // and software WebGL need not render eight karts for these DOM assertions.
   await expect(frame.locator('#touch')).toBeHidden();
   await page.evaluate(() => window.__akeruTestGamepad.connect(false));
   await expect(frame.locator('#touch')).toBeVisible();
   await page.evaluate(() => window.__akeruTestGamepad.connect(true));
   await expect(frame.locator('#touch')).toBeHidden();
+  // Resume through the real host, then stop before screenshot readback.
+  await page.locator('#player-menu').click();
+  await expect
+    .poll(() => game.evaluate(() => window.akeruKart.active()))
+    .toBe(true);
+  // Final screenshot cleanup activates the same host button programmatically;
+  // the physical click path above already verifies visibility and hit testing.
+  await page.locator('#player-menu').evaluate((button) => button.click());
+  await expect
+    .poll(() => game.evaluate(() => window.akeruKart.active()))
+    .toBe(false);
   await page.screenshot({ path: 'dist/previews/old-san-juan-kart.png' });
   expect(errors).toEqual([]);
 });
