@@ -159,3 +159,90 @@ test('native Doom menu saves a dated snapshot, restarts without deleting it, and
     await demo.close();
   }
 });
+
+for (const failure of ['decline', 'reject']) {
+  test(`native menu recovers from a temporary ${failure} without leaving two pills`, async ({
+    page,
+  }) => {
+    const demo = await startCatalogDemo();
+    try {
+      await page.addInitScript((failure) => {
+        window.__menuAttempts = 0;
+        window.webkit = {
+          messageHandlers: {
+            akeruPlayer: {
+              postMessage: async ({ action }) => {
+                if (action !== 'menu') return false;
+                window.__menuAttempts++;
+                if (window.__menuAttempts <= 2) {
+                  if (failure === 'reject')
+                    throw new Error('App transitioning');
+                  return false;
+                }
+                return true;
+              },
+            },
+          },
+        };
+      }, failure);
+      await page.goto(demo.url + '/play/orbit-study');
+      await expect(page.locator('#runtime-overlay')).toBeHidden();
+      await expect(page.locator('#player-menu')).toBeVisible();
+      await expect(page.locator('#player-menu')).toBeHidden({ timeout: 10000 });
+      await expect(page.locator('#touch-controls')).toBeHidden();
+      expect(await page.evaluate(() => window.__menuAttempts)).toBe(3);
+      expect(
+        await page.evaluate(() => window.akeruNative.command('pause')),
+      ).toBe('Paused');
+      await page.evaluate(() => {
+        window.dispatchEvent(new Event('focus'));
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+      await page.waitForTimeout(900);
+      expect(await page.evaluate(() => window.__menuAttempts)).toBe(3);
+    } finally {
+      await demo.close();
+    }
+  });
+}
+
+test('native menu retry is bounded and restarts on foreground after bridge recovery', async ({
+  page,
+}) => {
+  test.setTimeout(30000);
+  const demo = await startCatalogDemo();
+  try {
+    await page.addInitScript(() => {
+      window.__menuAttempts = 0;
+      window.__menuReady = false;
+      window.webkit = {
+        messageHandlers: {
+          akeruPlayer: {
+            postMessage: async ({ action }) => {
+              if (action !== 'menu') return false;
+              window.__menuAttempts++;
+              return window.__menuReady;
+            },
+          },
+        },
+      };
+    });
+    await page.goto(demo.url + '/play/orbit-study');
+    await expect
+      .poll(() => page.evaluate(() => window.__menuAttempts), {
+        timeout: 15000,
+      })
+      .toBe(8);
+    await page.waitForTimeout(900);
+    expect(await page.evaluate(() => window.__menuAttempts)).toBe(8);
+    await expect(page.locator('#player-menu')).toBeVisible();
+    await page.evaluate(() => {
+      window.__menuReady = true;
+      window.dispatchEvent(new Event('focus'));
+    });
+    await expect(page.locator('#player-menu')).toBeHidden();
+    expect(await page.evaluate(() => window.__menuAttempts)).toBe(9);
+  } finally {
+    await demo.close();
+  }
+});

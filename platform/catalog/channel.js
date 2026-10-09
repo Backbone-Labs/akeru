@@ -116,6 +116,17 @@ export function createRuntimeChannel({
       received = v.sequence;
       return true;
     }
+    if (v.type === 'touch-overlay') {
+      if (
+        !['playable', 'paused'].includes(state) ||
+        !exact(p, ['visible']) ||
+        typeof p.visible !== 'boolean'
+      )
+        return false;
+      received = v.sequence;
+      onEvent({ type: 'touch-overlay', visible: p.visible });
+      return true;
+    }
     if (v.type === 'actions') {
       if (
         !['playable', 'paused'].includes(state) ||

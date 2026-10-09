@@ -73,3 +73,14 @@ The authenticated runtime channel rejects unknown fields and invalid types or
 timestamps. Older native clients can omit the version and receive the existing
 string response. Deploy this web contract before distributing native clients
 that require version 2. Native clients localize their own menu/status copy.
+
+## Title menu touch visibility
+
+A playable or paused title may send the optional `akeru.catalog.v1` message
+`touch-overlay` with exactly `{ visible: boolean }`. It uses the same authenticated
+frame, origin, nonce, monotonic sequence and rate limit as other title messages.
+`false` temporarily hides the host's gameplay touch controls and releases held
+touches so native menus/tutorials can be tapped. `true` removes that suppression;
+it cannot force controls on against controller detection or the user's setting.
+The host's pill/menu remains available. Older titles need not send this hint.
+Standstill uses it while its native menus and tutorial are open.

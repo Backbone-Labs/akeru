@@ -118,3 +118,59 @@ test('action state is typed, bounded and independent of display copy', async () 
   });
   channel.dispose();
 });
+
+test('touch overlay hint is authenticated, exact and unavailable before launch or after close', () => {
+  const frame = { postMessage() {} },
+    origin = 'https://game.example',
+    nonce = 't'.repeat(32),
+    events = [];
+  const c = createRuntimeChannel({
+    frame,
+    origin,
+    nonce,
+    onEvent: (e) => events.push(e),
+  });
+  let sequence = 0;
+  const event = (type, payload) => ({
+    source: frame,
+    origin,
+    data: {
+      protocol: 'akeru.catalog.v1',
+      nonce,
+      sequence: sequence++,
+      type,
+      payload,
+    },
+  });
+  assert.equal(c.receive(event('touch-overlay', { visible: false })), false);
+  c.receive(event('playable', { sdkVersion: '0.1.0' }));
+  for (const payload of [
+    {},
+    { visible: 1 },
+    { visible: false, selector: 'body' },
+    null,
+  ])
+    assert.equal(c.receive(event('touch-overlay', payload)), false);
+  assert.equal(
+    c.receive({ ...event('touch-overlay', { visible: false }), source: {} }),
+    false,
+  );
+  assert.equal(
+    c.receive({
+      ...event('touch-overlay', { visible: false }),
+      origin: 'https://wrong.example',
+    }),
+    false,
+  );
+  const forged = event('touch-overlay', { visible: false });
+  forged.data.nonce = 'x'.repeat(32);
+  assert.equal(c.receive(forged), false);
+  const valid = event('touch-overlay', { visible: false });
+  assert.equal(c.receive(valid), true);
+  assert.deepEqual(events.at(-1), { type: 'touch-overlay', visible: false });
+  assert.equal(c.receive(valid), false);
+  c.pause();
+  assert.equal(c.receive(event('touch-overlay', { visible: true })), true);
+  c.dispose();
+  assert.equal(c.receive(event('touch-overlay', { visible: true })), false);
+});

@@ -51,7 +51,8 @@
     "three-legacy": "npm:three@0.128.0",
     "typescript": "7.0.2",
     "@tailwindcss/cli": "4.3.3",
-    "espree": "11.2.0"
+    "espree": "11.2.0",
+    "ws": "8.22.0"
   },
   "overrides": {
     "@tailwindcss/cli": {
