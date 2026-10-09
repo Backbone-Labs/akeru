@@ -89,9 +89,9 @@ test('kart launches at phone width, drives, and pauses without stuck throttle', 
   await expect
     .poll(() => game.evaluate(() => window.akeruKart.active()))
     .toBe(true);
-  // Final screenshot cleanup uses the host pause command; the click path is
-  // already verified above and need not wait on more software-rendered frames.
-  await page.evaluate(() => window.akeruNative.command('pause', {}, 2));
+  // Final screenshot cleanup activates the same host button programmatically;
+  // the physical click path above already verifies visibility and hit testing.
+  await page.locator('#player-menu').evaluate((button) => button.click());
   await expect
     .poll(() => game.evaluate(() => window.akeruKart.active()))
     .toBe(false);
