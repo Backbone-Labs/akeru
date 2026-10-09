@@ -67,4 +67,6 @@ confirmation of contacts and goals.
 After building both artifacts, run `node packages/bubblekick/verify-runtime.mjs`
 for bot isolation, delayed-reply prediction, input reconciliation, pause, room
 joining, team capacity and host-only controls. This uses only a loopback server.
-The root check includes camera projection tests at phone/tablet/desktop sizes.
+The player-following broadcast camera uses smooth tracking, bounded ball lead and
+a closer view of the surrounding pitch and stands. The root check covers player
+and nearby touchline visibility at phone/tablet/desktop sizes.

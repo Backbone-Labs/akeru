@@ -10,7 +10,8 @@ export function patchBubblekick(path, source) {
   if (path === 'client/game/app.js') {
     const begin = code.indexOf('  showOnline(error'),
       end = code.indexOf('  async _ensureNet', begin);
-    code = code.slice(0, begin) + file('online-ui.inc') + '\n' + code.slice(end);
+    code =
+      code.slice(0, begin) + file('online-ui.inc') + '\n' + code.slice(end);
     const lobby = code.indexOf('  showLobby()'),
       after = code.indexOf('  _backToRoom()', lobby);
     code =
@@ -102,21 +103,28 @@ export function patchBubblekick(path, source) {
     );
   }
   if (path === 'client/render/renderer.js') {
-    code = "import {fieldCameraDistance} from '../framing.js';\n" + code;
+    code = "import {followCamera} from '../framing.js';\n" + code;
+    replace(
+      '    if (this.debugCam) {',
+      "    if (!state || this.mode === 'attract') this.followingMatch=false;\n    if (this.debugCam) {",
+    );
     replace(
       'const v = this.players[i], p = state.players[i];',
       'const v = this.players[i], p = state.players[i];\n      v.root.visible=p.active !== false;\n      if(p.active === false) continue;',
     );
-    // Fit the entire playing surface including the near touchline, goals and HUD margin.
+    // Follow the local player, keeping the surrounding action and nearby stands in frame.
     const start = code.indexOf('      const b = state.ball;\n      let fx'),
       end = code.indexOf('\n    }\n    const k =', start);
     if (start < 0 || end < 0) throw Error('Camera patch mismatch');
     code =
       code.slice(0, start) +
-      `      const D=fieldCameraDistance(aspect,cam.fov);
-      px=0; py=D*.78; pz=D*.8; lx=0; ly=0; lz=0;
-      // A menu camera must not slide through a cropped field when kickoff starts.
-      this.camPos.set(px,py,pz); this.camLook.set(lx,ly,lz);` +
+      `      const framing=followCamera(state,this.localHumans,aspect);
+      px=framing.x; py=framing.height; pz=framing.z+framing.depth;
+      lx=framing.x; ly=0; lz=framing.z;
+      rate=5;
+      // Set the first frame directly; smooth subsequent movement and player switches.
+      if(!this.followingMatch) {this.camPos.set(px,py,pz);this.camLook.set(lx,ly,lz);}
+      this.followingMatch=true;` +
       code.slice(end);
   }
   if (path === 'client/game/sessions.js') {
