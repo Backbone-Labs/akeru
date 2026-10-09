@@ -51,7 +51,7 @@ export function options() {
       description:
         'Carve, hop and tuck your way down a dune that is different every day and the same for everyone who rides it. You carry three boards and every crash costs one. Chase your own ghost down Today’s Dune, or practise in Free Run. Three tunes to ride to.',
       category: 'action',
-      creator: 'Backbone',
+      creator: 'HyperLightAlex',
       ageLabel: 'Unrated',
       controls: {
         controller: [
