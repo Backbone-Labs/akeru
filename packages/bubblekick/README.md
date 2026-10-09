@@ -47,3 +47,24 @@ The host-selected Backbone/browser controller drives menus and gameplay through 
 - Y / RB: switch player.
 
 Regression coverage includes short presses, held buttons, standard mappings and input clearing. Browser integration checks cover the title-to-match flow and gameplay via both browser Gamepad input and the native host input command. Physical Backbone acceptance is still required.
+
+### Online rooms and responsiveness
+
+The title-specific build patches provide typed four-letter room codes, live team
+rosters, character selection and host-owned bot fill. The server limits each team
+to four humans. Without bots, empty slots (including goalkeepers) are absent from
+rendering, physics and player switching; tied matches end in a draw. A bot-free
+match requires a human on each team. Single-player-per-device online input follows
+the most recently used keyboard, touch or host-provided controller.
+
+Snapshots run at 30 Hz. Local movement uses the shared movement integrator and
+replays unacknowledged inputs after each authoritative checkpoint. Other players
+use a one-snapshot interpolation buffer. Scoring, contacts and match rules remain
+server-owned. Prediction stops after 30 outstanding inputs, rather than letting a
+lost connection simulate indefinitely. Internet latency still affects server
+confirmation of contacts and goals.
+
+After building both artifacts, run `node packages/bubblekick/verify-runtime.mjs`
+for bot isolation, delayed-reply prediction, input reconciliation, pause, room
+joining, team capacity and host-only controls. This uses only a loopback server.
+The root check includes camera projection tests at phone/tablet/desktop sizes.

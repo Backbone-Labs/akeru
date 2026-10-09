@@ -19,6 +19,8 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { rewriteImports } from '../creator-preview/imports.mjs';
 
+import { patchBubblekick } from './patches/apply.mjs';
+
 export const REVISION = process.env.BUBBLEKICK_REVISION || '';
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '../..');
@@ -129,7 +131,7 @@ export function buildBubblekick({
       true,
   );
   for (const p of runtime) {
-    let code = read(p);
+    let code = patchBubblekick(p, read(p));
     const virtual = p.replace(/^client\//, '');
     if (p.endsWith('.js')) {
       code = code
@@ -215,6 +217,7 @@ export function buildBubblekick({
   const sheets = [
     ...page.matchAll(/<link rel="stylesheet" href="\/?([^"]+)"/g),
   ].map((m) => flat(m[1].replace(/^\.\//, '')));
+  sheets.push('online.css');
   for (const s of sheets)
     if (!readdirSync(out).includes(s))
       throw new Error(`Missing stylesheet ${s}`);

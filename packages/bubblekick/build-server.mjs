@@ -8,6 +8,7 @@ import {
 } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { patchBubblekick, patchOnlineServer } from './patches/apply.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..'),
   source = process.argv[2],
   revision = process.env.BUBBLEKICK_REVISION;
@@ -30,7 +31,10 @@ for (const p of git('ls-tree', '-r', '--name-only', revision)
       p.startsWith('shared/') && p.endsWith('.js') && !p.endsWith('.test.js'),
   )) {
   mkdirSync(dirname(resolve(out, p)), { recursive: true });
-  writeFileSync(resolve(out, p), git('show', `${revision}:${p}`));
+  writeFileSync(
+    resolve(out, p),
+    patchBubblekick(p, git('show', `${revision}:${p}`).toString()),
+  );
 }
 let code = git('show', `${revision}:server/net.js`).toString();
 function patch(from, to) {
@@ -95,7 +99,7 @@ patch(
   '      for (const inp of decodeInputs(msg)) {',
   '      client.lastInputAt=Date.now();\n      for (const inp of decodeInputs(msg)) {',
 );
-writeFileSync(resolve(out, 'server/net.js'), code);
+writeFileSync(resolve(out, 'server/net.js'), patchOnlineServer(code));
 for (const p of ['start.mjs', 'policy.mjs'])
   cpSync(
     resolve(root, 'packages/bubblekick/server', p),
