@@ -1,0 +1,48 @@
+.creator-control-plate[data-tone='standstill'] {
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--f-text);
+  padding: 3rem;
+  gap: 2rem;
+}
+.creator-control-plate[data-tone='standstill'] .controller-caption {
+  color: var(--red);
+  font: 700 1.6rem var(--f-mono);
+}
+.creator-control-plate[data-tone='standstill'] .controller-button {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 2rem;
+}
+.creator-control-plate[data-tone='standstill'] .controller-action {
+  font-size: 2rem;
+}
+
+.ss-tut__pips {
+  gap: 0.3rem;
+}
+.ss-tut__pip {
+  width: 2.2rem;
+}
+.ss-tut__bar .ss-btn {
+  padding-inline: 0.8rem;
+}
+@media (max-height: 480px) {
+  .ss-tut__body {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .ss-tut__notes {
+    font-size: 8px;
+    letter-spacing: 0.04em;
+  }
+  .ss-tut__notes li {
+    line-height: 1.55;
+  }
+  .ss-tut__panel .ss-foot__keys {
+    font-size: 7px;
+    letter-spacing: 0.03em;
+  }
+}
