@@ -201,18 +201,16 @@ export function buildServerSurvival() {
   copyFileSync(resolve(vendor, 'LICENSE'), resolve(out, 'THREE-LICENSE.txt'));
   writeFileSync(
     resolve(out, 'tailwind-input.css'),
-    '@tailwind base;\n@tailwind components;\n@tailwind utilities;',
+    '@import "tailwindcss" source(none);\n@source "./*.html";\n@source "./*.js";',
   );
   execFileSync(
     process.execPath,
     [
-      resolve(root, 'node_modules/tailwindcss/lib/cli.js'),
+      resolve(root, 'node_modules/@tailwindcss/cli/dist/index.mjs'),
       '-i',
       resolve(out, 'tailwind-input.css'),
       '-o',
       resolve(out, 'utilities.css'),
-      '--content',
-      `${out}/*.html,${out}/*.js`,
       '--minify',
     ],
     { cwd: root, stdio: 'inherit' },
@@ -235,7 +233,7 @@ export function buildServerSurvival() {
         toolchain: {
           lockfileSha256: sha(readFileSync(resolve(root, 'package-lock.json'))),
           three: '0.128.0',
-          tailwind: '3.4.17',
+          tailwind: '4.3.3',
         },
         artifacts: readdirSync(out)
           .sort()
