@@ -28,6 +28,7 @@ import {
 } from '../packages/slipface/src/progress.js';
 import { createPill, supported } from '../packages/slipface/src/pill.js';
 import { build, revision } from '../packages/slipface/build.mjs';
+import { parse } from 'parse5';
 import { readBuiltTitle } from '../packages/anarch/artifacts.mjs';
 import { creatorTitles } from '../packages/creator-preview/titles.mjs';
 import { validateMetadata } from '../platform/catalog/model.js';
@@ -619,14 +620,45 @@ test('Slipface build packages only what the game entry reaches, from the commit'
           new URL('../packages/slipface/src/' + name, import.meta.url),
         ),
       );
-    const html = files['index.html'].toString();
-    assert.match(html, /<script type="module" src="\.\/title\.js"><\/script>/);
-    assert.match(html, /<link rel="modulepreload" href="\.\/sim--sim\.js">/);
-    assert.doesNotMatch(html, /<style|style=|<script>|\son[a-z]+=|https?:/);
-    assert.equal(
-      (html.match(/<script/g) ?? []).length,
-      1,
-      'one external module script',
+    // The page is parsed rather than pattern-matched: one external module
+    // script, no inline script or style, no event handlers, and every
+    // reference is a packaged file beside it.
+    const elements = [];
+    const walk = (node) => {
+      if (node.tagName) elements.push(node);
+      for (const child of node.childNodes ?? []) walk(child);
+    };
+    walk(parse(files['index.html'].toString()));
+    const attribute = (element, name) =>
+      element.attrs.find((a) => a.name === name)?.value;
+    const named = (tag) => elements.filter((el) => el.tagName === tag);
+    assert.equal(named('style').length, 0);
+    const [script, ...others] = named('script');
+    assert.deepEqual(others, []);
+    assert.equal(attribute(script, 'type'), 'module');
+    assert.equal(attribute(script, 'src'), './title.js');
+    assert.deepEqual(script.childNodes, []);
+    for (const element of elements)
+      for (const { name, value } of element.attrs) {
+        assert.notEqual(name, 'style');
+        assert.equal(name.startsWith('on'), false, name);
+        if (name === 'href' || name === 'src') {
+          assert.match(value, /^\.\/[a-zA-Z0-9._-]+$/);
+          assert.ok(Object.hasOwn(files, value.slice(2)), value);
+        }
+      }
+    const links = (rel) =>
+      named('link')
+        .filter((link) => attribute(link, 'rel') === rel)
+        .map((link) => attribute(link, 'href'));
+    assert.deepEqual(links('stylesheet'), ['./title.css']);
+    // Every packaged module but the entry is fetched up front.
+    assert.deepEqual(
+      links('modulepreload'),
+      Object.keys(files)
+        .filter((name) => name.endsWith('.js') && name !== 'title.js')
+        .sort()
+        .map((name) => './' + name),
     );
   }));
 
