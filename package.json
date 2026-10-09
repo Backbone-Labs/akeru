@@ -36,7 +36,7 @@
     "test:blackline-multiplayer": "npm run build:multiplayer && node --test tests/blackline-multiplayer*.test.mjs && playwright test tests/browser/blackline-*.spec.mjs"
   },
   "devDependencies": {
-    "@colyseus/core": "0.18.17",
+    "@colyseus/core": "0.18.18",
     "@colyseus/redis-driver": "0.18.4",
     "@colyseus/redis-presence": "0.18.5",
     "@colyseus/schema": "5.0.34",
