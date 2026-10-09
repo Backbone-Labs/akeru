@@ -2,7 +2,7 @@
   "name": "akeru-multiplayer-runtime",
   "private": true,
   "type": "module",
-  "engines": { "node": "24.19.0" },
+  "engines": { "node": "24.21.0" },
   "dependencies": {
     "@colyseus/core": "0.18.17",
     "@colyseus/redis-driver": "0.18.4",
