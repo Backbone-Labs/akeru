@@ -260,7 +260,7 @@ export function appendCatalog(catalog, entry, replaceDigest = null) {
 export async function packageShell({
   baseline,
   origin,
-  cover,
+  cover = resolve(root, 'packages/bubblekick/artwork/cover.png'),
   replaceDigest = null,
   skipLiveBaseline = false,
 }) {
