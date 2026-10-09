@@ -1256,7 +1256,15 @@ test(
       /\blocalStorage\b|\bsessionStorage\b|\bindexedDB\b|\bnavigator\.getGamepads\b|createElement\(["']style["']\)|\beval\(|new Function\b|\bclaude\b|RoomTransport/,
       'device, storage or foreign-host access',
     );
-    absent(bundle, /https?:\/\/(?!www\.w3\.org\/)\S*/, 'an outside address');
+    // Every address in the bundle, by its parsed host: only the XML
+    // namespaces the DOM needs for the game's drawn icons.
+    assert.deepEqual(
+      (bundle.match(/https?:\/\/[^\s"'`)]+/g) ?? []).filter(
+        (address) => new URL(address).hostname !== 'www.w3.org',
+      ),
+      [],
+      'an outside address',
+    );
     absent(bundle, /\/home\/|\/Users\//, 'a local path');
     const page = title.titleFiles['index.html'].toString();
     assert.doesNotMatch(page, /<style|\sstyle=|<script(?![^>]*src=)|\son\w+=/);
