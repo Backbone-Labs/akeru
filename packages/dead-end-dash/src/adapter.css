@@ -1,0 +1,35 @@
+/* The page around the game. The game's own rules are game.css, built from the
+   pinned source; nothing here restyles it. */
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #0d0a14;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+#ded-root {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+}
+#akeru-status:empty {
+  display: none;
+}
+#akeru-status {
+  position: fixed;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  left: 10px;
+  right: 10px;
+  z-index: 10000;
+  margin: 0;
+  padding: 10px;
+  color: #f0e6cf;
+  background: #120e1ce8;
+  font: 14px system-ui;
+  text-align: center;
+  pointer-events: none;
+}
