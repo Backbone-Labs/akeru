@@ -8,13 +8,13 @@ import { resolve } from 'node:path';
 // Where the source lives, which commit, and what the files each recipe reads
 // from that commit hash to. All four change together.
 export const sourceUrl = 'https://github.com/HyperLightAlex/dead-end-dash';
-export const revision = '932fde69c39846107c26998f1b96352a39dc9317';
+export const revision = 'bc7160d377d715c1b278ba6f3f82a83f40e2ce62';
 // The title (build.mjs).
 export const sourceDigest =
-  '0ba42ee1755da59ef78bdcee657c05ed76cd13b5db6a7902b17903380c12033a';
+  '279359c2032a4c8d57dc09a1f2f67339aa71c8e897608632709d70dd38926af3';
 // The party relay (build-server.mjs).
 export const serverDigest =
-  'f05d475d32e5dd5cb5575d8a2b837bf0290229933cddb1c60328402fe6172fdd';
+  '6ee09aa11f128287d80ff10246c7e39898d93cd3b98e4532eb7873d8e8d925b1';
 
 export const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
