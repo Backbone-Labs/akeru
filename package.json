@@ -52,7 +52,7 @@
     "prettier": "3.9.9",
     "tailwindcss": "4.3.3",
     "three": "0.180.0",
-    "three-blackline": "npm:three@0.169.0",
+    "three-blackline": "npm:three@0.186.1",
     "three-legacy": "npm:three@0.128.0",
     "typescript": "7.0.2",
     "@tailwindcss/cli": "4.3.3",
