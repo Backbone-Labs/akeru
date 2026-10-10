@@ -39,7 +39,7 @@
     "@colyseus/core": "0.18.17",
     "@colyseus/redis-driver": "0.18.4",
     "@colyseus/redis-presence": "0.18.5",
-    "@colyseus/schema": "5.0.34",
+    "@colyseus/schema": "5.0.36",
     "@colyseus/sdk": "0.18.4",
     "@colyseus/ws-transport": "0.18.4",
     "@eslint/js": "10.0.1",
